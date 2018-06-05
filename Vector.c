@@ -10,13 +10,6 @@ Vector::Vector(void) {
   V[2] = 0;
 } // Vector::Vector(void) {
 
-Vector::Vector(const double V_in[3]) {
-  // Initialize components of vector using supplied array
-  V[0] = V_in[0];
-  V[1] = V_in[1];
-  V[2] = V_in[2];
-} // Vector::Vector(const double v_in[3]) {
-
 Vector::Vector(const double v0, const double v1, const double v2) {
   // Initialize components of vector using supplied components
   V[0] = v0;
@@ -37,6 +30,8 @@ Vector Vector::operator+(const Vector V_In) const {
       iteration variable. Since there are only three components, it makes more
       sense to write out the component updates explicitly rather than using a
       for loop since this method will have less overhead/will run faster.
+
+      I choose to use a similar optimization on other vector functions
   */
   Sum.V[0] = V[0] + V_In.V[0];
   Sum.V[1] = V[1] + V_In.V[1];
@@ -49,16 +44,6 @@ Vector Vector::operator-(const Vector V_In) const{
   // Declare a Diff vector. This will be used to store the difference.
   Vector Diff;
 
-  /* Subtract components of the two vectors, store in the Diff Vector.
-
-     Notice that I choose to write out the three components here rather than
-     using a for loop. I did this because a for loop incurs overhead.
-     This overhead comes from declaring the increment variable, running the
-     test condition on each iteration and then performing the update to the
-     iteration variable. Since there are only three components, it makes more
-     sense to write out the component updates explicitly rather than using a
-     for loop since this method will have less overhead/will run faster.
-  */
   Diff.V[0] = V[0] - V_In.V[0];
   Diff.V[1] = V[1] - V_In.V[1];
   Diff.V[2] = V[2] - V_In.V[2];
@@ -85,6 +70,24 @@ Vector Vector::operator=(const Vector V_In) {
   // Return this vector
   return *this;
 } // Vector Vector::operator=(const Vector V_In) {
+
+Vector Vector::operator+=(const Vector V_In) {
+  V[0] = V[0] + V_In[0];
+  V[1] = V[1] + V_In[1];
+  V[2] = V[2] + V_In[2];
+
+  // Return this vector
+  return *this;
+} // Vector Vector:operator+=(const Vector V_In) {
+
+Vector Vector::operator+=(const double V_In[3]) {
+  V[0] = V[0] + V_In[0];
+  V[1] = V[1] + V_In[1];
+  V[2] = V[2] + V_In[2];
+
+  // Return this vector
+  return *this;
+} // Vector Vector::operator+=(const double V_In[3]) { 
 
 double& Vector::operator()(const uByte index) {
   if(index >= 3)

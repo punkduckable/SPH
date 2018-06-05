@@ -19,15 +19,15 @@ Dev Plan:
 
 TODO:
  - Vector class:
+    DONE: Move class and methods to separate header/source file
+    DONE: Add += operator
+    DONE: Remove the 'vector constructor' ( = overloading is more natural)
     - Improve operator overloading
-    - Move class and methods to separate header/source file
-    - Remove all but default constructors (= overloading is more natural imo)
 
  - Tensor Class:
     DONE: Define (), [], = (to arrays) for tensors.
-    - Move class and methods to a separate header/source file
-    - Remove all but default constructor (= overloading is more natural)
-    - Add += operator overload.
+    DONE: Move class and methods to a separate header/source file
+    DONE: Add += operator overload.
     - Add an inverse function
 
 IDEAS:

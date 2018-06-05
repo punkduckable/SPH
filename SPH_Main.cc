@@ -45,6 +45,11 @@ int main(int argc, char *argv[]) {
   V1[1] = 4;
   V1.Print();
 
+  Vector V3 = {1,2,3};
+  V3 += V3;
+  V3 += {1,2,3};
+  V3.Print();
+
   Tensor T1(1,2,3,
             4,5,6,
             7,8,9);
@@ -53,8 +58,12 @@ int main(int argc, char *argv[]) {
             3,6,9};
 
   Tensor T3 = T1*T2;
-
   T3.Print();
+
+  Tensor T4 = T1;
+  T4 += T1;
+  T4 += {1,2,3,4,5,6,7,8,9};
+  T4.Print();
 
   return 0;
 } // int main() {

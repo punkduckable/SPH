@@ -13,6 +13,8 @@ class Tensor {
     Tensor operator+(const Tensor S_In) const;
     Tensor operator*(const Tensor S_In) const;
     Vector operator*(const Vector V_In) const;
+    Tensor operator+=(const Tensor S_In);
+    Tensor operator+=(const double S_In[9]);
     Tensor operator=(const double S_In[9]);
     Tensor operator=(const Tensor S_In);
     double& operator()(const uByte row, const uByte col);

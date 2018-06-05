@@ -77,6 +77,28 @@ Vector Tensor::operator*(const Vector V_In) const {
   return Prod;
 } // Vector Tensor::operator*(const Vector V_In) const {
 
+Tensor Tensor::operator+=(const Tensor T_In) {
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      T[3*i+j] = T[3*i+ j] + T_In(i,j);
+    } // for(int j = 0; j < 3; j++) {
+  } // for(int i = 0; i < 3; i++) {
+
+  // Return this tensor
+  return *this;
+} // Tensor Tensor::operator+=(const Tensor T_In) {
+
+Tensor Tensor::operator+=(const double T_In[9]) {
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      T[3*i+j] = T[3*i+ j] + T_In[3*i+j];
+    } // for(int j = 0; j < 3; j++) {
+  } // for(int i = 0; i < 3; i++) {
+
+  // Return this tensor
+  return *this;
+} // Tensor Tensor::operator+=(const Tensor T_In) {
+
 Tensor Tensor::operator=(const double V_In[9]) {
   for(int i = 0; i < 9; i++) {
     for(int j = 0; j < 9; j++) {
@@ -84,6 +106,7 @@ Tensor Tensor::operator=(const double V_In[9]) {
     }
   } //   for(int i = 0; i < 9; i++) {
 
+  // return this tensor
   return *this;
 } // Tensor Tensor::operator=(const double V_In[9]) {
 
@@ -94,6 +117,7 @@ Tensor Tensor::operator=(const Tensor S_In) {
     }
   }
 
+  // return this tensor
   return *this;
 } // Tensor Tensor::operator=(const Tensor S_In) {
 
@@ -101,6 +125,7 @@ double& Tensor::operator()(const uByte row, const uByte col) {
   if(row >= 3 || col >=3)
       printf("Index out of bounds\n");
 
+  // Return the specified element (treat it like matirx notation)
   return T[3*row + col];
 } // double& Tensor::operator()(const uByte row, const uByte col) {
 
@@ -108,6 +133,7 @@ double Tensor::operator()( const uByte row, const uByte col) const {
   if(row >= 3 || col >=3)
       printf("Index out of bounds\n");
 
+  // Return the specified element (treat it like matirx notation)
   return T[3*row + col];
 } // double Tensor::operator()(const uByte row, const uByte col) const {
 
