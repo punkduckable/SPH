@@ -87,7 +87,7 @@ Vector Vector::operator+=(const double V_In[3]) {
 
   // Return this vector
   return *this;
-} // Vector Vector::operator+=(const double V_In[3]) { 
+} // Vector Vector::operator+=(const double V_In[3]) {
 
 double& Vector::operator()(const uByte index) {
   if(index >= 3)

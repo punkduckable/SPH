@@ -44,11 +44,13 @@ int main(int argc, char *argv[]) {
   V1(2) = 5;
   V1[1] = 4;
   V1.Print();
+  printf("\n");
 
   Vector V3 = {1,2,3};
   V3 += V3;
   V3 += {1,2,3};
   V3.Print();
+  printf("\n");
 
   Tensor T1(1,2,3,
             4,5,6,
@@ -59,11 +61,19 @@ int main(int argc, char *argv[]) {
 
   Tensor T3 = T1*T2;
   T3.Print();
+  printf("\n");
 
   Tensor T4 = T1;
   T4 += T1;
   T4 += {1,2,3,4,5,6,7,8,9};
   T4.Print();
+  printf("\n");
+
+  Tensor T5 = {1,5,8,
+               12,6,3,
+               6,9,11};
+  Tensor T6 = T5.Inverse();
+  T6.Print();
 
   return 0;
 } // int main() {

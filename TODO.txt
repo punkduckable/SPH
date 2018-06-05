@@ -22,13 +22,17 @@ TODO:
     DONE: Move class and methods to separate header/source file
     DONE: Add += operator
     DONE: Remove the 'vector constructor' ( = overloading is more natural)
+    - Add *=, / (divide vector by scalar), * (scalar multiplication + friend) overloading
     - Improve operator overloading
 
  - Tensor Class:
     DONE: Define (), [], = (to arrays) for tensors.
     DONE: Move class and methods to a separate header/source file
     DONE: Add += operator overload.
-    - Add an inverse function
+    DONE: Add *=, / (divide by scalar), * (scalar multiplication + friend) overloading
+    DONE: Add an inverse function
+    - Test all new operators!
+    - Clean up functions/reorganize
 
 IDEAS:
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)
