@@ -17,6 +17,7 @@ TODO:
 
  - Tensor Class:
     - Define (), [], = (to arrays) for tensors.
+    - Add an inverse function
 
 IDEAS:
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)
