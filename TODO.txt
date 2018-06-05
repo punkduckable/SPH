@@ -1,0 +1,25 @@
+Dev Plan:
+ - Create Vector, Tensor Classes
+     - Write definitions + test all methods... see that they're working
+
+ - Create Particle Classes
+    - Write definitions + Test methods.
+    - Generate neighbor list (Might need to make a list type object)
+    - Test that particles work using a simple 3x3 grid or something
+
+ - Write some SPH code
+    - Generate particle list, use this to get each particle's neighbor list
+    - Implement Algorithm
+
+TODO:
+ - Vector class:
+    - Improve operator overloading
+
+ - Tensor Class:
+    - Define (), [], = (to arrays) for tensors.
+
+IDEAS:
+ - Replace the Vector, Tensor classes with templates (need to look up how to do this)
+    - This would allow me to change the data type stored in each tensor depending
+    on the application... could be pretty useful (float vs double depending on
+    required level of accuracy, etc.)
