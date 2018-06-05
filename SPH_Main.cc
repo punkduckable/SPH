@@ -5,24 +5,29 @@ using namespace std;
 
 // Type definitions
 typedef signed char Byte;
+typedef unsigned char uByte;
 
 // Classes
 class Vector {
   public:
-    double V[3];                    // The three components of the Vector
+    double V[3];                    // Stores the three components of the Vector
 
-    Vector(void);                   // Default Constructor
-    Vector(double V_in[3]);         // Vector based constructor
-    Vector(double v0,
-           double v1,
-           double v2);              // Component based constructor
+    Vector(void);                                  // Default Constructor
+    Vector(const double V_in[3]);                  // Vector based constructor
+    Vector(const double v0,
+           const double v1,
+           const double v2);                       // Component based constructor
 
-    Vector operator+(Vector V_In);     // Addition overload (so we can add vectors)
-    Vector operator-(Vector V_In);     // Subtraction overload (so we can subtract vectors)
-    Vector operator=(double V_In[3]);
-    double& operator()(Byte index);
-    double& operator[](Byte index);
-    void Print(void);               // Print vector components
+    Vector operator+(const Vector V_In) const;     // Addition overload (so we can add vectors)
+    Vector operator-(const Vector V_In) const;     // Subtraction overload (so we can subtract vectors)
+    Vector operator=(const double V_In[3]);        // Initialize a vector to an array
+    Vector operator=(const Vector V_In);           // Initialize a vector to another vector!
+    double& operator()(const uByte index);
+    double operator()(const uByte index) const;
+    double& operator[](const uByte index);
+    double operator[](const uByte index) const;
+
+    void Print(void) const;               // Print vector components
 }; // class Vector {
 
 class Tensor {
@@ -34,9 +39,13 @@ class Tensor {
            double t21, double t22, double t23,
            double t31, double t32, double t33);   // Component constructor
 
-    Tensor operator+(Tensor S);
-    Tensor operator*(Tensor S);
-    Vector operator*(Vector V);
+    Tensor operator+(const Tensor S_In) const;
+    Tensor operator*(const Tensor S_In) const;
+    Vector operator*(const Vector V_In) const;
+    Tensor operator=(const double S_In[9]);
+    Tensor operator=(const Tensor S_In);
+    double& operator()(const uByte row, const uByte col);
+    double operator()(const uByte row, const uByte col) const;
     void Print(void);
 }; // class Tensor {
 
@@ -52,21 +61,21 @@ Vector::Vector(void) {
   V[2] = 0;
 } // Vector::Vector(void) {
 
-Vector::Vector(double V_in[3]) {
+Vector::Vector(const double V_in[3]) {
   // Initialize components of vector using supplied array
   V[0] = V_in[0];
   V[1] = V_in[1];
   V[2] = V_in[2];
-} // Vector::Vector(double v_in[3]) {
+} // Vector::Vector(const double v_in[3]) {
 
-Vector::Vector(double v0, double v1, double v2) {
+Vector::Vector(const double v0, const double v1, const double v2) {
   // Initialize components of vector using supplied components
   V[0] = v0;
   V[1] = v1;
   V[2] = v2;
-} // Vector::Vector(double v0, double v1, double v2) {
+} // Vector::Vector(const double v0, const double v1, const double v2) {
 
-Vector Vector::operator+(Vector V_In) {
+Vector Vector::operator+(const Vector V_In) const {
   // Declare a sum Vector. This will be used to store the sum
   Vector Sum;
 
@@ -85,9 +94,9 @@ Vector Vector::operator+(Vector V_In) {
   Sum.V[2] = V[2] + V_In.V[2];
 
   return Sum;
-} // Vector Vector::operator+(Vector V) {
+} // Vector Vector::operator+(const Vector V) const {
 
-Vector Vector::operator-(Vector V_In) {
+Vector Vector::operator-(const Vector V_In) const{
   // Declare a Diff vector. This will be used to store the difference.
   Vector Diff;
 
@@ -106,27 +115,59 @@ Vector Vector::operator-(Vector V_In) {
   Diff.V[2] = V[2] - V_In.V[2];
 
   return Diff;
-} // Vector Vector::operator-(Vector V) {
+} // Vector Vector::operator-(const Vector V) const {
 
-Vector Vector::operator=(double V_In[3]) {
+Vector Vector::operator=(const double V_In[3]) {
+  // Assign components of vector to V_In array
   V[0] = V_In[0];
   V[1] = V_In[1];
   V[2] = V_In[2];
 
+  // Return this Vector
   return *this;
 }
 
-double& Vector::operator()(Byte index) {
-  return V[index];
-} // double& Vector::operator()(Byte index) {
+Vector Vector::operator=(const Vector V_In) {
+  // Assign components of V using V_In.
+  V[0] = V_In.V[0];
+  V[0] = V_In.V[0];
+  V[0] = V_In.V[0];
 
-double& Vector::operator[](Byte index) {
-  return V[index];
-} // double& Vector::operaotr[](Byte index) {
+  // Return this vector
+  return *this;
+} // Vector Vector::operator=(const Vector V_In) {
 
-void Vector::Print(void) {
+double& Vector::operator()(const uByte index) {
+  if(index >= 3)
+    printf("Index out of bounds");
+
+  return V[index];
+} // double& Vector::operator()(const uByte index) {
+
+  double Vector::operator()(const uByte index) const {
+    if(index >= 3)
+      printf("Index out of bounds");
+
+    return V[index];
+  } // double Vector::operator()(const uByte index) const {
+
+double& Vector::operator[](const uByte index) {
+  if(index >= 3)
+    printf("Index out of bounds");
+
+  return V[index];
+} // double& Vector::operaotr[](const uByte index) {
+
+double Vector::operator[](const uByte index) const {
+  if(index >= 3)
+    printf("Index out of bounds");
+
+  return V[index];
+} // double Vector::operaotr[](const uByte index) const {
+
+void Vector::Print(void) const {
   printf("< %4.2f, %4.2f, %4.2f>\n",V[0], V[1], V[2]);
-} // void Print(void) {
+} // void Print(void) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tensor method definitions
@@ -153,7 +194,7 @@ Tensor::Tensor(double t11, double t12, double t13,
     T[8] = t33;
 } // Tensor:Tensor(double t11,.... double t33) {
 
-Tensor Tensor::operator+(Tensor S) {
+Tensor Tensor::operator+(const Tensor S_In) const {
   // Declare some vector to store the sum
   Tensor Sum;
 
@@ -163,14 +204,16 @@ Tensor Tensor::operator+(Tensor S) {
      typos, hard to change how the function operates). I am hopeful that the
      compuler willl unroll the loop for me.
   */
-  for(int i = 0; i < 9; i++){
-    Sum.T[i] = T[i] + S.T[i];
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 3; j++) {
+      Sum(i,j) = T[3*i + j] + S_In(i,j);
+    }
   } // for(int i = 0; i < 9; i++){
 
   return Sum;
-} // Tensor Tensor::operator+(Tensor S) {
+} // Tensor Tensor::operator+(const Tensor S_In) const {
 
-Tensor Tensor::operator*(Tensor S) {
+Tensor Tensor::operator*(const Tensor S_In) const{
   // Declare product tensor
   Tensor Prod;
 
@@ -179,15 +222,15 @@ Tensor Tensor::operator*(Tensor S) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       for(int k = 0; k < 3; k++) {
-        Prod.T[3*i+j] += T[3*i+k]*S.T[3*k+j];
+        Prod(i,j) += T[3*i + k]*S_In(k,j);
       } // for(int k = 0; k < 3; k++) {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
 
   return Prod;
-} // Tensor Tensor::operator*(Tensor S) {
+} // Tensor Tensor::operator*(const Tensor S_In) const{
 
-Vector Tensor::operator*(Vector V_In) {
+Vector Tensor::operator*(const Vector V_In) const {
   // Declare product vector (matrix vector product is a vector)
   Vector Prod;
 
@@ -200,7 +243,41 @@ Vector Tensor::operator*(Vector V_In) {
   } //   for(int i = 0; i < 3; i++) {
 
   return Prod;
-} // Vector Tensor::operator*(Vector V) {
+} // Vector Tensor::operator*(const Vector V_In) const {
+
+Tensor Tensor::operator=(const double V_In[9]) {
+  for(int i = 0; i < 9; i++) {
+    for(int j = 0; j < 9; j++) {
+      T[i] = V_In[i];
+    }
+  } //   for(int i = 0; i < 9; i++) {
+
+  return *this;
+} // Tensor Tensor::operator=(const double V_In[9]) {
+
+Tensor Tensor::operator=(const Tensor S_In) {
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      T[3*i + j] = S_In(i,j);
+    }
+  }
+
+  return *this;
+} // Tensor Tensor::operator=(const Tensor S_In) {
+
+double& Tensor::operator()(const uByte row, const uByte col) {
+  if(row >= 3 || col >=3)
+      printf("Index out of bounds\n");
+
+  return T[3*row + col];
+} // double& Tensor::operator()(const uByte row, const uByte col) {
+
+double Tensor::operator()( const uByte row, const uByte col) const {
+  if(row >= 3 || col >=3)
+      printf("Index out of bounds\n");
+
+  return T[3*row + col];
+} // double Tensor::operator()(const uByte row, const ubyte col) const {
 
 void Tensor::Print(void) {
   for(int i = 0; i < 3; i++) {
@@ -239,9 +316,9 @@ int main(int argc, char *argv[]) {
   Tensor T1(1,2,3,
             4,5,6,
             7,8,9);
-  Tensor T2(1,4,7,
+  Tensor T2 = {1,4,7,
             2,5,8,
-            3,6,9);
+            3,6,9};
 
   Tensor T3 = T1*T2;
 

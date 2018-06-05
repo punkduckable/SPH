@@ -11,6 +11,12 @@ Dev Plan:
     - Generate particle list, use this to get each particle's neighbor list
     - Implement Algorithm
 
+  - Optimize Serial code
+
+  - Write parallel code
+
+  - Optimize parallel code
+
 TODO:
  - Vector class:
     - Improve operator overloading
