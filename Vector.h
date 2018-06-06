@@ -37,6 +37,7 @@ class Vector {
     double operator[](const uByte index) const;
 
     void Print(void) const;                          // Print vector components
+    double Magnitude(void) const;
 
     friend Vector operator*(double c, Vector V_In);  // Scalar multiplication (defines c*V)
 }; // class Vector {
