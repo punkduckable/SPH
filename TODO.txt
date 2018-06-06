@@ -62,6 +62,18 @@ TODO / development history:
       - Try initializing particles.
 
 IDEAS:
+ - How to implement neighbor list: 
+     - Define three variables, a neighbor's pointer, an integer called 'num neighbors' 
+     and an integer called 'Numel'. Begin by allocating an array of 'numel' ints for 
+     the neighbor's pointer. Next, cycle through the particles. Each time a neighbor 
+     is found, add it's array index to the allocated 'Neighbors' array and increment
+     'num neighbors'. If num_neighbors excedes 'Numel' (the number of elements in the
+     Neighbors array), then reallocate the neighbor's array with an additional 'Numel' 
+     elements (use relloc). Continue doing this until you have cycled through every
+     particle/have every neighbor. At this point, you now have a complete neighbor 
+     list + the number of neighbors. Pass the neighbor ID's + number of neighbors to 
+     that particle's data. 
+     
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)
     - This would allow me to change the data type stored in each tensor depending
     on the application... could be pretty useful (float vs double depending on
