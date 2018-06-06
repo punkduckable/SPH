@@ -23,6 +23,7 @@ TODO:
     DONE: Add += operator
     DONE: Remove the 'vector constructor' ( = overloading is more natural)
     - Add *=, / (divide vector by scalar), * (scalar multiplication + friend) overloading
+    - Move V member to private section
     - Improve operator overloading
 
  - Tensor Class:
@@ -32,6 +33,7 @@ TODO:
     DONE: Add *=, / (divide by scalar), * (scalar multiplication + friend) overloading
     DONE: Add an inverse function
     - Test all new operators!
+    - Move T member to private section
     - Clean up functions/reorganize
 
 IDEAS:
