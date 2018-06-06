@@ -25,6 +25,7 @@ TODO:
     DONE: Add *=, / (divide vector by scalar), * (scalar multiplication + friend) overloading
     DONE: Move V member to private section
     DONE: Improve operator overloading
+    - Test all new operators!
 
  - Tensor Class:
     DONE: Define (), [], = (to arrays) for tensors.
@@ -32,9 +33,9 @@ TODO:
     DONE: Add += operator overload.
     DONE: Add *=, / (divide by scalar), * (scalar multiplication + friend) overloading
     DONE: Add an inverse function
+    DONE: Move T member to private section
+    DONE: Clean up functions/reorganize
     - Test all new operators!
-    - Move T member to private section
-    - Clean up functions/reorganize
 
 IDEAS:
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)
