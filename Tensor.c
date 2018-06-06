@@ -27,7 +27,7 @@ Tensor::Tensor(double t11, double t12, double t13,
 } // Tensor:Tensor(double t11,.... double t33) {
 
 Tensor Tensor::operator+(const Tensor S_In) const {
-  // Declare some vector to store the sum
+  // Declare some Tensor to store the sum
   Tensor Sum;
 
   /* Compute the 9 elements of the sum.
@@ -69,9 +69,9 @@ Vector Tensor::operator*(const Vector V_In) const {
   // Calculate components of Prod using a for loop. This uses standard matrix
   // vector multiplication
   for(int i = 0; i < 3; i++) {
-    Prod.V[i] = T[3*i]*V_In.V[0] +
-                T[3*i+1]*V_In.V[1] +
-                T[3*i+2]*V_In.V[2];
+    Prod[i] =   T[3*i]*V_In[0] +
+                T[3*i+1]*V_In[1] +
+                T[3*i+2]*V_In[2];
   } //   for(int i = 0; i < 3; i++) {
 
   return Prod;

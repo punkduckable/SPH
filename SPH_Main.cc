@@ -21,7 +21,7 @@ Tensor Dyadic_Product(Vector V1, Vector V2);
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions
 
-Tensor Dyatic_Product(Vector V1, Vector V2) {
+Tensor Dyadic_Product(Vector V1, Vector V2) {
   Tensor S;
 
   /* Assign the elements of our dyadic product using nested for loop. Note that
@@ -30,9 +30,9 @@ Tensor Dyatic_Product(Vector V1, Vector V2) {
      the jth component of V2)
   */
   for(int j = 0; j < 3; j++) {
-    S.T[0*3 + j] = V1.V[0]*V2.V[j];
-    S.T[1*3 + j] = V1.V[1]*V2.V[j];
-    S.T[2*3 + j] = V1.V[2]*V2.V[j];
+    S.T[0*3 + j] = V1[0]*V2[j];
+    S.T[1*3 + j] = V1[1]*V2[j];
+    S.T[2*3 + j] = V1[2]*V2[j];
   } //   for(int j = 0; j < 3; j++) {
 
   return S;

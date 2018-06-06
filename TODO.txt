@@ -22,9 +22,9 @@ TODO:
     DONE: Move class and methods to separate header/source file
     DONE: Add += operator
     DONE: Remove the 'vector constructor' ( = overloading is more natural)
-    - Add *=, / (divide vector by scalar), * (scalar multiplication + friend) overloading
-    - Move V member to private section
-    - Improve operator overloading
+    DONE: Add *=, / (divide vector by scalar), * (scalar multiplication + friend) overloading
+    DONE: Move V member to private section
+    DONE: Improve operator overloading
 
  - Tensor Class:
     DONE: Define (), [], = (to arrays) for tensors.

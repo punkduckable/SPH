@@ -1,30 +1,44 @@
 #if !defined(_VECTOR_HEADER)
 #define _VECTOR_HEADER
 
-class Vector {
-  public:
-    double V[3];                    // Stores the three components of the Vector
+/*  This is the header file for my vector class. Most of the methods for this
+class define operations with vectors and scalars. The intent of this is to make
+vector objects act just like mathematical vectors. As such, things like vector
+addition, scalar multiplication, vector equality, etc.. have been defined.
+Each method has a comment explaining what that method does. V, V1, and V2 denote
+vectors. c denotes a scalar constant.
+*/
 
-    Vector(void);                                  // Default Constructor
+class Vector {
+  private:
+    double V[3];                                     // Holds the three components of the Vector
+
+  public:
+    Vector(void);                                    // Default Constructor
     Vector(const double v0,
            const double v1,
-           const double v2);                       // Component based constructor
+           const double v2);                         // Component based constructor
 
-    Vector operator+(const Vector V_In) const;     // Addition overload (so we can add vectors)
-    Vector operator-(const Vector V_In) const;     // Subtraction overload (so we can subtract vectors)
+    Vector operator+(const Vector V_In) const;       // Vector addition (defines V1 + V2)
+    Vector operator-(const Vector V_In) const;       // Vector Subtraction (defines V1 - V2)
+    Vector operator*(const double c) const;          // Scalar multiplication (defines V*c)
+    Vector operator/(const double c) const;          // Scalar Divide (defines V/c).
 
-    Vector operator+=(const Vector V_In);
-    Vector operator+=(const double V_In[3]);
+    Vector operator+=(const Vector V_In);            // Compound Vector addition (Defines V1 += V2)
+    Vector operator+=(const double V_In[3]);         // Compound Vector addition with a 3 element array (Defines V1 += V2[3])
+    Vector operator*=(const double c);               // Compound Scalar multiplication (defines V *= c)
 
-    Vector operator=(const double V_In[3]);        // Initialize a vector to an array
-    Vector operator=(const Vector V_In);           // Initialize a vector to another vector!
+    Vector operator=(const double V_In[3]);          // Vector equality (defines V1 = V2[3])
+    Vector operator=(const Vector V_In);             // Vector equalitty (defines V1 = V2)
 
-    double& operator()(const uByte index);
+    double& operator()(const uByte index);           // () component access (defines V(n))
     double operator()(const uByte index) const;
-    double& operator[](const uByte index);
+    double& operator[](const uByte index);           // [] component access (defines V[n])
     double operator[](const uByte index) const;
 
-    void Print(void) const;               // Print vector components
+    void Print(void) const;                          // Print vector components
+
+    friend Vector operator*(double c, Vector V_In);  // Scalar multiplication (defines c*V)
 }; // class Vector {
 
 #endif
