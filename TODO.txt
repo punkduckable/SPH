@@ -26,6 +26,7 @@ TODO:
     DONE: Move V member to private section
     DONE: Improve operator overloading
     - Test all new operators!
+    - Replace printouts with actual errors
 
  - Tensor Class:
     DONE: Define (), [], = (to arrays) for tensors.
@@ -36,6 +37,7 @@ TODO:
     DONE: Move T member to private section
     DONE: Clean up functions/reorganize
     - Test all new operators!
+    - Repalce printouts with actual errors
 
 IDEAS:
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)
