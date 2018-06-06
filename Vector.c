@@ -1,8 +1,15 @@
 #if !defined(_VECTOR_SOURCE)
 #define _VECTOR_SOURCE
 
+/* In this file, I define methods for Vector objects. Theese methods are
+designed to make vector objects work just like mathematical vectors. In general,
+I use [] to access components of the vectors. However, () and [] are defined in
+the same way/give the same result (V[1]= V(1)).
+*/
+
 ////////////////////////////////////////////////////////////////////////////////
-// Vector method definitions
+// Constructors
+
 Vector::Vector(void) {
   // Initialize components of vector to zero (no input supplied, assume zero)
   V[0] = 0;
@@ -16,6 +23,11 @@ Vector::Vector(const double v0, const double v1, const double v2) {
   V[1] = v1;
   V[2] = v2;
 } // Vector::Vector(const double v0, const double v1, const double v2) {
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Simple arithmetic operators
 
 Vector Vector::operator+(const Vector V_In) const {
   // Declare a sum Vector. This will be used to store the sum
@@ -83,6 +95,9 @@ Vector Vector::operator/(const double c) const {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Compound arithmetic operators
+
 Vector Vector::operator+=(const Vector V_In) {
   V[0] = V[0] + V_In[0];
   V[1] = V[1] + V_In[1];
@@ -113,6 +128,9 @@ Vector Vector::operator*=(const double c) {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Vector equality
+
 Vector Vector::operator=(const double V_In[3]) {
   // Assign components of vector to V_In array
   V[0] = V_In[0];
@@ -134,6 +152,9 @@ Vector Vector::operator=(const Vector V_In) {
 } // Vector Vector::operator=(const Vector V_In) {
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Component access: (), []
 
 double& Vector::operator()(const uByte index) {
   /* Check if index is > 3. Note that this function only accepts an unsigned
@@ -168,11 +189,17 @@ double Vector::operator[](const uByte index) const {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Other methods
+
 void Vector::Print(void) const {
   printf("< %4.2f, %4.2f, %4.2f>\n",V[0], V[1], V[2]);
 } // void Print(void) const {
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Friend methods
 
 Vector operator*(double c, Vector V_In) {
   // Declare product vector

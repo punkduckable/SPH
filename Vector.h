@@ -6,8 +6,8 @@ class define operations with vectors and scalars. The intent of this is to make
 vector objects act just like mathematical vectors. As such, things like vector
 addition, scalar multiplication, vector equality, etc.. have been defined.
 Each method has a comment explaining what that method does. V, V1, and V2 denote
-vectors. c denotes a scalar constant.
-*/
+Vector objects, V[3] denotes a vector stored as an array, and c denotes a scalar
+constant. */
 
 class Vector {
   private:
