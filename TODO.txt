@@ -1,10 +1,10 @@
-Dev Plan:
+Development Plan:
  - Create Vector, Tensor Classes
      - Write definitions + test all methods... see that they're working
 
  - Create Particle Classes
     - Write definitions + Test methods.
-    - Generate neighbor list (Might need to make a list type object)
+    - Come up with a way to generate neighbor list (Might need to make a list type object)
     - Test that particles work using a simple 3x3 grid or something
 
  - Write some SPH code
@@ -17,27 +17,49 @@ Dev Plan:
 
   - Optimize parallel code
 
-TODO:
+TODO / development history:
  - Vector class:
-    DONE: Move class and methods to separate header/source file
-    DONE: Add += operator
-    DONE: Remove the 'vector constructor' ( = overloading is more natural)
-    DONE: Add *=, / (divide vector by scalar), * (scalar multiplication + friend) overloading
-    DONE: Move V member to private section
-    DONE: Improve operator overloading
+    DONE 6/5: Move class and methods to separate header/source file
+    DONE 6/5: Add += operator
+    DONE 6/5: Remove the 'vector constructor' ( = overloading is more natural)
+    DONE 6/5: Add *=, / (divide vector by scalar), * (scalar multiplication + friend) overloading
+    DONE 6/6: Move V member to private section
+    DONE 6/6: Improve operator overloading
+    DONE 6/6: Add magnitude method
     - Test all new operators!
     - Replace printouts with actual errors
 
  - Tensor Class:
-    DONE: Define (), [], = (to arrays) for tensors.
-    DONE: Move class and methods to a separate header/source file
-    DONE: Add += operator overload.
-    DONE: Add *=, / (divide by scalar), * (scalar multiplication + friend) overloading
-    DONE: Add an inverse function
-    DONE: Move T member to private section
-    DONE: Clean up functions/reorganize
+    DONE 6/5: Define (), [], = (to arrays) for tensors.
+    DONE 6/5: Move class and methods to a separate header/source file
+    DONE 6/5: Add += operator overload.
+    DONE 6/6: Add *=, / (divide by scalar), * (scalar multiplication + friend) overloading
+    DONE 6/5: Add an inverse function
+    DONE 6/6: Move T member to private section
+    DONE 6/6: Clean up functions/reorganize
     - Test all new operators!
-    - Repalce printouts with actual errors
+    - Replace printouts with actual errors
+
+  - Particle Class:
+    - Define all methods
+    - Move Grad_W_Tilde into an array of vectors
+        - Grad_W is used when calculating A and Grad_W_Tilde. However, I believe
+        that both of these only need to be found once. Using the provided
+        algorithm, Grad_W_Tilde for each neighbor is calculated for each
+        iteration (to calculate the deformation gradient). However, if we look
+        at the definition of Grad_W_Tilde, we can see that Grad_W_Tilde for the
+        jth neighbor will always be the same (since Grad_W_Tilde is a function
+        of just h and Rj (ref position) both of which do not change with time)
+        Thus, I believe that it makes sense to store the value of Grad_W_Tilde(Rj,h)
+        for each Neighbor in an array of vectors (each particle would get such
+        such an array). The idea here is that the jth Vector in the array
+        corresponds to Grad_W_Tilde for the jth neighbor! By storing
+        Grad_W_tilde for each neighbor in an array, we only need to calculate
+        each Grad_W_Tilde once! To calculate F, we simply call the corresponding
+        elements of the array. I believe this will greatly enhance performance.
+      - Add Particles array and h to main file! Also set number of particles.
+      - Come up with an algorithm to generate neighbor list
+      - Try initializing particles.
 
 IDEAS:
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)

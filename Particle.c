@@ -34,7 +34,7 @@ Vector Particle::Get_x(void) cosnt {
 ////////////////////////////////////////////////////////////////////////////////
 // Set neighbor List
 
-void Particle::Set_Neighbor_List(const unsigned int *List,const unsigned int N) {
+void Particle::Set_Neighbor_List(const unsigned int *List, const unsigned int N) {
   // Set Num_Neighbors using input
   Num_Neighbors = N;
 
@@ -60,10 +60,41 @@ Vector Particle::Grad_W(const Vector Rj,const double h) const {
   // Calculate the magnitude of Rj
   double Mag_Rj = Rj.Magnitude();
 
-  // Calculate Grad_W using Grad_W(Rj,h) = 3*(h - |Rj|)^2*(Rj / |Rj|)
+  /* Calculate Grad_W using Grad_W(Rj,h) = (d/d|Rj|)W(Rj,h)*(Rj / |Rj|) with
+  W(Rj,h) = (h - |Rj|)^3. Thus,
+  Grad_W(Rj,h) = 3*(h - |Rj|)^2*(Rj / |Rj|) */
   Grad_W = 3*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*Rj;
 
   return Grad_W;
 } // Vector Particle::Grad_W(const Vector Rj, cosnt double h) const {
+
+void Particle::Calculate_A_Inv(const double h) {
+  /* this function is used to calculate the inverse of the shape tensor A.
+  To do this, I need to first find the shape tensor A. This function should only
+  be run once as soon as the particle is setup. The shape matrix is defined by,
+  A = sum of all j in S { Vj*Grad_W(rj,h) (dyadic product) Rj }
+  Once we have found this tensor, we can find its inverse using the inverse
+  method for tensors.
+
+  Note, when we initialize the tensor A, the default tensor constructor sets
+  every element to 0. */
+
+  int Neighbor_Id;
+  Vector Rj;
+  Tensor A;
+
+  for(int i = 0; i < Num_Neighbors; i++) {
+    Neighbor_Id = Neighbor_List[i];
+    Rj = Particles[Neighbor_Id].Get_X();
+
+    A += Dyadic_Product(Vj*( Grad_W(Rj,h)) , Rj );
+  } // for(int i = 0; i < Num_Neighbors; i++) {
+
+  A_Inv = A.Inverse();
+} // void Particle::Calculate_A_Inv(const double h) {
+
+Vector Particle::Grad_W_Tilde(const Vector Rj,const double h) const {
+  return A_Inv*(Grad_W(Rj,h));
+} // Vector Particle::Calculate_Grad_W_Tilde(const Vector Rj,const double h) const {
 
 #endif

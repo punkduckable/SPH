@@ -14,12 +14,13 @@ class Particle {
     Vector acceleration;
 
     Tensor F;
-    Tensor A;
+    Tensor A_Inv;
     Tensor P;
     Tensor S;
 
-    Vector Calc_Grad_W(const Vector Rj,const  double h) const;
-    void Update_A(void);
+    Vector Grad_W(const Vector Rj, const double h) const;
+    void Calculate_A_Inv(const double h);
+    Vector Grad_W_Tilde(const Vector Rj, const double h) const;
     void Update_F(void);
     void Update_P(void);
     void Update_Force(void);
