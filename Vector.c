@@ -8,9 +8,10 @@ the same way/give the same result (V[1]= V(1)).
 */
 
 ////////////////////////////////////////////////////////////////////////////////
-// Constructors
+// Constructors, Destructor
 
 Vector::Vector(void) {
+  printf("Vector created with default constructor\n");
   // Initialize components of vector to zero (no input supplied, assume zero)
   V[0] = 0;
   V[1] = 0;
@@ -18,18 +19,30 @@ Vector::Vector(void) {
 } // Vector::Vector(void) {
 
 Vector::Vector(const double v0, const double v1, const double v2) {
+  printf("Vector created with component constructor\n");
   // Initialize components of vector using supplied components
   V[0] = v0;
   V[1] = v1;
   V[2] = v2;
 } // Vector::Vector(const double v0, const double v1, const double v2) {
 
+Vector::Vector(const Vector & V_In) {
+  printf("Vector created with copy constructor\n");
+  // Initialize components of vector using supplied components
+  V[0] = V_In[0];
+  V[1] = V_In[1];
+  V[2] = V_In[2];
+} // Vector::Vector(const Vector & V_In) {
+
+Vector::~Vector(void) { printf("Vector destroyed\n");
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Simple arithmetic operators
 
-Vector Vector::operator+(const Vector V_In) const {
+Vector Vector::operator+(const Vector & V_In) const {
   // Declare a sum Vector. This will be used to store the sum
   Vector Sum;
 
@@ -52,7 +65,7 @@ Vector Vector::operator+(const Vector V_In) const {
   return Sum;
 } // Vector Vector::operator+(const Vector V) const {
 
-Vector Vector::operator-(const Vector V_In) const{
+Vector Vector::operator-(const Vector & V_In) const{
   // Declare a Diff vector. This will be used to store the difference.
   Vector Diff;
 
@@ -98,14 +111,14 @@ Vector Vector::operator/(const double c) const {
 ////////////////////////////////////////////////////////////////////////////////
 // Compound arithmetic operators
 
-Vector & Vector::operator+=(const Vector V_In) {
+Vector & Vector::operator+=(const Vector & V_In) {
   V[0] = V[0] + V_In[0];
   V[1] = V[1] + V_In[1];
   V[2] = V[2] + V_In[2];
 
   // Return this vector
   return *this;
-} // Vector & Vector:operator+=(const Vector V_In) {
+} // Vector & Vector:operator+=(const Vector & V_In) {
 
 Vector & Vector::operator+=(const double V_In[3]) {
   V[0] = V[0] + V_In[0];
@@ -141,7 +154,7 @@ Vector & Vector::operator=(const double V_In[3]) {
   return *this;
 } // Vector & Vector::operator=(const double V_In[3]) {
 
-Vector & Vector::operator=(const Vector V_In) {
+Vector & Vector::operator=(const Vector & V_In) {
   // Assign components of V using V_In.
   V[0] = V_In[0];
   V[1] = V_In[1];
@@ -205,7 +218,7 @@ double Vector::Magnitude(void) const {
 ////////////////////////////////////////////////////////////////////////////////
 // Friend methods
 
-Vector operator*(double c, Vector V_In) {
+Vector operator*(double c, const Vector & V_In) {
   // Declare product vector
   Vector Prod;
 
@@ -215,6 +228,6 @@ Vector operator*(double c, Vector V_In) {
   Prod[2] = V_In[2]*c;
 
   return Prod;
-} //Vector operator*(double c, Vector V_In) {
+} //Vector operator*(double c, const Vector & V_In) {
 
 #endif

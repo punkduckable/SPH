@@ -18,28 +18,31 @@ class Vector {
     Vector(const double v0,
            const double v1,
            const double v2);                         // Component based constructor
+    Vector(const Vector & V_In);                     // Copy constructor
 
-    Vector operator+(const Vector V_In) const;       // Vector addition (defines V1 + V2)
-    Vector operator-(const Vector V_In) const;       // Vector Subtraction (defines V1 - V2)
+    ~Vector(void);                                   // Destructor
+
+    Vector operator+(const Vector & V_In) const;     // Vector addition (defines V1 + V2)
+    Vector operator-(const Vector & V_In) const;     // Vector Subtraction (defines V1 - V2)
     Vector operator*(const double c) const;          // Scalar multiplication (defines V*c)
     Vector operator/(const double c) const;          // Scalar Divide (defines V/c).
 
-    Vector & operator+=(const Vector V_In);          // Compound Vector addition (Defines V1 += V2)
+    Vector & operator+=(const Vector & V_In);        // Compound Vector addition (Defines V1 += V2)
     Vector & operator+=(const double V_In[3]);       // Compound Vector addition with a 3 element array (Defines V1 += V2[3])
     Vector & operator*=(const double c);             // Compound Scalar multiplication (defines V *= c)
 
     Vector & operator=(const double V_In[3]);        // Vector equality (defines V1 = V2[3])
-    Vector & operator=(const Vector V_In);           // Vector equalitty (defines V1 = V2)
+    Vector & operator=(const Vector & V_In);         // Vector equalitty (defines V1 = V2)
 
     double & operator()(const uByte index);          // () component access (defines V(n))
-    double operator()(const uByte index) const
+    double operator()(const uByte index) const;
     double & operator[](const uByte index);          // [] component access (defines V[n])
     double operator[](const uByte index) const;
 
     void Print(void) const;                          // Print vector components
     double Magnitude(void) const;
 
-    friend Vector operator*(double c, Vector V_In);  // Scalar multiplication (defines c*V)
+    friend Vector operator*(double c, const Vector & V_In);  // Scalar multiplication (defines c*V)
 }; // class Vector {
 
 #endif
