@@ -4,6 +4,7 @@
 class Particle {
   private:
     double V = 1;
+    static unsigned int Num_Particles;
 
     unsigned int *Neighbor_List;
     Vector *Grad_W_tilde;
@@ -29,7 +30,10 @@ class Particle {
 
   public:
     Particle(void);
-    Particle(Vector X_In);
+    Particle(const Vector & X_In);
+    Particle(const Particle & P_In);
+
+    ~Particle(void);
 
     void Set_X(const Vector X_In);
     Vector Get_X(void) const;

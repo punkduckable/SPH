@@ -2,15 +2,38 @@
 #define _PARTICLE_SOURCE
 
 ////////////////////////////////////////////////////////////////////////////////
-// Constructors
+// Constructors and destructor
 
 Particle::Particle(void) {
+  ++Num_Particles;
 } // Particle::Particle(void) {
 
-Particle::Particle(Vector X_In) {
+Particle::Particle(const Vector & X_In) {
+  ++Num_Particles;
   X = X_In;     // Set reference position
   x = X_In;     // Set current position
-} // Particle::Particle(Vector X_In) {
+} // Particle::Particle(const Vector & X_In) {
+
+Particle::Particle(const Particle & P_In) {
+  /* Copy elements from P_In to local elements. Note that an object of one class
+  is able to access private data of another object of that class. */
+
+  ++Num_Particles;
+
+  V = P_In.V;
+  X = P_In.X;
+  x = P_In.x;
+  Force = P_In.Force;
+  Acceleration = P_In.acceleration;
+  F = P_In.F;
+  A_Inv = P_In.A_Inv;
+  P = P_In.P;
+  S = P_In.S;
+} // Particle::Particle(const Particle & P_In) {
+
+Particle::~Particle(void) {
+  --Num_Particles;
+} // Particle::~Particle(void) {
 
 
 
