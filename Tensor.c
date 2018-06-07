@@ -277,7 +277,7 @@ Tensor Tensor::Inverse(void) const{
 
 void Tensor::Print(void) const {
   for(int i = 0; i < 3; i++) {
-    printf("| %6.2f %6.2f %6.2f |\n",T[i*3], T[i*3+1], T[i*3+2]);
+    printf("| %8.4f %8.4f %8.4f |\n",T[i*3], T[i*3+1], T[i*3+2]);
   }
 } // void Tensor::Print(void) const {
 

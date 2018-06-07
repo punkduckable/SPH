@@ -10,10 +10,12 @@ typedef unsigned char uByte;
 // Class definitions
 #include "Vector.h"
 #include "Tensor.h"
+#include "Tests.h"
 
 // Class functions
 #include "Vector.c"
 #include "Tensor.c"
+#include "Tests.c"
 
 // Prototypes
 Tensor Dyadic_Product(const Vector V1,const Vector V2);
@@ -40,44 +42,8 @@ Tensor Dyadic_Product(const Vector V1,const Vector V2) {
 
 int main(int argc, char *argv[]) {
 
-  Vector V1 = {1,2,3};
-  V1(2) = 5;
-  V1[1] = 4;
-  V1.Print();
-  printf("\n");
-
-  Vector V2 = {1,2,3};
-  V2 += V2;
-  V2 += {1,2,3};
-  V2.Print();
-  printf("\n");
-
-  Tensor T0 = Dyadic_Product(V1,V2);
-  T0.Print();
-  printf("\n");
-
-  Tensor T1(1,2,3,
-            4,5,6,
-            7,8,9);
-  Tensor T2 = {1,4,7,
-            2,5,8,
-            3,6,9};
-
-  Tensor T3 = T1*T2;
-  T3.Print();
-  printf("\n");
-
-  Tensor T4 = T1;
-  T4 += T1;
-  T4 += {1,2,3,4,5,6,7,8,9};
-  T4.Print();
-  printf("\n");
-
-  Tensor T5 = {1,5,8,
-               12,6,3,
-               6,9,11};
-  Tensor T6 = T5.Inverse();
-  T6.Print();
+  Vector_Tests();
+  Tensor_Tests();
 
   return 0;
 } // int main() {

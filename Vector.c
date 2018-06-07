@@ -196,9 +196,9 @@ void Vector::Print(void) const {
   printf("< %4.2f, %4.2f, %4.2f>\n",V[0], V[1], V[2]);
 } // void Print(void) const {
 
-double Magnitude(void) const {
+double Vector::Magnitude(void) const {
   return sqrt(V[0]*V[0] + V[1]*V[1] + V[2]*V[2]);
-} // double Magnitude(void) const { 
+} // double Magnitude(void) const {
 
 
 
