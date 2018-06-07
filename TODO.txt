@@ -26,7 +26,9 @@ TODO / development history:
     DONE 6/6: Move V member to private section
     DONE 6/6: Improve operator overloading
     DONE 6/6: Add magnitude method
-    - Test all new operators!
+    DONE 6/7: Test all new operators!
+    - Add a destructor
+    - Add a copy constructor
     - Replace printouts with actual errors
 
  - Tensor Class:
@@ -37,11 +39,17 @@ TODO / development history:
     DONE 6/5: Add an inverse function
     DONE 6/6: Move T member to private section
     DONE 6/6: Clean up functions/reorganize
-    - Test all new operators!
+    DONE 6/7: Test all new operators!
+    - Add a destructor
+    - Add a copy constructor
     - Replace printouts with actual errors
 
   - Particle Class:
     - Define all methods
+    - Include a static private memeber 'num_particles' that keeps track of how
+    many particles have been made
+        - constructors would increment this variable
+        - destructor would decrement this variable
     - Move Grad_W_Tilde into an array of vectors
         - Grad_W is used when calculating A and Grad_W_Tilde. However, I believe
         that both of these only need to be found once. Using the provided
@@ -62,18 +70,18 @@ TODO / development history:
       - Try initializing particles.
 
 IDEAS:
- - How to implement neighbor list: 
-     - Define three variables, a neighbor's pointer, an integer called 'num neighbors' 
-     and an integer called 'Numel'. Begin by allocating an array of 'numel' ints for 
-     the neighbor's pointer. Next, cycle through the particles. Each time a neighbor 
+ - How to implement neighbor list:
+     - Define three variables, a neighbor's pointer, an integer called 'num neighbors'
+     and an integer called 'Numel'. Begin by allocating an array of 'numel' ints for
+     the neighbor's pointer. Next, cycle through the particles. Each time a neighbor
      is found, add it's array index to the allocated 'Neighbors' array and increment
      'num neighbors'. If num_neighbors excedes 'Numel' (the number of elements in the
-     Neighbors array), then reallocate the neighbor's array with an additional 'Numel' 
+     Neighbors array), then reallocate the neighbor's array with an additional 'Numel'
      elements (use relloc). Continue doing this until you have cycled through every
-     particle/have every neighbor. At this point, you now have a complete neighbor 
-     list + the number of neighbors. Pass the neighbor ID's + number of neighbors to 
-     that particle's data. 
-     
+     particle/have every neighbor. At this point, you now have a complete neighbor
+     list + the number of neighbors. Pass the neighbor ID's + number of neighbors to
+     that particle's data.
+
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)
     - This would allow me to change the data type stored in each tensor depending
     on the application... could be pretty useful (float vs double depending on

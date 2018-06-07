@@ -119,7 +119,7 @@ Tensor Tensor::operator/(const double c) const {
 ////////////////////////////////////////////////////////////////////////////////
 // Compound Arithmetic operations
 
-Tensor Tensor::operator+=(const Tensor T_In) {
+Tensor & Tensor::operator+=(const Tensor T_In) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       T[3*i+j] = T[3*i+ j] + T_In(i,j);
@@ -128,9 +128,9 @@ Tensor Tensor::operator+=(const Tensor T_In) {
 
   // Return this tensor (element wise summation is done)
   return *this;
-} // Tensor Tensor::operator+=(const Tensor T_In) {
+} // Tensor & Tensor::operator+=(const Tensor T_In) {
 
-Tensor Tensor::operator+=(const double T_In[9]) {
+Tensor & Tensor::operator+=(const double T_In[9]) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       T[3*i+j] = T[3*i+ j] + T_In[3*i+j];
@@ -139,9 +139,9 @@ Tensor Tensor::operator+=(const double T_In[9]) {
 
   // Return this tensor (element wise summation is done)
   return *this;
-} // Tensor Tensor::operator+=(const Tensor T_In) {
+} // Tensor & Tensor::operator+=(const Tensor T_In) {
 
-Tensor Tensor::operator*=(const double c) {
+Tensor & Tensor::operator*=(const double c) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++)  {
       T[3*i + j] = T[3*i + j]*c;
@@ -150,14 +150,14 @@ Tensor Tensor::operator*=(const double c) {
 
   // Return this tensor (all elements have been scaled by c)
   return *this;
-} // Tensor Tensor::operator*=(const double c) {
+} // Tensor & Tensor::operator*=(const double c) {
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tensor equality
 
-Tensor Tensor::operator=(const double T_In[9]) {
+Tensor & Tensor::operator=(const double T_In[9]) {
   for(int i = 0; i < 9; i++) {
     for(int j = 0; j < 9; j++) {
       T[i] = T_In[i];
@@ -166,9 +166,9 @@ Tensor Tensor::operator=(const double T_In[9]) {
 
   // return this tensor (element wise equality is done)
   return *this;
-} // Tensor Tensor::operator=(const double T_In[9]) {
+} // Tensor & Tensor::operator=(const double T_In[9]) {
 
-Tensor Tensor::operator=(const Tensor T_In) {
+Tensor & Tensor::operator=(const Tensor T_In) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       T[3*i + j] = T_In(i,j);
@@ -177,14 +177,14 @@ Tensor Tensor::operator=(const Tensor T_In) {
 
   // return this tensor (element wise equality is done)
   return *this;
-} // Tensor Tensor::operator=(const Tensor T_In) {
+} // Tensor & Tensor::operator=(const Tensor T_In) {
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tensor element access: ()
 
-double& Tensor::operator()(const uByte row, const uByte col) {
+double & Tensor::operator()(const uByte row, const uByte col) {
   /* Check if desired rows or col is > 3. Note that this function only accepts
   unsigned integer inputs. Thus, there is no possibility of row or col being
   negative.  Therefore we only need to check that row and col are < 3 */
@@ -193,7 +193,7 @@ double& Tensor::operator()(const uByte row, const uByte col) {
 
   // Return the specified element (treat it like matirx notation)
   return T[3*row + col];
-} // double& Tensor::operator()(const uByte row, const uByte col) {
+} // double & Tensor::operator()(const uByte row, const uByte col) {
 
 double Tensor::operator()( const uByte row, const uByte col) const {
   if(row >= 3 || col >=3)

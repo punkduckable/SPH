@@ -24,16 +24,16 @@ class Vector {
     Vector operator*(const double c) const;          // Scalar multiplication (defines V*c)
     Vector operator/(const double c) const;          // Scalar Divide (defines V/c).
 
-    Vector operator+=(const Vector V_In);            // Compound Vector addition (Defines V1 += V2)
-    Vector operator+=(const double V_In[3]);         // Compound Vector addition with a 3 element array (Defines V1 += V2[3])
-    Vector operator*=(const double c);               // Compound Scalar multiplication (defines V *= c)
+    Vector & operator+=(const Vector V_In);          // Compound Vector addition (Defines V1 += V2)
+    Vector & operator+=(const double V_In[3]);       // Compound Vector addition with a 3 element array (Defines V1 += V2[3])
+    Vector & operator*=(const double c);             // Compound Scalar multiplication (defines V *= c)
 
-    Vector operator=(const double V_In[3]);          // Vector equality (defines V1 = V2[3])
-    Vector operator=(const Vector V_In);             // Vector equalitty (defines V1 = V2)
+    Vector & operator=(const double V_In[3]);        // Vector equality (defines V1 = V2[3])
+    Vector & operator=(const Vector V_In);           // Vector equalitty (defines V1 = V2)
 
-    double& operator()(const uByte index);           // () component access (defines V(n))
-    double operator()(const uByte index) const;
-    double& operator[](const uByte index);           // [] component access (defines V[n])
+    double & operator()(const uByte index);          // () component access (defines V(n))
+    double operator()(const uByte index) const
+    double & operator[](const uByte index);          // [] component access (defines V[n])
     double operator[](const uByte index) const;
 
     void Print(void) const;                          // Print vector components

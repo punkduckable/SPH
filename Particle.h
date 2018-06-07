@@ -6,6 +6,7 @@ class Particle {
     double V = 1;
 
     unsigned int *Neighbor_List;
+    Vector *Grad_W_tilde;
     unsigned int Num_Neighbors;
 
     Vector x;
