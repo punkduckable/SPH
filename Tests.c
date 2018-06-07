@@ -78,6 +78,11 @@ void Vector_Tests(void) {
   // Test that magnitude function works
   v = V2.Magnitude();
   printf("v = V2.Mag.(): %f\n",v);
+
+  // Test dyadic product
+  Tensor T = Dyadic_Product(V1,V2);
+  printf(" T = V1 dyad V2\n");
+  T.Print();
 } // void Vector_Tests(void) {
 
 void Tensor_Tests(void) {
@@ -154,7 +159,7 @@ void Tensor_Tests(void) {
 
   // Test () component access
   double t = T1(1,1);
-  printf("t = T(1,1)   : %f",t);
+  printf("t = T(1,1)   : %f\n",t);
 
   // Test inverse method
   T2 = {1,4, 9, 29, 4, 67, 10, 4, 0};

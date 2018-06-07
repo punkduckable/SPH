@@ -27,8 +27,9 @@ TODO / development history:
     DONE 6/6: Improve operator overloading
     DONE 6/6: Add magnitude method
     DONE 6/7: Test all new operators!
-    - Add a destructor
-    - Add a copy constructor
+    DONE 6/7: Add a destructor
+    DONE 6/7: Add a copy constructor
+    DONE 6/7: make applicable methods accept and/or return reference variables
     - Replace printouts with actual errors
 
  - Tensor Class:
@@ -40,8 +41,9 @@ TODO / development history:
     DONE 6/6: Move T member to private section
     DONE 6/6: Clean up functions/reorganize
     DONE 6/7: Test all new operators!
-    - Add a destructor
-    - Add a copy constructor
+    DONE 6/7: Add a destructor
+    DONE 6/7: Add a copy constructor
+    DONE 6/7: make applicable methods accept and/or return reference variables
     - Replace printouts with actual errors
 
   - Particle Class:

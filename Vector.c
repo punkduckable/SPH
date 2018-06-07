@@ -11,7 +11,8 @@ the same way/give the same result (V[1]= V(1)).
 // Constructors, Destructor
 
 Vector::Vector(void) {
-  printf("Vector created with default constructor\n");
+  printf("Vector default constructor\n");
+
   // Initialize components of vector to zero (no input supplied, assume zero)
   V[0] = 0;
   V[1] = 0;
@@ -19,7 +20,8 @@ Vector::Vector(void) {
 } // Vector::Vector(void) {
 
 Vector::Vector(const double v0, const double v1, const double v2) {
-  printf("Vector created with component constructor\n");
+  printf("Vector component constructor\n");
+
   // Initialize components of vector using supplied components
   V[0] = v0;
   V[1] = v1;
@@ -27,14 +29,16 @@ Vector::Vector(const double v0, const double v1, const double v2) {
 } // Vector::Vector(const double v0, const double v1, const double v2) {
 
 Vector::Vector(const Vector & V_In) {
-  printf("Vector created with copy constructor\n");
+  printf("Vector copy constructor\n");
+
   // Initialize components of vector using supplied components
   V[0] = V_In[0];
   V[1] = V_In[1];
   V[2] = V_In[2];
 } // Vector::Vector(const Vector & V_In) {
 
-Vector::~Vector(void) { printf("Vector destroyed\n");
+Vector::~Vector(void) {
+  printf("Vector destroyed\n");
 }
 
 

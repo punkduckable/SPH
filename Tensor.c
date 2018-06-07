@@ -9,9 +9,11 @@ column are 3 elements away from each other. Successive elements in a row are one
 element away from each other. Therefore, T[3*i+j] is the same as T(i,j). */
 
 ////////////////////////////////////////////////////////////////////////////////
-// Constuctors
+// Constuctors and destructor
 
 Tensor::Tensor(void) {
+  printf("Tensor default constructor\n");
+
   // Default constructor: Set 9 components to zero.
   T[0] = T[1] = T[2] =
   T[3] = T[4] = T[5] =
@@ -21,6 +23,7 @@ Tensor::Tensor(void) {
 Tensor::Tensor(double t11, double t12, double t13,
                double t21, double t22, double t23,
                double t31, double t32, double t33) {
+    printf("Tensor component constrctor\n");
 
     // Set the 9 individual components of T using inputs.
     T[0] = t11; T[1] = t12; T[2] = t13; // Row 1
@@ -28,12 +31,25 @@ Tensor::Tensor(double t11, double t12, double t13,
     T[6] = t31; T[7] = t32; T[8] = t33; // Row 3
 } // Tensor:Tensor(double t11,.... double t33) {
 
+Tensor::Tensor(const Tensor & T_In) {
+  printf("Tensor Copy contructor\n");
+
+  for(int i = 1; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      T[3*i + j] = T_In(i,j);
+    } // for(int j = 0; j < 3; j++) {
+  } // for(int i = 1; i < 3; i++) {
+} // Tensor::Tensor(const Tensor & T_In) {
+
+Tensor::~Tensor(void) {
+  printf("Tensor destroyed\n");
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Simple arithmetic operators
 
-Tensor Tensor::operator+(const Tensor T_In) const {
+Tensor Tensor::operator+(const Tensor & T_In) const {
   // Declare some Tensor to store the sum
   Tensor Sum;
 
@@ -50,9 +66,9 @@ Tensor Tensor::operator+(const Tensor T_In) const {
   } // for(int i = 0; i < 9; i++){
 
   return Sum;
-} // Tensor Tensor::operator+(const Tensor T_In) const {
+} // Tensor Tensor::operator+(const Tensor & T_In) const {
 
-Tensor Tensor::operator*(const Tensor T_In) const{
+Tensor Tensor::operator*(const Tensor & T_In) const{
   // Declare product tensor
   Tensor Prod;
 
@@ -67,9 +83,9 @@ Tensor Tensor::operator*(const Tensor T_In) const{
   } // for(int i = 0; i < 3; i++) {
 
   return Prod;
-} // Tensor Tensor::operator*(const Tensor T_In) const{
+} // Tensor Tensor::operator*(const Tensor & T_In) const{
 
-Vector Tensor::operator*(const Vector V_In) const {
+Vector Tensor::operator*(const Vector & V_In) const {
   // Declare product vector (matrix vector product is a vector)
   Vector Prod;
 
@@ -81,7 +97,7 @@ Vector Tensor::operator*(const Vector V_In) const {
   } //   for(int i = 0; i < 3; i++) {
 
   return Prod;
-} // Vector Tensor::operator*(const Vector V_In) const {
+} // Vector Tensor::operator*(const Vector & V_In) const {
 
 Tensor Tensor::operator*(const double c) const {
   // We will store results in Prod
@@ -119,7 +135,7 @@ Tensor Tensor::operator/(const double c) const {
 ////////////////////////////////////////////////////////////////////////////////
 // Compound Arithmetic operations
 
-Tensor & Tensor::operator+=(const Tensor T_In) {
+Tensor & Tensor::operator+=(const Tensor & T_In) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       T[3*i+j] = T[3*i+ j] + T_In(i,j);
@@ -128,7 +144,7 @@ Tensor & Tensor::operator+=(const Tensor T_In) {
 
   // Return this tensor (element wise summation is done)
   return *this;
-} // Tensor & Tensor::operator+=(const Tensor T_In) {
+} // Tensor & Tensor::operator+=(const Tensor & T_In) {
 
 Tensor & Tensor::operator+=(const double T_In[9]) {
   for(int i = 0; i < 3; i++) {
@@ -168,7 +184,7 @@ Tensor & Tensor::operator=(const double T_In[9]) {
   return *this;
 } // Tensor & Tensor::operator=(const double T_In[9]) {
 
-Tensor & Tensor::operator=(const Tensor T_In) {
+Tensor & Tensor::operator=(const Tensor & T_In) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       T[3*i + j] = T_In(i,j);
@@ -177,7 +193,7 @@ Tensor & Tensor::operator=(const Tensor T_In) {
 
   // return this tensor (element wise equality is done)
   return *this;
-} // Tensor & Tensor::operator=(const Tensor T_In) {
+} // Tensor & Tensor::operator=(const Tensor & T_In) {
 
 
 
@@ -286,7 +302,7 @@ void Tensor::Print(void) const {
 ////////////////////////////////////////////////////////////////////////////////
 // Friend functions
 
-Tensor operator*(const double c, const Tensor T_In) {
+Tensor operator*(const double c, const Tensor & T_In) {
   // Used to store the resulting product.
   Tensor T_Scaled;
 
@@ -298,6 +314,6 @@ Tensor operator*(const double c, const Tensor T_In) {
 
   // Return the scaled tensor.
   return T_Scaled;
-} // Tensor operator*(const double c, const Tensor T_In) {
+} // Tensor operator*(const double c, const Tensor & T_In) {
 
 #endif

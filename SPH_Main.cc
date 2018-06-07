@@ -12,18 +12,18 @@ typedef unsigned char uByte;
 #include "Tensor.h"
 #include "Tests.h"
 
+// Prototypes
+Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
+
 // Class functions
 #include "Vector.c"
 #include "Tensor.c"
 #include "Tests.c"
 
-// Prototypes
-Tensor Dyadic_Product(const Vector V1,const Vector V2);
-
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions
 
-Tensor Dyadic_Product(const Vector V1,const Vector V2) {
+Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
   Tensor T;
 
   /* Assign the elements of our dyadic product using nested for loop. Note that
@@ -34,11 +34,11 @@ Tensor Dyadic_Product(const Vector V1,const Vector V2) {
   for(int i = 0; i < 3; i++) {
     T(i,0) = V1[i]*V2[0];
     T(i,1) = V1[i]*V2[1];
-    T(i,2) = V2[i]*V2[2];
+    T(i,2) = V1[i]*V2[2];
   } //   for(int i = 0; i < 3; i++) {
 
   return T;
-} // Tensor Dyatic_Product(const Vector V2,const Vector V2) {
+} // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {
 
 int main(int argc, char *argv[]) {
 
