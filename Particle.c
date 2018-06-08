@@ -5,11 +5,9 @@
 // Constructors and destructor
 
 Particle::Particle(void) {
-  ++Num_Particles;
 } // Particle::Particle(void) {
 
 Particle::Particle(const Vector & X_In) {
-  ++Num_Particles;
   X = X_In;     // Set reference position
   x = X_In;     // Set current position
 } // Particle::Particle(const Vector & X_In) {
@@ -22,9 +20,6 @@ Particle::Particle(const Particle & P_In) {
   copy of those pointers to ensure that the pointed too location isn't deleted
   when a temporary object is created and then destroyed by the copy constructor.
   */
-
-  // Incremenet the number of particles! (A new one was just made!)
-  ++Num_Particles;
 
   // Element wise copy of NON-POINTER members
   V = P_In.V;
@@ -59,7 +54,6 @@ Particle::Particle(const Particle & P_In) {
 } // Particle::Particle(const Particle & P_In) {
 
 Particle::~Particle(void) {
-  --Num_Particles;
   delete [] Grad_W_Tilde;
   delete [] Neighbor_List;
 } // Particle::~Particle(void) {
@@ -86,17 +80,25 @@ Vector Particle::Get_x(void) cosnt {
 ////////////////////////////////////////////////////////////////////////////////
 // Set neighbor List
 
-void Particle::Set_Neighbor_List(const unsigned int *List, const unsigned int N) {
+void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_List_In, const Vector *X_Neighbors) {
   // Set Num_Neighbors using input
   Num_Neighbors = N;
 
-  // Allocate memory for the Neighbor_List
-  Neighbor_List = (unsigned int *)malloc(N*sizeof(unsigned int));
+  // Allocate memory for the Neighbor_List, and Grad_W_Tilde array
+  Neighbor_List = new int[N];
+  Grad_W_Tilde = new Vector[N];
 
-  // Populate neighbor list using supplied list
-  for(int i = 0; i < N; i++) {
-    Neighbor_List[i] = List[i];
-  } //   for(int i = 0; i < N; i++) {
+  // Calculate R from X_Neibhors. Rj = Xj - X (where is is current particle, j is some neighbor particle)
+  Vector R[N];
+  for(int j = 0; j < N; j++) {
+    R[j] = X_Neighbors[j] - X;
+  }
+
+  // Now that we have our list of neighbors, we can populate Populate neighbor list using supplied list
+  for(int j = 0; j < N; j++) {
+    Neighbor_List[j] = Neighbor_List_In[j];
+    Grad_W_Tilde[j] = Calc_Grad_W_Tilde(R[j]);
+  } // for(int j = 0; j < N; j++) {
 } //void Particle::Set_Neighbor_List(const unsigned int *List,const unsigned int N) {
 
 
@@ -105,7 +107,7 @@ void Particle::Set_Neighbor_List(const unsigned int *List, const unsigned int N)
 // Update x (spacial position)
 
 
-Vector Particle::Grad_W(const Vector Rj,const double h) const {
+Vector Particle::Calc_Grad_W(const Vector Rj) const {
   // Set up a vector to hold the gradient at the jth particle.
   Vector Grad_W;
 
@@ -118,9 +120,9 @@ Vector Particle::Grad_W(const Vector Rj,const double h) const {
   Grad_W = 3*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*Rj;
 
   return Grad_W;
-} // Vector Particle::Grad_W(const Vector Rj, cosnt double h) const {
+} // Vector Particle::Grad_W(const Vector Rj) const {
 
-void Particle::Calculate_A_Inv(const double h) {
+void Particle::Calc_A_Inv(void) {
   /* this function is used to calculate the inverse of the shape tensor A.
   To do this, I need to first find the shape tensor A. This function should only
   be run once as soon as the particle is setup. The shape matrix is defined by,
@@ -139,14 +141,14 @@ void Particle::Calculate_A_Inv(const double h) {
     Neighbor_Id = Neighbor_List[i];
     Rj = Particles[Neighbor_Id].Get_X();
 
-    A += Dyadic_Product(Vj*( Grad_W(Rj,h)) , Rj );
+    A += Dyadic_Product(Vj*( Grad_W(Rj)) , Rj );
   } // for(int i = 0; i < Num_Neighbors; i++) {
 
   A_Inv = A.Inverse();
-} // void Particle::Calculate_A_Inv(const double h) {
+} // void Particle::Calculate_A_Inv() {
 
-Vector Particle::Grad_W_Tilde(const Vector Rj,const double h) const {
-  return A_Inv*(Grad_W(Rj,h));
-} // Vector Particle::Calculate_Grad_W_Tilde(const Vector Rj,const double h) const {
+Vector Particle::Calc_Grad_W_Tilde(const Vector Rj) const {
+  return A_Inv*(Grad_W(Rj));
+} // Vector Particle::Calculate_Grad_W_Tilde(const Vector Rj) const {
 
 #endif

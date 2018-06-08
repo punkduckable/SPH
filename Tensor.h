@@ -12,7 +12,7 @@ array, V denotes a Vector object, c denotes a scalar. */
 
 class Tensor {
   private:
-    double T[9];                                 // Holds the 9 components of the Tensor
+    double T[9];                                  // Holds the 9 components of the Tensor
 
   public:
     Tensor(void);                                 // Default constructor
@@ -23,29 +23,30 @@ class Tensor {
 
     ~Tensor(void);                                // Destructor
 
-    Tensor operator+(const Tensor & T_In) const;    // Tensor addition (defines T1 + T2)
-    Tensor operator*(const Tensor & T_In) const;    // Tensor-Tensor multiplication (Defines T1*T2)
-    Vector operator*(const Vector & V_In) const;    // Tensor-Vector multiplication (defines T*V)
+    Tensor operator+(const Tensor & T_In) const;  // Tensor addition (defines T1 + T2)
+    Tensor operator*(const Tensor & T_In) const;  // Tensor-Tensor multiplication (Defines T1*T2)
+    Vector operator*(const Vector & V_In) const;  // Tensor-Vector multiplication (defines T*V)
     Tensor operator*(const double c) const;       // Scalar multiplication (defines T*c)
     Tensor operator/(const double c) const;       // Scalar division (defines T/c)
 
-    Tensor & operator+=(const Tensor & T_In);       // Compound Tensor addition (defines T1 += T2)
+    Tensor & operator+=(const Tensor & T_In);     // Compound Tensor addition (defines T1 += T2)
     Tensor & operator+=(const double T_In[9]);    // Compound tensor addition (defines T1 += T2[9])
     Tensor & operator*=(const double c);          // Compound scalar multiplication (defines T *= c)
+    Tensor & operator*=(const Tensor & T_In);     // Compound Tensor-Tensor multiplication (defines T1 *= T2)
 
     Tensor & operator=(const double T_In[9]);     // Tensor equality (Defines T1 = T2[9])
-    Tensor & operator=(const Tensor & T_In);        // Tensor equaltiy (defines T1 = T2)
+    Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
 
     double & operator()(const uByte row,
-                      const uByte col);          // Component access (defines T(i,j))
+                      const uByte col);           // Component access (defines T(i,j))
     double operator()(const uByte row,
                       const uByte col) const;
 
-    Tensor Inverse(void) const;                  // Tensor Inverse. Define T^(-1)
-    void Print(void) const;                            // Print tensor components
+    Tensor Inverse(void) const;                   // Tensor Inverse. Define T^(-1)
+    void Print(void) const;                       // Print tensor components
 
     friend Tensor operator*(double c,
-                            const Tensor & T_In);        // Scalar multiplication (defines c*T)
+                            const Tensor & T_In); // Scalar multiplication (defines c*T)
 }; // class Tensor {
 
 #endif

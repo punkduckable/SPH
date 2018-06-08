@@ -73,12 +73,30 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
   Tensor Prod;
 
   /* Calcualate Tensor Tensor product using nested for loops. Store each element
-   Of the product in Prod. */
+   Of the product in the Tensor 'Prod'.
+
+   Let A and B be tensors. The (i,j) element of AB is the dot product of the
+   ith row of A and the jth column of B. This nromally means that we'd need
+   three nested loops to calculate a Tensor Tensor product; one for the rows,
+   one for the columns, and one for the the dot product for each element.
+   However, since the Tensors we are working with will always be of dimension
+   3x3, the dot product has a predictable form. Therefore, rather than include
+   a third nested loop (which would add more overhead), we write out the 3 terms
+   of the dot product explicitly.
+
+   It should be noted that this small change will significantly reduce overhead.
+   The reason is that the 3rd nested loop would run 9 times (once for each
+   element) this means that the 3 iterations of the 3rd nested loop would run
+   9 times each, leading to a total of 27 equivalent iterations. By contrast,
+   the j loop only runs 3 times leading to 9 equivalent iterations and the i
+   loop only runs once for 3 equivelent iterations. Therefore, the innermost
+   loop is by far the most expensive. Removing it should have an appreciable
+   impact on performance. */
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      for(int k = 0; k < 3; k++) {
-        Prod(i,j) += T[3*i + k]*T_In(k,j);
-      } // for(int k = 0; k < 3; k++) {
+        Prod(i,j) = T[3*i + 0]*T_In(0,j) +
+                    T[3*i + 1]*T_In(1,j) +
+                    T[3*i + 2]*T_In(2,j);
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
 
@@ -168,6 +186,51 @@ Tensor & Tensor::operator*=(const double c) {
   return *this;
 } // Tensor & Tensor::operator*=(const double c) {
 
+Tensor & Tensor::operator*=(const Tensor & T_In) {
+  /* When we multiply two tensors together, we do so element by element. The
+  issue with this is that once an element has been updated, there will be no
+  way to access the origional value. We will need that origional value to
+  calculate other components of the product. Therefore, we need a new tensor to
+  temporarly hold onto the product. */
+  Tensor Prod;
+
+  /* Calcualate Tensor Tensor product using nested for loops. Store each element
+   Of the product in the Tensor 'Prod'.
+
+   Let A and B be tensors. The (i,j) element of AB is the dot product of the
+   ith row of A and the jth column of B. This nromally means that we'd need
+   three nested loops to calculate a Tensor Tensor product; one for the rows,
+   one for the columns, and one for the the dot product for each element.
+   However, since the Tensors we are working with will always be of dimension
+   3x3, the dot product has a predictable form. Therefore, rather than include
+   a third nested loop (which would add more overhead), we write out the 3 terms
+   of the dot product explicitly.
+
+   It should be noted that this small change will significantly reduce overhead.
+   The reason is that the 3rd nested loop would run 9 times (once for each
+   element) this means that the 3 iterations of the 3rd nested loop would run
+   9 times each, leading to a total of 27 equivalent iterations. By contrast,
+   the j loop only runs 3 times leading to 9 equivalent iterations and the i
+   loop only runs once for 3 equivelent iterations. Therefore, the innermost
+   loop is by far the most expensive. Removing it should have an appreciable
+   impact on performance. */
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      Prod(i,j) = T[3*i + 0]*T_In(0,j) +
+                  T[3*i + 1]*T_In(1,j) +
+                  T[3*i + 2]*T_In(2,j);
+    } // for(int j = 0; j < 3; j++) {
+  } // for(int i = 0; i < 3; i++) {
+
+  // Copy Prod to T (in this Tensor)
+  for(int i = 0; i < 3; i++) {
+    T[3*i + 0] = Prod(i,0);
+    T[3*i + 1] = Prod(i,1);
+    T[3*i + 2] = Prod(i,2);
+  } //   for(int i = 0; i < 3; i++) {
+
+  return *this;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

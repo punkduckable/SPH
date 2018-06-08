@@ -124,7 +124,7 @@ void Tensor_Tests(void) {
   // Test Tensor-Vector multiplication
   Vector V = {1,2,3};
   V = T1*V;
-  printf("V = {1,2,3}\n V = T1*V\n");
+  printf("V = {1,2,3}\nV = T1*V\n");
   V.Print();
 
   // Test scalar multiplication
@@ -155,6 +155,12 @@ void Tensor_Tests(void) {
   // Test compound Scalar multiplication
   T3 *= 5;
   printf("T3 *= 5\n");
+  T3.Print();
+
+  // Test compund Tensor multiplication
+  T3 = T1;
+  T3 *= T2;                           // together, these two lines are the same as T3 = (T1*T2)
+  printf("T3 = T1; T3 *= T2\n");
   T3.Print();
 
   // Test () component access

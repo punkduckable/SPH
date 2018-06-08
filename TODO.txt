@@ -48,10 +48,6 @@ TODO / development history:
 
   - Particle Class:
     - Define all methods
-    - Include a static private memeber 'num_particles' that keeps track of how
-    many particles have been made
-        - constructors would increment this variable
-        - destructor would decrement this variable
     - Move Grad_W_Tilde into an array of vectors
         - Grad_W is used when calculating A and Grad_W_Tilde. However, I believe
         that both of these only need to be found once. Using the provided
@@ -67,22 +63,64 @@ TODO / development history:
         Grad_W_tilde for each neighbor in an array, we only need to calculate
         each Grad_W_Tilde once! To calculate F, we simply call the corresponding
         elements of the array. I believe this will greatly enhance performance.
-      - Add Particles array and h to main file! Also set number of particles.
-      - Come up with an algorithm to generate neighbor list
-      - Try initializing particles.
+    - Include a static private member 'num neighbors' that keeps track of how
+    many neighbors a particles has
+      - This number is used to dynamically allocate the Grad_W_Tilde and
+      Neighbor_List arrays.
+    - Try removing Rj vector from Set_Neighbors method. I think I can just pass
+    X_Neighbors[j] - X to Grad_W_Tilde in second loop / avoid an explicit Rj
+    vector all together.
+    - Remove Force, Acceleration vectors and P, S, F member
+        I don't think that these quantities are needed. All of them are eulerian
+        These quantities are only used to update the particle's position. Thus,
+        these members are not needed to define a particle. Rather, they are
+        used to update a particle's position. As such, I think it makes sense
+        to treat these quantities as temporary/local variables inside of the
+        update_x function. This function would accept the neighbor particle's
+        current positions as an argument (as well as the time step) and use this
+        to calculate the deformation gradient F.  We then calculate P. We
+        then use this to calculate the force, which is used to calculate the
+        acceleration. Finally, the acceleration is used to update x (particle's
+        spacial position).
+
+        This approach of making these quantities local variables would save a
+        boat load of memory since each particle has far fewer members/is smaller.
+        With this approach, we only need calculate S, P, F... for the particle
+        that is currently being updated).
+    - Add Particles array to  main file
+    - Have main file set h (static member variable).
+    - Come up with an algorithm to generate neighbor list
+    - Try initializing particles.
 
 IDEAS:
  - How to implement neighbor list:
-     - Define three variables, a neighbor's pointer, an integer called 'num neighbors'
+     Define three variables, a neighbor's pointer, an integer called 'num neighbors'
      and an integer called 'Numel'. Begin by allocating an array of 'numel' ints for
      the neighbor's pointer. Next, cycle through the particles. Each time a neighbor
      is found, add it's array index to the allocated 'Neighbors' array and increment
-     'num neighbors'. If num_neighbors excedes 'Numel' (the number of elements in the
+     'num neighbors'. If num_neighbors exceeds 'Numel' (the number of elements in the
      Neighbors array), then reallocate the neighbor's array with an additional 'Numel'
      elements (use relloc). Continue doing this until you have cycled through every
      particle/have every neighbor. At this point, you now have a complete neighbor
      list + the number of neighbors. Pass the neighbor ID's + number of neighbors to
      that particle's data.
+
+  - How to set neighbors for each particles:
+    Once neighbor list search has finished, pass the number of neighbors, a
+    list containing the ID of each neighbor, and a list containing the reference
+    positions of each neighbor. The particle uses the supplied number of
+    particles to allocate its Neighbor_List and Grad_W_Tilde arrays' (both
+    quantities are Lagrangian).
+
+  - How to update each time step:
+    The main function has a giant array storing all of the particles. At the
+    start of each time step, the program cycles through the particles. For each
+    particle, the main function gets the neighbor list from that particle. The
+    neighbor list is simply a list of the Array ID's of the neighbors. With
+    this information, the main function gathers the position of each particle.
+    This is then used to update the current particle's deformation gradient,
+    stress tensor, and acceleration. Finally, with the updated acceleration,
+    we 'step forward in time' and find the particle's new position.
 
  - Replace the Vector, Tensor classes with templates (need to look up how to do this)
     - This would allow me to change the data type stored in each tensor depending
