@@ -16,10 +16,17 @@ Particle::Particle(const Vector & X_In) {
 
 Particle::Particle(const Particle & P_In) {
   /* Copy elements from P_In to local elements. Note that an object of one class
-  is able to access private data of another object of that class. */
+  is able to access private data of another object of that class.
 
+  Note: because the Particle class contains pointers, we need to perform a deep
+  copy of those pointers to ensure that the pointed too location isn't deleted
+  when a temporary object is created and then destroyed by the copy constructor.
+  */
+
+  // Incremenet the number of particles! (A new one was just made!)
   ++Num_Particles;
 
+  // Element wise copy of NON-POINTER members
   V = P_In.V;
   X = P_In.X;
   x = P_In.x;
@@ -29,10 +36,32 @@ Particle::Particle(const Particle & P_In) {
   A_Inv = P_In.A_Inv;
   P = P_In.P;
   S = P_In.S;
+
+  /* Deep copy of pointer members.
+  To do this, we need to give the new particle the same content as the origional
+  neighbor list and Grad_W_Tilde arrays, but have these array's stored in a new
+  memory location. This way, when the copy particle is deleted, it doesn't
+  delete the origional particle's array.
+
+  The new particle will have the same number of neighbors as the origional
+  particle. The neighbor list and Grad_W_Tilde array's of the new particle
+  should therefore be of length Num_Neighbors. Likewise, we need to copy the
+  origional particle's array contents into the new particle's array conetents.
+  We do this on an element by element basis. */
+  Num_Neighbors = P_In.Num_Neighbors;
+  Neighbor_List = new int[Num_Neighbors];
+  Grad_W_Tilde = new Vector[Num_Neighbors];
+
+  for(int i = 0; i < Num_Neighbors; i++) {
+    Neighbor_list[i] = P_In.Neighbor_List[i];
+    Grad_W_Tilde[i] = P_In.Grad_W_Tilde[i];
+  } // for(int i = 0; i < Num_Neighbors; i++) {
 } // Particle::Particle(const Particle & P_In) {
 
 Particle::~Particle(void) {
   --Num_Particles;
+  delete [] Grad_W_Tilde;
+  delete [] Neighbor_List;
 } // Particle::~Particle(void) {
 
 
