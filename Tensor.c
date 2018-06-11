@@ -403,19 +403,19 @@ Tensor operator*(const double c, const Tensor & T_In) {
   return T_Scaled;
 } // Tensor operator*(const double c, const Tensor & T_In) {
 
-Tensor Inverse(const Tensor T_In) {
+Tensor Inverse(const Tensor & T_In) {
   return T_In.Inverse();
-} // Tensor Inverse(const Tensor T_In) {
+} // Tensor Inverse(const Tensor & T_In) {
 
-double Determinant(const Tensor T_In) {
+double Determinant(const Tensor & T_In) {
   return T_In.Determinant();
-} // double Determinant(const Tensor T_In) {
+} // double Determinant(const Tensor & T_In) {
 
-Tensor Transpose(const Tensor T_In) {
+Tensor Transpose(const Tensor & T_In) {
   return T_In.Transpose();
-} // Tensor Transpose(const Tensor T_In) {
+} // Tensor Transpose(const Tensor & T_In) {
 
-double Tensor_Dot_Product(const Tensor T1, const Tensor T2) {
+double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
   // This returns T1:T2, the tensor dot product of T1 and T2
   double dot_prod = 0;
 
@@ -426,6 +426,9 @@ double Tensor_Dot_Product(const Tensor T1, const Tensor T2) {
   }
 
   return dot_prod;
-}
+} // double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
 
+void Print(const Tensor & T_In) {
+  T_In.Print();
+} // void Print(const Tensor & T_In) {
 #endif

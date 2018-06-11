@@ -49,10 +49,11 @@ class Tensor {
 
     friend Tensor operator*(double c,
                             const Tensor & T_In); // Scalar multiplication (defines c*T)
-    friend Tensor Inverse(const Tensor T_In);
-    friend double Determinant(const Tensor T_In);
-    friend Tensor Transpose(const Tensor T_In);
-    friend double Tensor_Dot_Product(const Tensor T1, const Tensor T2);
+    friend Tensor Inverse(const Tensor & T_In);
+    friend double Determinant(const Tensor & T_In);
+    friend Tensor Transpose(const Tensor & T_In);
+    friend double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2);
+    friend void Print(const Tensor & T_In);
 }; // class Tensor {
 
 #endif

@@ -87,7 +87,7 @@ void Vector_Tests(void) {
   // Test Vector dot product
   V1 = {1,2,3}; V2 = {1,2,3};
   double dot_prod = Vector_Dot_Product(V1,V2);
-  printf("V1 = V2 = {1,2,3}. V1 dot V2 = %d\n");
+  printf("V1 = V2 = {1,2,3}. V1 dot V2 = %f\n", dot_prod);
 } // void Vector_Tests(void) {
 
 void Tensor_Tests(void) {
@@ -191,7 +191,7 @@ void Tensor_Tests(void) {
   T1 = {1,2,3,4,5,6,7,8,9};
   T2 = {1,2,3,4,5,6,7,8,9};
   double dot_prod = Tensor_Dot_Product(T1, T2);
-  printf("T1 = T2 = {1,2,3,...9}. T1 : T2 = %d\n");
+  printf("T1 = T2 = {1,2,3,...9}. T1 : T2 = %f\n", dot_prod);
 } // void Tensor_Tests(void) {
 
 #endif

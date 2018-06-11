@@ -43,8 +43,9 @@ class Vector {
     double Magnitude(void) const;
 
     friend Vector operator*(double c, const Vector & V_In);  // Scalar multiplication (defines c*V)
-    friend double Magnitude(const Vector V_In);
-    friend double Vector_Dot_Product(const Vector V1, const Vector V2);
+    friend double Magnitude(const Vector & V_In);
+    friend double Vector_Dot_Product(const Vector & V1, const Vector & V2);
+    friend void Print(const Vector & V_In);
 }; // class Vector {
 
 #endif
