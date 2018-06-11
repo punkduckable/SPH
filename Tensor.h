@@ -42,12 +42,17 @@ class Tensor {
     double operator()(const uByte row,
                       const uByte col) const;
 
-    Tensor Inverse(void) const;                   // Tensor Inverse. Define T^(-1)
-    double Determinant(void) const;
+    Tensor Inverse(void) const;                   // Tensor Inverse. Returns T^(-1)
+    double Determinant(void) const;               // Tensor Determinant. Returns Det(T)
+    Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T (Tranpose of T)
     void Print(void) const;                       // Print tensor components
 
     friend Tensor operator*(double c,
                             const Tensor & T_In); // Scalar multiplication (defines c*T)
+    friend Tensor Inverse(const Tensor T_In);
+    friend double Determinant(const Tensor T_In);
+    friend Tensor Transpose(const Tensor T_In);
+    friend double Tensor_Dot_Product(const Tensor T1, const Tensor T2);
 }; // class Tensor {
 
 #endif

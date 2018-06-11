@@ -30,6 +30,8 @@ TODO / development history:
     DONE 6/7: Add a destructor
     DONE 6/7: Add a copy constructor
     DONE 6/7: make applicable methods accept and/or return reference variables
+    DONE 6/11: Add Magnitude friend function
+    DONE 6/11: Add Dot product friend function
     - Replace printouts with actual errors
 
  - Tensor Class:
@@ -44,6 +46,9 @@ TODO / development history:
     DONE 6/7: Add a destructor
     DONE 6/7: Add a copy constructor
     DONE 6/7: make applicable methods accept and/or return reference variables
+    DONE 6/11: Add Transpose, Determinant methods
+    DONE 6/11: Add Transpose, Determinant, Inverse friend functions
+    DONE 6/11: Add Tensor dot product friend function
     - Replace printouts with actual errors
 
   - Particle Class:

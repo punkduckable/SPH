@@ -40,7 +40,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
   return T;
 } // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {
 
-int main(int argc, char *argv[]) {
+int main() {
 
   Vector_Tests();
   Tensor_Tests();

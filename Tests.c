@@ -83,6 +83,11 @@ void Vector_Tests(void) {
   Tensor T = Dyadic_Product(V1,V2);
   printf(" T = V1 dyad V2\n");
   T.Print();
+
+  // Test Vector dot product
+  V1 = {1,2,3}; V2 = {1,2,3};
+  double dot_prod = Vector_Dot_Product(V1,V2);
+  printf("V1 = V2 = {1,2,3}. V1 dot V2 = %d\n");
 } // void Vector_Tests(void) {
 
 void Tensor_Tests(void) {
@@ -176,6 +181,17 @@ void Tensor_Tests(void) {
   // Test that Determinant method works
   double Det_T = T2.Determinant();
   printf("T2.Determinant = %f\n",Det_T);
+
+  // Test Transpose method
+  Tensor T3_T = T3.Transpose();
+  printf("T3^T\n");
+  T3_T.Print();
+
+  // Test Tensor Dot Product function
+  T1 = {1,2,3,4,5,6,7,8,9};
+  T2 = {1,2,3,4,5,6,7,8,9};
+  double dot_prod = Tensor_Dot_Product(T1, T2);
+  printf("T1 = T2 = {1,2,3,...9}. T1 : T2 = %d\n");
 } // void Tensor_Tests(void) {
 
 #endif

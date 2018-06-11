@@ -234,4 +234,12 @@ Vector operator*(double c, const Vector & V_In) {
   return Prod;
 } //Vector operator*(double c, const Vector & V_In) {
 
+double Magnitude(const Vector V_In)  {
+  return V_In.Magnitude();
+} // double Magnitude(const Vector V_In)  {
+
+double Vector_Dot_Product(const Vector V1, const Vector V2) {
+  return (V1[0]*V2[0] + V1[1]*V2[1] + V2[2]*V2[2]);
+}
+
 #endif

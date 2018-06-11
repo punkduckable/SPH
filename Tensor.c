@@ -365,6 +365,19 @@ double Tensor::Determinant(void) const {
   return Det_T;
 } // double Tensor::Determinant(void) const {
 
+Tensor Tensor::Transpose(void) const {
+  Tensor T_Transpose;                         // Will store Transpose
+
+  // Set components of the transpose using the rule A(i,j) = A^T(i,j) = A^(j,i).
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      T_Transpose(i,j) = T[3*j + i];
+    }
+  }
+
+  return T_Transpose;
+} // Tensor Tensor::Transpose(void) const {
+
 void Tensor::Print(void) const {
   for(int i = 0; i < 3; i++) {
     printf("| %8.4f %8.4f %8.4f |\n",T[i*3], T[i*3+1], T[i*3+2]);
@@ -389,5 +402,30 @@ Tensor operator*(const double c, const Tensor & T_In) {
   // Return the scaled tensor.
   return T_Scaled;
 } // Tensor operator*(const double c, const Tensor & T_In) {
+
+Tensor Inverse(const Tensor T_In) {
+  return T_In.Inverse();
+} // Tensor Inverse(const Tensor T_In) {
+
+double Determinant(const Tensor T_In) {
+  return T_In.Determinant();
+} // double Determinant(const Tensor T_In) {
+
+Tensor Transpose(const Tensor T_In) {
+  return T_In.Transpose();
+} // Tensor Transpose(const Tensor T_In) {
+
+double Tensor_Dot_Product(const Tensor T1, const Tensor T2) {
+  // This returns T1:T2, the tensor dot product of T1 and T2
+  double dot_prod = 0;
+
+  for(int i = 0; i < 3; i++) {
+    dot_prod += T1(i,0)*T2(i,0) +
+                T1(i,1)*T2(i,1) +
+                T1(i,2)*T2(i,2);
+  }
+
+  return dot_prod;
+}
 
 #endif
