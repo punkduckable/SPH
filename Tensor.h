@@ -43,6 +43,7 @@ class Tensor {
                       const uByte col) const;
 
     Tensor Inverse(void) const;                   // Tensor Inverse. Define T^(-1)
+    double Determinant(void) const;
     void Print(void) const;                       // Print tensor components
 
     friend Tensor operator*(double c,

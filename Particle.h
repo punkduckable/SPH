@@ -10,29 +10,17 @@ class Particle {
     unsigned int *Neighbor_List;                        // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
     Vector *Grad_W_tilde;                               // Dynamic array that stores Grad_W_Tilde for each particle
 
-    Vector x;                                           // current position
+    Vector x;                                           // Particle's current position
+    Vector x_new;                                       // Particle's position after current time step
     Vector X;                                           // reference position
-    Vector Force;                                       // Force vector
-    Vector acceleration;                                // acceleration vector
 
-    Tensor F;                                           // Deformation gradient
-    Tensor A_Inv;                                       // Inverse of shape tensor
-    Tensor P;                                           // First Poila-Kirchoff stress tensor
-    Tensor S;                                           // Second Poila-Kirchoff stress tensor
-
-    Vector Calc_Grad_W(const Vector Rj) const;          // Calculates Grad_W for a given Rj
-    void Calc_A_Inv(void);                              // Calculates A_Inverse (can only be called once Neighbors are set)
     Vector Calc_Grad_W_Tilde(const Vector Rj) const;    // Calculate Grad_W_Tilde: Grad_W_Tilde = A^(-1)*Grad_W
-
-    void Update_F(void);
-    void Update_P(void);
-    void Update_Force(void);
-    void Update_acceleration(void);
+    Vector Calc_Grad_W(const Vector Rj) const;          // Calculates Grad_W for a given Rj
 
   public:
     Particle(void);                                     // Default constructor
     Particle(const Vector & X_In);                      // Vector constructor (accept ref position)
-    Particle(const Particle & P_In);                    // Copy constructor
+    Particle(const Particle & P_In);                    // Copy constructor (performs a deep copy)
 
     ~Particle(void);                                    // Destructor
 
@@ -44,7 +32,12 @@ class Particle {
                        const unsigned int *Neighbor_List_In,
                        const Vector *X_Neighbors);      // Set Neighbors
 
-    void Update_x(const Vector *x_Neighbors, const double dt);
+    Particle & operator=(const Particle & P_In);        // Defines P1 = P2 (performs a deep copy)
+
+    // Friend functions
+    friend void Update_Particle_Position(const Particle & P_In,
+                         const Particle *Particles,
+                         const double dt);
 };
 
 #endif

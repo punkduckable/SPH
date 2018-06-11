@@ -75,7 +75,7 @@ void Vector_Tests(void) {
   v = V1[2];
   printf("v = V1[2]    : %f\n",v);
 
-  // Test that magnitude function works
+  // Test that magnitude method works
   v = V2.Magnitude();
   printf("v = V2.Mag.(): %f\n",v);
 
@@ -170,8 +170,12 @@ void Tensor_Tests(void) {
   // Test inverse method
   T2 = {1,4, 9, 29, 4, 67, 10, 4, 0};
   T3 = T2.Inverse();
-  printf("T1 = {1,4,9, 29, 4, 67, 10, 4, 0} \n T3 = T2.Inverse()\n");
+  printf("T1 = {1,4,9, 29, 4, 67, 10, 4, 0} \nT3 = T2.Inverse()\n");
   T3.Print();
+
+  // Test that Determinant method works
+  double Det_T = T2.Determinant();
+  printf("T2.Determinant = %f\n",Det_T);
 } // void Tensor_Tests(void) {
 
 #endif

@@ -354,6 +354,17 @@ Tensor Tensor::Inverse(void) const{
   return T_Inv;
 } // Tensor Inverse(void) const{
 
+double Tensor::Determinant(void) const {
+  double Det_T = (T[0*3 + 0]*(T[1*3 + 1]*T[2*3 + 2]
+                             -T[2*3 + 1]*T[1*3 + 2])
+                 +T[0*3 + 1]*(T[2*3 + 0]*T[1*3 + 2]
+                             -T[1*3 + 0]*T[2*3 + 2])
+                 +T[0*3 + 2]*(T[1*3 + 0]*T[2*3 + 1]
+                             -T[2*3 + 0]*T[1*3 + 1]));
+
+  return Det_T;
+} // double Tensor::Determinant(void) const {
+
 void Tensor::Print(void) const {
   for(int i = 0; i < 3; i++) {
     printf("| %8.4f %8.4f %8.4f |\n",T[i*3], T[i*3+1], T[i*3+2]);

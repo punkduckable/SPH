@@ -48,7 +48,7 @@ TODO / development history:
 
   - Particle Class:
     - Define all methods
-    - Move Grad_W_Tilde into an array of vectors
+    DONE: Move Grad_W_Tilde into an array of vectors
         - Grad_W is used when calculating A and Grad_W_Tilde. However, I believe
         that both of these only need to be found once. Using the provided
         algorithm, Grad_W_Tilde for each neighbor is calculated for each
@@ -63,10 +63,11 @@ TODO / development history:
         Grad_W_tilde for each neighbor in an array, we only need to calculate
         each Grad_W_Tilde once! To calculate F, we simply call the corresponding
         elements of the array. I believe this will greatly enhance performance.
-    - Include a static private member 'num neighbors' that keeps track of how
+    DONE: Include a static private member 'num neighbors' that keeps track of how
     many neighbors a particles has
       - This number is used to dynamically allocate the Grad_W_Tilde and
       Neighbor_List arrays.
+
     - Try removing Rj vector from Set_Neighbors method. I think I can just pass
     X_Neighbors[j] - X to Grad_W_Tilde in second loop / avoid an explicit Rj
     vector all together.
@@ -94,23 +95,15 @@ TODO / development history:
 
 IDEAS:
  - How to implement neighbor list:
-     Define three variables, a neighbor's pointer, an integer called 'num neighbors'
-     and an integer called 'Numel'. Begin by allocating an array of 'numel' ints for
-     the neighbor's pointer. Next, cycle through the particles. Each time a neighbor
-     is found, add it's array index to the allocated 'Neighbors' array and increment
-     'num neighbors'. If num_neighbors exceeds 'Numel' (the number of elements in the
-     Neighbors array), then reallocate the neighbor's array with an additional 'Numel'
-     elements (use relloc). Continue doing this until you have cycled through every
-     particle/have every neighbor. At this point, you now have a complete neighbor
-     list + the number of neighbors. Pass the neighbor ID's + number of neighbors to
-     that particle's data.
-
-  - How to set neighbors for each particles:
-    Once neighbor list search has finished, pass the number of neighbors, a
-    list containing the ID of each neighbor, and a list containing the reference
-    positions of each neighbor. The particle uses the supplied number of
-    particles to allocate its Neighbor_List and Grad_W_Tilde arrays' (both
-    quantities are Lagrangian).
+     Use a linked list. Create a linked list for each particle. Once a neighbor
+     is found, add a node that contains that neighbor's ID and their ref
+     position (as a vector) to the list. Keep track of total number of
+     neighbors. Once number of neighbors has been discovered, allocate an array
+     whose dimension is equal to the number of neighbors. Store the id's in this
+     array. Then free the list. Pass the number of neighbors + neighbor id List
+     + neighbor ref positions to the particle. The particle uses the number of
+     Neighbors to allocate its Neighbor_List and Grad_W_Tilde arrays' (both
+     quantities are Lagrangian).
 
   - How to update each time step:
     The main function has a giant array storing all of the particles. At the
