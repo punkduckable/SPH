@@ -68,6 +68,25 @@ Tensor Tensor::operator+(const Tensor & T_In) const {
   return Sum;
 } // Tensor Tensor::operator+(const Tensor & T_In) const {
 
+Tensor Tensor::operator-(const Tensor & T_In) const {
+  // Declare some Tensor to store the difference
+  Tensor Diff;
+
+  /* Compute the 9 elements of the sum.
+     I choose to use a for loop here, despite the extra overhead, because
+     writing out 9 individual lines was too hard to maintain (lots of room for
+     typos, hard to change how the function operates). I am hopeful that the
+     compiler will unroll the loop for me.
+  */
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 3; j++) {
+      Diff(i,j) = T[3*i + j] - T_In(i,j);
+    }
+  } // for(int i = 0; i < 9; i++){
+
+  return Diff;
+} // Tensor Tensor::operator-(const Tensor & T_In) const {
+
 Tensor Tensor::operator*(const Tensor & T_In) const{
   // Declare product tensor
   Tensor Prod;

@@ -32,6 +32,7 @@ TODO / development history:
     DONE 6/7: make applicable methods accept and/or return reference variables
     DONE 6/11: Add Magnitude friend function
     DONE 6/11: Add Dot product friend function
+    DONE 6/11: Add print friend function
     - Replace printouts with actual errors
 
  - Tensor Class:
@@ -49,12 +50,13 @@ TODO / development history:
     DONE 6/11: Add Transpose, Determinant methods
     DONE 6/11: Add Transpose, Determinant, Inverse friend functions
     DONE 6/11: Add Tensor dot product friend function
+    DONE 6/11: Add print friend function
     - Replace printouts with actual errors
 
   - Particle Class:
-    - Define all methods
-    DONE: Move Grad_W_Tilde into an array of vectors
-        - Grad_W is used when calculating A and Grad_W_Tilde. However, I believe
+    DONE 6/11: Define all methods
+    DONE 6/8: Move Grad_W_Tilde into an array of vectors
+        Grad_W is used when calculating A and Grad_W_Tilde. However, I believe
         that both of these only need to be found once. Using the provided
         algorithm, Grad_W_Tilde for each neighbor is calculated for each
         iteration (to calculate the deformation gradient). However, if we look
@@ -68,31 +70,14 @@ TODO / development history:
         Grad_W_tilde for each neighbor in an array, we only need to calculate
         each Grad_W_Tilde once! To calculate F, we simply call the corresponding
         elements of the array. I believe this will greatly enhance performance.
-    DONE: Include a static private member 'num neighbors' that keeps track of how
+    DONE 6/8: Include a static private member 'num neighbors' that keeps track of how
     many neighbors a particles has
-      - This number is used to dynamically allocate the Grad_W_Tilde and
-      Neighbor_List arrays.
-
-    - Try removing Rj vector from Set_Neighbors method. I think I can just pass
-    X_Neighbors[j] - X to Grad_W_Tilde in second loop / avoid an explicit Rj
-    vector all together.
-    - Remove Force, Acceleration vectors and P, S, F member
-        I don't think that these quantities are needed. All of them are eulerian
-        These quantities are only used to update the particle's position. Thus,
-        these members are not needed to define a particle. Rather, they are
-        used to update a particle's position. As such, I think it makes sense
-        to treat these quantities as temporary/local variables inside of the
-        update_x function. This function would accept the neighbor particle's
-        current positions as an argument (as well as the time step) and use this
-        to calculate the deformation gradient F.  We then calculate P. We
-        then use this to calculate the force, which is used to calculate the
-        acceleration. Finally, the acceleration is used to update x (particle's
-        spacial position).
-
-        This approach of making these quantities local variables would save a
-        boat load of memory since each particle has far fewer members/is smaller.
-        With this approach, we only need calculate S, P, F... for the particle
-        that is currently being updated).
+        This number is used to dynamically allocate the Grad_W_Tilde and
+        Neighbor_List arrays.
+    - Add in A when calculating W, Grad_W! (see eq (2)).
+    - Figure out how to set mass
+    - Update position using acceleration (finish Update_Particle_Position function)
+    - Find way to set all static member variables in main function
     - Add Particles array to  main file
     - Have main file set h (static member variable).
     - Come up with an algorithm to generate neighbor list

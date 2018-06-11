@@ -24,6 +24,7 @@ class Tensor {
     ~Tensor(void);                                // Destructor
 
     Tensor operator+(const Tensor & T_In) const;  // Tensor addition (defines T1 + T2)
+    Tensor operator-(const Tensor & T_In) const;  // Tensor subtraction (defines T1 - T2);
     Tensor operator*(const Tensor & T_In) const;  // Tensor-Tensor multiplication (Defines T1*T2)
     Vector operator*(const Vector & V_In) const;  // Tensor-Vector multiplication (defines T*V)
     Tensor operator*(const double c) const;       // Scalar multiplication (defines T*c)

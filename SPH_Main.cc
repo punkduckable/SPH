@@ -7,9 +7,12 @@ using namespace std;
 typedef signed char Byte;
 typedef unsigned char uByte;
 
+#define PI 3.1415926535897932384626
+
 // Class definitions
 #include "Vector.h"
 #include "Tensor.h"
+#include "Particle.h"
 #include "Tests.h"
 
 // Prototypes
@@ -18,7 +21,22 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 // Class functions
 #include "Vector.c"
 #include "Tensor.c"
+#include "Particle.c"
 #include "Tests.c"
+
+////////////////////////////////////////////////////////////////////////////////
+// Set particle constants REMOVE ASAP
+
+double Particle::rho = 1;
+double Particle::E = 1;
+double Particle::alpha = 1;
+Vector M_Set;
+Vector Particle::M = M_Set;
+double Particle::mu = 1;
+double Particle::mu0 = 1;
+double Particle::k1 = 1;
+double Particle::k2 = 1;
+double Particle::h = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions
