@@ -195,7 +195,7 @@ void List::Cycle_Nodes(void) const {
   while(Current_Node != NULL) {
     // Print info on current node
     printf("Node #%d\n",Node_Num);
-    printf("Value:     %p\n",Current_Node->Particle_ID);
+    printf("Value:     %d\n",Current_Node->Particle_ID);
     printf("Current    %p\n",Current_Node);
     printf("Previous:  %p\n",Current_Node->Previous_Node);
     printf("Next:      %p\n\n",Current_Node->Next_Node);
