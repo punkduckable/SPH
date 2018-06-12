@@ -75,8 +75,9 @@ TODO / development history:
         This number is used to dynamically allocate the Grad_W_Tilde and
         Neighbor_List arrays.
     DONE 6/12: Add in A when calculating W, Grad_W! (see eq (2)).
-    - Figure out how to set mass
     DONE 6/12: Update position using acceleration (finish Update_Particle_Position function)
+    - Set density, calculate mass
+    - Update penalty function (use eq 6.138 in H book)
     - Find way to set all static member variables in main function
     - Add Particles array to main file
     - Have main file set h (static member variable).

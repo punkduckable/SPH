@@ -5,7 +5,7 @@
 // Constructors and destructor
 
 Particle::Particle(void) {
-  Neighbors_Set = false;
+  Has_Neighbors = false;
   Num_Neighbors = 0;
   V = 0;
 } // Particle::Particle(void) {
@@ -24,7 +24,7 @@ Particle::Particle(const Particle & P_In) {
   X = P_In.X;
   x = P_In.x;
   P = P_In.P;
-  Neighbors_Set = P_In.Neighbors_Set;
+  Has_Neighbors = P_In.Has_Neighbors;
 
   /* Deep copy of pointer members.
   To do this, we need to give the new particle the same content as the origional
@@ -73,7 +73,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
   then allocating them again will cause a memory leak.  */
-  if(Neighbors_Set == true) {
+  if(Has_Neighbors == true) {
     printf("Neigbors already set, returning.\n");
     return;
   }
@@ -121,8 +121,8 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_
     Grad_W_Tilde[j] = A_Inv*Grad_W[j];
   } // for(int j = 0; j < N; j++) {
 
-  // Now that neighbors have been set, we set 'Neighbors_Set' to true
-  Neighbors_Set = true;
+  // Now that neighbors have been set, we set 'Has_Neighbors' to true
+  Has_Neighbors = true;
 } // void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_Id_List, const Particle *Particles) {
 
 void Particle::Set_X(const Vector & X_In) {
@@ -159,7 +159,7 @@ Particle & Particle::operator=(const Particle & P_In) {
   X = P_In.X;
   x = P_In.x;
   P = P_In.P;
-  Neighbors_Set = P_In.Neighbors_Set;
+  Has_Neighbors = P_In.Has_Neighbors;
 
   /* Deep copy of pointer members.
   To do this, we need to give the new particle the same content as the origional
@@ -227,14 +227,14 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
 
   Tensor C;                                           // Richt-Cauchy stress tensor
   Tensor S;                                           // Second Poila-Kirchoff stress tensor
-  Vector M;                                           // Fber orientation vector
+  Vector M;                                           // Fiber orientation vector
   Tensor M_Dyad_M;                                    // Stores dyadic product of M with M... used to calculate strain energy
   Tensor I = {1,0,0,
               0,1,0,
               0,0,1};                                 // Identity tensor
 
   double k1, k2, mu0, mu;
-  double I1, J, I4, p;                                // Used to calculate stress energy function
+  double I1, J, I4,;                                  // Used to calculate stress energy function
 
   Tensor F_Prime;                                     // Approximates the time derivative of F
   Tensor L;                                           // Used in viscosity correction term
@@ -266,9 +266,8 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   J = Determinant(F);
   M_Dyad_M = Dyadic_Product(M,M);
   I4 = Tensor_Dot_Product( C, M_Dyad_M );
-  p = mu0 / (C(1,1)*C(2,2) - C(1,2)*C(2,1));
 
-  S = mu0*I + k1*(I4 - 1)*exp(k1*(I4-1)*(I4-1))*M_Dyad_M - p*(1./J)*Inverse(C);
+  S = mu0*I + k1*(I4 - 1)*exp(k1*(I4-1)*(I4-1))*M_Dyad_M;
 
   // Calculate viscosity tensor
   F_Prime = (1/dt)*(F - P_In.F);                 // Note: P_In.F is the deformation gradient from the last time step (F_i), F is from new time step (F_i+1)
@@ -316,7 +315,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
   const double alpha = P_In.alpha;
   const double E = P_In.E;
-  const double rho = P_In.rho;
+  const double M = P_In.M;
 
 
   for(int j = 0; j < Num_Neighbors; j++) {
@@ -349,19 +348,18 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   } // for(int j = 0; j < Num_Neighbors; j++) {
 
   // Compute acceleration
-  acceleration = (1./(Vi*rho))*(Force_Int + Force_Ext + Force_Hg);
+  acceleration = (1./M)*(Force_Int + Force_Ext + Force_Hg);     // a(t_i+1): acceleration of particle at new position
 
   /* Now update the velocity, position vectors. This is done using the
   'leap-frog' integration scheme. However, during the first step of this
   scheme, we need to use forward euler to get the initial velocity.*/
+  if(P_In.First_Iteration == true) {
+    P_In.First_Iteration = false;
+    P_In.v = P_In.v + (dt/2.)*acceleration;        // velocity starts at t_i+1/2
+  } //   if(P_In.First_Iteration == true) {
 
-  if(P_In.First_Step == true) {
-    P_In.First_Step = false;
-    P_In.v = P_In.v - (dt/2.)*acceleration;        // velocity starts at t_i-1/2
-  } //   if(P_In.First_Step == true) {
-
-  P_In.v = P_In.v + dt*acceleration;               // V_i+1/2 = V_i-1/2 + dt*a(t_i)
   P_In.x = P_In.x + dt*P_In.v;                     // x_i+1 = x_i + dt*v_(i+1/2)
+  P_In.v = P_In.v + dt*acceleration;               // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)
 }
 
 #endif

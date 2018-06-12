@@ -3,20 +3,30 @@
 
 class Particle {
   private:
+    // Kernel paramaters
     static double h;                                    // Specifies connection radius (same for every particle)
     static double A;                                    // Scaling constant for spikey kernel
+
+    // Strain energy function parameters
     static double k1;                                   // Constant in strain energy function
     static double k2;                                   // Constant in strain energy function
     static double mu0;                                  // Constant in strain energy function
+
+    // Viscosity paramaters
     static double mu;                                   // Viscosity (in viscohyperelastic term)
+
+    // Hourglass correction parameters
     static double E;                                    // Hourglass stiffness
     static double alpha;                                // Coefficient to contols amplitue of hourclass correction
-    static double rho;                                  // Particle density
+
+    // Mass parameters
+    static double density;                              // Particle density
     static Vector M;                                    // Fiber orientation vector
 
-    double V;
+    double V;                                           // Particle volume
+    double M;                                           // Particle Mass
 
-    bool Neighbors_Set;
+    bool Has_Neighbors = false;                         // True if the particle has neighbors, false otherwise
     unsigned int Num_Neighbors;                         // Keeps track of number of Neighbors
     unsigned int *Neighbor_List;                        // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
 
@@ -27,13 +37,13 @@ class Particle {
     Vector *Grad_W_Tilde;                               // Dynamic array that stores Grad_W_Tilde
     double Calc_W(const Vector & Rj);                   // Returns value of W (kernel function) for a given displacement vector
 
-    Vector x;                                           // Particle's current position
+    Vector x;                                           // Particle's current position: x_i at start of iteration (x_i+1 at end)
+    Vector v;                                           // Particle's velocity at half time step (Leap-Frog method): v_i+1/2 at start of iteration (v_i+3/2 at end)
     Vector X;                                           // reference position
-    bool First_Step = true;
-    Vector v;                                           // Particle's velocity at half time step (Leap-Frog method)
-    Tensor P;                                           // First Piola-Kirchhoff stress tensor
 
-    Tensor F;                                           // deformation gradient (this needs to be a member so that we can calculate F')
+    bool First_Iteration = true;                        // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
+    Tensor P;                                           // First Piola-Kirchhoff stress tensor (needed to update position)
+    Tensor F;                                           // deformation gradient (needed to calculate (d/dt)F)
 
   public:
     Particle(void);                                     // Default constructor
