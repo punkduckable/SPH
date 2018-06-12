@@ -26,7 +26,7 @@ class List {
     int Remove_Front(void);              // Add an item to the front of the list
 
     int Node_Count(void) const;          // Returns number of nodes
-    void Cycle_Nodes(void) const;      // For testing
+    void Print_Node_Info(void) const;  // For testing
 };
 
 #endif

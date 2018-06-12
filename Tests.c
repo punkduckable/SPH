@@ -198,23 +198,23 @@ void List_Tests(void) {
   // Create a new Node, test that the two ends point to NULL
   List L1;
   printf("Newly created node. \n");
-  L1.Cycle_Nodes();
+  L1.Print_Node_Info();
 
   L1.Add_End(1);
   printf("Added '1' to end of list\n");
-  L1.Cycle_Nodes();
+  L1.Print_Node_Info();
 
   int returned_value = L1.Remove_End();
   printf("Removed rear, got %d\n",returned_value);
-  L1.Cycle_Nodes();
+  L1.Print_Node_Info();
 
   L1.Add_Front(2);
   printf("Added '2' to front of list\n");
-  L1.Cycle_Nodes();
+  L1.Print_Node_Info();
 
   returned_value = L1.Remove_Front();
   printf("Removed Front, got %d\n",returned_value);
-  L1.Cycle_Nodes();
+  L1.Print_Node_Info();
 
   L1.Add_End(2);
   L1.Add_Front(1);
@@ -222,6 +222,6 @@ void List_Tests(void) {
   L1.Add_Front(0);
   L1.Add_End(4);
   printf("Added {0,1,2,3,4} in strange order \n");
-  L1.Cycle_Nodes();
+  L1.Print_Node_Info();
 }
 #endif

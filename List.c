@@ -183,7 +183,7 @@ int List::Node_Count(void) const {
   return Num_Nodes;
 } // void List::Node_Count(void) const {
 
-void List::Cycle_Nodes(void) const {
+void List::Print_Node_Info(void) const {
   Node * Current_Node = Front;
   int Node_Num = 0;
 
@@ -204,6 +204,6 @@ void List::Cycle_Nodes(void) const {
     Current_Node = Current_Node->Next_Node;
     Node_Num++;
   } //   while(Current_Node != NULL) {
-} // void List::Cycle_Nodes(void) const {
+} // void List::Print_Node_Info(void) const {
 
 #endif
