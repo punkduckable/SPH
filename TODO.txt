@@ -78,10 +78,14 @@ TODO / development history:
     - Figure out how to set mass
     DONE 6/12: Update position using acceleration (finish Update_Particle_Position function)
     - Find way to set all static member variables in main function
-    - Add Particles array to  main file
+    - Add Particles array to main file
     - Have main file set h (static member variable).
     - Come up with an algorithm to generate neighbor list
     - Try initializing particles.
+
+  - Linked List class
+    DONE 6/12: Write a two way linked list (will be used for neighbor search)
+    DONE 6/12: Add tests for list class
 
 IDEAS:
  - How to implement neighbor list:

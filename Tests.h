@@ -3,5 +3,6 @@
 
 void Vector_Tests(void);
 void Tensor_Tests(void);
+void List_Tests(void);
 
 #endif

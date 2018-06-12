@@ -12,6 +12,7 @@ typedef unsigned char uByte;
 #include "Vector.h"
 #include "Tensor.h"
 #include "Particle.h"
+#include "List.h"
 #include "Tests.h"
 
 // Prototypes
@@ -21,6 +22,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 #include "Vector.c"
 #include "Tensor.c"
 #include "Particle.c"
+#include "List.c"
 #include "Tests.c"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,9 +62,10 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 } // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {
 
 int main() {
-  // Run Vector, Tensor tests.
+  // Run Vector, Tensor, List tests.
   Vector_Tests();
   Tensor_Tests();
+  List_Tests();
 
   return 0;
 } // int main() {

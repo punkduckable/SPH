@@ -20,8 +20,8 @@ class Particle {
     unsigned int Num_Neighbors;                         // Keeps track of number of Neighbors
     unsigned int *Neighbor_List;                        // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
 
-    Vector *r;                                           // Stores neighbor spacial positions
-    Vector *R;                                           // Stores neighbor reference positions
+    Vector *r;                                          // Stores neighbor spacial positions
+    Vector *R;                                          // Stores neighbor reference positions
 
     Vector *Grad_W;                                     // Dynamic array that stores Grad_W
     Vector *Grad_W_Tilde;                               // Dynamic array that stores Grad_W_Tilde
