@@ -1,15 +1,14 @@
 #include <stdio.h>
 #include <math.h>
 
-using namespace std;
-
 // Type definitions
 typedef signed char Byte;
 typedef unsigned char uByte;
 
+// Definitions
 #define PI 3.1415926535897932384626
 
-// Class definitions
+// Header files
 #include "Vector.h"
 #include "Tensor.h"
 #include "Particle.h"
@@ -18,25 +17,27 @@ typedef unsigned char uByte;
 // Prototypes
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
-// Class functions
+// Source files
 #include "Vector.c"
 #include "Tensor.c"
 #include "Particle.c"
 #include "Tests.c"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Set particle constants REMOVE ASAP
+// Initialize static members of particle class
 
 double Particle::rho = 1;
 double Particle::E = 1;
-double Particle::alpha = 1;
+double Particle::alpha = 50;                    // What was used in the paper
 Vector M_Set;
 Vector Particle::M = M_Set;
 double Particle::mu = 1;
 double Particle::mu0 = 1;
 double Particle::k1 = 1;
 double Particle::k2 = 1;
-double Particle::h = 1;
+double h = 1;
+double Particle::h = h;
+double Particle::A = 15./(PI*h*h*h*h*h*h);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions
@@ -59,7 +60,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 } // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {
 
 int main() {
-
+  // Run Vector, Tensor tests.
   Vector_Tests();
   Tensor_Tests();
 

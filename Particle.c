@@ -23,7 +23,6 @@ Particle::Particle(const Particle & P_In) {
   V = P_In.V;
   X = P_In.X;
   x = P_In.x;
-  x_new = P_In.x_new;
   P = P_In.P;
   Neighbors_Set = P_In.Neighbors_Set;
 
@@ -109,7 +108,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_
 
     Mag_Rj = R[j].Magnitude();                     // Determine magniude of displacement vector with jth particle (R[j])
 
-    Grad_W[j] = 3*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*R[j];  // calculate Grad_W at jth particle
+    Grad_W[j] = 3*A*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*R[j];  // calculate Grad_W at jth particle
 
     A += Dyadic_Product(P_Neighbor.V*Grad_W[j], R[j]);   // Add in the Current Neighbor's contribution to the Shape tensor
   } // for(int j = 0; j < N; j++) {
@@ -159,7 +158,6 @@ Particle & Particle::operator=(const Particle & P_In) {
   V = P_In.V;
   X = P_In.X;
   x = P_In.x;
-  x_new = P_In.x_new;
   P = P_In.P;
   Neighbors_Set = P_In.Neighbors_Set;
 
@@ -225,7 +223,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   double Vj;                                          // Volume of jth particle (a neighbor)
   int Neighbor_Id;                                    // Index of jth neighbor.
 
-  Tensor F_New;                                       // New Deformation gradient
+  Tensor F;                                           // Deformation gradient
 
   Tensor C;                                           // Richt-Cauchy stress tensor
   Tensor S;                                           // Second Poila-Kirchoff stress tensor
@@ -249,7 +247,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
     Neighbor_Id = P_In.Neighbor_List[j];
     Vj = Particles[Neighbor_Id].V;
 
-    F_New += Dyadic_Product(P_In.r[j], Vj*P_In.Grad_W_Tilde[j]);
+    F += Dyadic_Product(P_In.r[j], Vj*P_In.Grad_W_Tilde[j]);
   } // for(int j = 0; j < Num_Neighbors; j++) {
 
   /* Now that we have calculated the deformation gradient, we need to calculate
@@ -263,9 +261,9 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   mu = P_In.mu;
   M = P_In.M;
 
-  C = F_New.Transpose()*F_New;
+  C = F.Transpose()*F;
   I1 = C(1,1) + C(2,2) + C(3,3);
-  J = Determinant(F_New);
+  J = Determinant(F);
   M_Dyad_M = Dyadic_Product(M,M);
   I4 = Tensor_Dot_Product( C, M_Dyad_M );
   p = mu0 / (C(1,1)*C(2,2) - C(1,2)*C(2,1));
@@ -273,15 +271,15 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   S = mu0*I + k1*(I4 - 1)*exp(k1*(I4-1)*(I4-1))*M_Dyad_M - p*(1./J)*Inverse(C);
 
   // Calculate viscosity tensor
-  F_Prime = (1/dt)*(F_New - P_In.F);
-  L = F_Prime*Inverse(F_New);
-  Visc = J*mu*(L + L.Transpose())*Transpose(F_New.Inverse());
+  F_Prime = (1/dt)*(F - P_In.F);                 // Note: P_In.F is the deformation gradient from the last time step (F_i), F is from new time step (F_i+1)
+  L = F_Prime*Inverse(F);
+  Visc = J*mu*(L + L.Transpose())*Transpose(F.Inverse());
 
   // Set P
-  P_In.Set_P(F_New*S + Visc);
+  P_In.Set_P(F*S + Visc);
 
   // Update Particle's F member
-  P_In.Set_F(F_New);
+  P_In.Set_F(F);
 
 } // void Update_P(const Particle & P_In, const Particle * Particles, const double dt) {
 
@@ -297,15 +295,15 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
   Vector acceleration;                               // acceleration vector
 
-  int Neighbor_Id;                                   // ID of current neighbor particle (in paritlce's array)
-  int Num_Neighbors = P_In.Num_Neighbors;            // Number of neighbors of P_In.
+  int Neighbor_Id;                             // ID of current neighbor particle (in paritlce's array)
+  const int Num_Neighbors = P_In.Num_Neighbors;      // Number of neighbors of P_In.
   Particle P_Neighbor;                               // Current neighbor particle
 
 
-  double Vj;                                         // Volume of jth particle
-  double Vi = P_In.V;                                // Volume of P_In;
+  double Vj;                                          // Volume of jth particle
+  const double Vi = P_In.V;                           // Volume of P_In;
   Tensor P_j;                                         // Piola-Kirchhoff stress tensor for jth particle
-  Tensor P_i = P_In.P;                                // Piola-Kirchhoff stress tensor for P_In
+  const Tensor P_i = P_In.P;                          // Piola-Kirchhoff stress tensor for P_In
 
   Vector Rj;
   Vector rj;
@@ -316,9 +314,9 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   double delta_ij;
   double delta_ji;
 
-  double alpha = P_In.alpha;
-  double E = P_In.E;
-  double rho = P_In.rho;
+  const double alpha = P_In.alpha;
+  const double E = P_In.E;
+  const double rho = P_In.rho;
 
 
   for(int j = 0; j < Num_Neighbors; j++) {
@@ -353,7 +351,17 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   // Compute acceleration
   acceleration = (1./(Vi*rho))*(Force_Int + Force_Ext + Force_Hg);
 
-  // Calculate new position
+  /* Now update the velocity, position vectors. This is done using the
+  'leap-frog' integration scheme. However, during the first step of this
+  scheme, we need to use forward euler to get the initial velocity.*/
+
+  if(P_In.First_Step == true) {
+    P_In.First_Step = false;
+    P_In.v = P_In.v - (dt/2.)*acceleration;        // velocity starts at t_i-1/2
+  } //   if(P_In.First_Step == true) {
+
+  P_In.v = P_In.v + dt*acceleration;               // V_i+1/2 = V_i-1/2 + dt*a(t_i)
+  P_In.x = P_In.x + dt*P_In.v;                     // x_i+1 = x_i + dt*v_(i+1/2)
 }
 
 #endif
