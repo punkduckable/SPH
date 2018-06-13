@@ -5,6 +5,7 @@
 // Constructors and destructor
 
 Particle::Particle(void) {
+  //printf("Particle default constructor \n");
   Has_Neighbors = false;
   Num_Neighbors = 0;
   Vol = 0;
@@ -14,6 +15,8 @@ Particle::Particle(void) {
 } // Particle::Particle(void) {
 
 Particle::Particle(const Particle & P_In) {
+  //printf("Particle copy constructor\n");
+
   /* Copy elements from P_In to local elements. Note that an object of one class
   is able to access private data of another object of that class.
 
@@ -64,11 +67,16 @@ Particle::Particle(const Particle & P_In) {
 } // Particle::Particle(const Particle & P_In) {
 
 Particle::~Particle(void) {
-  delete [] r;
-  delete [] R;
-  delete [] Grad_W;
-  delete [] Grad_W_Tilde;
-  delete [] Neighbor_List;
+  //printf("Removing particle\n");
+
+  // Note, we should only free the memory if it has been allocated.
+  if(Has_Neighbors == true) {
+    delete [] r;
+    delete [] R;
+    delete [] Grad_W;
+    delete [] Grad_W_Tilde;
+    delete [] Neighbor_List;
+  }
 } // Particle::~Particle(void) {
 
 
@@ -97,13 +105,19 @@ void Particle::Set_vel(const Vector & vel_In) {
   vel = vel_In;
 } // void Particle::Set_vel(const Vector & vel_In) {
 
-void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_Id_List, const Particle *Particles) {
+void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_ID_List, const Particle *Particles) {
   /* First check if this particle already has neighbors. This function should
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
   then allocating them again will cause a memory leak.  */
   if(Has_Neighbors == true) {
     printf("Neigbors already set, returning.\n");
+    return;
+  }
+
+  /* Next, check that N > 0. if N = 0, then there are no neighbors to add. */
+  if(N == 0) {
+    printf("You didn't supply any neighbors!\n");
     return;
   }
 
@@ -122,24 +136,22 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_
   determine the Shape tensor A (and its inverse) in order to populate the
   Grad_W_Tilde array! */
 
-  int Neighbor_Id;                                 // Keep track of current particle
+  int Neighbor_ID;                                 // Keep track of current particle
   double Mag_Rj;                                   // magnitude of Rj vector
   Tensor A, A_Inv;                                 // Shape Tensor and its inverse
-  Particle P_Neighbor;                             // Current neighbor particle
 
   for(int j = 0; j < N; j++) {
-    Neighbor_Id = Neighbor_Id_List[j];             // Get Neighbor ID (index in Particles array)
-    Neighbor_List[j] = Neighbor_Id;                // Set Neighbor_List member Element
-    P_Neighbor = Particles[Neighbor_Id];           // Set P_Particle to current particle (using particle's array)
+    Neighbor_ID = Neighbor_ID_List[j];             // Get Neighbor ID (index in Particles array)
+    Neighbor_List[j] = Neighbor_ID;                // Set Neighbor_List member Element
 
-    r[j] = P_Neighbor.x - x;                       // Determine spacial displacement vector
-    R[j] = P_Neighbor.X - X;                       // Determine reference displacement vector
+    r[j] = Particles[Neighbor_ID].x - x;                       // Determine spacial displacement vector
+    R[j] = Particles[Neighbor_ID].X - X;                       // Determine reference displacement vector
 
     Mag_Rj = R[j].Magnitude();                     // Determine magniude of displacement vector with jth particle (R[j])
 
-    Grad_W[j] = 3*A*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*R[j];  // calculate Grad_W at jth particle
+    Grad_W[j] = 3*Shape_Function_Amp*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*R[j];  // calculate Grad_W at jth particle
 
-    A += Dyadic_Product(P_Neighbor.Vol*Grad_W[j], R[j]);   // Add in the Current Neighbor's contribution to the Shape tensor
+    A += Dyadic_Product(Particles[Neighbor_ID].Vol*Grad_W[j], R[j]);   // Add in the Current Neighbor's contribution to the Shape tensor
   } // for(int j = 0; j < N; j++) {
 
   // Now we can calculate A^(-1) from A.
@@ -195,14 +207,18 @@ Particle & Particle::operator=(const Particle & P_In) {
   Num_Neighbors = P_In.Num_Neighbors;
 
   Neighbor_List = new unsigned int[Num_Neighbors];
+  r = new Vector[Num_Neighbors];
+  R = new Vector[Num_Neighbors];
   Grad_W = new Vector[Num_Neighbors];
   Grad_W_Tilde = new Vector[Num_Neighbors];
 
-  for(int i = 0; i < Num_Neighbors; i++) {
-    Neighbor_List[i] = P_In.Neighbor_List[i];
-    Grad_W[i] = P_In.Grad_W[i];
-    Grad_W_Tilde[i] = P_In.Grad_W_Tilde[i];
-  } // for(int i = 0; i < Num_Neighbors; i++) {
+  for(int j = 0; j < Num_Neighbors; j++) {
+    Neighbor_List[j] = P_In.Neighbor_List[j];
+    r[j] = P_In.r[j];
+    R[j] = P_In.R[j];
+    Grad_W[j] = P_In.Grad_W[j];
+    Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
+  } // for(int j = 0; j < Num_Neighbors; j++) {
 
   return *this;
 }
@@ -283,7 +299,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   M = P_In.M;
 
   C = F.Transpose()*F;
-  I1 = C(1,1) + C(2,2) + C(3,3);
+  I1 = C(0,0) + C(1,1) + C(2,2);
   J = Determinant(F);
   M_Dyad_M = Dyadic_Product(M,M);
   I4 = Tensor_Dot_Product( C, M_Dyad_M );
@@ -315,7 +331,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
   Vector acceleration;                               // acceleration vector
 
-  int Neighbor_Id;                                   // ID of current neighbor particle (in paritlce's array)
+  int Neighbor_ID;                                   // ID of current neighbor particle (in paritlce's array)
   const int Num_Neighbors = P_In.Num_Neighbors;      // Number of neighbors of P_In.
   Particle P_Neighbor;                               // Current neighbor particle
 
@@ -338,11 +354,10 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   const double E = P_In.E;
   const double Mass = P_In.Mass;
 
-
   for(int j = 0; j < Num_Neighbors; j++) {
     // Update Neighbor
-    Neighbor_Id = P_In.Neighbor_List[j];
-    P_Neighbor = Particles[Neighbor_Id];
+    Neighbor_ID = P_In.Neighbor_List[j];
+    P_Neighbor = Particles[Neighbor_ID];
 
     // Calculate Internal force
     Vj = P_Neighbor.Vol;
@@ -363,7 +378,17 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
     Error_ji = (P_Neighbor.F)*(-1*Rj) + rj;                    // Rij = -Rji and rij = -rij
 
     delta_ij = Vector_Dot_Product(Error_ij, P_In.r[j])/(Mag_rj);
-    delta_ji = Vector_Dot_Product(Error_ji, P_Neighbor.r[j])/(Mag_rj);
+    /* Note: To find delta ji, we wan to take the dot product of Error_ji with
+    r_ji. However, there's no good way of finding r_ji since that would require
+    knowing the appropiate neighbor ID for particle j (Let particle i's jth
+    neighbor be particle j. Particle j will have particle i as a neighbor, but
+    it won't necessairally be j's 'jth' neighbor.
+
+    Therefore, we need to get r_ji from quantities available in the ith particle.
+    However, r_ji = r_i - r_j = -(r_j - r_i) = -r_ij = -r[j]. Thus, we can just
+    use the negative of P_In.r[j] for r_ji! */
+    delta_ji = Vector_Dot_Product(Error_ji, -1*P_In.r[j])/(Mag_rj);
+
 
     Force_Hg += -1*((alpha*E*Vi*Vj*P_In.Calc_W(Rj))/(2*Mag_Rj*Mag_Rj))*(delta_ij + delta_ji)*(rj/Mag_rj);
   } // for(int j = 0; j < Num_Neighbors; j++) {
@@ -383,22 +408,60 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   P_In.vel = P_In.vel + dt*acceleration;               // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)
 }
 
+bool Are_Neighbors(const Particle & P1, const Particle & P2) {
+  /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
+  particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
+  h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
+  neighbor of P2. */
+
+  return ( P1.h > Magnitude(P1.X - P2.X));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Printing functions
 
 void Particle::Print(void) const {
-  printf("Mass:   %d\n");
-  printf("Volume: %d\n");
-  printf("X:\n");
+  // Print basic particle parameters.
+  printf("Mass:   %f\n",Mass);
+  printf("Volume: %f\n",Vol);
+  printf("X:   ");
   X.Print();
-  printf("x:\n");
+  printf("x:   ");
   x.Print();
-  printf("vel:\n");
+  printf("vel: ");
   vel.Print();
-}
+
+  // If we have neighbors, print neighbor information
+  if(Has_Neighbors == true) {
+    int i;                // Loop index variable
+
+    // Print neighbor ID's
+    printf("Neighbor ID's  : {");
+    for(i = 0; i < Num_Neighbors-1; i++) {
+      printf("%5d, ",Neighbor_List[i]);
+    } // for(i = 0; i < Num_Neighbors-1; i++) {
+    printf("%5d } \n", Neighbor_List[Num_Neighbors-1]);
+
+    // Print Grad_W magnitudes
+    printf("%p\n",Grad_W);
+    printf("|Grad_W|       : {");
+    for(int i = 0; i < Num_Neighbors-1; i++) {
+      printf("%5.3f, ",Magnitude(Grad_W[i]));
+    } // for(int i = 0; i < Num_Neighbors-1; i++) {
+    printf("%5.3f } \n", Grad_W[Num_Neighbors-1]);
+
+    // Print Grad_W_Tilde magnitudes
+    printf("|Grad_W_Tilde| : {");
+    for(int i = 0; i < Num_Neighbors-1; i++) {
+      printf("%5.3f, ",Magnitude(Grad_W_Tilde[i]));
+    } // for(int i = 0; i < Num_Neighbors-1; i++) {
+    printf("%5.3f } \n", Grad_W_Tilde[Num_Neighbors-1]);
+
+  } // if(Has_Neighbors == true) {
+} // void Particle::Print(void) const {
 
 void Print(const Particle & P_In) {
   P_In.Print();
-}
+} // void Print(const Particle & P_In) {
 
 #endif

@@ -33,7 +33,7 @@ TODO / development history:
     DONE 6/11: Add Magnitude friend function
     DONE 6/11: Add Dot product friend function
     DONE 6/11: Add print friend function
-    - Replace printouts with actual errors
+    - Figure out how to allow access to friend functions (mag, print) outside of class scope
 
  - Tensor Class:
     DONE 6/5: Define (), [], = (to arrays) for tensors.
@@ -51,7 +51,7 @@ TODO / development history:
     DONE 6/11: Add Transpose, Determinant, Inverse friend functions
     DONE 6/11: Add Tensor dot product friend function
     DONE 6/11: Add print friend function
-    - Replace printouts with actual errors
+    - Figure out how to allow access to friend functions (Print, transpose, etc..) outside of class scope
 
   - Particle Class:
     DONE 6/11: Define all methods
@@ -76,13 +76,14 @@ TODO / development history:
         Neighbor_List arrays.
     DONE 6/12: Add in A when calculating W, Grad_W! (see eq (2)).
     DONE 6/12: Update position using acceleration (finish Update_Particle_Position function)
+    DONE 6/13: Write a particle test!
+    DONE 6/13: Come up with an algorithm to generate neighbor list
+    DONE 6/13: Try setting up particles.
+    DONE 6/13: add print method
+    - implement neighbor list generating function
     - Set density, calculate mass
     - Update penalty function (use eq 6.138 in H book)
     - Find way to set all static member variables in main function
-    - Add Particles array to main file
-    - Have main file set h (static member variable).
-    - Come up with an algorithm to generate neighbor list
-    - Try initializing particles.
 
   - Linked List class
     DONE 6/12: Write a two way linked list (will be used for neighbor search)

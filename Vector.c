@@ -11,7 +11,7 @@ the same way/give the same result (V[1]= V(1)).
 // Constructors, Destructor
 
 Vector::Vector(void) {
-  printf("Vector default constructor\n");
+  //printf("Vector default constructor\n");
 
   // Initialize components of vector to zero (no input supplied, assume zero)
   V[0] = 0;
@@ -20,7 +20,7 @@ Vector::Vector(void) {
 } // Vector::Vector(void) {
 
 Vector::Vector(const double v0, const double v1, const double v2) {
-  printf("Vector component constructor\n");
+  //printf("Vector component constructor\n");
 
   // Initialize components of vector using supplied components
   V[0] = v0;
@@ -29,7 +29,7 @@ Vector::Vector(const double v0, const double v1, const double v2) {
 } // Vector::Vector(const double v0, const double v1, const double v2) {
 
 Vector::Vector(const Vector & V_In) {
-  printf("Vector copy constructor\n");
+  //printf("Vector copy constructor\n");
 
   // Initialize components of vector using supplied components
   V[0] = V_In[0];
@@ -38,7 +38,7 @@ Vector::Vector(const Vector & V_In) {
 } // Vector::Vector(const Vector & V_In) {
 
 Vector::~Vector(void) {
-  printf("Vector destroyed\n");
+  //printf("Vector destroyed\n");
 }
 
 
@@ -239,11 +239,11 @@ double Magnitude(const Vector & V_In)  {
 } // double Magnitude(const Vector V_In)  {
 
 double Vector_Dot_Product(const Vector & V1, const Vector & V2) {
-  return (V1[0]*V2[0] + V1[1]*V2[1] + V2[2]*V2[2]);
+  return (V1[0]*V2[0] + V1[1]*V2[1] + V1[2]*V2[2]);
 }
 
 void Print(const Vector & V_In) {
   V_In.Print();
-} // void Print(const Vector & V_In) { 
+} // void Print(const Vector & V_In) {
 
 #endif

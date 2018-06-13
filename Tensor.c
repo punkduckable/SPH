@@ -12,7 +12,7 @@ element away from each other. Therefore, T[3*i+j] is the same as T(i,j). */
 // Constuctors and destructor
 
 Tensor::Tensor(void) {
-  printf("Tensor default constructor\n");
+  //printf("Tensor default constructor\n");
 
   // Default constructor: Set 9 components to zero.
   T[0] = T[1] = T[2] =
@@ -23,7 +23,7 @@ Tensor::Tensor(void) {
 Tensor::Tensor(double t11, double t12, double t13,
                double t21, double t22, double t23,
                double t31, double t32, double t33) {
-    printf("Tensor component constrctor\n");
+    //printf("Tensor component constrctor\n");
 
     // Set the 9 individual components of T using inputs.
     T[0] = t11; T[1] = t12; T[2] = t13; // Row 1
@@ -32,7 +32,7 @@ Tensor::Tensor(double t11, double t12, double t13,
 } // Tensor:Tensor(double t11,.... double t33) {
 
 Tensor::Tensor(const Tensor & T_In) {
-  printf("Tensor Copy contructor\n");
+  //printf("Tensor Copy contructor\n");
 
   for(int i = 1; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
@@ -42,7 +42,7 @@ Tensor::Tensor(const Tensor & T_In) {
 } // Tensor::Tensor(const Tensor & T_In) {
 
 Tensor::~Tensor(void) {
-  printf("Tensor destroyed\n");
+  //printf("Tensor destroyed\n");
 }
 
 
@@ -450,5 +450,5 @@ double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
 void Print(const Tensor & T_In) {
   T_In.Print();
 } // void Print(const Tensor & T_In) {
-  
+
 #endif

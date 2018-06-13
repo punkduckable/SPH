@@ -223,5 +223,121 @@ void List_Tests(void) {
   L1.Add_End(4);
   printf("Added {0,1,2,3,4} in strange order \n");
   L1.Print_Node_Info();
-}
+} // void List_Tests(void) {
+
+void Particle_Tests(void) {
+  // Loop indicies
+  int i,j,k;
+
+  // Declare an array of particles
+  const int Num_Particles = 27;
+
+  Particle Particles[Num_Particles];
+  double Mass, Vol;
+
+  // Initialize particle masses, volumes, etc..
+  for(i = 0; i < 3; i++) {
+    for(j = 0; j < 3; j++) {
+      for(k = 0; k < 3; k++) {
+        Vector X = {(double)i,(double)j,(double)k};
+        Vector x = X;
+        Mass = 1;
+        Vol = 1;
+
+        Vector vel;
+        if(i == 1 && j == 1 && k == 0)
+          vel = {0.,0.,5.};
+        else
+          vel = {0.,0.,0.};
+
+        Particles[9*i + 3*j + k].Set_Mass(Mass);
+        Particles[9*i + 3*j + k].Set_Vol(Vol);
+        Particles[9*i + 3*j + k].Set_X(X);
+        Particles[9*i + 3*j + k].Set_x(x);
+        Particles[9*i + 3*j + k].Set_vel(vel);
+      }
+    }
+  }
+
+  // Have each particle print out its data (so we can tell that stuff worked)
+  for(i = 0; i < 3; i++) {
+    for(j = 0; j < 3; j++) {
+      for(k = 0; k < 3; k++) {
+        printf("\nParticle %d:\n",9*i+3*j+k);
+        Particles[9*i + 3*j + k].Print();
+      }
+    }
+  }
+
+  // Now let's set each particle's neighbors!
+
+  List Particle_Neighbor_List;
+  unsigned int *Neighbor_IDs;
+  unsigned int Num_Neighbors;
+
+  // Cycle through the particles
+  for(i = 0; i < Num_Particles; i++) {
+
+    // For each particle, cycle through the potential neighbors (every particle)
+    for(j = 0; j < Num_Particles; j++) {
+      if(j == i)
+        continue;
+
+      // Test if jth particle is inside support radius of ith particle
+      if(Are_Neighbors(Particles[i], Particles[j])) {
+        Particle_Neighbor_List.Add_End(j);
+      } // if(Are_Neighbors(Particles[i], Particles[j])) {
+    } // for(int j = 0; j < Num_Particles; j++) {
+
+    // Now that we have the neighbor list, we can make it into an array
+    Num_Neighbors = Particle_Neighbor_List.Node_Count();
+    Neighbor_IDs = new unsigned int[Num_Neighbors];
+
+    for(j = 0; j < Num_Neighbors; j++) {
+      Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front();
+    } // for(j = 0; j < Num_Neighbors; j++) {
+
+    // Now sent the Neighbor list to the particle
+    Particles[i].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
+
+    // Now free Neighbor_IDs array for next particle!
+    delete [] Neighbor_IDs;
+  } // for(int i = 0; i < Num_Particles; i++) {
+
+  /* Run through another round of printing to test that neighbor paramaters
+  have been set up.*/
+  for(i = 0; i < 3; i++) {
+    for(j = 0; j < 3; j++) {
+      for(k = 0; k < 3; k++) {
+        printf("\nParticle %d:\n",9*i+3*j+k);
+        Particles[9*i + 3*j + k].Print();
+      }
+    }
+  }
+
+  /* Now perform a time step. */
+  double dt = .1;
+
+  for(i = 0; i < Num_Particles; i++) {
+    Update_P(Particles[i],Particles, dt);
+  }
+
+  for(i = 0; i < Num_Particles; i++) {
+    printf("Updated x for %d\n",i);
+    Update_Particle_Position(Particles[i],Particles,dt);
+    printf("Am back\n");
+  }
+
+  /* Run through a final round of printing (to make sure that the time step(s)
+  worked */
+  for(i = 0; i < 3; i++) {
+    for(j = 0; j < 3; j++) {
+      for(k = 0; k < 3; k++) {
+        printf("\nParticle %d:\n",9*i+3*j+k);
+        Particles[9*i + 3*j + k].Print();
+      }
+    }
+  }
+} // void Particle_Tests(void) {
+
 #endif

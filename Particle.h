@@ -5,7 +5,7 @@ class Particle {
   private:
     // Kernel paramaters
     static double h;                                    // Specifies connection radius (same for every particle)
-    static double A;                                    // Scaling constant for spikey kernel
+    static double Shape_Function_Amp;                   // Scaling constant for spikey kernel
 
     // Strain energy function parameters
     static double k1;                                   // Constant in strain energy function
@@ -23,7 +23,7 @@ class Particle {
     static double density;                              // Particle density
     static Vector M;                                    // Fiber orientation vector
 
-    // Particle dimensions (Mass, M, Vol, etc...)
+    // Particle dimensions (Mass, Vol, etc...)
     double Mass;                                        // Particle Mass
     double Vol;                                         // Particle volume
 
@@ -76,6 +76,8 @@ class Particle {
    friend void Update_Particle_Position(Particle & P_In,
                                         const Particle *Particles,
                                         const double dt);
+
+  friend bool Are_Neighbors(const Particle & P1, const Particle & P2);
 
   // Printing functions
   void Print(void) const;
