@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
 
 // Type definitions
 typedef signed char Byte;
@@ -28,7 +29,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize static members of particle class
 
-double Particle::rho = 1;
+double Particle::density = 1;
 double Particle::E = 1;
 double Particle::alpha = 50;                    // What was used in the paper
 Vector M_Set;
@@ -37,7 +38,7 @@ double Particle::mu = 1;
 double Particle::mu0 = 1;
 double Particle::k1 = 1;
 double Particle::k2 = 1;
-double h = 1;
+double h = 5;
 double Particle::h = h;
 double Particle::A = 15./(PI*h*h*h*h*h*h);
 
@@ -63,9 +64,46 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 
 int main() {
   // Run Vector, Tensor, List tests.
-  Vector_Tests();
-  Tensor_Tests();
-  List_Tests();
+  //Vector_Tests();
+  //Tensor_Tests();
+  //List_Tests();
 
+  // Declare an array of particles
+  Particle Particles[27];
+  Particle & Current_Particle = Particles[0];
+
+  // Initialize particle masses, volumes, etc..
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      for(int k = 0; k < 3; k++) {
+        Vector X = {(double)i,(double)j,(double)k};
+        Vector x = X;
+        double Mass = 1;
+        double Vol = 1;
+
+        Vector vel;
+        if(i == 1 && j == 1 && k == 0)
+          vel = {0.,0.,5.};
+        else
+          vel = {0.,0.,0.};
+
+        Current_Particle = Particles[9*i + 3*j + k];
+        Current_Particle.Set_Mass(Mass);
+        Current_Particle.Set_Vol(Vol);
+        Current_Particle.Set_X(X);
+        Current_Particle.Set_x(x);
+        Current_Particle.Set_vel(vel);
+        sleep(1);
+      }
+    }
+  }
+
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      for(int k = 0; k < 3; k++) {
+        Print(Particles[9*i + 3*j + k]);
+      }
+    }
+  }
   return 0;
 } // int main() {

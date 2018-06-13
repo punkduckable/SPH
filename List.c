@@ -35,9 +35,12 @@ List::~List(void) {
 
   Node * temp;
   while(Front != NULL) {
-    temp = Front;                    // Store address of current front node in temp
+    temp = Front;                    // Store current front in temp (so we can free it!)
     Front = Front->Next_Node;        // Move front forward one node
     delete temp;                     // free the old front node
+
+    Num_Nodes--;
+    printf("%d nodes remaining\n",Num_Nodes);
   } // while(Front != NULL) {
 } // List::~List(void) {
 

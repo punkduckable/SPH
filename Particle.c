@@ -7,7 +7,10 @@
 Particle::Particle(void) {
   Has_Neighbors = false;
   Num_Neighbors = 0;
-  V = 0;
+  Vol = 0;
+  Mass = 0;
+  /* Note: all tensor and vector members will be default initialized to zero
+  (because that's how those class's constructors work) */
 } // Particle::Particle(void) {
 
 Particle::Particle(const Particle & P_In) {
@@ -20,11 +23,16 @@ Particle::Particle(const Particle & P_In) {
   */
 
   // Element wise copy of NON-POINTER members
-  V = P_In.V;
+  Vol = P_In.Vol;
+  Mass = P_In.Mass;
+
   X = P_In.X;
   x = P_In.x;
+  vel = P_In.vel;
+
+  First_Iteration = P_In.First_Iteration;
   P = P_In.P;
-  Has_Neighbors = P_In.Has_Neighbors;
+  F = P_In.F;
 
   /* Deep copy of pointer members.
   To do this, we need to give the new particle the same content as the origional
@@ -37,6 +45,7 @@ Particle::Particle(const Particle & P_In) {
   should therefore be of length Num_Neighbors. Likewise, we need to copy the
   origional particle's array contents into the new particle's array conetents.
   We do this on an element by element basis. */
+  Has_Neighbors = P_In.Has_Neighbors;
   Num_Neighbors = P_In.Num_Neighbors;
 
   Neighbor_List = new unsigned int[Num_Neighbors];
@@ -66,7 +75,27 @@ Particle::~Particle(void) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Particle setup methods:
-// Set Neighbors, Set_V, Set_X.
+// Set Neighbors, Set_Mass, Set_Vol, Set_X, Set_x, Set_vel
+
+void Particle::Set_Mass(const double Mass_In) {
+  Mass = Mass_In;
+} // void Particle::Set_Mass(const double Mass_In) {
+
+void Particle::Set_Vol(const double Vol_In) {
+  Vol = Vol_In;
+} // void Particle::Set_Vol(const double Vol_In) {
+
+void Particle::Set_X(const Vector & X_In) {
+  X = X_In;
+} // void Particle::Set_X(cosnt Vector X_In) {
+
+void Particle::Set_x(const Vector & x_In) {
+  x = x_In;
+} // void Particle::Set_x(cosnt Vector x_In) {
+
+void Particle::Set_vel(const Vector & vel_In) {
+  vel = vel_In;
+} // void Particle::Set_vel(const Vector & vel_In) {
 
 void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_Id_List, const Particle *Particles) {
   /* First check if this particle already has neighbors. This function should
@@ -110,7 +139,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_
 
     Grad_W[j] = 3*A*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*R[j];  // calculate Grad_W at jth particle
 
-    A += Dyadic_Product(P_Neighbor.V*Grad_W[j], R[j]);   // Add in the Current Neighbor's contribution to the Shape tensor
+    A += Dyadic_Product(P_Neighbor.Vol*Grad_W[j], R[j]);   // Add in the Current Neighbor's contribution to the Shape tensor
   } // for(int j = 0; j < N; j++) {
 
   // Now we can calculate A^(-1) from A.
@@ -125,21 +154,6 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_
   Has_Neighbors = true;
 } // void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_Id_List, const Particle *Particles) {
 
-void Particle::Set_X(const Vector & X_In) {
-  X = X_In;
-} // void Particle::Set_X(cosnt Vector X_In) {
-
-void Particle::Set_V(const double V_In) {
-  V = V_In;
-} // void Set_V(const double V_In) {
-
-void Particle::Set_P(const Tensor & P_In) {
-  P = P_In;
-} // void Particle::Set_P(const Tensor & P_In) {
-
-void Particle::Set_F(const Tensor & F_In) {
-  F = F_In;
-} // void Particle::Set_P(const Tensor & P_In) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,11 +169,16 @@ Particle & Particle::operator=(const Particle & P_In) {
   */
 
   // Element wise copy of NON-POINTER members
-  V = P_In.V;
+  Vol = P_In.Vol;
+  Mass = P_In.Mass;
+
   X = P_In.X;
   x = P_In.x;
+  vel = P_In.vel;
+
+  First_Iteration = P_In.First_Iteration;
   P = P_In.P;
-  Has_Neighbors = P_In.Has_Neighbors;
+  F = P_In.F;
 
   /* Deep copy of pointer members.
   To do this, we need to give the new particle the same content as the origional
@@ -172,7 +191,9 @@ Particle & Particle::operator=(const Particle & P_In) {
   should therefore be of length Num_Neighbors. Likewise, we need to copy the
   origional particle's array contents into the new particle's array conetents.
   We do this on an element by element basis. */
+  Has_Neighbors = P_In.Has_Neighbors;
   Num_Neighbors = P_In.Num_Neighbors;
+
   Neighbor_List = new unsigned int[Num_Neighbors];
   Grad_W = new Vector[Num_Neighbors];
   Grad_W_Tilde = new Vector[Num_Neighbors];
@@ -234,7 +255,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
               0,0,1};                                 // Identity tensor
 
   double k1, k2, mu0, mu;
-  double I1, J, I4,;                                  // Used to calculate stress energy function
+  double I1, J, I4;                                   // Used to calculate stress energy function
 
   Tensor F_Prime;                                     // Approximates the time derivative of F
   Tensor L;                                           // Used in viscosity correction term
@@ -245,7 +266,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   to F by the jth neighbor is dj (Dyadic Product) Vj Grad_W(Rj, h) */
   for(int j = 0; j < P_In.Num_Neighbors; j++) {
     Neighbor_Id = P_In.Neighbor_List[j];
-    Vj = Particles[Neighbor_Id].V;
+    Vj = Particles[Neighbor_Id].Vol;
 
     F += Dyadic_Product(P_In.r[j], Vj*P_In.Grad_W_Tilde[j]);
   } // for(int j = 0; j < Num_Neighbors; j++) {
@@ -275,10 +296,10 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   Visc = J*mu*(L + L.Transpose())*Transpose(F.Inverse());
 
   // Set P
-  P_In.Set_P(F*S + Visc);
+  P_In.P = F*S + Visc;
 
   // Update Particle's F member
-  P_In.Set_F(F);
+  P_In.F = F;
 
 } // void Update_P(const Particle & P_In, const Particle * Particles, const double dt) {
 
@@ -294,13 +315,13 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
   Vector acceleration;                               // acceleration vector
 
-  int Neighbor_Id;                             // ID of current neighbor particle (in paritlce's array)
+  int Neighbor_Id;                                   // ID of current neighbor particle (in paritlce's array)
   const int Num_Neighbors = P_In.Num_Neighbors;      // Number of neighbors of P_In.
   Particle P_Neighbor;                               // Current neighbor particle
 
 
   double Vj;                                          // Volume of jth particle
-  const double Vi = P_In.V;                           // Volume of P_In;
+  const double Vi = P_In.Vol;                           // Volume of P_In;
   Tensor P_j;                                         // Piola-Kirchhoff stress tensor for jth particle
   const Tensor P_i = P_In.P;                          // Piola-Kirchhoff stress tensor for P_In
 
@@ -315,7 +336,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
   const double alpha = P_In.alpha;
   const double E = P_In.E;
-  const double M = P_In.M;
+  const double Mass = P_In.Mass;
 
 
   for(int j = 0; j < Num_Neighbors; j++) {
@@ -324,7 +345,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
     P_Neighbor = Particles[Neighbor_Id];
 
     // Calculate Internal force
-    Vj = P_Neighbor.V;
+    Vj = P_Neighbor.Vol;
 
     P_j = P_Neighbor.P;
 
@@ -348,18 +369,36 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   } // for(int j = 0; j < Num_Neighbors; j++) {
 
   // Compute acceleration
-  acceleration = (1./M)*(Force_Int + Force_Ext + Force_Hg);     // a(t_i+1): acceleration of particle at new position
+  acceleration = (1./Mass)*(Force_Int + Force_Ext + Force_Hg);     // a(t_i+1): acceleration of particle at new position
 
   /* Now update the velocity, position vectors. This is done using the
   'leap-frog' integration scheme. However, during the first step of this
   scheme, we need to use forward euler to get the initial velocity.*/
   if(P_In.First_Iteration == true) {
     P_In.First_Iteration = false;
-    P_In.v = P_In.v + (dt/2.)*acceleration;        // velocity starts at t_i+1/2
+    P_In.vel = P_In.vel + (dt/2.)*acceleration;        // velocity starts at t_i+1/2
   } //   if(P_In.First_Iteration == true) {
 
-  P_In.x = P_In.x + dt*P_In.v;                     // x_i+1 = x_i + dt*v_(i+1/2)
-  P_In.v = P_In.v + dt*acceleration;               // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)
+  P_In.x = P_In.x + dt*P_In.vel;                     // x_i+1 = x_i + dt*v_(i+1/2)
+  P_In.vel = P_In.vel + dt*acceleration;               // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing functions
+
+void Particle::Print(void) const {
+  printf("Mass:   %d\n");
+  printf("Volume: %d\n");
+  printf("X:\n");
+  X.Print();
+  printf("x:\n");
+  x.Print();
+  printf("vel:\n");
+  vel.Print();
+}
+
+void Print(const Particle & P_In) {
+  P_In.Print();
 }
 
 #endif
