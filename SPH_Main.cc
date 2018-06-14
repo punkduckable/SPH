@@ -63,10 +63,10 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 
 int main() {
   // Run Vector, Tensor, List tests.
-  //Vector_Tests();
-  //Tensor_Tests();
-  //List_Tests();
+  Vector_Tests();
+  Tensor_Tests();
+  List_Tests();
   Particle_Tests();
-  
+
   return 0;
 } // int main() {

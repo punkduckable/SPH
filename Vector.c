@@ -223,15 +223,7 @@ double Vector::Magnitude(void) const {
 // Friend methods
 
 Vector operator*(double c, const Vector & V_In) {
-  // Declare product vector
-  Vector Prod;
-
-  // Scale components of V_In by c
-  Prod[0] = V_In[0]*c;
-  Prod[1] = V_In[1]*c;
-  Prod[2] = V_In[2]*c;
-
-  return Prod;
+  return V_In*c;
 } //Vector operator*(double c, const Vector & V_In) {
 
 double Magnitude(const Vector & V_In)  {

@@ -92,31 +92,36 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
   Tensor Prod;
 
   /* Calcualate Tensor Tensor product using nested for loops. Store each element
-   Of the product in the Tensor 'Prod'.
+  Of the product in the Tensor 'Prod'.
 
-   Let A and B be tensors. The (i,j) element of AB is the dot product of the
-   ith row of A and the jth column of B. This nromally means that we'd need
-   three nested loops to calculate a Tensor Tensor product; one for the rows,
-   one for the columns, and one for the the dot product for each element.
-   However, since the Tensors we are working with will always be of dimension
-   3x3, the dot product has a predictable form. Therefore, rather than include
-   a third nested loop (which would add more overhead), we write out the 3 terms
-   of the dot product explicitly.
+  Let A and B be tensors. The (i,j) element of AB is the dot product of the
+  ith row of A and the jth column of B. This leads to three nested loops. We
+  will call the loop that changes the rows the 'i loop', the loop that changes
+  the columns the 'j loop' and the loop that performs the dot product the 'k
+  loop'
 
-   It should be noted that this small change will significantly reduce overhead.
-   The reason is that the 3rd nested loop would run 9 times (once for each
-   element) this means that the 3 iterations of the 3rd nested loop would run
-   9 times each, leading to a total of 27 equivalent iterations. By contrast,
-   the j loop only runs 3 times leading to 9 equivalent iterations and the i
-   loop only runs once for 3 equivelent iterations. Therefore, the innermost
-   loop is by far the most expensive. Removing it should have an appreciable
-   impact on performance. */
-  for(int i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-        Prod(i,j) = T[3*i + 0]*T_In(0,j) +
-                    T[3*i + 1]*T_In(1,j) +
-                    T[3*i + 2]*T_In(2,j);
-    } // for(int j = 0; j < 3; j++) {
+  The order in which we perform these loops does not change the resulting tensor
+  product. However, the order will completely change performance. I have stored
+  my tensors in Row-Major order  ( A(i,j), A(i,j+1) occur in adjacnet memory
+  locations).
+
+  The equation for the (i,j) element of the product is given by,
+    AB(i,j) = Sum( A(i,p)*B(p,j) )
+  To optimize cache usage, we want the loops that change rows to be on the
+  outside. Botice that for both AB and A, the i index changes rows. We want this
+  to be the outer most loop. The p index changes columns on the B matrix, so we
+  want this loop to come next. Finally, the j index never changes the rows, so
+  this index should go on the inside.
+
+  It should also be noted that the inner most loop will run a considerable
+  amount of overhead. However, I'm assuming that the compiler will unroll this
+  loop for me. Therefore, I have kept it to make the code more readible. */
+  for(int i = 0; i < 3; i++) {    // Row loops
+    for(int p = 0; p < 3; p++) {    // Dot prod loops
+      for(int j = 0; j < 3; j++) {    // Col loop
+        Prod(i,j) += T[3*i + p]*T_In(p,j);
+      } // for(int j = 0; j < 3; j++) {
+    } // for(int p = 0; p < 3; p++) {
   } // for(int i = 0; i < 3; i++) {
 
   return Prod;
@@ -214,31 +219,36 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
   Tensor Prod;
 
   /* Calcualate Tensor Tensor product using nested for loops. Store each element
-   Of the product in the Tensor 'Prod'.
+  Of the product in the Tensor 'Prod'.
 
-   Let A and B be tensors. The (i,j) element of AB is the dot product of the
-   ith row of A and the jth column of B. This nromally means that we'd need
-   three nested loops to calculate a Tensor Tensor product; one for the rows,
-   one for the columns, and one for the the dot product for each element.
-   However, since the Tensors we are working with will always be of dimension
-   3x3, the dot product has a predictable form. Therefore, rather than include
-   a third nested loop (which would add more overhead), we write out the 3 terms
-   of the dot product explicitly.
+  Let A and B be tensors. The (i,j) element of AB is the dot product of the
+  ith row of A and the jth column of B. This leads to three nested loops. We
+  will call the loop that changes the rows the 'i loop', the loop that changes
+  the columns the 'j loop' and the loop that performs the dot product the 'k
+  loop'
 
-   It should be noted that this small change will significantly reduce overhead.
-   The reason is that the 3rd nested loop would run 9 times (once for each
-   element) this means that the 3 iterations of the 3rd nested loop would run
-   9 times each, leading to a total of 27 equivalent iterations. By contrast,
-   the j loop only runs 3 times leading to 9 equivalent iterations and the i
-   loop only runs once for 3 equivelent iterations. Therefore, the innermost
-   loop is by far the most expensive. Removing it should have an appreciable
-   impact on performance. */
-  for(int i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      Prod(i,j) = T[3*i + 0]*T_In(0,j) +
-                  T[3*i + 1]*T_In(1,j) +
-                  T[3*i + 2]*T_In(2,j);
-    } // for(int j = 0; j < 3; j++) {
+  The order in which we perform these loops does not change the resulting tensor
+  product. However, the order will completely change performance. I have stored
+  my tensors in Row-Major order  ( A(i,j), A(i,j+1) occur in adjacnet memory
+  locations).
+
+  The equation for the (i,j) element of the product is given by,
+    AB(i,j) = Sum( A(i,p)*B(p,j) )
+  To optimize cache usage, we want the loops that change rows to be on the
+  outside. Botice that for both AB and A, the i index changes rows. We want this
+  to be the outer most loop. The p index changes columns on the B matrix, so we
+  want this loop to come next. Finally, the j index never changes the rows, so
+  this index should go on the inside.
+
+  It should also be noted that the inner most loop will run a considerable
+  amount of overhead. However, I'm assuming that the compiler will unroll this
+  loop for me. Therefore, I have kept it to make the code more readible. */
+  for(int i = 0; i < 3; i++) {    // Row loops
+    for(int p = 0; p < 3; p++) {    // Dot prod loops
+      for(int j = 0; j < 3; j++) {    // Col loop
+        Prod(i,j) += T[3*i + p]*T_In(p,j);
+      } // for(int j = 0; j < 3; j++) {
+    } // for(int p = 0; p < 3; p++) {
   } // for(int i = 0; i < 3; i++) {
 
   // Copy Prod to T (in this Tensor)
@@ -409,17 +419,7 @@ void Tensor::Print(void) const {
 // Friend functions
 
 Tensor operator*(const double c, const Tensor & T_In) {
-  // Used to store the resulting product.
-  Tensor T_Scaled;
-
-  for(int i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      T_Scaled(i,j) = T_In(i,j)*c;
-    } // for(int i = 0; i < 3; i++) {
-  } // for(int j = 0; j < 3; j++) {
-
-  // Return the scaled tensor.
-  return T_Scaled;
+  return T_In*c;
 } // Tensor operator*(const double c, const Tensor & T_In) {
 
 Tensor Inverse(const Tensor & T_In) {

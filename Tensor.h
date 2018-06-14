@@ -57,4 +57,11 @@ class Tensor {
     friend void Print(const Tensor & T_In);
 }; // class Tensor {
 
+// Tensor functions that don't belong in the tensor class
+Tensor Inverse(const Tensor & T_In);
+double Determinant(const Tensor & T_In);
+Tensor Transpose(const Tensor & T_In);
+double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2);
+void Print(const Tensor & T_In);
+
 #endif

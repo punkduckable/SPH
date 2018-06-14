@@ -46,12 +46,14 @@ class Vector {
 
     // Friends
     friend Vector operator*(double c, const Vector & V_In);  // Scalar multiplication (defines c*V)
-    friend double Magnitude(const Vector & V_In);
-    friend double Vector_Dot_Product(const Vector & V1, const Vector & V2);
 
     // Printing functions
     void Print(void) const;                          // Print vector components
-    friend void Print(const Vector & V_In);
 }; // class Vector {
+
+// Vector functions that don't belong in the vector class
+double Magnitue(const Vector & V_In);
+double Vector_Dot_Product(const Vector & V1, const Vector & V2);
+void Print(const Vector & V_In);
 
 #endif
