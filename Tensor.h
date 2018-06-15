@@ -13,9 +13,14 @@ array, V denotes a Vector object, c denotes a scalar. */
 class Tensor {
   private:
     double T[9];                                  // Holds the 9 components of the Tensor
-    
-    double & operator[](const uByte N);           // Access component of the tensor array for writing (faster than (row,col))
-    double operator[](const uByte N) const;       // Access component of the tensor array for reading
+
+    double & operator[](const uByte N) {          // Access component of the tensor array for writing
+      return T[N];
+    }
+
+    double operator[](const uByte N) const {      // Access component of the tensor array for reading
+      return T[N];
+    }
 
   public:
     Tensor(void);                                 // Default constructor

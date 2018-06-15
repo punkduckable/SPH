@@ -179,7 +179,7 @@ void Tensor_Tests(void) {
 
   // Test () component access
   double t = T1(1,1);
-  printf("t = T(1,1)   : %f\n",t);
+  printf("t = T1(1,1)  : %f\n",t);
 
   // Test inverse method
   T2 = {1,4, 9, 29, 4, 67, 10, 4, 0};
@@ -320,20 +320,22 @@ void Particle_Tests(void) {
 } // void Particle_Tests(void) {
 
 void Timing_Tests(void) {
-  //////////////////////////////////////////////////////////////////////////////
-  // Tensor-Tensor product timing test
-
-  /* Test tensor-tensor multiplication T3 = T1*T2 */
   // Set up timing variables. Note: All times will be reported in ms
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   int Ms_Elapsed;
+  clock_t timer;
 
-  // Multiply two tensors.... 1,000,000 times
-  Tensor T1 = {1,2,3,4,5,6,7,8,9};
-  Tensor T2 = {9,8,7,6,5,4,3,2,1};
-  Tensor T3;
+  Tensor T1, T2, T3;
 
-  clock_t timer = clock();
+  //////////////////////////////////////////////////////////////////////////////
+  /* Tensor-Tensor product timing test */
+  // Test tensor-tensor multiplication T3 = T1*T2
+
+  // Assign some random values to T1, T2
+  T1 = {1,2,3,4,5,6,7,8,9};
+  T2 = {9,8,7,6,5,4,3,2,1};
+
+  timer = clock();
   for(int i = 0; i < 10000000; i++) {
     T3 = T1*T2;
   }
@@ -342,8 +344,9 @@ void Timing_Tests(void) {
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
   printf("It took %d ms to compute 10,000,000 Tensor-Tensor products\n",Ms_Elapsed);
 
-  /* Test compound tensor-tensor multiplication */
+  // Test compound tensor-tensor multiplication
 
+  // Make T1 the identity (so that compoud multiplication doesn't blow up the matrix's components)
   T1 = {1,0,0,0,1,0,0,0,1};
 
   timer = clock();
@@ -354,6 +357,19 @@ void Timing_Tests(void) {
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
   printf("It took %d ms to compute 10,000,000 compound Tensor-Tensor products\n",Ms_Elapsed);
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  /* Tensor Inverse timing */
+
+  T1 = {0,39,29,59,58,2,9,8,3};           // Just some random tensor... will use to find inverse
+  timer = clock();
+  for(int i = 0; i < 10000000; i++) {
+    T3 = T1.Inverse();
+  }
+  timer = clock() - timer;
+
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to compute 10,000,000 Tensor inverses\n",Ms_Elapsed);
 } // void Timing_Tests(void) {
 
 #endif
