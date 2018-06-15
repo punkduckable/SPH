@@ -260,6 +260,7 @@ void Particle_Tests(void) {
   }
 
   // Have each particle print out its data (so we can tell that stuff worked)
+  /*
   for(i = 0; i < 3; i++) {
     for(j = 0; j < 3; j++) {
       for(k = 0; k < 3; k++) {
@@ -268,44 +269,14 @@ void Particle_Tests(void) {
       }
     }
   }
+  */
 
   // Now let's set each particle's neighbors!
-
-  List Particle_Neighbor_List;
-  unsigned int *Neighbor_IDs;
-  unsigned int Num_Neighbors;
-
-  // Cycle through the particles
-  for(i = 0; i < Num_Particles; i++) {
-
-    // For each particle, cycle through the potential neighbors (every particle)
-    for(j = 0; j < Num_Particles; j++) {
-      if(j == i)
-        continue;
-
-      // Test if jth particle is inside support radius of ith particle
-      if(Are_Neighbors(Particles[i], Particles[j])) {
-        Particle_Neighbor_List.Add_End(j);
-      } // if(Are_Neighbors(Particles[i], Particles[j])) {
-    } // for(int j = 0; j < Num_Particles; j++) {
-
-    // Now that we have the neighbor list, we can make it into an array
-    Num_Neighbors = Particle_Neighbor_List.Node_Count();
-    Neighbor_IDs = new unsigned int[Num_Neighbors];
-
-    for(j = 0; j < Num_Neighbors; j++) {
-      Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front();
-    } // for(j = 0; j < Num_Neighbors; j++) {
-
-    // Now sent the Neighbor list to the particle
-    Particles[i].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
-
-    // Now free Neighbor_IDs array for next particle!
-    delete [] Neighbor_IDs;
-  } // for(int i = 0; i < Num_Particles; i++) {
+  Generate_Neighbor_Lists(Num_Particles, Particles);
 
   /* Run through another round of printing to test that neighbor paramaters
   have been set up.*/
+  /*
   for(i = 0; i < 3; i++) {
     for(j = 0; j < 3; j++) {
       for(k = 0; k < 3; k++) {
@@ -314,6 +285,7 @@ void Particle_Tests(void) {
       }
     }
   }
+  */
 
   /* Now perform a time step. */
   double dt = .1;
@@ -323,9 +295,7 @@ void Particle_Tests(void) {
   }
 
   for(i = 0; i < Num_Particles; i++) {
-    printf("Updated x for %d\n",i);
     Update_Particle_Position(Particles[i],Particles,dt);
-    printf("Am back\n");
   }
 
   /* Run through a final round of printing (to make sure that the time step(s)
@@ -339,5 +309,25 @@ void Particle_Tests(void) {
     }
   }
 } // void Particle_Tests(void) {
+
+void Timing_Tests(void) {
+  // Set up timing variables. Note: All times will be reported in ms
+  #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
+  clock_t timer = clock();
+  int Ms_Elapsed;
+
+  // Multiply two tensors.... 1,000,000 times
+  Tensor T1 = {1,2,3,4,5,6,7,8,9};
+  Tensor T2 = {9,8,7,6,5,4,3,2,1};
+  Tensor T3;
+
+  for(int i = 0; i < 10000000; i++) {
+    T3 = T1*T2;
+  }
+
+  timer = clock() - timer;
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to perform 10,000,000 Tensor-Tensor multiplications",Ms_Elapsed);
+} // void Timing_Tests(void) {
 
 #endif

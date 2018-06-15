@@ -53,17 +53,33 @@ Tensor Tensor::operator+(const Tensor & T_In) const {
   // Declare some Tensor to store the sum
   Tensor Sum;
 
-  /* Compute the 9 elements of the sum.
-     I choose to use a for loop here, despite the extra overhead, because
-     writing out 9 individual lines was too hard to maintain (lots of room for
-     typos, hard to change how the function operates). I am hopeful that the
-     compiler will unroll the loop for me.
-  */
+  /* Here we comput (*this) + T_In. This is done component-by-componnet.
+  Normally, such calculations would require a double nested loop (one for rows)
+  and one for columns). However, loops have overhead, and we want this code to
+  run fast. Thus, I choose to write out the 9 loop iterations as statements
+  rather than in a double loop.
+
+  I included comments that specify which loop iteration a given statement would
+  correspond to (with i as the row index, j as the column index  */
+  Sum(0,0) = T[3*0 + 0] + T_In(0,0);             // i = 0, j = 0
+  Sum(0,1) = T[3*0 + 1] + T_In(0,1);             // i = 0, j = 1
+  Sum(0,2) = T[3*0 + 2] + T_In(0,2);             // i = 0, j = 2
+
+  Sum(1,0) = T[3*1 + 0] + T_In(1,0);             // i = 1, j = 0
+  Sum(1,1) = T[3*1 + 1] + T_In(1,1);             // i = 1, j = 1
+  Sum(1,2) = T[3*1 + 2] + T_In(1,2);             // i = 1, j = 2
+
+  Sum(2,0) = T[3*2 + 0] + T_In(2,0);             // i = 2, j = 0
+  Sum(2,1) = T[3*2 + 1] + T_In(2,1);             // i = 2, j = 1
+  Sum(2,2) = T[3*2 + 2] + T_In(2,2);             // i = 2, j = 2
+
+  /* Old, double nested loop.
   for(int i = 0; i < 3; i++){
     for(int j = 0; j < 3; j++) {
       Sum(i,j) = T[3*i + j] + T_In(i,j);
     }
   } // for(int i = 0; i < 9; i++){
+  */
 
   return Sum;
 } // Tensor Tensor::operator+(const Tensor & T_In) const {
@@ -72,17 +88,34 @@ Tensor Tensor::operator-(const Tensor & T_In) const {
   // Declare some Tensor to store the difference
   Tensor Diff;
 
-  /* Compute the 9 elements of the sum.
-     I choose to use a for loop here, despite the extra overhead, because
-     writing out 9 individual lines was too hard to maintain (lots of room for
-     typos, hard to change how the function operates). I am hopeful that the
-     compiler will unroll the loop for me.
-  */
+  /* Here we comput (*this) - T_In. This is done component-by-component
+  Normally, such calculations would require a double nested loop (one for rows)
+  and one for columns). However, loops have overhead, and we want this code to
+  run fast. Thus, I choose to write out the 9 loop iterations as statements
+  rather than in a double loop.
+
+  I included comments that specify which loop iteration a given statement would
+  correspond to (with i as the row index, j as the column index  */
+
+  Diff(0,0) = T[3*0 + 0] - T_In(0,0);             // i = 0, j = 0
+  Diff(0,1) = T[3*0 + 1] - T_In(0,1);             // i = 0, j = 1
+  Diff(0,2) = T[3*0 + 2] - T_In(0,2);             // i = 0, j = 2
+
+  Diff(1,0) = T[3*1 + 0] - T_In(1,0);             // i = 1, j = 0
+  Diff(1,1) = T[3*1 + 1] - T_In(1,1);             // i = 1, j = 1
+  Diff(1,2) = T[3*1 + 2] - T_In(1,2);             // i = 1, j = 2
+
+  Diff(2,0) = T[3*2 + 0] - T_In(2,0);             // i = 2, j = 0
+  Diff(2,1) = T[3*2 + 1] - T_In(2,1);             // i = 2, j = 1
+  Diff(2,2) = T[3*2 + 2] - T_In(2,2);             // i = 2, j = 2
+
+  /* Old double nested loop
   for(int i = 0; i < 3; i++){
     for(int j = 0; j < 3; j++) {
       Diff(i,j) = T[3*i + j] - T_In(i,j);
     }
   } // for(int i = 0; i < 9; i++){
+  */
 
   return Diff;
 } // Tensor Tensor::operator-(const Tensor & T_In) const {
@@ -95,35 +128,86 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
   Of the product in the Tensor 'Prod'.
 
   Let A and B be tensors. The (i,j) element of AB is the dot product of the
-  ith row of A and the jth column of B. This leads to three nested loops. We
-  will call the loop that changes the rows the 'i loop', the loop that changes
-  the columns the 'j loop' and the loop that performs the dot product the 'k
-  loop'
+  ith row of A and the jth column of B. In other words:
+                            AB(i,j) = Sum(p = 0 to p = 2) A(i,p)*B(p,j)
+  Naturally, this would lead to three nested loops.
+
+  We will call the loop that changes the rows the 'i loop', the loop that
+  changes the columns the 'j loop' and the loop that performs the dot product
+  the 'k loop'
 
   The order in which we perform these loops does not change the resulting tensor
   product. However, the order will completely change performance. I have stored
   my tensors in Row-Major order  ( A(i,j), A(i,j+1) occur in adjacnet memory
   locations).
 
-  The equation for the (i,j) element of the product is given by,
-    AB(i,j) = Sum( A(i,p)*B(p,j) )
   To optimize cache usage, we want the loops that change rows to be on the
-  outside. Botice that for both AB and A, the i index changes rows. We want this
+  outside. Notice that for both AB and A, the i index changes rows. We want this
   to be the outer most loop. The p index changes columns on the B matrix, so we
   want this loop to come next. Finally, the j index never changes the rows, so
   this index should go on the inside.
 
-  It should also be noted that the inner most loop will run a considerable
-  amount of overhead. However, I'm assuming that the compiler will unroll this
-  loop for me. Therefore, I have kept it to make the code more readible. */
+  Thus, to improve performance, I choose to order my loops in this way.
+
+  However, that's not the end of the story; loops cary overhead. We want
+  exceptional performnace, this means minimizing unecessairry overhead.
+  I found that 'unrolling' my loops - literally writing out the 27 loop
+  interations in the order that they would occur in (so that we still optimize
+  cache line usage) can improve perofmrnce by 20%+. This makes the code a little
+  difficult to understand, however. To make the code more readible, I have
+  included a comment on each statement that explains which loop iteration that
+  statement would have corresponded to (which value of the i,j,p indicies) */
+
+  /* i = 0 (1st row of C) */
+  Prod(0,0) += T[3*0 + 0]*T_In(0,0);             // i = 0, j = 0, p = 0
+  Prod(0,1) += T[3*0 + 0]*T_In(0,1);             // i = 0, j = 1, p = 0
+  Prod(0,2) += T[3*0 + 0]*T_In(0,2);             // i = 0, j = 2, p = 0
+
+  Prod(0,0) += T[3*0 + 1]*T_In(1,0);             // i = 0, j = 0, p = 1
+  Prod(0,1) += T[3*0 + 1]*T_In(1,1);             // i = 0, j = 1, p = 1
+  Prod(0,2) += T[3*0 + 1]*T_In(1,2);             // i = 0, j = 2, p = 1
+
+  Prod(0,0) += T[3*0 + 2]*T_In(2,0);             // i = 0, j = 0, p = 2
+  Prod(0,1) += T[3*0 + 2]*T_In(2,1);             // i = 0, j = 1, p = 2
+  Prod(0,2) += T[3*0 + 2]*T_In(2,2);             // i = 0, j = 2, p = 2
+
+
+  /* i = 1 (2nd row of C) */
+  Prod(1,0) += T[3*1 + 0]*T_In(0,0);             // i = 1, j = 0, p = 0
+  Prod(1,1) += T[3*1 + 0]*T_In(0,1);             // i = 1, j = 1, p = 0
+  Prod(1,2) += T[3*1 + 0]*T_In(0,2);             // i = 1, j = 2, p = 0
+
+  Prod(1,0) += T[3*1 + 1]*T_In(1,0);             // i = 1, j = 0, p = 1
+  Prod(1,1) += T[3*1 + 1]*T_In(1,1);             // i = 1, j = 1, p = 1
+  Prod(1,2) += T[3*1 + 1]*T_In(1,2);             // i = 1, j = 2, p = 1
+
+  Prod(1,0) += T[3*1 + 2]*T_In(2,0);             // i = 1, j = 0, p = 2
+  Prod(1,1) += T[3*1 + 2]*T_In(2,1);             // i = 1, j = 1, p = 2
+  Prod(1,2) += T[3*1 + 2]*T_In(2,2);             // i = 1, j = 2, p = 2
+
+
+  /* i = 2 (3rd row) */
+  Prod(2,0) += T[3*2 + 0]*T_In(0,0);             // i = 2, j = 0, p = 0
+  Prod(2,1) += T[3*2 + 0]*T_In(0,1);             // i = 2, j = 1, p = 0
+  Prod(2,2) += T[3*2 + 0]*T_In(0,2);             // i = 2, j = 2, p = 0
+
+  Prod(2,0) += T[3*2 + 1]*T_In(1,0);             // i = 2, j = 0, p = 1
+  Prod(2,1) += T[3*2 + 1]*T_In(1,1);             // i = 2, j = 1, p = 1
+  Prod(2,2) += T[3*2 + 1]*T_In(1,2);             // i = 2, j = 2, p = 1
+
+  Prod(2,0) += T[3*2 + 2]*T_In(2,0);             // i = 2, j = 0, p = 2
+  Prod(2,1) += T[3*2 + 2]*T_In(2,1);             // i = 2, j = 1, p = 2
+  Prod(2,2) += T[3*2 + 2]*T_In(2,2);             // i = 2, j = 2, p = 2
+
+  /* Old, loop based Tensor-Tensor product
   for(int i = 0; i < 3; i++) {    // Row loops
     for(int p = 0; p < 3; p++) {    // Dot prod loops
-      for(int j = 0; j < 3; j++) {    // Col loop
-        Prod(i,j) += T[3*i + p]*T_In(p,j);
-      } // for(int j = 0; j < 3; j++) {
+      Prod(i,0) += T[3*i + j]*T_In(j,0);
+      Prod(i,1) += T[3*i + j]*T_In(j,1);
+      Prod(i,2) += T[3*i + j]*T_In(j,2);
     } // for(int p = 0; p < 3; p++) {
   } // for(int i = 0; i < 3; i++) {
-
+*/
   return Prod;
 } // Tensor Tensor::operator*(const Tensor & T_In) const{
 
@@ -131,12 +215,31 @@ Vector Tensor::operator*(const Vector & V_In) const {
   // Declare product vector (matrix vector product is a vector)
   Vector Prod;
 
-  // Calculate components of vector tensor product. Store results Prod.
+  /* Here I compute the product Prod = (*this) * V_In. Normally, this would
+  require a loop to go through the components of Prod (and possible a second
+  to compute what goes in each componnet). However, Loops have overhead. To
+  eliminate this overhead, I have written what would have been the loop
+  iterations as a series of statements.*/
+
+  Prod[0] =   T[3*0 + 0]*V_In[0] +
+              T[3*0 + 1]*V_In[1] +
+              T[3*0 + 2]*V_In[2];
+
+  Prod[1] =   T[3*1 + 0]*V_In[0] +
+              T[3*1 + 1]*V_In[1] +
+              T[3*1 + 2]*V_In[2];
+
+  Prod[2] =   T[3*2 + 0]*V_In[0] +
+              T[3*2 + 1]*V_In[1] +
+              T[3*2 + 2]*V_In[2];
+
+  /* Old loop
   for(int i = 0; i < 3; i++) {
     Prod[i] =   T[3*i + 0]*V_In[0] +
                 T[3*i + 1]*V_In[1] +
                 T[3*i + 2]*V_In[2];
   } //   for(int i = 0; i < 3; i++) {
+  */
 
   return Prod;
 } // Vector Tensor::operator*(const Vector & V_In) const {
@@ -145,12 +248,33 @@ Tensor Tensor::operator*(const double c) const {
   // We will store results in Prod
   Tensor Prod;
 
-  // Scale T by c, store in Prod.
+  /* Here we return the product (*this)*c. Normally, doing this would require
+  cycling through the row's and col's of T in a double nested loop. However,
+  loops have overhead. To eliminate this overhead, I wrote what would have been
+  the 9 iterations of this double loop as 9 statemenets.
+
+  To make this a little  more readible, I have included a comment with each
+  statement that identifies which loop iteration that statement would have
+  corresponded to (with i as the row index and j as the column index) */
+  Prod(0,0) = T[3*0 + 0]*c;
+  Prod(0,1) = T[3*0 + 1]*c;
+  Prod(0,2) = T[3*0 + 2]*c;
+
+  Prod(1,0) = T[3*0 + 0]*c;
+  Prod(1,1) = T[3*0 + 1]*c;
+  Prod(1,2) = T[3*0 + 2]*c;
+
+  Prod(2,0) = T[3*2 + 0]*c;
+  Prod(2,1) = T[3*2 + 1]*c;
+  Prod(2,2) = T[3*2 + 2]*c;
+
+  /* Old double nested loop
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       Prod(i,j) = T[3*i + j]*c;
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
+  */
 
   return Prod;
 } // Tensor Tensor::operator*(const double c) const {
@@ -162,12 +286,33 @@ Tensor Tensor::operator/(const double c) const {
   if(c == 0)
     printf("You tried dividing a tensor by zero!!!\n");
 
-  // Divide the components of T by c, store the results in Quotient.
+    /* Here we return the quotient (*this)/c. Normally, doing this would require
+    cycling through the row's and col's of T in a double nested loop. However,
+    loops have overhead. To eliminate this overhead, I wrote what would have been
+    the 9 iterations of this double loop as 9 statemenets.
+
+    To make this a little  more readible, I have included a comment with each
+    statement that identifies which loop iteration that statement would have
+    corresponded to (with i as the row index and j as the column index) */
+    Quotient(0,0) = T[3*0 + 0]/c;
+    Quotient(0,1) = T[3*0 + 1]/c;
+    Quotient(0,2) = T[3*0 + 2]/c;
+
+    Quotient(1,0) = T[3*0 + 0]/c;
+    Quotient(1,1) = T[3*0 + 1]/c;
+    Quotient(1,2) = T[3*0 + 2]/c;
+
+    Quotient(2,0) = T[3*2 + 0]/c;
+    Quotient(2,1) = T[3*2 + 1]/c;
+    Quotient(2,2) = T[3*2 + 2]/c;
+
+  /* Old double nested loop
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
         Quotient(i,j) = T[3*i + j]/c;
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
+  */
 
   return Quotient;
 } //Tensor Tensor::operator/(const double c) const {
@@ -211,56 +356,122 @@ Tensor & Tensor::operator*=(const double c) {
 } // Tensor & Tensor::operator*=(const double c) {
 
 Tensor & Tensor::operator*=(const Tensor & T_In) {
-  /* When we multiply two tensors together, we do so element by element. The
-  issue with this is that once an element has been updated, there will be no
-  way to access the origional value. We will need that origional value to
-  calculate other components of the product. Therefore, we need a new tensor to
-  temporarly hold onto the product. */
+  // Declare product tensor
   Tensor Prod;
 
   /* Calcualate Tensor Tensor product using nested for loops. Store each element
   Of the product in the Tensor 'Prod'.
 
   Let A and B be tensors. The (i,j) element of AB is the dot product of the
-  ith row of A and the jth column of B. This leads to three nested loops. We
-  will call the loop that changes the rows the 'i loop', the loop that changes
-  the columns the 'j loop' and the loop that performs the dot product the 'k
-  loop'
+  ith row of A and the jth column of B. In other words:
+                            AB(i,j) = Sum(p = 0 to p = 2) A(i,p)*B(p,j)
+  Naturally, this would lead to three nested loops.
+
+  We will call the loop that changes the rows the 'i loop', the loop that
+  changes the columns the 'j loop' and the loop that performs the dot product
+  the 'k loop'
 
   The order in which we perform these loops does not change the resulting tensor
   product. However, the order will completely change performance. I have stored
   my tensors in Row-Major order  ( A(i,j), A(i,j+1) occur in adjacnet memory
   locations).
 
-  The equation for the (i,j) element of the product is given by,
-    AB(i,j) = Sum( A(i,p)*B(p,j) )
   To optimize cache usage, we want the loops that change rows to be on the
-  outside. Botice that for both AB and A, the i index changes rows. We want this
+  outside. Notice that for both AB and A, the i index changes rows. We want this
   to be the outer most loop. The p index changes columns on the B matrix, so we
   want this loop to come next. Finally, the j index never changes the rows, so
   this index should go on the inside.
 
-  It should also be noted that the inner most loop will run a considerable
-  amount of overhead. However, I'm assuming that the compiler will unroll this
-  loop for me. Therefore, I have kept it to make the code more readible. */
-  for(int i = 0; i < 3; i++) {    // Row loops
-    for(int p = 0; p < 3; p++) {    // Dot prod loops
+  Thus, to improve performance, I choose to order my loops in this way.
+
+  However, that's not the end of the story; loops cary overhead. We want
+  exceptional performnace, this means minimizing unecessairry overhead.
+  I found that 'unrolling' my loops - literally writing out the 27 loop
+  interations in the order that they would occur in (so that we still optimize
+  cache line usage) can improve perofmrnce by 20%+. This makes the code a little
+  difficult to understand, however. To make the code more readible, I have
+  included a comment on each statement that explains which loop iteration that
+  statement would have corresponded to (which value of the i,j,p indicies) */
+
+  /* i = 0 (1st row of C) */
+  Prod(0,0) += T[3*0 + 0]*T_In(0,0);             // i = 0, j = 0, p = 0
+  Prod(0,1) += T[3*0 + 0]*T_In(0,1);             // i = 0, j = 1, p = 0
+  Prod(0,2) += T[3*0 + 0]*T_In(0,2);             // i = 0, j = 2, p = 0
+
+  Prod(0,0) += T[3*0 + 1]*T_In(1,0);             // i = 0, j = 0, p = 1
+  Prod(0,1) += T[3*0 + 1]*T_In(1,1);             // i = 0, j = 1, p = 1
+  Prod(0,2) += T[3*0 + 1]*T_In(1,2);             // i = 0, j = 2, p = 1
+
+  Prod(0,0) += T[3*0 + 2]*T_In(2,0);             // i = 0, j = 0, p = 2
+  Prod(0,1) += T[3*0 + 2]*T_In(2,1);             // i = 0, j = 1, p = 2
+  Prod(0,2) += T[3*0 + 2]*T_In(2,2);             // i = 0, j = 2, p = 2
+
+
+  /* i = 1 (2nd row of C) */
+  Prod(1,0) += T[3*1 + 0]*T_In(0,0);             // i = 1, j = 0, p = 0
+  Prod(1,1) += T[3*1 + 0]*T_In(0,1);             // i = 1, j = 1, p = 0
+  Prod(1,2) += T[3*1 + 0]*T_In(0,2);             // i = 1, j = 2, p = 0
+
+  Prod(1,0) += T[3*1 + 1]*T_In(1,0);             // i = 1, j = 0, p = 1
+  Prod(1,1) += T[3*1 + 1]*T_In(1,1);             // i = 1, j = 1, p = 1
+  Prod(1,2) += T[3*1 + 1]*T_In(1,2);             // i = 1, j = 2, p = 1
+
+  Prod(1,0) += T[3*1 + 2]*T_In(2,0);             // i = 1, j = 0, p = 2
+  Prod(1,1) += T[3*1 + 2]*T_In(2,1);             // i = 1, j = 1, p = 2
+  Prod(1,2) += T[3*1 + 2]*T_In(2,2);             // i = 1, j = 2, p = 2
+
+
+  /* i = 2 (3rd row) */
+  Prod(2,0) += T[3*2 + 0]*T_In(0,0);             // i = 2, j = 0, p = 0
+  Prod(2,1) += T[3*2 + 0]*T_In(0,1);             // i = 2, j = 1, p = 0
+  Prod(2,2) += T[3*2 + 0]*T_In(0,2);             // i = 2, j = 2, p = 0
+
+  Prod(2,0) += T[3*2 + 1]*T_In(1,0);             // i = 2, j = 0, p = 1
+  Prod(2,1) += T[3*2 + 1]*T_In(1,1);             // i = 2, j = 1, p = 1
+  Prod(2,2) += T[3*2 + 1]*T_In(1,2);             // i = 2, j = 2, p = 1
+
+  Prod(2,0) += T[3*2 + 2]*T_In(2,0);             // i = 2, j = 0, p = 2
+  Prod(2,1) += T[3*2 + 2]*T_In(2,1);             // i = 2, j = 1, p = 2
+  Prod(2,2) += T[3*2 + 2]*T_In(2,2);             // i = 2, j = 2, p = 2
+
+  /*
+  // Old triple nested loop.
+  for(int i = 0; i < 3; i++) {    // Row loop
+    for(int p = 0; p < 3; p++) {    // Dot prod loop
       for(int j = 0; j < 3; j++) {    // Col loop
         Prod(i,j) += T[3*i + p]*T_In(p,j);
       } // for(int j = 0; j < 3; j++) {
     } // for(int p = 0; p < 3; p++) {
   } // for(int i = 0; i < 3; i++) {
+  */
 
-  // Copy Prod to T (in this Tensor)
+  /* Copy Prod to T (in this Tensor). To do this normally would require two
+  nested loops (one for the rows and one for the cols). However, as before, we
+  want to minimize overhead. This means unrolling loops. Thus, rather than using
+  a double loop to cycle through the 9 elements of our tensor, I have witten out
+  the 9 iterations. To make the code a little more readible, I included the
+  origional iteration numbers as comments. */
+  T[3*0 + 0] = Prod(0,0);                        // i = 0, j = 0
+  T[3*0 + 1] = Prod(0,1);                        // i = 0, j = 1
+  T[3*0 + 2] = Prod(0,2);                        // i = 0, j = 1
+
+  T[3*1 + 0] = Prod(1,0);                        // i = 1, j = 0
+  T[3*1 + 1] = Prod(1,1);                        // i = 1, j = 1
+  T[3*1 + 2] = Prod(1,2);                        // i = 1, j = 2
+
+  T[3*2 + 0] = Prod(2,0);                        // i = 2, j = 0
+  T[3*2 + 1] = Prod(2,1);                        // i = 2, j = 1
+  T[3*2 + 2] = Prod(2,2);                        // i = 2, j = 2
+
+  /* Old double loop
   for(int i = 0; i < 3; i++) {
-    T[3*i + 0] = Prod(i,0);
-    T[3*i + 1] = Prod(i,1);
-    T[3*i + 2] = Prod(i,2);
+    for(int j = 0; j < 3; j++) {
+      T[3*i + j] = Prod(i,j);
+    } // for(int j = 0; j < 3; j++) {
   } //   for(int i = 0; i < 3; i++) {
-
+  */
   return *this;
-}
-
+} // Tensor & Tensor::operator*=(const Tensor & T_In) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tensor equality

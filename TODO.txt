@@ -85,14 +85,24 @@ TODO / development history:
     DONE 6/13: Try setting up particles.
     DONE 6/13: add print method
     - implement neighbor list generating function
-    - Set density, calculate mass
     - Update penalty function (use eq 6.138 in H book)
+    - functions that allocate memory return 1 if allocation failed.
     - Find way to set all static member variables in main function
 
   - Linked List class
     DONE 6/12: Write a two way linked list (will be used for neighbor search)
     DONE 6/12: Add tests for list class
+    - functions that allocate arrays return 1 if allocation of memory fails
 
+SERIAL OPTIMIZATION
+
+Tensor-Tensor Multiplication:
+    To optimize the tensor-tensor product operation, I decided to multiply two
+    tensors together 10,000,000 times. I timed how long it took to perform this
+    operation. I performed some analysis on the results. The results of this
+    analysis can be found in my 'Tensor-Tensor multiplication optimization' file
+    on google drive.
+    
 IDEAS:
  - How to implement neighbor list:
      Use a linked list. Create a linked list for each particle. Once a neighbor

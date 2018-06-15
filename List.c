@@ -40,7 +40,7 @@ List::~List(void) {
     delete temp;                     // free the old front node
 
     Num_Nodes--;
-    printf("%d nodes remaining\n",Num_Nodes);
+    //printf("%d nodes remaining\n",Num_Nodes);
   } // while(Front != NULL) {
 } // List::~List(void) {
 
@@ -145,6 +145,7 @@ int List::Remove_End(void) {
   delete temp;                         // free memory allocated by old End
 
   Num_Nodes--;                         // decrement number of nodes
+  //printf("Node removed from end. %d nodes remaining\n",Num_Nodes);      // For testing
 
   /* check if there are any nodes left in the list. If there are none, then
   Front should point to NULL */
@@ -170,6 +171,7 @@ int List::Remove_Front(void) {
   delete temp;                         // free memory allocated by old Front
 
   Num_Nodes--;                         // decrement number of nodes
+  //printf("Node remove from front. %d nodes remaining\n",Num_Nodes);       // For testing
 
   /* Check if there are any nodes left in the list. If there are none, then End
   should point to NULL. */

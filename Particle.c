@@ -464,4 +464,47 @@ void Print(const Particle & P_In) {
   P_In.Print();
 } // void Print(const Particle & P_In) {
 
+////////////////////////////////////////////////////////////////////////////////
+// Generate particles
+
+void Generate_Neighbor_Lists(const unsigned int Num_Particles, Particle * Particles) {
+  int i,j;                             // Loop index variables
+  List Particle_Neighbor_List;         // Linked list to store known neighbors
+  unsigned int Num_Neighbors;          // Number of neighbors found
+  unsigned int *Neighbor_IDs;          // Array that holds final list of neighbors
+
+  // Cycle through the particles
+  for(i = 0; i < Num_Particles; i++) {
+
+    /* For each particle, cycle through the potential neighbors (every particle) */
+    for(j = 0; j < Num_Particles; j++) {
+      // ith particle is not its own neighbor.
+      if(j == i)
+        continue;
+
+      // Test if jth particle is inside support radius of ith particle
+      if(Are_Neighbors(Particles[i], Particles[j])) {
+        Particle_Neighbor_List.Add_End(j);
+      } // if(Are_Neighbors(Particles[i], Particles[j])) {
+    } // for(int j = 0; j < Num_Particles; j++) {
+
+    /* Now that we have the neighbor list, we can make it into an array. To do
+    this, we allocate an array whose length is equal to the length of the
+    neighbor list. We then populate this array with the elements of the list
+    and finally send this off to the particle (whose neighbors we found) */
+    Num_Neighbors = Particle_Neighbor_List.Node_Count();
+    Neighbor_IDs = new unsigned int[Num_Neighbors];
+
+    for(j = 0; j < Num_Neighbors; j++) {
+      Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front();
+    } // for(j = 0; j < Num_Neighbors; j++) {
+
+    // Now sent the Neighbor list to the particle
+    Particles[i].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
+
+    /* Now free Neighbor_IDs array for next particle! */
+    delete [] Neighbor_IDs;
+  } // for(int i = 0; i < Num_Particles; i++) {
+} // void Generate_Neighbor_Lists(const unsigned int Num_Particles, const Particle * Particles) {
+
 #endif

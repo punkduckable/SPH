@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include <unistd.h>
+#include <time.h>
 
 // Type definitions
 typedef signed char Byte;
@@ -63,10 +63,11 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 
 int main() {
   // Run Vector, Tensor, List tests.
-  Vector_Tests();
+  //Vector_Tests();
   Tensor_Tests();
-  List_Tests();
-  Particle_Tests();
+  //List_Tests();
+  //Particle_Tests();
+  Timing_Tests();
 
   return 0;
 } // int main() {
