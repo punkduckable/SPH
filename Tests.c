@@ -122,6 +122,11 @@ void Tensor_Tests(void) {
   T3.Print();
 
   // Test Tensor-Tensor multiplication
+  T3 = T1 - T2;
+  printf("T3 = T1 - T2\n");
+  Print(T3);
+
+  // Test Tensor-Tensor multiplication
   T3 = T1*T2;
   printf("T3 = T1*T2\n");
   T3.Print();
@@ -151,6 +156,10 @@ void Tensor_Tests(void) {
   T3 += T1;
   printf("T3 += T1\n");
   T3.Print();
+
+  T3 -= T1;
+  printf("T3 -= T1\n");
+  Print(T3);
 
   // Test compound Tensor-Array addition
   T3 += {1,1,1,1,1,1,1,1,1};
@@ -311,6 +320,10 @@ void Particle_Tests(void) {
 } // void Particle_Tests(void) {
 
 void Timing_Tests(void) {
+  //////////////////////////////////////////////////////////////////////////////
+  // Tensor-Tensor product timing test
+
+  /* Test tensor-tensor multiplication T3 = T1*T2 */
   // Set up timing variables. Note: All times will be reported in ms
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   clock_t timer = clock();
@@ -327,7 +340,20 @@ void Timing_Tests(void) {
 
   timer = clock() - timer;
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to perform 10,000,000 Tensor-Tensor multiplications",Ms_Elapsed);
+  printf("It took %d ms to perform 10,000,000 Tensor-Tensor multiplications\n",Ms_Elapsed);
+
+  /* Test compound tensor-tensor multiplication */
+  timer = clock();
+
+  T1 = {1,0,0,0,1,0,0,0,1};
+
+  for(int i = 0; i < 10000000; i++) {
+    T3 *= T1;
+  }
+
+  timer = clock() - timer;
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to perform 10,000,000 compound Tensor-Tensor multiplications\n",Ms_Elapsed);
 } // void Timing_Tests(void) {
 
 #endif

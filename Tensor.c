@@ -34,11 +34,34 @@ Tensor::Tensor(double t11, double t12, double t13,
 Tensor::Tensor(const Tensor & T_In) {
   //printf("Tensor Copy contructor\n");
 
+  /* Here we create one tensor using another. This is done element-by-element.
+  Normally, such an operation would require a double nested loop (one for the
+  rows and one for the columns).  However, loops have overhead. To eliminate
+  this overhead, I wrote what would have been the 9 iterations of this double
+  loop as 9 statemenets.
+
+  To make this a little  more readible, I have included a comment with each
+  statement that identifies which loop iteration that statement would have
+  corresponded to (with i as the row index and j as the column index) */
+  T[3*0 + 0] = T_In(0,0);                        // i = 0, j = 0
+  T[3*0 + 1] = T_In(0,1);                        // i = 0, j = 1
+  T[3*0 + 2] = T_In(0,2);                        // i = 0, j = 2
+
+  T[3*1 + 0] = T_In(1,0);                        // i = 1, j = 0
+  T[3*1 + 1] = T_In(1,1);                        // i = 1, j = 1
+  T[3*1 + 2] = T_In(1,2);                        // i = 1, j = 2
+
+  T[3*2 + 0] = T_In(2,0);                        // i = 2, j = 0
+  T[3*2 + 1] = T_In(2,1);                        // i = 2, j = 1
+  T[3*2 + 2] = T_In(2,2);                        // i = 2, j = 2
+
+  /* Old double nested loop
   for(int i = 1; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       T[3*i + j] = T_In(i,j);
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 1; i < 3; i++) {
+  */
 } // Tensor::Tensor(const Tensor & T_In) {
 
 Tensor::~Tensor(void) {
@@ -207,7 +230,8 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
       Prod(i,2) += T[3*i + j]*T_In(j,2);
     } // for(int p = 0; p < 3; p++) {
   } // for(int i = 0; i < 3; i++) {
-*/
+  */
+
   return Prod;
 } // Tensor Tensor::operator*(const Tensor & T_In) const{
 
@@ -260,9 +284,9 @@ Tensor Tensor::operator*(const double c) const {
   Prod(0,1) = T[3*0 + 1]*c;
   Prod(0,2) = T[3*0 + 2]*c;
 
-  Prod(1,0) = T[3*0 + 0]*c;
-  Prod(1,1) = T[3*0 + 1]*c;
-  Prod(1,2) = T[3*0 + 2]*c;
+  Prod(1,0) = T[3*1 + 0]*c;
+  Prod(1,1) = T[3*1 + 1]*c;
+  Prod(1,2) = T[3*1 + 2]*c;
 
   Prod(2,0) = T[3*2 + 0]*c;
   Prod(2,1) = T[3*2 + 1]*c;
@@ -298,9 +322,9 @@ Tensor Tensor::operator/(const double c) const {
     Quotient(0,1) = T[3*0 + 1]/c;
     Quotient(0,2) = T[3*0 + 2]/c;
 
-    Quotient(1,0) = T[3*0 + 0]/c;
-    Quotient(1,1) = T[3*0 + 1]/c;
-    Quotient(1,2) = T[3*0 + 2]/c;
+    Quotient(1,0) = T[3*1 + 0]/c;
+    Quotient(1,1) = T[3*1 + 1]/c;
+    Quotient(1,2) = T[3*1 + 2]/c;
 
     Quotient(2,0) = T[3*2 + 0]/c;
     Quotient(2,1) = T[3*2 + 1]/c;
@@ -333,16 +357,16 @@ Tensor & Tensor::operator+=(const Tensor & T_In) {
   return *this;
 } // Tensor & Tensor::operator+=(const Tensor & T_In) {
 
-Tensor & Tensor::operator+=(const double T_In[9]) {
+Tensor & Tensor::operator-=(const Tensor & T_In) {
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      T[3*i+j] = T[3*i+ j] + T_In[3*i+j];
+      T[3*i+j] = T[3*i+ j] - T_In(i,j);
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
 
-  // Return this tensor (element wise summation is done)
+  // Return this tensor (element wise subtraction is done)
   return *this;
-} // Tensor & Tensor::operator+=(const Tensor T_In) {
+} // Tensor & Tensor::operator-=(const Tensor & T_In) {
 
 Tensor & Tensor::operator*=(const double c) {
   for(int i = 0; i < 3; i++) {
@@ -476,23 +500,35 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
 ////////////////////////////////////////////////////////////////////////////////
 // Tensor equality
 
-Tensor & Tensor::operator=(const double T_In[9]) {
-  for(int i = 0; i < 9; i++) {
-    for(int j = 0; j < 9; j++) {
-      T[i] = T_In[i];
-    }
-  } //   for(int i = 0; i < 9; i++) {
-
-  // return this tensor (element wise equality is done)
-  return *this;
-} // Tensor & Tensor::operator=(const double T_In[9]) {
-
 Tensor & Tensor::operator=(const Tensor & T_In) {
+  /* Here we set one tensor equal to another. This is done element-by-element.
+  Normally, such an operation would require a double nested loop (one for the
+  rows and one for the columns).  However, loops have overhead. To eliminate
+  this overhead, I wrote what would have been the 9 iterations of this double
+  loop as 9 statemenets.
+
+  To make this a little  more readible, I have included a comment with each
+  statement that identifies which loop iteration that statement would have
+  corresponded to (with i as the row index and j as the column index) */
+  T[3*0 + 0] = T_In(0,0);                        // i = 0, j = 0
+  T[3*0 + 1] = T_In(0,1);                        // i = 0, j = 1
+  T[3*0 + 2] = T_In(0,2);                        // i = 0, j = 2
+
+  T[3*1 + 0] = T_In(1,0);                        // i = 1, j = 0
+  T[3*1 + 1] = T_In(1,1);                        // i = 1, j = 1
+  T[3*1 + 2] = T_In(1,2);                        // i = 1, j = 2
+
+  T[3*2 + 0] = T_In(2,0);                        // i = 2, j = 0
+  T[3*2 + 1] = T_In(2,1);                        // i = 2, j = 1
+  T[3*2 + 2] = T_In(2,2);                        // i = 2, j = 2
+
+  /* Old double nested loop
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       T[3*i + j] = T_In(i,j);
     }
   }
+  */
 
   // return this tensor (element wise equality is done)
   return *this;

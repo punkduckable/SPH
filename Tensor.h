@@ -31,11 +31,10 @@ class Tensor {
     Tensor operator/(const double c) const;       // Scalar division (defines T/c)
 
     Tensor & operator+=(const Tensor & T_In);     // Compound Tensor addition (defines T1 += T2)
-    Tensor & operator+=(const double T_In[9]);    // Compound tensor addition (defines T1 += T2[9])
+    Tensor & operator-=(const Tensor & T_In);     // Compound tensor subtraction (defines T1 -= T2)
     Tensor & operator*=(const double c);          // Compound scalar multiplication (defines T *= c)
     Tensor & operator*=(const Tensor & T_In);     // Compound Tensor-Tensor multiplication (defines T1 *= T2)
 
-    Tensor & operator=(const double T_In[9]);     // Tensor equality (Defines T1 = T2[9])
     Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
 
     double & operator()(const uByte row,
