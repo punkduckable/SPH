@@ -182,45 +182,45 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod(0,0) += T[3*0 + 0]*T_In(0,0);             // i = 0, j = 0, p = 0
-  Prod(0,1) += T[3*0 + 0]*T_In(0,1);             // i = 0, j = 1, p = 0
-  Prod(0,2) += T[3*0 + 0]*T_In(0,2);             // i = 0, j = 2, p = 0
+  Prod[3*0 + 0] += T[3*0 + 0]*T_In[3*0 + 0];     // i = 0, j = 0, p = 0
+  Prod[3*0 + 1] += T[3*0 + 0]*T_In[3*0 + 1];     // i = 0, j = 1, p = 0
+  Prod[3*0 + 2] += T[3*0 + 0]*T_In[3*0 + 2];     // i = 0, j = 2, p = 0
 
-  Prod(0,0) += T[3*0 + 1]*T_In(1,0);             // i = 0, j = 0, p = 1
-  Prod(0,1) += T[3*0 + 1]*T_In(1,1);             // i = 0, j = 1, p = 1
-  Prod(0,2) += T[3*0 + 1]*T_In(1,2);             // i = 0, j = 2, p = 1
+  Prod[3*0 + 0] += T[3*0 + 1]*T_In[3*1 + 0];     // i = 0, j = 0, p = 1
+  Prod[3*0 + 1] += T[3*0 + 1]*T_In[3*1 + 1];     // i = 0, j = 1, p = 1
+  Prod[3*0 + 2] += T[3*0 + 1]*T_In[3*1 + 2];     // i = 0, j = 2, p = 1
 
-  Prod(0,0) += T[3*0 + 2]*T_In(2,0);             // i = 0, j = 0, p = 2
-  Prod(0,1) += T[3*0 + 2]*T_In(2,1);             // i = 0, j = 1, p = 2
-  Prod(0,2) += T[3*0 + 2]*T_In(2,2);             // i = 0, j = 2, p = 2
+  Prod[3*0 + 0] += T[3*0 + 2]*T_In[3*2 + 0];     // i = 0, j = 0, p = 2
+  Prod[3*0 + 1] += T[3*0 + 2]*T_In[3*2 + 1];     // i = 0, j = 1, p = 2
+  Prod[3*0 + 2] += T[3*0 + 2]*T_In[3*2 + 2];     // i = 0, j = 2, p = 2
 
 
   /* i = 1 (2nd row of C) */
-  Prod(1,0) += T[3*1 + 0]*T_In(0,0);             // i = 1, j = 0, p = 0
-  Prod(1,1) += T[3*1 + 0]*T_In(0,1);             // i = 1, j = 1, p = 0
-  Prod(1,2) += T[3*1 + 0]*T_In(0,2);             // i = 1, j = 2, p = 0
+  Prod[3*1 + 0] += T[3*1 + 0]*T_In[3*0 + 0];     // i = 1, j = 0, p = 0
+  Prod[3*1 + 1] += T[3*1 + 0]*T_In[3*0 + 1];     // i = 1, j = 1, p = 0
+  Prod[3*1 + 2] += T[3*1 + 0]*T_In[3*0 + 2];     // i = 1, j = 2, p = 0
 
-  Prod(1,0) += T[3*1 + 1]*T_In(1,0);             // i = 1, j = 0, p = 1
-  Prod(1,1) += T[3*1 + 1]*T_In(1,1);             // i = 1, j = 1, p = 1
-  Prod(1,2) += T[3*1 + 1]*T_In(1,2);             // i = 1, j = 2, p = 1
+  Prod[3*1 + 0] += T[3*1 + 1]*T_In[3*1 + 0];     // i = 1, j = 0, p = 1
+  Prod[3*1 + 1] += T[3*1 + 1]*T_In[3*1 + 1];     // i = 1, j = 1, p = 1
+  Prod[3*1 + 2] += T[3*1 + 1]*T_In[3*1 + 2];     // i = 1, j = 2, p = 1
 
-  Prod(1,0) += T[3*1 + 2]*T_In(2,0);             // i = 1, j = 0, p = 2
-  Prod(1,1) += T[3*1 + 2]*T_In(2,1);             // i = 1, j = 1, p = 2
-  Prod(1,2) += T[3*1 + 2]*T_In(2,2);             // i = 1, j = 2, p = 2
+  Prod[3*1 + 0] += T[3*1 + 2]*T_In[3*2 + 0];     // i = 1, j = 0, p = 2
+  Prod[3*1 + 1] += T[3*1 + 2]*T_In[3*2 + 1];     // i = 1, j = 1, p = 2
+  Prod[3*1 + 2] += T[3*1 + 2]*T_In[3*2 + 2];     // i = 1, j = 2, p = 2
 
 
   /* i = 2 (3rd row) */
-  Prod(2,0) += T[3*2 + 0]*T_In(0,0);             // i = 2, j = 0, p = 0
-  Prod(2,1) += T[3*2 + 0]*T_In(0,1);             // i = 2, j = 1, p = 0
-  Prod(2,2) += T[3*2 + 0]*T_In(0,2);             // i = 2, j = 2, p = 0
+  Prod[3*2 + 0] += T[3*2 + 0]*T_In[3*0 + 0];     // i = 2, j = 0, p = 0
+  Prod[3*2 + 1] += T[3*2 + 0]*T_In[3*0 + 1];     // i = 2, j = 1, p = 0
+  Prod[3*2 + 2] += T[3*2 + 0]*T_In[3*0 + 2];     // i = 2, j = 2, p = 0
 
-  Prod(2,0) += T[3*2 + 1]*T_In(1,0);             // i = 2, j = 0, p = 1
-  Prod(2,1) += T[3*2 + 1]*T_In(1,1);             // i = 2, j = 1, p = 1
-  Prod(2,2) += T[3*2 + 1]*T_In(1,2);             // i = 2, j = 2, p = 1
+  Prod[3*2 + 0] += T[3*2 + 1]*T_In[3*1 + 0];     // i = 2, j = 0, p = 1
+  Prod[3*2 + 1] += T[3*2 + 1]*T_In[3*1 + 1];     // i = 2, j = 1, p = 1
+  Prod[3*2 + 2] += T[3*2 + 1]*T_In[3*1 + 2];     // i = 2, j = 2, p = 1
 
-  Prod(2,0) += T[3*2 + 2]*T_In(2,0);             // i = 2, j = 0, p = 2
-  Prod(2,1) += T[3*2 + 2]*T_In(2,1);             // i = 2, j = 1, p = 2
-  Prod(2,2) += T[3*2 + 2]*T_In(2,2);             // i = 2, j = 2, p = 2
+  Prod[3*2 + 0] += T[3*2 + 2]*T_In[3*2 + 0];     // i = 2, j = 0, p = 2
+  Prod[3*2 + 1] += T[3*2 + 2]*T_In[3*2 + 1];     // i = 2, j = 1, p = 2
+  Prod[3*2 + 2] += T[3*2 + 2]*T_In[3*2 + 2];     // i = 2, j = 2, p = 2
 
   /* Old, loop based Tensor-Tensor product
   for(int i = 0; i < 3; i++) {    // Row loops
@@ -418,45 +418,45 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod(0,0) += T[3*0 + 0]*T_In(0,0);             // i = 0, j = 0, p = 0
-  Prod(0,1) += T[3*0 + 0]*T_In(0,1);             // i = 0, j = 1, p = 0
-  Prod(0,2) += T[3*0 + 0]*T_In(0,2);             // i = 0, j = 2, p = 0
+  Prod[3*0 + 0] += T[3*0 + 0]*T_In[3*0 + 0];     // i = 0, j = 0, p = 0
+  Prod[3*0 + 1] += T[3*0 + 0]*T_In[3*0 + 1];     // i = 0, j = 1, p = 0
+  Prod[3*0 + 2] += T[3*0 + 0]*T_In[3*0 + 2];     // i = 0, j = 2, p = 0
 
-  Prod(0,0) += T[3*0 + 1]*T_In(1,0);             // i = 0, j = 0, p = 1
-  Prod(0,1) += T[3*0 + 1]*T_In(1,1);             // i = 0, j = 1, p = 1
-  Prod(0,2) += T[3*0 + 1]*T_In(1,2);             // i = 0, j = 2, p = 1
+  Prod[3*0 + 0] += T[3*0 + 1]*T_In[3*1 + 0];     // i = 0, j = 0, p = 1
+  Prod[3*0 + 1] += T[3*0 + 1]*T_In[3*1 + 1];     // i = 0, j = 1, p = 1
+  Prod[3*0 + 2] += T[3*0 + 1]*T_In[3*1 + 2];     // i = 0, j = 2, p = 1
 
-  Prod(0,0) += T[3*0 + 2]*T_In(2,0);             // i = 0, j = 0, p = 2
-  Prod(0,1) += T[3*0 + 2]*T_In(2,1);             // i = 0, j = 1, p = 2
-  Prod(0,2) += T[3*0 + 2]*T_In(2,2);             // i = 0, j = 2, p = 2
+  Prod[3*0 + 0] += T[3*0 + 2]*T_In[3*2 + 0];     // i = 0, j = 0, p = 2
+  Prod[3*0 + 1] += T[3*0 + 2]*T_In[3*2 + 1];     // i = 0, j = 1, p = 2
+  Prod[3*0 + 2] += T[3*0 + 2]*T_In[3*2 + 2];     // i = 0, j = 2, p = 2
 
 
   /* i = 1 (2nd row of C) */
-  Prod(1,0) += T[3*1 + 0]*T_In(0,0);             // i = 1, j = 0, p = 0
-  Prod(1,1) += T[3*1 + 0]*T_In(0,1);             // i = 1, j = 1, p = 0
-  Prod(1,2) += T[3*1 + 0]*T_In(0,2);             // i = 1, j = 2, p = 0
+  Prod[3*1 + 0] += T[3*1 + 0]*T_In[3*0 + 0];     // i = 1, j = 0, p = 0
+  Prod[3*1 + 1] += T[3*1 + 0]*T_In[3*0 + 1];     // i = 1, j = 1, p = 0
+  Prod[3*1 + 2] += T[3*1 + 0]*T_In[3*0 + 2];     // i = 1, j = 2, p = 0
 
-  Prod(1,0) += T[3*1 + 1]*T_In(1,0);             // i = 1, j = 0, p = 1
-  Prod(1,1) += T[3*1 + 1]*T_In(1,1);             // i = 1, j = 1, p = 1
-  Prod(1,2) += T[3*1 + 1]*T_In(1,2);             // i = 1, j = 2, p = 1
+  Prod[3*1 + 0] += T[3*1 + 1]*T_In[3*1 + 0];     // i = 1, j = 0, p = 1
+  Prod[3*1 + 1] += T[3*1 + 1]*T_In[3*1 + 1];     // i = 1, j = 1, p = 1
+  Prod[3*1 + 2] += T[3*1 + 1]*T_In[3*1 + 2];     // i = 1, j = 2, p = 1
 
-  Prod(1,0) += T[3*1 + 2]*T_In(2,0);             // i = 1, j = 0, p = 2
-  Prod(1,1) += T[3*1 + 2]*T_In(2,1);             // i = 1, j = 1, p = 2
-  Prod(1,2) += T[3*1 + 2]*T_In(2,2);             // i = 1, j = 2, p = 2
+  Prod[3*1 + 0] += T[3*1 + 2]*T_In[3*2 + 0];     // i = 1, j = 0, p = 2
+  Prod[3*1 + 1] += T[3*1 + 2]*T_In[3*2 + 1];     // i = 1, j = 1, p = 2
+  Prod[3*1 + 2] += T[3*1 + 2]*T_In[3*2 + 2];     // i = 1, j = 2, p = 2
 
 
   /* i = 2 (3rd row) */
-  Prod(2,0) += T[3*2 + 0]*T_In(0,0);             // i = 2, j = 0, p = 0
-  Prod(2,1) += T[3*2 + 0]*T_In(0,1);             // i = 2, j = 1, p = 0
-  Prod(2,2) += T[3*2 + 0]*T_In(0,2);             // i = 2, j = 2, p = 0
+  Prod[3*2 + 0] += T[3*2 + 0]*T_In[3*0 + 0];     // i = 2, j = 0, p = 0
+  Prod[3*2 + 1] += T[3*2 + 0]*T_In[3*0 + 1];     // i = 2, j = 1, p = 0
+  Prod[3*2 + 2] += T[3*2 + 0]*T_In[3*0 + 2];     // i = 2, j = 2, p = 0
 
-  Prod(2,0) += T[3*2 + 1]*T_In(1,0);             // i = 2, j = 0, p = 1
-  Prod(2,1) += T[3*2 + 1]*T_In(1,1);             // i = 2, j = 1, p = 1
-  Prod(2,2) += T[3*2 + 1]*T_In(1,2);             // i = 2, j = 2, p = 1
+  Prod[3*2 + 0] += T[3*2 + 1]*T_In[3*1 + 0];     // i = 2, j = 0, p = 1
+  Prod[3*2 + 1] += T[3*2 + 1]*T_In[3*1 + 1];     // i = 2, j = 1, p = 1
+  Prod[3*2 + 2] += T[3*2 + 1]*T_In[3*1 + 2];     // i = 2, j = 2, p = 1
 
-  Prod(2,0) += T[3*2 + 2]*T_In(2,0);             // i = 2, j = 0, p = 2
-  Prod(2,1) += T[3*2 + 2]*T_In(2,1);             // i = 2, j = 1, p = 2
-  Prod(2,2) += T[3*2 + 2]*T_In(2,2);             // i = 2, j = 2, p = 2
+  Prod[3*2 + 0] += T[3*2 + 2]*T_In[3*2 + 0];     // i = 2, j = 0, p = 2
+  Prod[3*2 + 1] += T[3*2 + 2]*T_In[3*2 + 1];     // i = 2, j = 1, p = 2
+  Prod[3*2 + 2] += T[3*2 + 2]*T_In[3*2 + 2];     // i = 2, j = 2, p = 2
 
   /*
   // Old triple nested loop.
@@ -475,17 +475,17 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
   a double loop to cycle through the 9 elements of our tensor, I have witten out
   the 9 iterations. To make the code a little more readible, I included the
   origional iteration numbers as comments. */
-  T[3*0 + 0] = Prod(0,0);                        // i = 0, j = 0
-  T[3*0 + 1] = Prod(0,1);                        // i = 0, j = 1
-  T[3*0 + 2] = Prod(0,2);                        // i = 0, j = 1
+  T[3*0 + 0] = Prod[3*0 + 0];                    // i = 0, j = 0
+  T[3*0 + 1] = Prod[3*0 + 1];                    // i = 0, j = 1
+  T[3*0 + 2] = Prod[3*0 + 2];                    // i = 0, j = 1
 
-  T[3*1 + 0] = Prod(1,0);                        // i = 1, j = 0
-  T[3*1 + 1] = Prod(1,1);                        // i = 1, j = 1
-  T[3*1 + 2] = Prod(1,2);                        // i = 1, j = 2
+  T[3*1 + 0] = Prod[3*1 + 0];                    // i = 1, j = 0
+  T[3*1 + 1] = Prod[3*1 + 1];                    // i = 1, j = 1
+  T[3*1 + 2] = Prod[3*1 + 2];                    // i = 1, j = 2
 
-  T[3*2 + 0] = Prod(2,0);                        // i = 2, j = 0
-  T[3*2 + 1] = Prod(2,1);                        // i = 2, j = 1
-  T[3*2 + 2] = Prod(2,2);                        // i = 2, j = 2
+  T[3*2 + 0] = Prod[3*2 + 0];                    // i = 2, j = 0
+  T[3*2 + 1] = Prod[3*2 + 1];                    // i = 2, j = 1
+  T[3*2 + 2] = Prod[3*2 + 2];                    // i = 2, j = 2
 
   /* Old double loop
   for(int i = 0; i < 3; i++) {
@@ -510,17 +510,17 @@ Tensor & Tensor::operator=(const Tensor & T_In) {
   To make this a little  more readible, I have included a comment with each
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
-  T[3*0 + 0] = T_In(0,0);                        // i = 0, j = 0
-  T[3*0 + 1] = T_In(0,1);                        // i = 0, j = 1
-  T[3*0 + 2] = T_In(0,2);                        // i = 0, j = 2
+  T[3*0 + 0] = T_In[3*0 + 0];                    // i = 0, j = 0
+  T[3*0 + 1] = T_In[3*0 + 1];                    // i = 0, j = 1
+  T[3*0 + 2] = T_In[3*0 + 2];                    // i = 0, j = 1
 
-  T[3*1 + 0] = T_In(1,0);                        // i = 1, j = 0
-  T[3*1 + 1] = T_In(1,1);                        // i = 1, j = 1
-  T[3*1 + 2] = T_In(1,2);                        // i = 1, j = 2
+  T[3*1 + 0] = T_In[3*1 + 0];                    // i = 1, j = 0
+  T[3*1 + 1] = T_In[3*1 + 1];                    // i = 1, j = 1
+  T[3*1 + 2] = T_In[3*1 + 2];                    // i = 1, j = 2
 
-  T[3*2 + 0] = T_In(2,0);                        // i = 2, j = 0
-  T[3*2 + 1] = T_In(2,1);                        // i = 2, j = 1
-  T[3*2 + 2] = T_In(2,2);                        // i = 2, j = 2
+  T[3*2 + 0] = T_In[3*2 + 0];                    // i = 2, j = 0
+  T[3*2 + 1] = T_In[3*2 + 1];                    // i = 2, j = 1
+  T[3*2 + 2] = T_In[3*2 + 2];                    // i = 2, j = 2
 
   /* Old double nested loop
   for(int i = 0; i < 3; i++) {
@@ -556,6 +556,16 @@ double Tensor::operator()( const uByte row, const uByte col) const {
 
   // Return the specified element (treat it like matirx notation)
   return T[3*row + col];
+} // double Tensor::operator()(const uByte row, const uByte col) const {
+
+double & Tensor::operator[](const uByte N) {
+  // Return the specified element (treat it like matirx notation)
+  return T[N];
+} // double & Tensor::operator()(const uByte row, const uByte col) {
+
+double Tensor::operator[]( const uByte N) const {
+  // Return the specified element (treat it like matirx notation)
+  return T[N];
 } // double Tensor::operator()(const uByte row, const uByte col) const {
 
 
