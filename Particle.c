@@ -448,7 +448,7 @@ void Particle::Print(void) const {
     for(int i = 0; i < Num_Neighbors-1; i++) {
       printf("%5.3f, ",Magnitude(Grad_W[i]));
     } // for(int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1]_);
+    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1]));
 
     // Print Grad_W_Tilde magnitudes
     printf("|Grad_W_Tilde| : {");
