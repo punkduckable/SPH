@@ -1,5 +1,5 @@
-#if !defined(_TENSOR_SOURCE)
-#define _TENSOR_SOURCE
+#if !defined(TENSOR_SOURCE)
+#define TENSOR_SOURCE
 
 /* In this file, I define methods for tensor objects. It should be noted that
 tensor data is stored in a 9 element array rather than a 3x3 matrix. This is
@@ -13,11 +13,6 @@ element away from each other. Therefore, T[3*i+j] is the same as T(i,j). */
 
 Tensor::Tensor(void) {
   //printf("Tensor default constructor\n");
-
-  // Default constructor: Set 9 components to zero.
-  T[0] = T[1] = T[2] =
-  T[3] = T[4] = T[5] =
-  T[6] = T[7] = T[8] = 0;
 } // Tensor::Tensor(void) {
 
 Tensor::Tensor(double t11, double t12, double t13,

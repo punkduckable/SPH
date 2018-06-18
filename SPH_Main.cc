@@ -10,6 +10,7 @@ typedef unsigned char uByte;
 #define PI 3.1415926535897932384626
 
 // Header files
+#include "Classes.h"
 #include "Vector.h"
 #include "Tensor.h"
 #include "Particle.h"
@@ -53,9 +54,9 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
      the jth component of V2)
   */
   for(int i = 0; i < 3; i++) {
-    T(i,0) = V1[i]*V2[0];
-    T(i,1) = V1[i]*V2[1];
-    T(i,2) = V1[i]*V2[2];
+    T[3*i + 0] = V1[i]*V2[0];
+    T[3*i + 1] = V1[i]*V2[1];
+    T[3*i + 2] = V1[i]*V2[2];
   } //   for(int i = 0; i < 3; i++) {
 
   return T;
@@ -63,11 +64,11 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 
 int main() {
   // Run Vector, Tensor, List tests.
-  //Vector_Tests();
-  //Tensor_Tests();
+  Vector_Tests();
+  Tensor_Tests();
   //List_Tests();
   //Particle_Tests();
-  Timing_Tests();
+  //Timing_Tests();
 
   return 0;
 } // int main() {

@@ -1,5 +1,5 @@
-#if !defined(_PARTICLE_SOURCE)
-#define _PARTICLE_SOURCE
+#if !defined(PARTICLE_SOURCE)
+#define PARTICLE_SOURCE
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors and destructor
@@ -298,9 +298,9 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   mu = P_In.mu;
   M = P_In.M;
 
-  C = F.Transpose()*F;
-  I1 = C(0,0) + C(1,1) + C(2,2);
-  J = Determinant(F);
+  C = F.Transpose()*F;                             // C = F^T*F
+  I1 = C(0,0) + C(1,1) + C(2,2);                   // I1 is trace of C
+  J = Determinant(F);                              // J is det of F
   M_Dyad_M = Dyadic_Product(M,M);
   I4 = Tensor_Dot_Product( C, M_Dyad_M );
 

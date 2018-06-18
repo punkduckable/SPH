@@ -1,5 +1,5 @@
-#if !defined(_TESTS_SOURCE)
-#define _TESTS_SOURCE
+#if !defined(TESTS_SOURCE)
+#define TESTS_SOURCE
 
 void Vector_Tests(void) {
   //////////////////////////////////////////////////////////////////////////////
@@ -7,12 +7,8 @@ void Vector_Tests(void) {
 
   printf("Vector method tests: \n\n");
 
-  // Check that default constructor initializes all components to zero
-  Vector V1;
-  printf("V1           : ");
-  V1.Print();
-
   // Check that Component constructor works
+  Vector V1;
   Vector V2(1,2,3);
   printf("V2(1,2,3)    : ");
   V2.Print();
@@ -23,8 +19,8 @@ void Vector_Tests(void) {
   V1.Print();
 
   // Check that Vector-Array equality works
-  V2 = {1,2,3};
-  printf("V2 = {1,2,3} : ");
+  V2 = {4,5,6};
+  printf("V2 = {4,5,6} : ");
   V2.Print();
 
   // Check Vector-Vector addition
@@ -71,13 +67,9 @@ void Vector_Tests(void) {
   double v = V1(1);
   printf("v = V1(1)    : %f\n",v);
 
-  // check that [] access works
-  v = V1[2];
-  printf("v = V1[2]    : %f\n",v);
-
   // Test that magnitude method works
-  v = V2.Magnitude();
-  printf("v = V2.Mag.(): %f\n",v);
+  v = Magnitude(V1);
+  printf("v = |V1|     : %f\n",v);
 
   // Test dyadic product
   Tensor T = Dyadic_Product(V1,V2);
@@ -96,12 +88,8 @@ void Tensor_Tests(void) {
 
   printf("\nTensor Method tests \n\n");
 
-  // Test default tensor Constructor
-  Tensor T1;
-  printf("T1: \n");
-  T1.Print();
-
   // Test component constructor
+  Tensor T1;
   Tensor T2(1,2,3,4,5,6,7,8,9);
   printf("T2(1,2,...8,9): \n");
   T2.Print();

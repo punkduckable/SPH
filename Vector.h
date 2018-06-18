@@ -1,5 +1,5 @@
-#if !defined(_VECTOR_HEADER)
-#define _VECTOR_HEADER
+#if !defined(VECTOR_HEADER)
+#define VECTOR_HEADER
 
 /*  This is the header file for my vector class. Most of the methods for this
 class define operations with vectors and scalars. The intent of this is to make
@@ -10,8 +10,17 @@ Vector objects, V[3] denotes a vector stored as an array, and c denotes a scalar
 constant. */
 
 class Vector {
+  friend class Tensor;
+
   private:
     double V[3];                                     // Holds the three components of the Vector
+
+    double & operator[](const uByte index) {         // Write to a component of vector (no checks, faster)
+      return V[index];
+    };                                               // Read a componnet of the vector (no checks, faster)
+    double operator[](const uByte index) const {
+      return V[index];
+    };
 
   public:
     // Constructors, destructor
@@ -36,16 +45,18 @@ class Vector {
     Vector & operator=(const double V_In[3]);        // Vector equality (defines V1 = V2[3])
     Vector & operator=(const Vector & V_In);         // Vector equalitty (defines V1 = V2)
 
-    double & operator()(const uByte index);          // () component access (defines V(n))
-    double operator()(const uByte index) const;
-    double & operator[](const uByte index);          // [] component access (defines V[n])
-    double operator[](const uByte index) const;
+    double & operator()(const uByte index);          // Write to a component of the vector (runs checks, safer)
+    double operator()(const uByte index) const;      // Read a component of the vector (runs checks, safer)
 
     // Magnitude method
     double Magnitude(void) const;
 
     // Friends
     friend Vector operator*(double c, const Vector & V_In);  // Scalar multiplication (defines c*V)
+    friend double Magnitue(const Vector & V_In);
+    friend double Vector_Dot_Product(const Vector & V1, const Vector & V2);
+    friend void Print(const Vector & V_In);
+    friend Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
     // Printing functions
     void Print(void) const;                          // Print vector components

@@ -1,5 +1,5 @@
-#if !defined(_VECTOR_SOURCE)
-#define _VECTOR_SOURCE
+#if !defined(VECTOR_SOURCE)
+#define VECTOR_SOURCE
 
 /* In this file, I define methods for Vector objects. Theese methods are
 designed to make vector objects work just like mathematical vectors. In general,
@@ -12,11 +12,6 @@ the same way/give the same result (V[1]= V(1)).
 
 Vector::Vector(void) {
   //printf("Vector default constructor\n");
-
-  // Initialize components of vector to zero (no input supplied, assume zero)
-  V[0] = 0;
-  V[1] = 0;
-  V[2] = 0;
 } // Vector::Vector(void) {
 
 Vector::Vector(const double v0, const double v1, const double v2) {
@@ -189,20 +184,6 @@ double Vector::operator()(const uByte index) const {
 
   return V[index];
 } // double Vector::operator()(const uByte index) const {
-
-double & Vector::operator[](const uByte index) {
-  if(index >= 3)
-    printf("Index out of bounds");
-
-  return V[index];
-} // double & Vector::operator[](const uByte index) {
-
-double Vector::operator[](const uByte index) const {
-  if(index >= 3)
-    printf("Index out of bounds");
-
-  return V[index];
-} // double Vector::operator[](const uByte index) const {
 
 
 

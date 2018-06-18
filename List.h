@@ -1,5 +1,5 @@
-#if !defined(_LIST_HEADER)
-#define _LIST_HEADER
+#if !defined(LIST_HEADER)
+#define LIST_HEADER
 
 class List {
   private:

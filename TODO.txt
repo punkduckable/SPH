@@ -34,9 +34,9 @@ TODO / development history:
     DONE 6/11: Add print friend function
     DONE 6/14: make Print, Magnitude friends into regular functions (to allow access outside of class)
     DONE 6/14: Make c*V function call V*c (less maintenance)
-    - Make [] access scheme private, remove all checks (make it super fast)
-    - Unroll all loops in private methods
-    - Eliminate usage of () access scheme in private methods.
+    DONE 6/18: Make [] access scheme private, remove all checks (make it super fast)
+    DONE 6/18: Unroll all loops in private methods
+    DONE 6/18: Eliminate usage of () access scheme in private methods.
     - Test that changes work/give correct values.
 
  - Tensor Class:

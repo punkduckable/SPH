@@ -1,5 +1,5 @@
-#if !defined(_LIST_SOURCE)
-#define _LIST_SOURCE
+#if !defined(LIST_SOURCE)
+#define LIST_SOURCE
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors, destructor

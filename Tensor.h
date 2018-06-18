@@ -1,5 +1,5 @@
-#if !defined(_TENSOR_HEADER)
-#define _TENSOR_HEADER
+#if !defined(TENSOR_HEADER)
+#define TENSOR_HEADER
 
 /*  This is the header file for my Tensor class. Most of the methods for this
 class define operations with Tensors, Vectors, and Scalars. The intent of this
@@ -14,15 +14,16 @@ class Tensor {
   private:
     double T[9];                                  // Holds the 9 components of the Tensor
 
-    double & operator[](const uByte N) {          // Access component of the tensor array for writing
+    double & operator[](const uByte N) {          // Write to a component of the tensor (no checks, faster)
       return T[N];
     }
 
-    double operator[](const uByte N) const {      // Access component of the tensor array for reading
+    double operator[](const uByte N) const {      // Read a component of the tensor (no checks, faster)
       return T[N];
     }
 
   public:
+    // Constructors, destructor
     Tensor(void);                                 // Default constructor
     Tensor(double t11, double t12, double t13,
            double t21, double t22, double t23,
@@ -31,6 +32,7 @@ class Tensor {
 
     ~Tensor(void);                                // Destructor
 
+    // Simple arithmetic operators
     Tensor operator+(const Tensor & T_In) const;  // Tensor addition (defines T1 + T2)
     Tensor operator-(const Tensor & T_In) const;  // Tensor subtraction (defines T1 - T2);
     Tensor operator*(const Tensor & T_In) const;  // Tensor-Tensor multiplication (Defines T1*T2)
@@ -38,6 +40,7 @@ class Tensor {
     Tensor operator*(const double c) const;       // Scalar multiplication (defines T*c)
     Tensor operator/(const double c) const;       // Scalar division (defines T/c)
 
+    // Compound arithmetic operators
     Tensor & operator+=(const Tensor & T_In);     // Compound Tensor addition (defines T1 += T2)
     Tensor & operator-=(const Tensor & T_In);     // Compound tensor subtraction (defines T1 -= T2)
     Tensor & operator*=(const double c);          // Compound scalar multiplication (defines T *= c)
@@ -45,16 +48,19 @@ class Tensor {
 
     Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
 
+    // Component access (public)
     double & operator()(const uByte row,
-                      const uByte col);           // Comonent access for write (defines T(i,j) = ....)
+                      const uByte col);           // Write to a component of the tensor (defines T(i,j) = ....) (runs checks, safer)
     double operator()(const uByte row,
-                      const uByte col) const;     // Component access for read (defines ... = T(i,j))
+                      const uByte col) const;     // Read a component of the tensor (defines ... = T(i,j)) (runs checks, safer)
 
+    // Other methods
     Tensor Inverse(void) const;                   // Tensor Inverse. Returns T^(-1)
     double Determinant(void) const;               // Tensor Determinant. Returns Det(T)
     Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T (Tranpose of T)
     void Print(void) const;                       // Print tensor components
 
+    // Friends
     friend Tensor operator*(double c,
                             const Tensor & T_In); // Scalar multiplication (defines c*T)
     friend Tensor Inverse(const Tensor & T_In);
@@ -62,6 +68,7 @@ class Tensor {
     friend Tensor Transpose(const Tensor & T_In);
     friend double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2);
     friend void Print(const Tensor & T_In);
+    friend Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 }; // class Tensor {
 
 // Tensor functions that don't belong in the tensor class
