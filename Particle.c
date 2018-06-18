@@ -448,14 +448,14 @@ void Particle::Print(void) const {
     for(int i = 0; i < Num_Neighbors-1; i++) {
       printf("%5.3f, ",Magnitude(Grad_W[i]));
     } // for(int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Grad_W[Num_Neighbors-1]);
+    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1]_);
 
     // Print Grad_W_Tilde magnitudes
     printf("|Grad_W_Tilde| : {");
     for(int i = 0; i < Num_Neighbors-1; i++) {
       printf("%5.3f, ",Magnitude(Grad_W_Tilde[i]));
     } // for(int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Grad_W_Tilde[Num_Neighbors-1]);
+    printf("%5.3f } \n", Magnitude(Grad_W_Tilde[Num_Neighbors-1]));
 
   } // if(Has_Neighbors == true) {
 } // void Particle::Print(void) const {
