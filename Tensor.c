@@ -179,9 +179,9 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod[3*0 + 0] += T[3*0 + 0]*T_In[3*0 + 0];     // i = 0, j = 0, p = 0
-  Prod[3*0 + 1] += T[3*0 + 0]*T_In[3*0 + 1];     // i = 0, j = 1, p = 0
-  Prod[3*0 + 2] += T[3*0 + 0]*T_In[3*0 + 2];     // i = 0, j = 2, p = 0
+  Prod[3*0 + 0] = T[3*0 + 0]*T_In[3*0 + 0];      // i = 0, j = 0, p = 0
+  Prod[3*0 + 1] = T[3*0 + 0]*T_In[3*0 + 1];      // i = 0, j = 1, p = 0
+  Prod[3*0 + 2] = T[3*0 + 0]*T_In[3*0 + 2];      // i = 0, j = 2, p = 0
 
   Prod[3*0 + 0] += T[3*0 + 1]*T_In[3*1 + 0];     // i = 0, j = 0, p = 1
   Prod[3*0 + 1] += T[3*0 + 1]*T_In[3*1 + 1];     // i = 0, j = 1, p = 1
@@ -193,9 +193,9 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
 
 
   /* i = 1 (2nd row of C) */
-  Prod[3*1 + 0] += T[3*1 + 0]*T_In[3*0 + 0];     // i = 1, j = 0, p = 0
-  Prod[3*1 + 1] += T[3*1 + 0]*T_In[3*0 + 1];     // i = 1, j = 1, p = 0
-  Prod[3*1 + 2] += T[3*1 + 0]*T_In[3*0 + 2];     // i = 1, j = 2, p = 0
+  Prod[3*1 + 0] = T[3*1 + 0]*T_In[3*0 + 0];      // i = 1, j = 0, p = 0
+  Prod[3*1 + 1] = T[3*1 + 0]*T_In[3*0 + 1];      // i = 1, j = 1, p = 0
+  Prod[3*1 + 2] = T[3*1 + 0]*T_In[3*0 + 2];      // i = 1, j = 2, p = 0
 
   Prod[3*1 + 0] += T[3*1 + 1]*T_In[3*1 + 0];     // i = 1, j = 0, p = 1
   Prod[3*1 + 1] += T[3*1 + 1]*T_In[3*1 + 1];     // i = 1, j = 1, p = 1
@@ -207,9 +207,9 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
 
 
   /* i = 2 (3rd row) */
-  Prod[3*2 + 0] += T[3*2 + 0]*T_In[3*0 + 0];     // i = 2, j = 0, p = 0
-  Prod[3*2 + 1] += T[3*2 + 0]*T_In[3*0 + 1];     // i = 2, j = 1, p = 0
-  Prod[3*2 + 2] += T[3*2 + 0]*T_In[3*0 + 2];     // i = 2, j = 2, p = 0
+  Prod[3*2 + 0] = T[3*2 + 0]*T_In[3*0 + 0];      // i = 2, j = 0, p = 0
+  Prod[3*2 + 1] = T[3*2 + 0]*T_In[3*0 + 1];      // i = 2, j = 1, p = 0
+  Prod[3*2 + 2] = T[3*2 + 0]*T_In[3*0 + 2];      // i = 2, j = 2, p = 0
 
   Prod[3*2 + 0] += T[3*2 + 1]*T_In[3*1 + 0];     // i = 2, j = 0, p = 1
   Prod[3*2 + 1] += T[3*2 + 1]*T_In[3*1 + 1];     // i = 2, j = 1, p = 1
@@ -489,9 +489,9 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod[3*0 + 0] += T[3*0 + 0]*T_In[3*0 + 0];     // i = 0, j = 0, p = 0
-  Prod[3*0 + 1] += T[3*0 + 0]*T_In[3*0 + 1];     // i = 0, j = 1, p = 0
-  Prod[3*0 + 2] += T[3*0 + 0]*T_In[3*0 + 2];     // i = 0, j = 2, p = 0
+  Prod[3*0 + 0] = T[3*0 + 0]*T_In[3*0 + 0];      // i = 0, j = 0, p = 0
+  Prod[3*0 + 1] = T[3*0 + 0]*T_In[3*0 + 1];      // i = 0, j = 1, p = 0
+  Prod[3*0 + 2] = T[3*0 + 0]*T_In[3*0 + 2];      // i = 0, j = 2, p = 0
 
   Prod[3*0 + 0] += T[3*0 + 1]*T_In[3*1 + 0];     // i = 0, j = 0, p = 1
   Prod[3*0 + 1] += T[3*0 + 1]*T_In[3*1 + 1];     // i = 0, j = 1, p = 1
@@ -503,9 +503,9 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
 
 
   /* i = 1 (2nd row of C) */
-  Prod[3*1 + 0] += T[3*1 + 0]*T_In[3*0 + 0];     // i = 1, j = 0, p = 0
-  Prod[3*1 + 1] += T[3*1 + 0]*T_In[3*0 + 1];     // i = 1, j = 1, p = 0
-  Prod[3*1 + 2] += T[3*1 + 0]*T_In[3*0 + 2];     // i = 1, j = 2, p = 0
+  Prod[3*1 + 0] = T[3*1 + 0]*T_In[3*0 + 0];      // i = 1, j = 0, p = 0
+  Prod[3*1 + 1] = T[3*1 + 0]*T_In[3*0 + 1];      // i = 1, j = 1, p = 0
+  Prod[3*1 + 2] = T[3*1 + 0]*T_In[3*0 + 2];      // i = 1, j = 2, p = 0
 
   Prod[3*1 + 0] += T[3*1 + 1]*T_In[3*1 + 0];     // i = 1, j = 0, p = 1
   Prod[3*1 + 1] += T[3*1 + 1]*T_In[3*1 + 1];     // i = 1, j = 1, p = 1
@@ -517,9 +517,9 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
 
 
   /* i = 2 (3rd row) */
-  Prod[3*2 + 0] += T[3*2 + 0]*T_In[3*0 + 0];     // i = 2, j = 0, p = 0
-  Prod[3*2 + 1] += T[3*2 + 0]*T_In[3*0 + 1];     // i = 2, j = 1, p = 0
-  Prod[3*2 + 2] += T[3*2 + 0]*T_In[3*0 + 2];     // i = 2, j = 2, p = 0
+  Prod[3*2 + 0] = T[3*2 + 0]*T_In[3*0 + 0];      // i = 2, j = 0, p = 0
+  Prod[3*2 + 1] = T[3*2 + 0]*T_In[3*0 + 1];      // i = 2, j = 1, p = 0
+  Prod[3*2 + 2] = T[3*2 + 0]*T_In[3*0 + 2];      // i = 2, j = 2, p = 0
 
   Prod[3*2 + 0] += T[3*2 + 1]*T_In[3*1 + 0];     // i = 2, j = 0, p = 1
   Prod[3*2 + 1] += T[3*2 + 1]*T_In[3*1 + 1];     // i = 2, j = 1, p = 1
