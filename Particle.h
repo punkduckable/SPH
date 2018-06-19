@@ -36,7 +36,8 @@ class Particle {
     Vector *R;                                             // Stores neighbor reference positions
 
     Vector *Grad_W;                                        // Dynamic array that stores Grad_W
-    Vector *Grad_W_Tilde;                                  // Dynamic array that stores Grad_W_Tilde
+    //Vector *Grad_W_Tilde;                                // Dynamic array that stores Grad_W_Tilde
+    Tensor A_Inv;                                          // Inverse of shape tensor
     double Calc_W(const Vector & Rj);                      // Returns value of W (kernel function) for a given displacement vector
 
     // Particle dynamics variables
@@ -45,8 +46,12 @@ class Particle {
     Vector vel{0,0,0};                                     // Particle's velocity at half time step (Leap-Frog method): v_i+1/2 at start of iteration (v_i+3/2 at end)
 
     bool First_Iteration = true;                           // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
-    Tensor P;                                              // First Piola-Kirchhoff stress tensor (needed to update position)
-    Tensor F;                                              // deformation gradient (needed to calculate (d/dt)F)
+    Tensor P{1,0,0,
+             0,1,0,
+             0,0,1};                                       // First Piola-Kirchhoff stress tensor (needed to update position)
+    Tensor F{1,0,0,
+             0,1,0,
+             0,0,1};                                       // deformation gradient (needed to calculate (d/dt)F)
 
   public:
     // Constructors, destructor

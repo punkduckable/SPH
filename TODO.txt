@@ -1,14 +1,16 @@
 Development Plan:
- - Create Vector, Tensor Classes
+ DONE: Create Vector, Tensor Classes
      - Write definitions + test all methods... see that they're working
 
- - Create Particle Classes
+ DONE: Create Particle Classes
     - Write definitions + Test methods.
     - Come up with a way to generate neighbor list (Might need to make a list type object)
     - Test that particles work using a simple 3x3 grid or something
 
  - Write some SPH code
-    - Generate particle list, use this to get each particle's neighbor list
+    DONE: Generate particle list, use this to get each particle's neighbor list
+    - Test that code runs properly
+    - Allow program to read data in from a file, write to a file
 
   - Optimize Serial code
 
@@ -91,7 +93,7 @@ TODO / development history:
     DONE 6/13: Come up with an algorithm to generate neighbor list
     DONE 6/13: Try setting up particles.
     DONE 6/13: add print method
-    - implement neighbor list generating function
+    DONE 6/18 implement neighbor list generating function
     - Update penalty function (use eq 6.138 in H book)
     - functions that allocate memory return 1 if allocation failed.
     - Find way to set all static member variables in main function

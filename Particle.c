@@ -55,14 +55,14 @@ Particle::Particle(const Particle & P_In) {
   r = new Vector[Num_Neighbors];
   R = new Vector[Num_Neighbors];
   Grad_W = new Vector[Num_Neighbors];
-  Grad_W_Tilde = new Vector[Num_Neighbors];
+  //Grad_W_Tilde = new Vector[Num_Neighbors];
 
   for(int j = 0; j < Num_Neighbors; j++) {
     Neighbor_List[j] = P_In.Neighbor_List[j];
     r[j] = P_In.r[j];
     R[j] = P_In.R[j];
     Grad_W[j] = P_In.Grad_W[j];
-    Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
+    //Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
   } // for(int j = 0; j < Num_Neighbors; j++) {
 } // Particle::Particle(const Particle & P_In) {
 
@@ -74,7 +74,7 @@ Particle::~Particle(void) {
     delete [] r;
     delete [] R;
     delete [] Grad_W;
-    delete [] Grad_W_Tilde;
+    //delete [] Grad_W_Tilde;
     delete [] Neighbor_List;
   }
 } // Particle::~Particle(void) {
@@ -129,7 +129,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   r = new Vector[N];
   R = new Vector[N];
   Grad_W = new Vector[N];
-  Grad_W_Tilde = new Vector[N];
+  //Grad_W_Tilde = new Vector[N];
 
   /* Now that we know our neighbors (and where they are), there's a lot that
   we can find out. We an set the Neighbor_List, r, R, Grad_W members and
@@ -138,7 +138,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 
   int Neighbor_ID;                                 // Keep track of current particle
   double Mag_Rj;                                   // magnitude of Rj vector
-  Tensor A, A_Inv;                                 // Shape Tensor and its inverse
+  Tensor A{0,0,0,0,0,0,0,0,0};                     // Shape Tensor
 
   for(int j = 0; j < N; j++) {
     Neighbor_ID = Neighbor_ID_List[j];             // Get Neighbor ID (index in Particles array)
@@ -149,7 +149,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 
     Mag_Rj = R[j].Magnitude();                     // Determine magniude of displacement vector with jth particle (R[j])
 
-    Grad_W[j] = 3*Shape_Function_Amp*((h - Mag_Rj)*(h - Mag_Rj)/(Mag_Rj))*R[j];  // calculate Grad_W at jth particle
+    Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_Rj)*(h - Mag_Rj))*(R[j]/Mag_Rj);  // calculate Grad_W at jth particle
 
     A += Dyadic_Product(Particles[Neighbor_ID].Vol*Grad_W[j], R[j]);   // Add in the Current Neighbor's contribution to the Shape tensor
   } // for(int j = 0; j < N; j++) {
@@ -157,10 +157,10 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   // Now we can calculate A^(-1) from A.
   A_Inv = A.Inverse();
 
-  // Now we can popuate the Grad_W_Tilde array
+  /* Now we can popuate the Grad_W_Tilde array
   for(int j = 0; j < N; j++) {
     Grad_W_Tilde[j] = A_Inv*Grad_W[j];
-  } // for(int j = 0; j < N; j++) {
+  } // for(int j = 0; j < N; j++) { */
 
   // Now that neighbors have been set, we set 'Has_Neighbors' to true
   Has_Neighbors = true;
@@ -210,14 +210,14 @@ Particle & Particle::operator=(const Particle & P_In) {
   r = new Vector[Num_Neighbors];
   R = new Vector[Num_Neighbors];
   Grad_W = new Vector[Num_Neighbors];
-  Grad_W_Tilde = new Vector[Num_Neighbors];
+  //Grad_W_Tilde = new Vector[Num_Neighbors];
 
   for(int j = 0; j < Num_Neighbors; j++) {
     Neighbor_List[j] = P_In.Neighbor_List[j];
     r[j] = P_In.r[j];
     R[j] = P_In.R[j];
     Grad_W[j] = P_In.Grad_W[j];
-    Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
+    //Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
   } // for(int j = 0; j < Num_Neighbors; j++) {
 
   return *this;
@@ -260,7 +260,8 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   double Vj;                                          // Volume of jth particle (a neighbor)
   int Neighbor_Id;                                    // Index of jth neighbor.
 
-  Tensor F;                                           // Deformation gradient
+  Tensor F = {0,0,0,0,0,0,0,0,0};                     // Deformation gradient
+  Tensor A_Inv = P_In.A_Inv;                          // Inverse of shape tensor
 
   Tensor C;                                           // Richt-Cauchy stress tensor
   Tensor S;                                           // Second Poila-Kirchoff stress tensor
@@ -284,8 +285,12 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
     Neighbor_Id = P_In.Neighbor_List[j];
     Vj = Particles[Neighbor_Id].Vol;
 
-    F += Dyadic_Product(P_In.r[j], Vj*P_In.Grad_W_Tilde[j]);
+    //F += Dyadic_Product(P_In.r[j], Vj*P_In.Grad_W_Tilde[j]);
+    F += Dyadic_Product(P_In.r[j], Vj*P_In.Grad_W[j]);
   } // for(int j = 0; j < Num_Neighbors; j++) {
+
+  // Deformation gradient with correction
+  F = F*A_Inv;
 
   /* Now that we have calculated the deformation gradient, we need to calculate
   the first Piola-Kirchhoff stess tensor. To do this, however, we need to
@@ -312,7 +317,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   Visc = J*mu*(L + L.Transpose())*Transpose(F.Inverse());
 
   // Set P
-  P_In.P = F*S + Visc;
+  P_In.P = (F*S + Visc)*A_Inv;
 
   // Update Particle's F member
   P_In.F = F;
@@ -325,19 +330,18 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   member variables have been set. This function should not be run until
   these assumptions are valid. */
 
-  Vector Force_Int;                                  // Internal Force vector
-  Vector Force_Ext;                                  // External/body force
-  Vector Force_Hg;                                   // Hour-glass force
+  Vector Force_Int{0,0,0};                           // Internal Force vector
+  Vector Force_Ext{0,0,0};                           // External/body force
+  Vector Force_Hg{0,0,0};                            // Hour-glass force
 
   Vector acceleration;                               // acceleration vector
 
   int Neighbor_ID;                                   // ID of current neighbor particle (in paritlce's array)
   const int Num_Neighbors = P_In.Num_Neighbors;      // Number of neighbors of P_In.
-  Particle P_Neighbor;                               // Current neighbor particle
 
 
   double Vj;                                          // Volume of jth particle
-  const double Vi = P_In.Vol;                           // Volume of P_In;
+  const double Vi = P_In.Vol;                         // Volume of P_In;
   Tensor P_j;                                         // Piola-Kirchhoff stress tensor for jth particle
   const Tensor P_i = P_In.P;                          // Piola-Kirchhoff stress tensor for P_In
 
@@ -363,7 +367,8 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
     P_j = Particles[Neighbor_ID].P;
 
-    Force_Int += Vi*Vj*(P_i + P_j)*P_In.Grad_W_Tilde[j];
+    // Force_Int += Vi*Vj*(P_i + P_j)*P_In.Grad_W_Tilde[j];
+    Force_Int += Vi*Vj*(P_i + P_j)*P_In.Grad_W[j];
 
     // Calculate external Force
 
@@ -429,32 +434,38 @@ void Particle::Print(void) const {
   x.Print();
   printf("vel: ");
   vel.Print();
+  printf("F:   \n");
+  F.Print();
+  printf("P:   \n");
+  P.Print();
+  printf("A^(-1)\n");
+  A_Inv.Print();
 
   // If we have neighbors, print neighbor information
   if(Has_Neighbors == true) {
     int i;                // Loop index variable
 
-    // Print neighbor ID's
+    /* Print neighbor ID's
     printf("Neighbor ID's  : {");
     for(i = 0; i < Num_Neighbors-1; i++) {
       printf("%5d, ",Neighbor_List[i]);
     } // for(i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5d } \n", Neighbor_List[Num_Neighbors-1]);
+    printf("%5d } \n", Neighbor_List[Num_Neighbors-1]);  // */
 
-    // Print Grad_W magnitudes
+    /* Print Grad_W magnitudes
     printf("%p\n",Grad_W);
     printf("|Grad_W|       : {");
     for(int i = 0; i < Num_Neighbors-1; i++) {
       printf("%5.3f, ",Magnitude(Grad_W[i]));
     } // for(int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1]));
+    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1])); // */
 
-    // Print Grad_W_Tilde magnitudes
+    /* Print Grad_W_Tilde magnitudes
     printf("|Grad_W_Tilde| : {");
     for(int i = 0; i < Num_Neighbors-1; i++) {
       printf("%5.3f, ",Magnitude(Grad_W_Tilde[i]));
     } // for(int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Magnitude(Grad_W_Tilde[Num_Neighbors-1]));
+    printf("%5.3f } \n", Magnitude(Grad_W_Tilde[Num_Neighbors-1])); // */
 
   } // if(Has_Neighbors == true) {
 } // void Particle::Print(void) const {

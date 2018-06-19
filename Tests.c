@@ -227,42 +227,39 @@ void Particle_Tests(void) {
   int i,j,k;
 
   // Declare an array of particles
-  const int Num_Particles = 27;
+  const int Side_Len = 9;
+  const int Num_Particles = Side_Len*Side_Len*Side_Len;
 
   Particle Particles[Num_Particles];
   double Mass, Vol;
 
   // Initialize particle masses, volumes, etc..
-  for(i = 0; i < 3; i++) {
-    for(j = 0; j < 3; j++) {
-      for(k = 0; k < 3; k++) {
+  for(i = 0; i < Side_Len; i++) {
+    for(j = 0; j < Side_Len; j++) {
+      for(k = 0; k < Side_Len; k++) {
         Vector X = {(double)i,(double)j,(double)k};
         Vector x = X;
         Mass = 1;
         Vol = 1;
 
-        Vector vel;
-        if(i == 1 && j == 1 && k == 0)
-          vel = {0.,0.,5.};
-        else
-          vel = {0.,0.,0.};
+        Vector vel = {0.,0.,0.};
 
-        Particles[9*i + 3*j + k].Set_Mass(Mass);
-        Particles[9*i + 3*j + k].Set_Vol(Vol);
-        Particles[9*i + 3*j + k].Set_X(X);
-        Particles[9*i + 3*j + k].Set_x(x);
-        Particles[9*i + 3*j + k].Set_vel(vel);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Mass(Mass);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Vol(Vol);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_X(X);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_x(x);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_vel(vel);
       }
     }
   }
 
   // Have each particle print out its data (so we can tell that stuff worked)
   /*
-  for(i = 0; i < 3; i++) {
-    for(j = 0; j < 3; j++) {
-      for(k = 0; k < 3; k++) {
-        printf("\nParticle %d:\n",9*i+3*j+k);
-        Particles[9*i + 3*j + k].Print();
+  for(i = 0; i < Side_Len; i++) {
+    for(j = 0; j < Side_Len; j++) {
+      for(k = 0; k < Side_Len; k++) {
+        printf("\nParticle %d:\n",Side_Len*Side_Len*i+Side_Len*j+k);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Print();
       }
     }
   }
@@ -273,22 +270,23 @@ void Particle_Tests(void) {
 
   /* Run through another round of printing to test that neighbor paramaters
   have been set up.*/
+
   /*
-  for(i = 0; i < 3; i++) {
-    for(j = 0; j < 3; j++) {
-      for(k = 0; k < 3; k++) {
-        printf("\nParticle %d:\n",9*i+3*j+k);
-        Particles[9*i + 3*j + k].Print();
+  for(i = 0; i < Side_Len; i++) {
+    for(j = 0; j < Side_Len; j++) {
+      for(k = 0; k < Side_Len; k++) {
+        printf("\nParticle %d:\n",Side_Len*Side_Len*i+Side_Len*j+k);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Print();
       }
     }
   }
   */
 
-  /* Now perform a time step. */
-  double dt = .1;
+  /* Now perform some time steps. */
+  const double dt = .001;
 
   for(i = 0; i < Num_Particles; i++) {
-    Update_P(Particles[i],Particles, dt);
+    Update_P(Particles[i],Particles, dt); 
   }
 
   for(i = 0; i < Num_Particles; i++) {
@@ -296,15 +294,16 @@ void Particle_Tests(void) {
   }
 
   /* Run through a final round of printing (to make sure that the time step(s)
-  worked */
-  for(i = 0; i < 3; i++) {
-    for(j = 0; j < 3; j++) {
-      for(k = 0; k < 3; k++) {
-        printf("\nParticle %d:\n",9*i+3*j+k);
-        Particles[9*i + 3*j + k].Print();
+  worked
+  for(i = 0; i < Side_Len; i++) {
+    for(j = 0; j < Side_Len; j++) {
+      for(k = 0; k < Side_Len; k++) {
+        printf("\nParticle %d: ",Side_Len*Side_Len*i+Side_Len*j+k);
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Print();
       }
     }
   }
+  // */
 } // void Particle_Tests(void) {
 
 void Timing_Tests(void) {
@@ -313,11 +312,13 @@ void Timing_Tests(void) {
   int Ms_Elapsed;
   clock_t timer;
   long Num_Tests = 100000000;
+  int i;
 
   Tensor T1, T2, T3;
+  Vector V1, V2;
 
   //////////////////////////////////////////////////////////////////////////////
-  /* Tensor-Tensor product timing test */
+  /* Tensor-Tensor product timing test
   // Test tensor-tensor multiplication T3 = T1*T2
 
   // Assign some random values to T1, T2
@@ -325,7 +326,7 @@ void Timing_Tests(void) {
   T2 = {9,8,7,6,5,4,3,2,1};
 
   timer = clock();
-  for(int i = 0; i < Num_Tests; i++) {
+  for(i = 0; i < Num_Tests; i++) {
     T3 = T1*T2;
   }
   timer = clock() - timer;
@@ -339,7 +340,7 @@ void Timing_Tests(void) {
   T1 = {1,0,0,0,1,0,0,0,1};
 
   timer = clock();
-  for(int i = 0; i < Num_Tests; i++) {
+  for(i = 0; i < Num_Tests; i++) {
     T3 *= T1;
   }
   timer = clock() - timer;
@@ -348,11 +349,25 @@ void Timing_Tests(void) {
   printf("It took %d ms to compute %d compound Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  /* Tensor Inverse timing */
+  /* Tensor-Vector product timing tests */
+  T1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
+  V1 = {1,.2920, -2.392};
+
+  timer = clock();
+  for(i = 0; i < Num_Tests; i++) {
+    V2 = T1*V1;
+  }
+  timer = clock() - timer;
+
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to compute %d Tensor-Vector products \n",Ms_Elapsed, Num_Tests);
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  /* Tensor Inverse timing
 
   T1 = {0,39,29,59,58,2,9,8,3};           // Just some random tensor... will use to find inverse
   timer = clock();
-  for(int i = 0; i < Num_Tests; i++) {
+  for(i = 0; i < Num_Tests; i++) {
     T3 = T1.Inverse();
   }
   timer = clock() - timer;
@@ -362,15 +377,30 @@ void Timing_Tests(void) {
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Dyadic product timing */
-  Vector V1 = {23992.4920,2693.02,5.92941}, V2 = {392.4,592.502,-29492.42};
+  V1 = {23992.4920,2693.02,5.92941};
+  V2 = {392.4,592.502,-29492.42};
   timer = clock();
-  for(int i = 0; i < Num_Tests; i++) {
+  for(i = 0; i < Num_Tests; i++) {
     T1 = Dyadic_Product(V1,V2);
   }
   timer = clock()-timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
   printf("It took %d ms to compute %d dyadic products\n",Ms_Elapsed, Num_Tests);
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  /* Tensor Addition tests */
+  T1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
+  T2 = T1.Inverse();
+
+  timer = clock();
+  for(i = 0; i < Num_Tests; i++) {
+    T3 = T1 + T2;
+  }
+  timer = clock() - timer;
+
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to compute %d tensor additions products\n",Ms_Elapsed, Num_Tests);
 } // void Timing_Tests(void) {
 
 #endif

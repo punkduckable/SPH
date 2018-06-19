@@ -39,7 +39,7 @@ double Particle::mu = 1;
 double Particle::mu0 = 1;
 double Particle::k1 = 1;
 double Particle::k2 = 1;
-double Particle::h = 2;
+double Particle::h = 4;
 double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,8 +83,8 @@ int main() {
   //Vector_Tests();
   //Tensor_Tests();
   //List_Tests();
-  //Particle_Tests();
-  Timing_Tests();
+  Particle_Tests();
+  //Timing_Tests();
 
   return 0;
 } // int main() {
