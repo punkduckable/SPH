@@ -312,6 +312,7 @@ void Timing_Tests(void) {
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   int Ms_Elapsed;
   clock_t timer;
+  long Num_Tests = 100000000;
 
   Tensor T1, T2, T3;
 
@@ -324,13 +325,13 @@ void Timing_Tests(void) {
   T2 = {9,8,7,6,5,4,3,2,1};
 
   timer = clock();
-  for(int i = 0; i < 10000000; i++) {
+  for(int i = 0; i < Num_Tests; i++) {
     T3 = T1*T2;
   }
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute 10,000,000 Tensor-Tensor products\n",Ms_Elapsed);
+  printf("It took %d ms to compute %d Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
 
   // Test compound tensor-tensor multiplication
 
@@ -338,26 +339,38 @@ void Timing_Tests(void) {
   T1 = {1,0,0,0,1,0,0,0,1};
 
   timer = clock();
-  for(int i = 0; i < 10000000; i++) {
+  for(int i = 0; i < Num_Tests; i++) {
     T3 *= T1;
   }
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute 10,000,000 compound Tensor-Tensor products\n",Ms_Elapsed);
+  printf("It took %d ms to compute %d compound Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor Inverse timing */
 
   T1 = {0,39,29,59,58,2,9,8,3};           // Just some random tensor... will use to find inverse
   timer = clock();
-  for(int i = 0; i < 10000000; i++) {
+  for(int i = 0; i < Num_Tests; i++) {
     T3 = T1.Inverse();
   }
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute 10,000,000 Tensor inverses\n",Ms_Elapsed);
+  printf("It took %d ms to compute %d Tensor inverses\n",Ms_Elapsed, Num_Tests);
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  /* Dyadic product timing */
+  Vector V1 = {23992.4920,2693.02,5.92941}, V2 = {392.4,592.502,-29492.42};
+  timer = clock();
+  for(int i = 0; i < Num_Tests; i++) {
+    T1 = Dyadic_Product(V1,V2);
+  }
+  timer = clock()-timer;
+
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to compute %d dyadic products\n",Ms_Elapsed, Num_Tests);
 } // void Timing_Tests(void) {
 
 #endif

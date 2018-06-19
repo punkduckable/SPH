@@ -222,9 +222,9 @@ Tensor Tensor::operator*(const Tensor & T_In) const{
   /* Old, loop based Tensor-Tensor product
   for(int i = 0; i < 3; i++) {    // Row loops
     for(int p = 0; p < 3; p++) {    // Dot prod loops
-      Prod(i,0) += T[3*i + j]*T_In(j,0);
-      Prod(i,1) += T[3*i + j]*T_In(j,1);
-      Prod(i,2) += T[3*i + j]*T_In(j,2);
+      Prod(i,0) += T[3*i + p]*T_In(p,0);
+      Prod(i,1) += T[3*i + p]*T_In(p,1);
+      Prod(i,2) += T[3*i + p]*T_In(p,2);
     } // for(int p = 0; p < 3; p++) {
   } // for(int i = 0; i < 3; i++) {
   */
@@ -546,6 +546,7 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
   a double loop to cycle through the 9 elements of our tensor, I have witten out
   the 9 iterations. To make the code a little more readible, I included the
   origional iteration numbers as comments. */
+
   T[3*0 + 0] = Prod[3*0 + 0];                    // i = 0, j = 0
   T[3*0 + 1] = Prod[3*0 + 1];                    // i = 0, j = 1
   T[3*0 + 2] = Prod[3*0 + 2];                    // i = 0, j = 1
@@ -558,11 +559,11 @@ Tensor & Tensor::operator*=(const Tensor & T_In) {
   T[3*2 + 1] = Prod[3*2 + 1];                    // i = 2, j = 1
   T[3*2 + 2] = Prod[3*2 + 2];                    // i = 2, j = 2
 
-  /* Old double loop
+  /* Old loop
   for(int i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      T[3*i + j] = Prod(i,j);
-    } // for(int j = 0; j < 3; j++) {
+    T[3*i + 0] = Prod(i,0);
+    T[3*i + 1] = Prod(i,1);
+    T[3*i + 2] = Prod(i,2);
   } //   for(int i = 0; i < 3; i++) {
   */
 

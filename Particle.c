@@ -105,7 +105,7 @@ void Particle::Set_vel(const Vector & vel_In) {
   vel = vel_In;
 } // void Particle::Set_vel(const Vector & vel_In) {
 
-void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_ID_List, const Particle *Particles) {
+void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor_ID_List, const Particle * Particles) {
   /* First check if this particle already has neighbors. This function should
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
@@ -357,12 +357,11 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   for(int j = 0; j < Num_Neighbors; j++) {
     // Update Neighbor
     Neighbor_ID = P_In.Neighbor_List[j];
-    P_Neighbor = Particles[Neighbor_ID];
 
     // Calculate Internal force
-    Vj = P_Neighbor.Vol;
+    Vj = Particles[Neighbor_ID].Vol;
 
-    P_j = P_Neighbor.P;
+    P_j = Particles[Neighbor_ID].P;
 
     Force_Int += Vi*Vj*(P_i + P_j)*P_In.Grad_W_Tilde[j];
 
@@ -375,7 +374,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
     Mag_rj = Magnitude(rj);
 
     Error_ij = (P_In.F)*(Rj) - rj;
-    Error_ji = (P_Neighbor.F)*(-1*Rj) + rj;                    // Rij = -Rji and rij = -rij
+    Error_ji =(Particles[Neighbor_ID].F)*(-1*Rj) + rj;                    // Rij = -Rji and rij = -rij
 
     delta_ij = Vector_Dot_Product(Error_ij, P_In.r[j])/(Mag_rj);
     /* Note: To find delta ji, we wan to take the dot product of Error_ji with
