@@ -86,5 +86,16 @@ int main() {
   Particle_Tests();
   //Timing_Tests();
 
+  Vector V1{1,2,3}, V2{92.392,-203.29, 5.2039};
+  Tensor T1, T2;
+  Tensor A = {1, -20, 39,
+              6 ,2.293, -32.3020,
+              .20392, .592, -.0001993};
+  T1 = Dyadic_Product(V1, (A.Inverse()*V2));
+  T2 = Dyadic_Product(V1, V2)*Transpose(Inverse(A));
+
+  T1.Print();
+  T2.Print();
+
   return 0;
 } // int main() {

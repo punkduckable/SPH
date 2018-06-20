@@ -709,8 +709,8 @@ double Tensor::Determinant(void) const {
 Tensor Tensor::Transpose(void) const {
   Tensor T_Transpose;                         // Will store Transpose
 
-  /* Let A be some tensor and A^T be its tranpose. The rule for a tranpose is
-  A(i,j) = A^T(j,i). Thus, to find the tranpose we would normally cycle through
+  /* Let A be some tensor and A^T be its transpose. The rule for a transpose is
+  A(i,j) = A^T(j,i). Thus, to find the transpose we would normally cycle through
   the rows and columns of T using a double loop. However, loops have overhead
   and we want to avoid overhead if at all possible. Thus, we have instead
   written out 9 statements that would have made up the 9 iterations of this
@@ -745,7 +745,7 @@ Tensor Tensor::Transpose(void) const {
 
 void Tensor::Print(void) const {
   for(int i = 0; i < 3; i++) {
-    printf("| %8.4f %8.4f %8.4f |\n",T[i*3], T[i*3 + 1], T[i*3 + 2]);
+    printf("| %9.2e %9.2e %9.2e |\n",T[i*3], T[i*3 + 1], T[i*3 + 2]);
   }
 } // void Tensor::Print(void) const {
 

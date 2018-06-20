@@ -197,11 +197,11 @@ void List_Tests(void) {
   printf("Newly created node. \n");
   L1.Print_Node_Info();
 
-  L1.Add_End(1);
+  L1.Add_Back(1);
   printf("Added '1' to end of list\n");
   L1.Print_Node_Info();
 
-  int returned_value = L1.Remove_End();
+  int returned_value = L1.Remove_Back();
   printf("Removed rear, got %d\n",returned_value);
   L1.Print_Node_Info();
 
@@ -213,11 +213,11 @@ void List_Tests(void) {
   printf("Removed Front, got %d\n",returned_value);
   L1.Print_Node_Info();
 
-  L1.Add_End(2);
+  L1.Add_Back(2);
   L1.Add_Front(1);
-  L1.Add_End(3);
+  L1.Add_Back(3);
   L1.Add_Front(0);
-  L1.Add_End(4);
+  L1.Add_Back(4);
   printf("Added {0,1,2,3,4} in strange order \n");
   L1.Print_Node_Info();
 } // void List_Tests(void) {
@@ -286,7 +286,7 @@ void Particle_Tests(void) {
   const double dt = .001;
 
   for(i = 0; i < Num_Particles; i++) {
-    Update_P(Particles[i],Particles, dt); 
+    Update_P(Particles[i],Particles, dt);
   }
 
   for(i = 0; i < Num_Particles; i++) {

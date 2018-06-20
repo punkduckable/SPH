@@ -191,7 +191,7 @@ double Vector::operator()(const uByte index) const {
 // Other methods
 
 void Vector::Print(void) const {
-  printf("< %e, %e, %e>\n",V[0], V[1], V[2]);
+  printf("< %9.2e, %9.2e, %9.2e>\n",V[0], V[1], V[2]);
 } // void Print(void) const {
 
 double Vector::Magnitude(void) const {

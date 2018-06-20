@@ -30,7 +30,7 @@ class Particle {
     // Neighbor variables
     bool Has_Neighbors = false;                            // True if the particle has neighbors, false otherwise
     unsigned int Num_Neighbors;                            // Keeps track of number of Neighbors
-    unsigned int *Neighbor_List;                           // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
+    unsigned int *Neighbor_IDs;                            // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
 
     Vector *r;                                             // Stores neighbor spacial positions
     Vector *R;                                             // Stores neighbor reference positions
