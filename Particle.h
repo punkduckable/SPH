@@ -8,20 +8,18 @@ class Particle {
     static double Shape_Function_Amp;                      // Scaling constant for spikey kernel
 
     // Strain energy function parameters
-    static double k1;                                      // Constant in strain energy function
-    static double k2;                                      // Constant in strain energy function
-    static double mu0;                                     // Constant in strain energy function
+    static double Lame;                                    // Lame paramater (see eq 27)
+    static double mu0;                                     // Shear modulus (see eq 27)
 
     // Viscosity paramaters
     static double mu;                                      // Viscosity (in viscohyperelastic term)
 
     // Hourglass correction parameters
     static double E;                                       // Hourglass stiffness
-    static double alpha;                                   // Coefficient to contols amplitue of hourclass correction
+    static double alpha;                                   // Coefficient to contol amplitue of hourclass correction
 
-    // Material properties (density, Fiber orientation matirx)
+    // Material properties (density)
     static double density;                                 // Particle density
-    static Vector M;                                       // Fiber orientation vector
 
     // Particle dimensions (Mass, Vol, etc...)
     double Mass;                                           // Particle Mass

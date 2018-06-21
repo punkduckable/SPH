@@ -8,6 +8,7 @@ typedef unsigned char uByte;
 
 // Definitions
 #define PI 3.1415926535897932384626
+#define T 2
 
 // Header files
 #include "Classes.h"
@@ -30,23 +31,24 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize static members of particle class
 
-double Particle::density = 1;
-double Particle::E = 1;
-double Particle::alpha = 50;                    // What was used in the paper
-Vector M_Set;
-Vector Particle::M = M_Set;
-double Particle::mu = 1;
-double Particle::mu0 = 1;
-double Particle::k1 = 1;
-double Particle::k2 = 1;
 double Particle::h = 4;
 double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);
+
+double Particle::Lame = 9e+6;
+double Particle::mu0 = .1e+6;
+
+double Particle::mu = 1;
+
+double Particle::E = 1;
+double Particle::alpha = 50;
+
+double Particle::density = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions
 
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
-  Tensor T;
+  Tensor S;
 
   /* Assign the elements of our dyadic product using nested for loop. Note that
      We only cycle through the columns. Let S denote the dyadic product of V1
@@ -70,32 +72,21 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 
   // Old loop. (works better than 9 statements with O2 optimization)
   for(int i = 0; i < 3; i++) {
-    T[3*i + 0] = V1[i]*V2[0];
-    T[3*i + 1] = V1[i]*V2[1];
-    T[3*i + 2] = V1[i]*V2[2];
+    S[3*i + 0] = V1[i]*V2[0];
+    S[3*i + 1] = V1[i]*V2[1];
+    S[3*i + 2] = V1[i]*V2[2];
   } //   for(int i = 0; i < 3; i++)
 
-  return T;
+  return S;
 } // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {
 
 int main() {
   // Run Vector, Tensor, List tests.
   //Vector_Tests();
-  //Tensor_Tests();
+  Tensor_Tests();
   //List_Tests();
   Particle_Tests();
   //Timing_Tests();
-
-  Vector V1{1,2,3}, V2{92.392,-203.29, 5.2039};
-  Tensor T1, T2;
-  Tensor A = {1, -20, 39,
-              6 ,2.293, -32.3020,
-              .20392, .592, -.0001993};
-  T1 = Dyadic_Product(V1, (A.Inverse()*V2));
-  T2 = Dyadic_Product(V1, V2)*Transpose(Inverse(A));
-
-  T1.Print();
-  T2.Print();
 
   return 0;
 } // int main() {

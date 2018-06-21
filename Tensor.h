@@ -7,19 +7,19 @@ is to make Tensor objects act just like second order tensors. As such, things
 like vector Tensor Tensor products, Tensor Vector products, Scalar
 multiplication, Tensor equality, Tensor Addition, Tensor Inverse, etc... have
 been defined. Each method has a comment explaining what that method does. T, T1,
-and T2 denote 2nd order Tensor objects, T[9] denotes a tensor stored as a 9 element
+and T2 denote 2nd order Tensor objects, S[9] denotes a tensor stored as a 9 element
 array, V denotes a Vector object, c denotes a scalar. */
 
 class Tensor {
   private:
-    double T[9];                                  // Holds the 9 components of the Tensor
+    double S[9];                                  // Holds the 9 components of the Tensor
 
     double & operator[](const uByte N) {          // Write to a component of the tensor (no checks, faster)
-      return T[N];
+      return S[N];
     }
 
     double operator[](const uByte N) const {      // Read a component of the tensor (no checks, faster)
-      return T[N];
+      return S[N];
     }
 
   public:
@@ -43,7 +43,6 @@ class Tensor {
     // Compound arithmetic operators
     Tensor & operator+=(const Tensor & T_In);     // Compound Tensor addition (defines T1 += T2)
     Tensor & operator-=(const Tensor & T_In);     // Compound tensor subtraction (defines T1 -= T2)
-    Tensor & operator*=(const double c);          // Compound scalar multiplication (defines T *= c)
     Tensor & operator*=(const Tensor & T_In);     // Compound Tensor-Tensor multiplication (defines T1 *= T2)
 
     Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
@@ -54,8 +53,11 @@ class Tensor {
     double operator()(const uByte row,
                       const uByte col) const;     // Read a component of the tensor (defines ... = T(i,j)) (runs checks, safer)
 
-    // Other methods
+    // Inverse methods
+    Tensor operator^(const int exp);
     Tensor Inverse(void) const;                   // Tensor Inverse. Returns T^(-1)
+
+    // Other methods
     double Determinant(void) const;               // Tensor Determinant. Returns Det(T)
     Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T (Tranpose of T)
     void Print(void) const;                       // Print tensor components

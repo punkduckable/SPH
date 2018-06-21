@@ -157,7 +157,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   } // for(int j = 0; j < N; j++) {
 
   // Now we can calculate A^(-1) from A.
-  A_Inv = A.Inverse();
+  A_Inv = A^(-1);
 
   /* Now we can popuate the Grad_W_Tilde array
   for(int j = 0; j < N; j++) {
@@ -259,28 +259,26 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
 
   /* First, let's set up the local variables that will be used to update the
   particle's position */
-  double Vj;                                          // Volume of jth particle (a neighbor)
-  int Neighbor_Id;                                    // Index of jth neighbor.
+  double Vj;                                     // Volume of jth particle (a neighbor)
+  int Neighbor_Id;                               // Index of jth neighbor.
 
-  Tensor F = {0,0,0,0,0,0,0,0,0};                     // Deformation gradient
-  Tensor A_Inv = P_In.A_Inv;                          // Inverse of shape tensor
+  Tensor F = {0,0,0,0,0,0,0,0,0};                // Deformation gradient
+  Tensor A_Inv = P_In.A_Inv;                     // Inverse of shape tensor
 
-  Tensor C;                                           // Richt-Cauchy stress tensor
-  Tensor S;                                           // Second Poila-Kirchoff stress tensor
-  Vector M;                                           // Fiber orientation vector
-  Tensor M_Dyad_M;                                    // Stores dyadic product of M with M... used to calculate strain energy
+  Tensor C;                                      // Richt-Cauchy stress tensor
+  Tensor S;                                      // Second Poila-Kirchoff stress tensor
   Tensor I = {1,0,0,
               0,1,0,
-              0,0,1};                                 // Identity tensor
+              0,0,1};                            // Identity tensor
 
-  double k1, k2, mu0, mu;
-  double I1, J, I4;                                   // Used to calculate stress energy function
+  double Lame, mu0, mu;
+  double I1, J;                                  // Used to calculate stress energy function
 
-  Tensor F_Prime;                                     // Approximates the time derivative of F
-  Tensor L;                                           // Used in viscosity correction term
-  Tensor Visc;                                        // Viscosity correction term for P
-  Vector *Grad_W = P_In.Grad_W;                       // Pointer to P_In's Grad_W array.
-  Vector *r = P_In.r;                                 // Pointer to P_In's r array.
+  Tensor F_Prime;                                // Approximates the time derivative of F
+  Tensor L;                                      // Used in viscosity correction term
+  Tensor Visc;                                   // Viscosity correction term for P
+  Vector *Grad_W = P_In.Grad_W;                  // Pointer to P_In's Grad_W array.
+  Vector *r = P_In.r;                            // Pointer to P_In's r array.
 
 
   /* Now, we can calculate F by cycling through the neighbors. The contribution
@@ -301,24 +299,24 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
 
   // Calculate S
-  k1 = P_In.k1;
-  k2 = P_In.k2;
+  Lame = P_In.Lame;
   mu0 = P_In.mu0;
   mu = P_In.mu;
-  M = P_In.M;
 
-  C = F.Transpose()*F;                             // C = F^T*F
-  I1 = C(0,0) + C(1,1) + C(2,2);                   // I1 is trace of C
-  J = Determinant(F);                              // J is det of F
-  M_Dyad_M = Dyadic_Product(M,M);
-  I4 = Tensor_Dot_Product( C, M_Dyad_M );
+  C = (F^(T))*F;                                 // C = F^T*F
+  I1 = C(0,0) + C(1,1) + C(2,2);                 // I1 is trace of C
+  J = Determinant(F);                            // J is det of F
 
-  S = mu0*I + k1*(I4 - 1)*exp(k1*(I4-1)*(I4-1))*M_Dyad_M;
+  // For debugging
+  if(J < 0)
+    printf("J = %f\n",J);
+
+  S = mu0*I + (-mu0 + 2*Lame*log(J))*(C^(-1));
 
   // Calculate viscosity tensor
   F_Prime = (1/dt)*(F - P_In.F);                 // Note: P_In.F is the deformation gradient from the last time step (F_i), F is from new time step (F_i+1)
-  L = F_Prime*Inverse(F);
-  Visc = J*mu*(L + L.Transpose())*Transpose(F.Inverse());
+  L = F_Prime*(F^(-1));
+  Visc = J*mu*(L + (L^(T))*(F^(-T)));
 
   // Set P
   P_In.P = (F*S + Visc)*A_Inv;
@@ -334,28 +332,28 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   member variables have been set. This function should not be run until
   these assumptions are valid. */
 
-  Vector Force_Int{0,0,0};                            // Internal Force vector
-  Vector Force_Ext{0,0,0};                            // External/body force
-  Vector Force_Hg{0,0,0};                             // Hour-glass force
+  Vector Force_Int{0,0,0};                       // Internal Force vector
+  Vector Force_Ext{0,0,0};                       // External/body force
+  Vector Force_Hg{0,0,0};                        // Hour-glass force
 
-  Vector acceleration;                                // acceleration vector
+  Vector acceleration;                           // acceleration vector
 
-  int Neighbor_ID;                                    // ID of current neighbor particle (in paritlce's array)
+  int Neighbor_ID;                               // ID of current neighbor particle (in paritlce's array)
 
   /* Pj varialbes */
-  double Vj;                                          // Volume of jth particle
-  Tensor P_j;                                         // Piola-Kirchhoff stress tensor for jth particle
+  double Vj;                                     // Volume of jth particle
+  Tensor P_j;                                    // Piola-Kirchhoff stress tensor for jth particle
 
   /* P_In aliases (notice, P_In/P_i doesn't change so these variables are const) */
-  const int Num_Neighbors = P_In.Num_Neighbors;       // Number of neighbors of P_In.
-  const double Vi = P_In.Vol;                         // Volume of P_In;
-  const Tensor P_i = P_In.P;                          // Piola-Kirchhoff stress tensor for P_In
-  const Vector * R = P_In.R;                          // Reference displacement array
-  const Vector * r = P_In.r;                          // Spacial displacement array.
-  const Vector * Grad_W = P_In.Grad_W;                // Grad_W array
-  const double Mass = P_In.Mass;                      // P_i's mass
-  const double alpha = P_In.alpha;                    // alpha static member
-  const double E = P_In.E;                            // E static member
+  const int Num_Neighbors = P_In.Num_Neighbors;  // Number of neighbors of P_In.
+  const double Vi = P_In.Vol;                    // Volume of P_In;
+  const Tensor P_i = P_In.P;                     // Piola-Kirchhoff stress tensor for P_In
+  const Vector * R = P_In.R;                     // Reference displacement array
+  const Vector * r = P_In.r;                     // Spacial displacement array.
+  const Vector * Grad_W = P_In.Grad_W;           // Grad_W array
+  const double Mass = P_In.Mass;                 // P_i's mass
+  const double alpha = P_In.alpha;               // alpha static member
+  const double E = P_In.E;                       // E static member
 
   /* Hour glass variables */
   double Mag_Rj;

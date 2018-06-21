@@ -72,9 +72,9 @@ void Vector_Tests(void) {
   printf("v = |V1|     : %f\n",v);
 
   // Test dyadic product
-  Tensor T = Dyadic_Product(V1,V2);
-  printf(" T = V1 dyad V2\n");
-  T.Print();
+  Tensor S = Dyadic_Product(V1,V2);
+  printf(" S = V1 dyad V2\n");
+  S.Print();
 
   // Test Vector dot product
   V1 = {1,2,3}; V2 = {1,2,3};
@@ -89,106 +89,133 @@ void Tensor_Tests(void) {
   printf("\nTensor Method tests \n\n");
 
   // Test component constructor
-  Tensor T1;
-  Tensor T2(1,2,3,4,5,6,7,8,9);
-  printf("T2(1,2,...8,9): \n");
-  T2.Print();
+  Tensor S1;
+  Tensor S2(1,2,3,4,5,6,7,8,9);
+  printf("\nS2(1,2,...8,9): \n");
+  S2.Print();
 
   // Test Tensor-Tensor equality
-  T1 = T2;
-  printf("T1 = T2\n");
-  T2.Print();
+  S1 = S2;
+  printf("\nS1 = S2\n");
+  S2.Print();
 
   // Test Tensor-Array Equality
-  T2 = {9,8,7,6,5,4,3,2,1};
-  printf("T2 = {9,8,....2,1}:\n");
-  T2.Print();
+  S2 = {9,8,7,6,5,4,3,2,1};
+  printf("\nS2 = {9,8,....2,1}:\n");
+  S2.Print();
 
   // Test Tensor-Tensor Addition
-  Tensor T3 = T1 + T2;
-  printf("T3 = T1 + T2\n");
-  T3.Print();
+  Tensor S3 = S1 + S2;
+  printf("\nS3 = S1 + S2\n");
+  S3.Print();
 
   // Test Tensor-Tensor multiplication
-  T3 = T1 - T2;
-  printf("T3 = T1 - T2\n");
-  Print(T3);
+  S3 = S1 - S2;
+  printf("\nS3 = S1 - S2\n");
+  Print(S3);
 
   // Test Tensor-Tensor multiplication
-  T3 = T1*T2;
-  printf("T3 = T1*T2\n");
-  T3.Print();
+  S3 = S1*S2;
+  printf("\nS3 = S1*S2\n");
+  S3.Print();
 
   // Test Tensor-Vector multiplication
   Vector V = {1,2,3};
-  V = T1*V;
-  printf("V = {1,2,3}\nV = T1*V\n");
+  V = S1*V;
+  printf("\nV = {1,2,3}\nV = S1*V\n");
   V.Print();
 
   // Test scalar multiplication
-  T3 = T1*5;
-  printf("T3 = T1*5\n");
-  T3.Print();
+  S3 = S1*5;
+  printf("\nS3 = S1*5\n");
+  S3.Print();
 
   // Test other scalar multiplication
-  T3 = 5*T1;
-  printf("T3 = 5*T1\n");
-  T3.Print();
+  S3 = 5*S1;
+  printf("\nS3 = 5*S1\n");
+  S3.Print();
 
   // Test Scalar division
-  T3 = T1/5.;
-  printf("T3 = T1/5.\n");
-  T3.Print();
+  S3 = S1/5.;
+  printf("\nS3 = S1/5.\n");
+  S3.Print();
 
   // Test compound Tensor-Tensor addition
-  T3 += T1;
-  printf("T3 += T1\n");
-  T3.Print();
+  S3 += S1;
+  printf("\nS3 += S1\n");
+  S3.Print();
 
-  T3 -= T1;
-  printf("T3 -= T1\n");
-  Print(T3);
+  S3 -= S1;
+  printf("\nS3 -= S1\n");
+  Print(S3);
 
   // Test compound Tensor-Array addition
-  T3 += {1,1,1,1,1,1,1,1,1};
-  printf("T3 += {1,1... 1,1}\n");
-  T3.Print();
-
-  // Test compound Scalar multiplication
-  T3 *= 5;
-  printf("T3 *= 5\n");
-  T3.Print();
+  S3 += {1,1,1,1,1,1,1,1,1};
+  printf("\nS3 += {1,1... 1,1}\n");
+  S3.Print();
 
   // Test compund Tensor multiplication
-  T3 = T1;
-  T3 *= T2;                           // together, these two lines are the same as T3 = (T1*T2)
-  printf("T3 = T1; T3 *= T2\n");
-  T3.Print();
+  S3 = S1;
+  S3 *= S2;                           // together, these two lines are the same as S3 = (S1*S2)
+  printf("\nS3 = S1; S3 *= S2\n");
+  S3.Print();
 
   // Test () component access
-  double t = T1(1,1);
-  printf("t = T1(1,1)  : %f\n",t);
+  double t = S1(1,1);
+  printf("\nt = S1(1,1)  : %f\n",t);
 
   // Test inverse method
-  T2 = {1,4, 9, 29, 4, 67, 10, 4, 0};
-  T3 = T2.Inverse();
-  printf("T1 = {1,4,9, 29, 4, 67, 10, 4, 0} \nT3 = T2.Inverse()\n");
-  T3.Print();
+  S2 = {1,4, 9, 29, 4, 67, 10, 4, 0};
+  S3 = S2.Inverse();
+  printf("\nS2 = {1,4,9, 29, 4, 67, 10, 4, 0} \nS3 = S2.Inverse()\n");
+  S3.Print();
+
+  // Test inverse operator
+  S2 = {1,4, 9, 29, 4, 67, 10, 4, 0};
+  S3 = (S2^-1);
+  printf("S3 = S2^-1\n");
+  S3.Print();
 
   // Test that Determinant method works
-  double Det_T = T2.Determinant();
-  printf("T2.Determinant = %f\n",Det_T);
+  double Det_S = S2.Determinant();
+  printf("\nS2.Determinant = %f\n",Det_S);
 
   // Test Transpose method
-  Tensor T3_T = T3.Transpose();
-  printf("T3^T\n");
-  T3_T.Print();
+  Tensor S3_T = S3.Transpose();
+  printf("\nS3.Transpose()\n");
+  S3_T.Print();
+
+  // Test Transpose operator
+  S3_T = (S3^T);
+  printf("S3^T\n");
+  S3_T.Print();
+
+  // Test Inverse-Transpose operator
+  S3_T = (S3^-T);
+  printf("\nS3^-T\n");
+  S3_T.Print();
 
   // Test Tensor Dot Product function
-  T1 = {1,2,3,4,5,6,7,8,9};
-  T2 = {1,2,3,4,5,6,7,8,9};
-  double dot_prod = Tensor_Dot_Product(T1, T2);
-  printf("T1 = T2 = {1,2,3,...9}. T1 : T2 = %f\n", dot_prod);
+  S1 = {1,2,3,4,5,6,7,8,9};
+  S2 = {1,2,3,4,5,6,7,8,9};
+  double dot_prod = Tensor_Dot_Product(S1, S2);
+  printf("\nS1 = S2 = {1,2,3,...9}. S1 : S2 = %f\n", dot_prod);
+
+  // A Dyadic-Product identity (S2 and S3 should be equal at the end)
+  Vector V1{1,2,3}, V2{92.392,-203.29, 5.2039};
+  S1 = {1, -20, 39,
+        6 ,2.293, -32.3020,
+        .20392, .592, -.0001993};
+  printf("\nV1 = {1,2,3}, V2 = {92.392,-203.29, 5.2039}\n");
+  printf("S1 = \n");
+  S1.Print();
+  printf("S2 = Dyadic_Product(V1, S1^-1 * V2)\n");
+  S2 = Dyadic_Product(V1, ((S1^(-1))*V2));
+  S2.Print();
+
+  printf("S3 = Dyadic_Product(V1, V2)*S1^-T\n");
+  S3 = Dyadic_Product(V1, V2)*(S1^(-T));
+  S3.Print();
 } // void Tensor_Tests(void) {
 
 void List_Tests(void) {
@@ -223,6 +250,8 @@ void List_Tests(void) {
 } // void List_Tests(void) {
 
 void Particle_Tests(void) {
+  printf("\nParticle tests\n\n");
+
   // Loop indicies
   int i,j,k;
 
@@ -307,6 +336,8 @@ void Particle_Tests(void) {
 } // void Particle_Tests(void) {
 
 void Timing_Tests(void) {
+  printf("\nTiming tests\n\n");
+
   // Set up timing variables. Note: All times will be reported in ms
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   int Ms_Elapsed;
@@ -314,20 +345,20 @@ void Timing_Tests(void) {
   long Num_Tests = 100000000;
   int i;
 
-  Tensor T1, T2, T3;
+  Tensor S1, S2, S3;
   Vector V1, V2;
 
   //////////////////////////////////////////////////////////////////////////////
   /* Tensor-Tensor product timing test
-  // Test tensor-tensor multiplication T3 = T1*T2
+  // Test tensor-tensor multiplication S3 = S1*S2
 
-  // Assign some random values to T1, T2
-  T1 = {1,2,3,4,5,6,7,8,9};
-  T2 = {9,8,7,6,5,4,3,2,1};
+  // Assign some random values to S1, S2
+  S1 = {1,2,3,4,5,6,7,8,9};
+  S2 = {9,8,7,6,5,4,3,2,1};
 
   timer = clock();
   for(i = 0; i < Num_Tests; i++) {
-    T3 = T1*T2;
+    S3 = S1*S2;
   }
   timer = clock() - timer;
 
@@ -336,12 +367,12 @@ void Timing_Tests(void) {
 
   // Test compound tensor-tensor multiplication
 
-  // Make T1 the identity (so that compoud multiplication doesn't blow up the matrix's components)
-  T1 = {1,0,0,0,1,0,0,0,1};
+  // Make S1 the identity (so that compoud multiplication doesn't blow up the matrix's components)
+  S1 = {1,0,0,0,1,0,0,0,1};
 
   timer = clock();
   for(i = 0; i < Num_Tests; i++) {
-    T3 *= T1;
+    S3 *= S1;
   }
   timer = clock() - timer;
 
@@ -350,12 +381,12 @@ void Timing_Tests(void) {
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor-Vector product timing tests */
-  T1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
+  S1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
   V1 = {1,.2920, -2.392};
 
   timer = clock();
   for(i = 0; i < Num_Tests; i++) {
-    V2 = T1*V1;
+    V2 = S1*V1;
   }
   timer = clock() - timer;
 
@@ -365,10 +396,10 @@ void Timing_Tests(void) {
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor Inverse timing
 
-  T1 = {0,39,29,59,58,2,9,8,3};           // Just some random tensor... will use to find inverse
+  S1 = {0,39,29,59,58,2,9,8,3};           // Just some random tensor... will use to find inverse
   timer = clock();
   for(i = 0; i < Num_Tests; i++) {
-    T3 = T1.Inverse();
+    S3 = S1.Inverse();
   }
   timer = clock() - timer;
 
@@ -381,7 +412,7 @@ void Timing_Tests(void) {
   V2 = {392.4,592.502,-29492.42};
   timer = clock();
   for(i = 0; i < Num_Tests; i++) {
-    T1 = Dyadic_Product(V1,V2);
+    S1 = Dyadic_Product(V1,V2);
   }
   timer = clock()-timer;
 
@@ -390,12 +421,12 @@ void Timing_Tests(void) {
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor Addition tests */
-  T1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
-  T2 = T1.Inverse();
+  S1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
+  S2 = S1.Inverse();
 
   timer = clock();
   for(i = 0; i < Num_Tests; i++) {
-    T3 = T1 + T2;
+    S3 = S1 + S2;
   }
   timer = clock() - timer;
 

@@ -39,7 +39,6 @@ TODO / development history:
     DONE 6/18: Make [] access scheme private, remove all checks (make it super fast)
     DONE 6/18: Unroll all loops in private methods
     DONE 6/18: Eliminate usage of () access scheme in private methods.
-    - Test that changes work/give correct values.
 
  - Tensor Class:
     DONE 6/5: Define (), [], = (to arrays) for tensors.
@@ -63,8 +62,8 @@ TODO / development history:
     DONE 6/15: add [] access scheme
     DONE 6/15: Unroll all loops in private methods
     DONE 6/15: Eliminate all uses of the (row, col) access method in private methods
-    - Test that the changes work/give correct values.
-
+    DONE 6/21: Removed *=(double) operator overload.
+    DONE 6/21: Add ^ operator overload (for Transpose, Inverse, NOT POWER)
 
   - Particle Class:
     DONE 6/11: Define all methods
@@ -94,7 +93,8 @@ TODO / development history:
     DONE 6/13: Try setting up particles.
     DONE 6/13: add print method
     DONE 6/18 implement neighbor list generating function
-    - Update penalty function (use eq 6.138 in H book)
+    DONE 6/21: Updated Strain energy function
+    DONE 6/21: Updated particle methods to use ^-1, ^T and ^-T syntax with tensors.
     - functions that allocate memory return 1 if allocation failed.
     - Find way to set all static member variables in main function
 
