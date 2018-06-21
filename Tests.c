@@ -311,9 +311,8 @@ void Particle_Tests(void) {
   }
   */
 
-  /* Now perform some time steps. */
+  /* Now perform some time steps, store results in file */
   const double dt = .001;
-
   for(i = 0; i < Num_Particles; i++) {
     Update_P(Particles[i],Particles, dt);
   }
@@ -333,6 +332,20 @@ void Particle_Tests(void) {
     }
   }
   // */
+
+  /* Print results to file */
+  FILE * Position_File = fopen("Position_File.txt","w");              // Stores particle positions
+  FILE * Paramaters_File = fopen("Paramaters_File.txt","w");          // Stores number of iterations, number of particles
+
+  Export_Pariticle_Positions(Num_Particles, Particles, Position_File);
+
+  // Print number of iterations + Number of particles on final lines
+  fprintf(Paramaters_File,"Number of Steps    : %d\n",1);
+  fprintf(Paramaters_File,"Number of particles: %d\n",Num_Particles);
+
+  // Close file
+  fclose(Position_File);
+  fclose(Paramaters_File);
 } // void Particle_Tests(void) {
 
 void Timing_Tests(void) {

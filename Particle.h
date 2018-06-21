@@ -68,6 +68,11 @@ class Particle {
                        const unsigned int * Neighbor_Id_List,
                        const Particle * Particles);        // Set Neighbors
 
+    // Methods to access particle data
+    Vector Get_x(void) const {
+      return x;
+    }
+
     // Operator overloading
     Particle & operator=(const Particle & P_In);           // Defines P1 = P2 (performs a deep copy)
 

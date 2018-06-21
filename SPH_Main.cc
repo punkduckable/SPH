@@ -20,6 +20,8 @@ typedef unsigned char uByte;
 
 // Prototypes
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
+void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles, FILE * Output_File);
+  bool First_Time_Printing_To_File = true;
 
 // Source files
 #include "Vector.c"
@@ -80,10 +82,20 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
   return S;
 } // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {
 
+void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles, FILE * Position_File) {
+  // Cycle through particles, print spacial positions of each particle
+  Vector x;
+  for(int i = 0; i < Num_Particles; i++) {
+    x = Particles[i].Get_x();
+
+    fprintf(Position_File,"%8.5f, %8.5f, %8.5f;\n",x(0), x(1), x(2));
+  }
+}
+
 int main() {
   // Run Vector, Tensor, List tests.
   //Vector_Tests();
-  Tensor_Tests();
+  //Tensor_Tests();
   //List_Tests();
   Particle_Tests();
   //Timing_Tests();
