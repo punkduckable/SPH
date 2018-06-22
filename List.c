@@ -45,7 +45,7 @@ List::~List(void) {
 } // List::~List(void) {
 
 ////////////////////////////////////////////////////////////////////////////////
-// Deep copy = operator overload
+// List equality: Deep copy
 
 List & List::operator=(const List & L_In) {
   /* Since list type objects dynamically allocate memory, we need to perform a
@@ -181,7 +181,7 @@ int List::Remove_Front(void) {
 } // void List::Remove_Front(void) {
 
 ////////////////////////////////////////////////////////////////////////////////
-// Other public methods
+// Methods to get list info
 
 int List::Node_Count(void) const {
   return Num_Nodes;

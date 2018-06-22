@@ -65,6 +65,46 @@ Tensor::~Tensor(void) {
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Tensor equality
+
+Tensor & Tensor::operator=(const Tensor & Tensor_In) {
+  /* Here we set one tensor equal to another. This is done element-by-element.
+  Normally, such an operation would require a double nested loop (one for the
+  rows and one for the columns).  However, loops have overhead. To eliminate
+  this overhead, I wrote what would have been the 9 iterations of this double
+  loop as 9 statemenets.
+
+  To make this a little  more readible, I have included a comment with each
+  statement that identifies which loop iteration that statement would have
+  corresponded to (with i as the row index and j as the column index) */
+  S[3*0 + 0] = Tensor_In[3*0 + 0];                    // i = 0, j = 0
+  S[3*0 + 1] = Tensor_In[3*0 + 1];                    // i = 0, j = 1
+  S[3*0 + 2] = Tensor_In[3*0 + 2];                    // i = 0, j = 1
+
+  S[3*1 + 0] = Tensor_In[3*1 + 0];                    // i = 1, j = 0
+  S[3*1 + 1] = Tensor_In[3*1 + 1];                    // i = 1, j = 1
+  S[3*1 + 2] = Tensor_In[3*1 + 2];                    // i = 1, j = 2
+
+  S[3*2 + 0] = Tensor_In[3*2 + 0];                    // i = 2, j = 0
+  S[3*2 + 1] = Tensor_In[3*2 + 1];                    // i = 2, j = 1
+  S[3*2 + 2] = Tensor_In[3*2 + 2];                    // i = 2, j = 2
+
+  /* Old double nested loop
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      S[3*i + j] = Tensor_In(i,j);
+    } // for(int j = 0; j < 3; j++) {
+  } // for(int i = 0; i < 3; i++) {
+  */
+
+  // return this tensor (element wise equality is done)
+  return *this;
+} // Tensor & Tensor::operator=(const Tensor & Tensor_In) {
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Simple arithmetic operators
 
@@ -534,43 +574,6 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
 
   return *this;
 } // Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
-
-////////////////////////////////////////////////////////////////////////////////
-// Tensor equality
-
-Tensor & Tensor::operator=(const Tensor & Tensor_In) {
-  /* Here we set one tensor equal to another. This is done element-by-element.
-  Normally, such an operation would require a double nested loop (one for the
-  rows and one for the columns).  However, loops have overhead. To eliminate
-  this overhead, I wrote what would have been the 9 iterations of this double
-  loop as 9 statemenets.
-
-  To make this a little  more readible, I have included a comment with each
-  statement that identifies which loop iteration that statement would have
-  corresponded to (with i as the row index and j as the column index) */
-  S[3*0 + 0] = Tensor_In[3*0 + 0];                    // i = 0, j = 0
-  S[3*0 + 1] = Tensor_In[3*0 + 1];                    // i = 0, j = 1
-  S[3*0 + 2] = Tensor_In[3*0 + 2];                    // i = 0, j = 1
-
-  S[3*1 + 0] = Tensor_In[3*1 + 0];                    // i = 1, j = 0
-  S[3*1 + 1] = Tensor_In[3*1 + 1];                    // i = 1, j = 1
-  S[3*1 + 2] = Tensor_In[3*1 + 2];                    // i = 1, j = 2
-
-  S[3*2 + 0] = Tensor_In[3*2 + 0];                    // i = 2, j = 0
-  S[3*2 + 1] = Tensor_In[3*2 + 1];                    // i = 2, j = 1
-  S[3*2 + 2] = Tensor_In[3*2 + 2];                    // i = 2, j = 2
-
-  /* Old double nested loop
-  for(int i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      S[3*i + j] = Tensor_In(i,j);
-    } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 3; i++) {
-  */
-
-  // return this tensor (element wise equality is done)
-  return *this;
-} // Tensor & Tensor::operator=(const Tensor & Tensor_In) {
 
 
 

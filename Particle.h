@@ -4,52 +4,47 @@
 class Particle {
   private:
     // Kernel paramaters
-    static double h;                                       // Specifies connection radius (same for every particle)
-    static double Shape_Function_Amp;                      // Scaling constant for spikey kernel
+    static double h;                                       // Support radius             : mm
+    static double Shape_Function_Amp;                      // Shape function Amplitude   : mm^-3
 
     // Strain energy function parameters
-    static double Lame;                                    // Lame paramater (see eq 27)
-    static double mu0;                                     // Shear modulus (see eq 27)
+    static double Lame;                                    // Lame paramater             : Mpa
+    static double mu0;                                     // Shear modulus              : Mpa
 
     // Viscosity paramaters
-    static double mu;                                      // Viscosity (in viscohyperelastic term)
+    static double mu;                                      // Viscosity                  : Mpa*s
 
-    // Hourglass correction parameters
-    static double E;                                       // Hourglass stiffness
-    static double alpha;                                   // Coefficient to contol amplitue of hourclass correction
-
-    // Material properties (density)
-    static double density;                                 // Particle density
+    // Hourglass (Hg) correction parameters
+    static double E;                                       // Hourglass stiffness        : Mpa
+    static double alpha;                                   // Hg control parameter       : unitless
 
     // Particle dimensions (Mass, Vol, etc...)
-    double Mass;                                           // Particle Mass
-    double Vol;                                            // Particle volume
+    double Mass;                                           // Particle Mass              : g
+    double Vol;                                            // Particle volume            : mm^3
 
     // Neighbor variables
     bool Has_Neighbors = false;                            // True if the particle has neighbors, false otherwise
     unsigned int Num_Neighbors;                            // Keeps track of number of Neighbors
     unsigned int *Neighbor_IDs;                            // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
 
-    Vector *r;                                             // Stores neighbor spacial positions
-    Vector *R;                                             // Stores neighbor reference positions
-
-    Vector *Grad_W;                                        // Dynamic array that stores Grad_W
+    Vector *R;                                             // Dynamic array that stores neighbor reference positions
+    double *W;                                             // Dynamic array that stores shape function value for each neighbor
+    Vector *Grad_W;                                        // Dynamic array that stores Gradient of the Shape function at each neighbors
     //Vector *Grad_W_Tilde;                                // Dynamic array that stores Grad_W_Tilde
     Tensor A_Inv;                                          // Inverse of shape tensor
-    double Calc_W(const Vector & Rj);                      // Returns value of W (kernel function) for a given displacement vector
 
     // Particle dynamics variables
-    Vector X{0,0,0};                                       // reference position
-    Vector x{0,0,0};                                       // Particle's current position: x_i at start of iteration (x_i+1 at end)
-    Vector vel{0,0,0};                                     // Particle's velocity at half time step (Leap-Frog method): v_i+1/2 at start of iteration (v_i+3/2 at end)
+    Vector X{0,0,0};                                       // reference position         : mm
+    Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        :  mm
+    Vector vel{0,0,0};                                     // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog)    :  mm/s
 
     bool First_Iteration = true;                           // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
     Tensor P{0,0,0,
              0,0,0,
-             0,0,0};                                       // First Piola-Kirchhoff stress tensor (needed to update position)
+             0,0,0};                                       // First Piola-Kirchhoff stress tensor  : Mpa
     Tensor F{1,0,0,
              0,1,0,
-             0,0,1};                                       // deformation gradient (needed to calculate (d/dt)F)
+             0,0,1};                                       // deformation gradient       : unitless
 
   public:
     // Constructors, destructor
@@ -58,14 +53,17 @@ class Particle {
 
     ~Particle(void);                                       // Destructor
 
+    // Particle equality
+    Particle & operator=(const Particle & P_In);           // Defines P1 = P2 (performs a deep copy)
+
     // Particle setup methods
-    void Set_Mass(const double Mass_In);                   // Set particle's mass
-    void Set_Vol(const double Vol_In);                     // Set particle's volume
-    void Set_X(const Vector & X_In);                       // Set ref position
-    void Set_x(const Vector & x_In);                       // Set spacial position
-    void Set_vel(const Vector & vel_In);                   // Set particle's velocity
+    void Set_Mass(const double Mass_In) { Mass = Mass_In; }// Set particle's mass        : g
+    void Set_Vol(const double Vol_In) { Vol = Vol_In; }    // Set particle's volume      : mm^3
+    void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm
+    void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm
+    void Set_vel(const Vector & vel_In) { vel = vel_In; }  // Set particle's velocity    : mm/s
     void Set_Neighbors(const unsigned int N,
-                       const unsigned int * Neighbor_Id_List,
+                       const unsigned int * Neighbor_ID_List,
                        const Particle * Particles);        // Set Neighbors
 
     // Methods to access particle data
@@ -73,13 +71,10 @@ class Particle {
       return x;
     }
 
-    // Operator overloading
-    Particle & operator=(const Particle & P_In);           // Defines P1 = P2 (performs a deep copy)
-
     // Friend functions
     friend void Update_P(Particle & P_In,
                          const Particle * Particles,
-                         const double dt);
+                         const double dt);                 // Updates P_In's Second Piola-Kirchhoff stress tensor
     friend void Update_Particle_Position(Particle & P_In,
                                          const Particle * Particles,
                                          const double dt); // Updates P_In's x (spacial position)

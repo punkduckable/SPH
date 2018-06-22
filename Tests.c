@@ -256,28 +256,34 @@ void Particle_Tests(void) {
   int i,j,k;
 
   // Declare an array of particles
-  const int Side_Len = 9;
+  const int Side_Len = 10;
   const int Num_Particles = Side_Len*Side_Len*Side_Len;
 
+
+  // Particle paramaters
   Particle Particles[Num_Particles];
-  double Mass, Vol;
+  double Inter_Particle_Spacing = 1;                                           //        : mm
+  double Particle_Volume = 1;                                                  //        : mm^3
+  double Particle_Density = 1;        // I chose the density of water.         //        : g/mm^3
+  double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
+
 
   // Initialize particle masses, volumes, etc..
   for(i = 0; i < Side_Len; i++) {
     for(j = 0; j < Side_Len; j++) {
       for(k = 0; k < Side_Len; k++) {
-        Vector X = {(double)i,(double)j,(double)k};
-        Vector x = X;
-        Mass = 1;
-        Vol = 1;
+        Vector X{(double)i,(double)j,(double)k};
+        X *= Inter_Particle_Spacing;                                           //        : mm
+        Vector x = X;                                                          //        : mm
 
-        Vector vel = {0.,0.,0.};
 
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Mass(Mass);
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Vol(Vol);
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_X(X);
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_x(x);
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_vel(vel);
+        Vector vel = {0.,0.,0.};                                               //        : mm/s
+
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Mass(Particle_Mass);    //   : g
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Vol(Particle_Volume);   //   : mm^3
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_X(X);              //        : mm
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_x(x);              //        : mm
+        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_vel(vel);          //        : mm/s
       }
     }
   }
@@ -311,16 +317,56 @@ void Particle_Tests(void) {
   }
   */
 
-  /* Now perform some time steps, store results in file */
-  const double dt = .001;
-  for(i = 0; i < Num_Particles; i++) {
-    Update_P(Particles[i],Particles, dt);
-  }
+  /* Now we want to perform some time steps. We want to compare the initial and
+  final configuration. To do this, we will save the initial configuration to a
+  file, then run some time steps and store the final configuration in another
+  file. */
 
-  for(i = 0; i < Num_Particles; i++) {
-    Update_Particle_Position(Particles[i],Particles,dt);
-  }
+  // Print initial configuration to file
+  FILE * Position_File = fopen("Initial_Position_File.txt","w");     // Stores particle positions
+  FILE * Paramaters_File = fopen("Initial_Paramaters_File.txt","w"); // Stores number of iterations, number of particles
 
+  Export_Pariticle_Positions(Num_Particles, Particles, Position_File);
+
+  // Print number of iterations + Number of particles on final lines
+  fprintf(Paramaters_File,"Number of Steps    : %d\n",1);
+  fprintf(Paramaters_File,"Number of particles: %d\n",Num_Particles);
+
+  // Close file
+  fclose(Position_File);
+  fclose(Paramaters_File);
+
+  // Run time steps
+  const double dt = .00001;                                          // Time step        : s
+  const int Num_Steps = 5000;
+  Vector Vel = {10,0,0};                                   // Forced particle velocity   : mm/s
+
+  // Computation time measurement variables
+  int Ms_Elapsed;
+  #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
+  clock_t timer = clock();
+
+  for(k = 0; k < Num_Steps; k++) {
+    //printf("Step #%d\n",k);
+    // Make the k = 0 face have a constant velocity
+    for(i = 0; i < Side_Len*Side_Len; i++) {
+      Particles[i].Set_vel(Vel);
+    }
+
+    // Update each particle's Stress tensor
+    for(i = 0; i < Num_Particles; i++) {
+      Update_P(Particles[i],Particles, dt);
+    }
+
+    // Update each particle's position
+    for(i = 0; i < Num_Particles; i++) {
+      Update_Particle_Position(Particles[i],Particles,dt);
+    }
+  }
+  timer = clock()-timer;
+
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to perform %d Particle iterations \n",Ms_Elapsed, Num_Steps);
   /* Run through a final round of printing (to make sure that the time step(s)
   worked
   for(i = 0; i < Side_Len; i++) {
@@ -334,8 +380,8 @@ void Particle_Tests(void) {
   // */
 
   /* Print results to file */
-  FILE * Position_File = fopen("Position_File.txt","w");              // Stores particle positions
-  FILE * Paramaters_File = fopen("Paramaters_File.txt","w");          // Stores number of iterations, number of particles
+  Position_File = fopen("Final_Position_File.txt","w");              // Stores particle positions
+  Paramaters_File = fopen("Final_Paramaters_File.txt","w");          // Stores number of iterations, number of particles
 
   Export_Pariticle_Positions(Num_Particles, Particles, Position_File);
 

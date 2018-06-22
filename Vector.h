@@ -32,6 +32,10 @@ class Vector {
 
     ~Vector(void);                                   // Destructor
 
+    // Vector equality
+    Vector & operator=(const double V_In[3]);        // Vector equality (defines V1 = V2[3])
+    Vector & operator=(const Vector & V_In);         // Vector equalitty (defines V1 = V2)
+
     // Operator overloading
     Vector operator+(const Vector & V_In) const;     // Vector addition (defines V1 + V2)
     Vector operator-(const Vector & V_In) const;     // Vector Subtraction (defines V1 - V2)
@@ -41,9 +45,6 @@ class Vector {
     Vector & operator+=(const Vector & V_In);        // Compound Vector addition (Defines V1 += V2)
     Vector & operator+=(const double V_In[3]);       // Compound Vector addition with a 3 element array (Defines V1 += V2[3])
     Vector & operator*=(const double c);             // Compound Scalar multiplication (defines V *= c)
-
-    Vector & operator=(const double V_In[3]);        // Vector equality (defines V1 = V2[3])
-    Vector & operator=(const Vector & V_In);         // Vector equalitty (defines V1 = V2)
 
     double & operator()(const uByte index);          // Write to a component of the vector (runs checks, safer)
     double operator()(const uByte index) const;      // Read a component of the vector (runs checks, safer)

@@ -39,6 +39,31 @@ Vector::~Vector(void) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// Vector equality
+
+Vector & Vector::operator=(const double V_In[3]) {
+  // Assign components of vector to V_In array
+  V[0] = V_In[0];
+  V[1] = V_In[1];
+  V[2] = V_In[2];
+
+  // Return this Vector
+  return *this;
+} // Vector & Vector::operator=(const double V_In[3]) {
+
+Vector & Vector::operator=(const Vector & V_In) {
+  // Assign components of V using V_In.
+  V[0] = V_In[0];
+  V[1] = V_In[1];
+  V[2] = V_In[2];
+
+  // Return this vector
+  return *this;
+} // Vector & Vector::operator=(const Vector V_In) {
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 // Simple arithmetic operators
 
 Vector Vector::operator+(const Vector & V_In) const {
@@ -137,31 +162,6 @@ Vector & Vector::operator*=(const double c) {
   // Return this vector (now scalled by c)
   return *this;
 } // Vector & Vector::operator*=(const double c) {
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Vector equality
-
-Vector & Vector::operator=(const double V_In[3]) {
-  // Assign components of vector to V_In array
-  V[0] = V_In[0];
-  V[1] = V_In[1];
-  V[2] = V_In[2];
-
-  // Return this Vector
-  return *this;
-} // Vector & Vector::operator=(const double V_In[3]) {
-
-Vector & Vector::operator=(const Vector & V_In) {
-  // Assign components of V using V_In.
-  V[0] = V_In[0];
-  V[1] = V_In[1];
-  V[2] = V_In[2];
-
-  // Return this vector
-  return *this;
-} // Vector & Vector::operator=(const Vector V_In) {
 
 
 

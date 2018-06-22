@@ -33,18 +33,16 @@ void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize static members of particle class
 
-double Particle::h = 4;
-double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);
+double Particle::h = 4;                                    // Suppoer function raduius   : mm
+double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);// Shape function amplitude   : mm^-3
 
-double Particle::Lame = 9e+6;
-double Particle::mu0 = .1e+6;
+double Particle::Lame = 9;                                 // Lame parameter             : Mpa
+double Particle::mu0 = .1;                                 // Shear modulus              : Mpa
 
-double Particle::mu = 1;
+double Particle::mu = 5e-9;                                // Viscosity                  : Mpa*s
 
-double Particle::E = 1;
-double Particle::alpha = 50;
-
-double Particle::density = 1;
+double Particle::E = .01;                                  // Hourglass stiffness        : Mpa
+double Particle::alpha = 50;                               // Hg control parameter       : Unitless
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions

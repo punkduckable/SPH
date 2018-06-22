@@ -32,6 +32,9 @@ class Tensor {
 
     ~Tensor(void);                                // Destructor
 
+    // Tensor equality
+    Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
+
     // Simple arithmetic operators
     Tensor operator+(const Tensor & T_In) const;  // Tensor addition (defines T1 + T2)
     Tensor operator-(const Tensor & T_In) const;  // Tensor subtraction (defines T1 - T2);
@@ -44,8 +47,6 @@ class Tensor {
     Tensor & operator+=(const Tensor & T_In);     // Compound Tensor addition (defines T1 += T2)
     Tensor & operator-=(const Tensor & T_In);     // Compound tensor subtraction (defines T1 -= T2)
     Tensor & operator*=(const Tensor & T_In);     // Compound Tensor-Tensor multiplication (defines T1 *= T2)
-
-    Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
 
     // Component access (public)
     double & operator()(const uByte row,
