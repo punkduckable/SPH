@@ -95,8 +95,8 @@ TODO / development history:
     DONE 6/18 implement neighbor list generating function
     DONE 6/21: Updated Strain energy function
     DONE 6/21: Updated particle methods to use ^-1, ^T and ^-T syntax with tensors.
-    - functions that allocate memory return 1 if allocation failed.
-    - Find way to set all static member variables in main function
+    DONE 6/22: Make all setting functions (Set_vel, Set_x, etc...) inline
+    DONE 6/22: Add units to all particle statements that involve units
 
   - Linked List class
     DONE 6/12: Write a two way linked list (will be used for neighbor search)
