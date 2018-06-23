@@ -366,7 +366,7 @@ void Particle_Tests(void) {
   timer = clock()-timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to perform %d Particle iterations \n",Ms_Elapsed, Num_Steps);
+  printf("It took %d ms to perform %ld Particle iterations \n",Ms_Elapsed, Num_Steps);
   /* Run through a final round of printing (to make sure that the time step(s)
   worked
   for(i = 0; i < Side_Len; i++) {
@@ -450,7 +450,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %d Tensor-Vector products \n",Ms_Elapsed, Num_Tests);
+  printf("It took %d ms to compute %ld Tensor-Vector products \n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor Inverse timing
@@ -463,7 +463,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %d Tensor inverses\n",Ms_Elapsed, Num_Tests);
+  printf("It took %d ms to compute %ld Tensor inverses\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Dyadic product timing */
@@ -476,7 +476,7 @@ void Timing_Tests(void) {
   timer = clock()-timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %d dyadic products\n",Ms_Elapsed, Num_Tests);
+  printf("It took %d ms to compute %ld dyadic products\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor Addition tests */
@@ -490,7 +490,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %d tensor additions products\n",Ms_Elapsed, Num_Tests);
+  printf("It took %d ms to compute %ld tensor additions products\n",Ms_Elapsed, Num_Tests);
 } // void Timing_Tests(void) {
 
 #endif
