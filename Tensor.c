@@ -1,6 +1,9 @@
 #if !defined(TENSOR_SOURCE)
 #define TENSOR_SOURCE
 
+#include "Tensor.h"
+#include "Vector.h"
+
 /* In this file, I define methods for tensor objects. It should be noted that
 tensor data is stored in a 9 element array rather than a 3x3 matrix. This is
 done because single dimension arrays tend to perform better and are, in my

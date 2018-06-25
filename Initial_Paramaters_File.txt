@@ -1,2 +1,0 @@
-Number of Steps    : 1
-Number of particles: 1000

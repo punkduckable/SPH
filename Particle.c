@@ -1,6 +1,11 @@
 #if !defined(PARTICLE_SOURCE)
 #define PARTICLE_SOURCE
 
+#include "Particle.h"
+#include "Tensor.h"
+#include "Vector.h"
+#include "List.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors and destructor
 
@@ -194,7 +199,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
     Mag_Rj = R[j].Magnitude();                   // |R[j]|                               : mm
 
     // Calculate shape function, shape function gradient for jth neighbor
-    W[j] = (h - Mag_Rj)*(h - Mag_Rj)*(h - Mag_Rj);                             //        :unitless
+    W[j] = Shape_Function_Amp*(h - Mag_Rj)*(h - Mag_Rj)*(h - Mag_Rj);                             //        :unitless
     Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_Rj)*(h - Mag_Rj))*(R[j] / Mag_Rj); //    : mm^-1
 
     // Add in the Current Neighbor's contribution to the Shape tensor
@@ -346,7 +351,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
     rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
 
     // Force_Int += Vi*Vj*(P_i + P_j)*P_In.Grad_W_Tilde[j];
-    Force_Int += Vi*Vj*(P_i + P_j)*Grad_W[j];                                  //        : N
+    Force_Int += (Vi*Vj)*(P_i + P_j)*Grad_W[j];                                  //        : N
 
     /* Calculate external Force */
 
@@ -354,8 +359,17 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
     Mag_Rj = Magnitude(R[j]);                                                  //        : mm
     Mag_rj = Magnitude(rj);                                                    //        : mm
 
+    // Error_ij = F_i*R_ij - r_ij
     Error_ij = (P_In.F)*(R[j]) - rj;                                           //        : mm
-    Error_ji =(Particles[Neighbor_ID].F)*(-1*R[j]) + rj;   // Rij = -Rji, rij = -rij     : mm
+    /* Note, to calculate Error_ji, we need to know the the jth particle's
+    deformation gradient, R_ji, and r_ji. We could calculate all of these, but we
+    can save some time by making a few clever observations. From the definion of
+    R,
+             R_ji = X_i - X_j = -(X_j - X_i) = -R_ij
+     Likewise, from the defintion of r, we can decduce that r_ij = -r_ji. Thus,
+            Error_ji = F_j*R_ji - r_ji = F_j*(-R_ij) + r_ij = -F_j*(R_ij) + r_ij
+        */
+    Error_ji = -1*(Particles[Neighbor_ID].F)*(R[j]) + rj;                      //        : mm
 
     delta_ij = Vector_Dot_Product(Error_ij, rj)/(Mag_rj);                      //        : mm
     /* Note: To find delta ji, we wan to take the dot product of Error_ji with
@@ -367,10 +381,10 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
     Therefore, we need to get r_ji from quantities available in the ith particle.
     However, r_ji = r_i - r_j = -(r_j - r_i) = -r_ij = -rj. Thus, we can just
     use the negative of P_In.rj for r_ji! */
-    delta_ji = Vector_Dot_Product(Error_ji, -1*rj)/(Mag_rj);                   //        : mm
+    delta_ji = -1*Vector_Dot_Product(Error_ji, rj)/(Mag_rj);                   //        : mm
 
-    Force_Hg += -1*alpha*((E*Vi*Vj*W[j])/(2*Mag_Rj*Mag_Rj))*
-                (delta_ij + delta_ji)*(rj/Mag_rj);                             //        : N
+    Force_Hg += (-1*alpha*((E*Vi*Vj*W[j])/(2*Mag_Rj*Mag_Rj*Mag_rj))*
+                (delta_ij + delta_ji))*(rj);                                   //        : N
   } // for(int j = 0; j < Num_Neighbors; j++) {
 
   /* Compute acceleration of particle at new position a(t_i+1).

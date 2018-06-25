@@ -1,6 +1,13 @@
 #if !defined(TESTS_SOURCE)
 #define TESTS_SOURCE
 
+#include "Tests.h"
+#include "Particle.h"
+#include "Tensor.h"
+#include "Vector.h"
+#include "List.h"
+#include "VTK_File.h"
+
 void Vector_Tests(void) {
   //////////////////////////////////////////////////////////////////////////////
   // Test vector methods
@@ -322,51 +329,58 @@ void Particle_Tests(void) {
   file, then run some time steps and store the final configuration in another
   file. */
 
-  // Print initial configuration to file
-  FILE * Position_File = fopen("Initial_Position_File.txt","w");     // Stores particle positions
-  FILE * Paramaters_File = fopen("Initial_Paramaters_File.txt","w"); // Stores number of iterations, number of particles
-
-  Export_Pariticle_Positions(Num_Particles, Particles, Position_File);
-
-  // Print number of iterations + Number of particles on final lines
-  fprintf(Paramaters_File,"Number of Steps    : %d\n",1);
-  fprintf(Paramaters_File,"Number of particles: %d\n",Num_Particles);
-
-  // Close file
-  fclose(Position_File);
-  fclose(Paramaters_File);
-
   // Run time steps
-  const double dt = .00001;                                          // Time step        : s
-  const int Num_Steps = 5000;
+  const double dt = .0001;                                           // Time step        : s
+  const int Num_Steps = 3000;
   Vector Vel = {10,0,0};                                   // Forced particle velocity   : mm/s
 
   // Computation time measurement variables
   int Ms_Elapsed;
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   clock_t timer = clock();
+  clock_t temp_timer, update_vel_timer = 0, update_P_timer = 0, update_x_timer = 0;
+  int MS_vel, MS_P, MS_x;
 
   for(k = 0; k < Num_Steps; k++) {
-    //printf("Step #%d\n",k);
+    temp_timer = clock();
     // Make the k = 0 face have a constant velocity
     for(i = 0; i < Side_Len*Side_Len; i++) {
       Particles[i].Set_vel(Vel);
     }
+    update_vel_timer += clock() - temp_timer;
 
     // Update each particle's Stress tensor
+    temp_timer = clock();
     for(i = 0; i < Num_Particles; i++) {
       Update_P(Particles[i],Particles, dt);
     }
+    update_P_timer += clock() - temp_timer;
 
     // Update each particle's position
+    temp_timer = clock();
     for(i = 0; i < Num_Particles; i++) {
       Update_Particle_Position(Particles[i],Particles,dt);
     }
+    update_x_timer += clock() - temp_timer;
+
+    // Print to file evert 100th iteration
+    if((k+1)%100 == 0) {
+      printf("%d iterations complete\n",k+1);
+      VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
+    } // if((k+1)%100 == 0) {
   }
   timer = clock()-timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  MS_vel = (int)((double)update_vel_timer / (double)CLOCKS_PER_MS);
+  MS_P = (int)((double)update_P_timer / (double)CLOCKS_PER_MS);
+  MS_x = (int)((double)update_x_timer / (double)CLOCKS_PER_MS);
+
   printf("It took %d ms to perform %ld Particle iterations \n",Ms_Elapsed, Num_Steps);
+  printf("%d ms spent on updating the velocity\n", MS_vel);
+  printf("%d ms spent on updating P\n", MS_P);
+  printf("%d ms spent on updating x\n", MS_x);
+
   /* Run through a final round of printing (to make sure that the time step(s)
   worked
   for(i = 0; i < Side_Len; i++) {
@@ -379,19 +393,6 @@ void Particle_Tests(void) {
   }
   // */
 
-  /* Print results to file */
-  Position_File = fopen("Final_Position_File.txt","w");              // Stores particle positions
-  Paramaters_File = fopen("Final_Paramaters_File.txt","w");          // Stores number of iterations, number of particles
-
-  Export_Pariticle_Positions(Num_Particles, Particles, Position_File);
-
-  // Print number of iterations + Number of particles on final lines
-  fprintf(Paramaters_File,"Number of Steps    : %d\n",1);
-  fprintf(Paramaters_File,"Number of particles: %d\n",Num_Particles);
-
-  // Close file
-  fclose(Position_File);
-  fclose(Paramaters_File);
 } // void Particle_Tests(void) {
 
 void Timing_Tests(void) {
@@ -479,7 +480,7 @@ void Timing_Tests(void) {
   printf("It took %d ms to compute %ld dyadic products\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  /* Tensor Addition tests */
+  /* Tensor Addition test */
   S1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
   S2 = S1.Inverse();
 
@@ -491,6 +492,19 @@ void Timing_Tests(void) {
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
   printf("It took %d ms to compute %ld tensor additions products\n",Ms_Elapsed, Num_Tests);
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  /* Compound Vector-Vector addition test */
+
+  V1 = {0,0,0}, V2 = {0,0,0};
+  timer = clock();
+  for(int i = 0; i < Num_Tests; i++) {
+    V1 += V2;
+  }
+  timer = clock() - timer;
+
+  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
+  printf("It took %d ms to compute %ld compound vector-vector additions\n",Ms_Elapsed, Num_Tests);
 } // void Timing_Tests(void) {
 
 #endif

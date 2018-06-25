@@ -1,6 +1,8 @@
 #if !defined(VECTOR_SOURCE)
 #define VECTOR_SOURCE
 
+#include "Vector.h"
+
 /* In this file, I define methods for Vector objects. Theese methods are
 designed to make vector objects work just like mathematical vectors. In general,
 I use [] to access components of the vectors. However, () and [] are defined in

@@ -11,6 +11,8 @@ and T2 denote 2nd order Tensor objects, S[9] denotes a tensor stored as a 9 elem
 array, V denotes a Vector object, c denotes a scalar. */
 
 class Tensor {
+  friend class Particle;
+  
   private:
     double S[9];                                  // Holds the 9 components of the Tensor
 

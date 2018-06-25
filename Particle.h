@@ -71,6 +71,10 @@ class Particle {
       return x;
     }
 
+    double Get_P_1_1(void) const {
+      return P[3*0 + 0];
+    }
+
     // Friend functions
     friend void Update_P(Particle & P_In,
                          const Particle * Particles,

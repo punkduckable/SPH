@@ -1,0 +1,2008 @@
+# vtk DataFile Version 3.0
+test_file
+ASCII
+DATASET POLYDATA
+POINTS 1000 float
+   2.60000,    0.00000,    0.00000;
+   2.60000,   -0.00000,    1.00000;
+   2.60000,   -0.00000,    2.00000;
+   2.60000,    0.00000,    3.00000;
+   2.60000,    0.00000,    4.00000;
+   2.60000,    0.00000,    5.00000;
+   2.60000,    0.00000,    6.00000;
+   2.60000,    0.00000,    7.00000;
+   2.60000,   -0.00000,    8.00000;
+   2.60000,    0.00000,    9.00000;
+   2.60000,    1.00000,    0.00000;
+   2.60000,    1.00000,    1.00000;
+   2.60000,    1.00000,    2.00000;
+   2.60000,    1.00000,    3.00000;
+   2.60000,    1.00000,    4.00000;
+   2.60000,    1.00000,    5.00000;
+   2.60000,    1.00000,    6.00000;
+   2.60000,    1.00000,    7.00000;
+   2.60000,    1.00000,    8.00000;
+   2.60000,    1.00000,    9.00000;
+   2.60000,    2.00000,    0.00000;
+   2.60000,    2.00000,    1.00000;
+   2.60000,    2.00000,    2.00000;
+   2.60000,    2.00000,    3.00000;
+   2.60000,    2.00000,    4.00000;
+   2.60000,    2.00000,    5.00000;
+   2.60000,    2.00000,    6.00000;
+   2.60000,    2.00000,    7.00000;
+   2.60000,    2.00000,    8.00000;
+   2.60000,    2.00000,    9.00000;
+   2.60000,    3.00000,    0.00000;
+   2.60000,    3.00000,    1.00000;
+   2.60000,    3.00000,    2.00000;
+   2.60000,    3.00000,    3.00000;
+   2.60000,    3.00000,    4.00000;
+   2.60000,    3.00000,    5.00000;
+   2.60000,    3.00000,    6.00000;
+   2.60000,    3.00000,    7.00000;
+   2.60000,    3.00000,    8.00000;
+   2.60000,    3.00000,    9.00000;
+   2.60000,    4.00000,    0.00000;
+   2.60000,    4.00000,    1.00000;
+   2.60000,    4.00000,    2.00000;
+   2.60000,    4.00000,    3.00000;
+   2.60000,    4.00000,    4.00000;
+   2.60000,    4.00000,    5.00000;
+   2.60000,    4.00000,    6.00000;
+   2.60000,    4.00000,    7.00000;
+   2.60000,    4.00000,    8.00000;
+   2.60000,    4.00000,    9.00000;
+   2.60000,    5.00000,    0.00000;
+   2.60000,    5.00000,    1.00000;
+   2.60000,    5.00000,    2.00000;
+   2.60000,    5.00000,    3.00000;
+   2.60000,    5.00000,    4.00000;
+   2.60000,    5.00000,    5.00000;
+   2.60000,    5.00000,    6.00000;
+   2.60000,    5.00000,    7.00000;
+   2.60000,    5.00000,    8.00000;
+   2.60000,    5.00000,    9.00000;
+   2.60000,    6.00000,    0.00000;
+   2.60000,    6.00000,    1.00000;
+   2.60000,    6.00000,    2.00000;
+   2.60000,    6.00000,    3.00000;
+   2.60000,    6.00000,    4.00000;
+   2.60000,    6.00000,    5.00000;
+   2.60000,    6.00000,    6.00000;
+   2.60000,    6.00000,    7.00000;
+   2.60000,    6.00000,    8.00000;
+   2.60000,    6.00000,    9.00000;
+   2.60000,    7.00000,    0.00000;
+   2.60000,    7.00000,    1.00000;
+   2.60000,    7.00000,    2.00000;
+   2.60000,    7.00000,    3.00000;
+   2.60000,    7.00000,    4.00000;
+   2.60000,    7.00000,    5.00000;
+   2.60000,    7.00000,    6.00000;
+   2.60000,    7.00000,    7.00000;
+   2.60000,    7.00000,    8.00000;
+   2.60000,    7.00000,    9.00000;
+   2.60000,    8.00000,    0.00000;
+   2.60000,    8.00000,    1.00000;
+   2.60000,    8.00000,    2.00000;
+   2.60000,    8.00000,    3.00000;
+   2.60000,    8.00000,    4.00000;
+   2.60000,    8.00000,    5.00000;
+   2.60000,    8.00000,    6.00000;
+   2.60000,    8.00000,    7.00000;
+   2.60000,    8.00000,    8.00000;
+   2.60000,    8.00000,    9.00000;
+   2.60000,    9.00000,    0.00000;
+   2.60000,    9.00000,    1.00000;
+   2.60000,    9.00000,    2.00000;
+   2.60000,    9.00000,    3.00000;
+   2.60000,    9.00000,    4.00000;
+   2.60000,    9.00000,    5.00000;
+   2.60000,    9.00000,    6.00000;
+   2.60000,    9.00000,    7.00000;
+   2.60000,    9.00000,    8.00000;
+   2.60000,    9.00000,    9.00000;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+       nan,        nan,        nan;
+POINT_DATA 1000
+SCALARS C float
+LOOKUP_TABLE default
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
+	            nan
