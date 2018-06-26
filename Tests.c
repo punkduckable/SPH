@@ -427,9 +427,9 @@ void Particle_Tests(void) {
   MS_x = (int)((double)update_x_timer / (double)CLOCKS_PER_MS);
 
   printf("It took %ld ms to perform %d Particle iterations \n",Ms_Elapsed, Num_Steps);
-  printf("%ld ms spent on updating the BC's\n", MS_BC);
-  printf("%ld ms spent on updating P\n", MS_P);
-  printf("%ld ms spent on updating x\n", MS_x);
+  printf("%ld ms to update BC's\n", MS_BC);
+  printf("%ld ms to update P\n", MS_P);
+  printf("%ld ms to update x\n", MS_x);
 
 } // void Particle_Tests(void) {
 
