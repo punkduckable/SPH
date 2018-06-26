@@ -37,14 +37,14 @@ bool VTK_File::Append_Digits(unsigned int N, string & Str) {
   Digits[File_Number_Max_Digits] = '\0';
 
   // Populate the elements of the Digits array
-  for(int i = File_Number_Max_Digits-1; i >= File_Number_Max_Digits - Num_Digits; i--) {
+  for(unsigned int i = File_Number_Max_Digits-1; i >= File_Number_Max_Digits - Num_Digits; i--) {
     Digits[i] = N%10+48;
     N /= 10;
-  } // for(int i = Num_Digits-1; i >= 0; i--) {
+  } // for(unsigned int i = Num_Digits-1; i >= 0; i--) {
 
-  for(int i = 0; i < File_Number_Max_Digits - Num_Digits; i++) {
+  for(unsigned int i = 0; i < File_Number_Max_Digits - Num_Digits; i++) {
     Digits[i] = '0';
-  } // for(int i = 0; i < File_Number_Max_Digits - Num_Digits; i++) {
+  } // for(unsigned int i = 0; i < File_Number_Max_Digits - Num_Digits; i++) {
 
   // Now return the string version of N
   Str += Digits;
@@ -76,22 +76,22 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   // Cycle through particles, print spacial positions of each particle
   Vector x;
-  for(int i = 0; i < Num_Particles; i++) {
+  for(unsigned int i = 0; i < Num_Particles; i++) {
     x = Particles[i].Get_x();
 
-    fprintf(File,"%10.5f, %10.5f, %10.5f;\n",x(0), x(1), x(2));
-  }
+    fprintf(File,"%10.5f \t %10.5f \t %10.5f\n",x(0), x(1), x(2));
+  } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   // Now print weighting information
   fprintf(File,"POINT_DATA %i\n", Num_Particles);
   fprintf(File,"SCALARS C float\n");
-  fprintf(File,"LOOKUP_TABLE default\n",Num_Particles);
+  fprintf(File,"LOOKUP_TABLE default\n");
 
   double P_1_1;
-  for(int i = 0; i < Num_Particles; i++) {
+  for(unsigned int i = 0; i < Num_Particles; i++) {
     P_1_1 = Particles[i].Get_P_1_1();
     fprintf(File,"\t %14.7f\n",P_1_1);
-  } // for(int i = 0; i < Num_Particles; i++) {
+  } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   fclose(File);
 } // void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles) {

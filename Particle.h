@@ -67,13 +67,9 @@ class Particle {
                        const Particle * Particles);        // Set Neighbors
 
     // Methods to access particle data
-    Vector Get_x(void) const {
-      return x;
-    }
-
-    double Get_P_1_1(void) const {
-      return P[3*0 + 0];
-    }
+    Vector Get_x(void) const { return x; }
+    Vector Get_X(void) const { return X; }
+    double Get_P_1_1(void) const { return P[3*0 + 0]; }
 
     // Friend functions
     friend void Update_P(Particle & P_In,
@@ -84,6 +80,8 @@ class Particle {
                                          const double dt); // Updates P_In's x (spacial position)
     friend bool Are_Neighbors(const Particle & P1,
                               const Particle & P2);        // Returns true P1 and P2 are neighbors, false otherwise
+
+    friend void Particle_Tests(void);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

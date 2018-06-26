@@ -3,2006 +3,2006 @@ test_file
 ASCII
 DATASET POLYDATA
 POINTS 1000 float
-   0.47000,    0.00000,   -0.00000;
-   0.47000,    0.00000,    1.00000;
-   0.47000,   -0.00000,    2.00000;
-   0.47000,   -0.00000,    3.00000;
-   0.47000,   -0.00000,    4.00000;
-   0.47000,   -0.00000,    5.00000;
-   0.47000,   -0.00000,    6.00000;
-   0.47000,   -0.00000,    7.00000;
-   0.47000,   -0.00000,    8.00000;
-   0.47000,   -0.00000,    9.00000;
-   0.47000,    1.00000,    0.00000;
-   0.47000,    1.00000,    1.00000;
-   0.47000,    1.00000,    2.00000;
-   0.47000,    1.00000,    3.00000;
-   0.47000,    1.00000,    4.00000;
-   0.47000,    1.00000,    5.00000;
-   0.47000,    1.00000,    6.00000;
-   0.47000,    1.00000,    7.00000;
-   0.47000,    1.00000,    8.00000;
-   0.47000,    1.00000,    9.00000;
-   0.47000,    2.00000,    0.00000;
-   0.47000,    2.00000,    1.00000;
-   0.47000,    2.00000,    2.00000;
-   0.47000,    2.00000,    3.00000;
-   0.47000,    2.00000,    4.00000;
-   0.47000,    2.00000,    5.00000;
-   0.47000,    2.00000,    6.00000;
-   0.47000,    2.00000,    7.00000;
-   0.47000,    2.00000,    8.00000;
-   0.47000,    2.00000,    9.00000;
-   0.47000,    3.00000,    0.00000;
-   0.47000,    3.00000,    1.00000;
-   0.47000,    3.00000,    2.00000;
-   0.47000,    3.00000,    3.00000;
-   0.47000,    3.00000,    4.00000;
-   0.47000,    3.00000,    5.00000;
-   0.47000,    3.00000,    6.00000;
-   0.47000,    3.00000,    7.00000;
-   0.47000,    3.00000,    8.00000;
-   0.47000,    3.00000,    9.00000;
-   0.47000,    4.00000,    0.00000;
-   0.47000,    4.00000,    1.00000;
-   0.47000,    4.00000,    2.00000;
-   0.47000,    4.00000,    3.00000;
-   0.47000,    4.00000,    4.00000;
-   0.47000,    4.00000,    5.00000;
-   0.47000,    4.00000,    6.00000;
-   0.47000,    4.00000,    7.00000;
-   0.47000,    4.00000,    8.00000;
-   0.47000,    4.00000,    9.00000;
-   0.47000,    5.00000,    0.00000;
-   0.47000,    5.00000,    1.00000;
-   0.47000,    5.00000,    2.00000;
-   0.47000,    5.00000,    3.00000;
-   0.47000,    5.00000,    4.00000;
-   0.47000,    5.00000,    5.00000;
-   0.47000,    5.00000,    6.00000;
-   0.47000,    5.00000,    7.00000;
-   0.47000,    5.00000,    8.00000;
-   0.47000,    5.00000,    9.00000;
-   0.47000,    6.00000,    0.00000;
-   0.47000,    6.00000,    1.00000;
-   0.47000,    6.00000,    2.00000;
-   0.47000,    6.00000,    3.00000;
-   0.47000,    6.00000,    4.00000;
-   0.47000,    6.00000,    5.00000;
-   0.47000,    6.00000,    6.00000;
-   0.47000,    6.00000,    7.00000;
-   0.47000,    6.00000,    8.00000;
-   0.47000,    6.00000,    9.00000;
-   0.47000,    7.00000,    0.00000;
-   0.47000,    7.00000,    1.00000;
-   0.47000,    7.00000,    2.00000;
-   0.47000,    7.00000,    3.00000;
-   0.47000,    7.00000,    4.00000;
-   0.47000,    7.00000,    5.00000;
-   0.47000,    7.00000,    6.00000;
-   0.47000,    7.00000,    7.00000;
-   0.47000,    7.00000,    8.00000;
-   0.47000,    7.00000,    9.00000;
-   0.47000,    8.00000,    0.00000;
-   0.47000,    8.00000,    1.00000;
-   0.47000,    8.00000,    2.00000;
-   0.47000,    8.00000,    3.00000;
-   0.47000,    8.00000,    4.00000;
-   0.47000,    8.00000,    5.00000;
-   0.47000,    8.00000,    6.00000;
-   0.47000,    8.00000,    7.00000;
-   0.47000,    8.00000,    8.00000;
-   0.47000,    8.00000,    9.00000;
-   0.47000,    9.00000,    0.00000;
-   0.47000,    9.00000,    1.00000;
-   0.47000,    9.00000,    2.00000;
-   0.47000,    9.00000,    3.00000;
-   0.47000,    9.00000,    4.00000;
-   0.47000,    9.00000,    5.00000;
-   0.47000,    9.00000,    6.00000;
-   0.47000,    9.00000,    7.00000;
-   0.47000,    9.00000,    8.00000;
-   0.47000,    9.00000,    9.00000;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
-       nan,        nan,        nan;
+   1.17500 	   -0.00000 	    0.00000
+   1.17500 	   -0.00000 	    1.00000
+   1.17500 	    0.00000 	    2.00000
+   1.17500 	    0.00000 	    3.00000
+   1.17500 	    0.00000 	    4.00000
+   1.17500 	    0.00000 	    5.00000
+   1.17500 	    0.00000 	    6.00000
+   1.17500 	    0.00000 	    7.00000
+   1.17500 	   -0.00000 	    8.00000
+   1.17500 	    0.00000 	    9.00000
+   1.17500 	    1.00000 	    0.00000
+   1.17500 	    1.00000 	    1.00000
+   1.17500 	    1.00000 	    2.00000
+   1.17500 	    1.00000 	    3.00000
+   1.17500 	    1.00000 	    4.00000
+   1.17500 	    1.00000 	    5.00000
+   1.17500 	    1.00000 	    6.00000
+   1.17500 	    1.00000 	    7.00000
+   1.17500 	    1.00000 	    8.00000
+   1.17500 	    1.00000 	    9.00000
+   1.17500 	    2.00000 	    0.00000
+   1.17500 	    2.00000 	    1.00000
+   1.17500 	    2.00000 	    2.00000
+   1.17500 	    2.00000 	    3.00000
+   1.17500 	    2.00000 	    4.00000
+   1.17500 	    2.00000 	    5.00000
+   1.17500 	    2.00000 	    6.00000
+   1.17500 	    2.00000 	    7.00000
+   1.17500 	    2.00000 	    8.00000
+   1.17500 	    2.00000 	    9.00000
+   1.17500 	    3.00000 	    0.00000
+   1.17500 	    3.00000 	    1.00000
+   1.17500 	    3.00000 	    2.00000
+   1.17500 	    3.00000 	    3.00000
+   1.17500 	    3.00000 	    4.00000
+   1.17500 	    3.00000 	    5.00000
+   1.17500 	    3.00000 	    6.00000
+   1.17500 	    3.00000 	    7.00000
+   1.17500 	    3.00000 	    8.00000
+   1.17500 	    3.00000 	    9.00000
+   1.17500 	    4.00000 	    0.00000
+   1.17500 	    4.00000 	    1.00000
+   1.17500 	    4.00000 	    2.00000
+   1.17500 	    4.00000 	    3.00000
+   1.17500 	    4.00000 	    4.00000
+   1.17500 	    4.00000 	    5.00000
+   1.17500 	    4.00000 	    6.00000
+   1.17500 	    4.00000 	    7.00000
+   1.17500 	    4.00000 	    8.00000
+   1.17500 	    4.00000 	    9.00000
+   1.17500 	    5.00000 	    0.00000
+   1.17500 	    5.00000 	    1.00000
+   1.17500 	    5.00000 	    2.00000
+   1.17500 	    5.00000 	    3.00000
+   1.17500 	    5.00000 	    4.00000
+   1.17500 	    5.00000 	    5.00000
+   1.17500 	    5.00000 	    6.00000
+   1.17500 	    5.00000 	    7.00000
+   1.17500 	    5.00000 	    8.00000
+   1.17500 	    5.00000 	    9.00000
+   1.17500 	    6.00000 	    0.00000
+   1.17500 	    6.00000 	    1.00000
+   1.17500 	    6.00000 	    2.00000
+   1.17500 	    6.00000 	    3.00000
+   1.17500 	    6.00000 	    4.00000
+   1.17500 	    6.00000 	    5.00000
+   1.17500 	    6.00000 	    6.00000
+   1.17500 	    6.00000 	    7.00000
+   1.17500 	    6.00000 	    8.00000
+   1.17500 	    6.00000 	    9.00000
+   1.17500 	    7.00000 	    0.00000
+   1.17500 	    7.00000 	    1.00000
+   1.17500 	    7.00000 	    2.00000
+   1.17500 	    7.00000 	    3.00000
+   1.17500 	    7.00000 	    4.00000
+   1.17500 	    7.00000 	    5.00000
+   1.17500 	    7.00000 	    6.00000
+   1.17500 	    7.00000 	    7.00000
+   1.17500 	    7.00000 	    8.00000
+   1.17500 	    7.00000 	    9.00000
+   1.17500 	    8.00000 	    0.00000
+   1.17500 	    8.00000 	    1.00000
+   1.17500 	    8.00000 	    2.00000
+   1.17500 	    8.00000 	    3.00000
+   1.17500 	    8.00000 	    4.00000
+   1.17500 	    8.00000 	    5.00000
+   1.17500 	    8.00000 	    6.00000
+   1.17500 	    8.00000 	    7.00000
+   1.17500 	    8.00000 	    8.00000
+   1.17500 	    8.00000 	    9.00000
+   1.17500 	    9.00000 	    0.00000
+   1.17500 	    9.00000 	    1.00000
+   1.17500 	    9.00000 	    2.00000
+   1.17500 	    9.00000 	    3.00000
+   1.17500 	    9.00000 	    4.00000
+   1.17500 	    9.00000 	    5.00000
+   1.17500 	    9.00000 	    6.00000
+   1.17500 	    9.00000 	    7.00000
+   1.17500 	    9.00000 	    8.00000
+   1.17500 	    9.00000 	    9.00000
+   2.19559 	   -0.23054 	   -0.23054
+   2.18134 	   -0.24870 	    0.88125
+   2.17997 	   -0.24800 	    1.93491
+   2.18847 	   -0.25520 	    2.94846
+   2.18204 	   -0.25417 	    3.98076
+   2.18204 	   -0.25417 	    5.01923
+   2.18847 	   -0.25520 	    6.05153
+   2.17997 	   -0.24800 	    7.06509
+   2.18134 	   -0.24869 	    8.11875
+   2.19559 	   -0.23053 	    9.23053
+   2.18134 	    0.88125 	   -0.24870
+   2.13728 	    0.84191 	    0.84191
+   2.12630 	    0.85730 	    1.91455
+   2.12972 	    0.85261 	    2.92199
+   2.12813 	    0.85684 	    3.97028
+   2.12813 	    0.85684 	    5.02971
+   2.12972 	    0.85261 	    6.07800
+   2.12630 	    0.85730 	    7.08544
+   2.13728 	    0.84191 	    8.15808
+   2.18134 	    0.88125 	    9.24869
+   2.17997 	    1.93491 	   -0.24800
+   2.12630 	    1.91455 	    0.85730
+   2.13765 	    1.91962 	    1.91962
+   2.13678 	    1.91993 	    2.90907
+   2.13919 	    1.92041 	    3.96499
+   2.13919 	    1.92041 	    5.03500
+   2.13678 	    1.91993 	    6.09092
+   2.13765 	    1.91962 	    7.08037
+   2.12630 	    1.91455 	    8.14269
+   2.17997 	    1.93491 	    9.24799
+   2.18847 	    2.94846 	   -0.25519
+   2.12972 	    2.92199 	    0.85261
+   2.13678 	    2.90907 	    1.91993
+   2.13295 	    2.90690 	    2.90690
+   2.13533 	    2.90593 	    3.96454
+   2.13533 	    2.90593 	    5.03545
+   2.13295 	    2.90690 	    6.09309
+   2.13678 	    2.90907 	    7.08006
+   2.12972 	    2.92199 	    8.14738
+   2.18847 	    2.94846 	    9.25519
+   2.18204 	    3.98076 	   -0.25417
+   2.12813 	    3.97027 	    0.85685
+   2.13919 	    3.96499 	    1.92042
+   2.13533 	    3.96454 	    2.90594
+   2.13756 	    3.96447 	    3.96447
+   2.13756 	    3.96447 	    5.03552
+   2.13533 	    3.96454 	    6.09405
+   2.13919 	    3.96499 	    7.07958
+   2.12813 	    3.97027 	    8.14315
+   2.18204 	    3.98076 	    9.25416
+   2.18204 	    5.01923 	   -0.25417
+   2.12813 	    5.02971 	    0.85685
+   2.13919 	    5.03499 	    1.92042
+   2.13533 	    5.03544 	    2.90594
+   2.13756 	    5.03551 	    3.96447
+   2.13756 	    5.03551 	    5.03552
+   2.13533 	    5.03544 	    6.09405
+   2.13919 	    5.03499 	    7.07958
+   2.12813 	    5.02971 	    8.14314
+   2.18204 	    5.01923 	    9.25416
+   2.18847 	    6.05153 	   -0.25519
+   2.12972 	    6.07799 	    0.85261
+   2.13678 	    6.09091 	    1.91993
+   2.13295 	    6.09308 	    2.90690
+   2.13533 	    6.09405 	    3.96454
+   2.13533 	    6.09405 	    5.03545
+   2.13295 	    6.09308 	    6.09309
+   2.13678 	    6.09091 	    7.08006
+   2.12972 	    6.07799 	    8.14738
+   2.18847 	    6.05153 	    9.25518
+   2.17997 	    7.06509 	   -0.24799
+   2.12630 	    7.08544 	    0.85731
+   2.13765 	    7.08037 	    1.91963
+   2.13678 	    7.08006 	    2.90907
+   2.13919 	    7.07958 	    3.96499
+   2.13919 	    7.07958 	    5.03500
+   2.13678 	    7.08006 	    6.09091
+   2.13765 	    7.08037 	    7.08037
+   2.12629 	    7.08544 	    8.14268
+   2.17997 	    7.06508 	    9.24799
+   2.18134 	    8.11874 	   -0.24869
+   2.13727 	    8.15808 	    0.84191
+   2.12630 	    8.14268 	    1.91455
+   2.12972 	    8.14737 	    2.92199
+   2.12813 	    8.14314 	    3.97028
+   2.12813 	    8.14314 	    5.02971
+   2.12972 	    8.14737 	    6.07800
+   2.12629 	    8.14268 	    7.08544
+   2.13727 	    8.15808 	    8.15808
+   2.18134 	    8.11874 	    9.24868
+   2.19559 	    9.23053 	   -0.23053
+   2.18134 	    9.24869 	    0.88126
+   2.17997 	    9.24799 	    1.93491
+   2.18847 	    9.25518 	    2.94847
+   2.18204 	    9.25416 	    3.98077
+   2.18204 	    9.25415 	    5.01923
+   2.18847 	    9.25518 	    6.05153
+   2.17997 	    9.24798 	    7.06508
+   2.18134 	    9.24868 	    8.11874
+   2.19559 	    9.23052 	    9.23052
+   2.90428 	   -0.32702 	   -0.32702
+   2.95544 	   -0.34434 	    0.75782
+   2.97319 	   -0.35597 	    1.83988
+   2.97376 	   -0.36746 	    2.90200
+   2.96871 	   -0.37421 	    3.96795
+   2.96871 	   -0.37421 	    5.03204
+   2.97376 	   -0.36746 	    6.09799
+   2.97319 	   -0.35597 	    7.16011
+   2.95544 	   -0.34434 	    8.24218
+   2.90429 	   -0.32702 	    9.32702
+   2.95544 	    0.75781 	   -0.34434
+   3.05748 	    0.72930 	    0.72930
+   3.09325 	    0.71597 	    1.84770
+   3.09300 	    0.70643 	    2.90958
+   3.08652 	    0.69529 	    3.97103
+   3.08652 	    0.69529 	    5.02896
+   3.09300 	    0.70643 	    6.09041
+   3.09325 	    0.71597 	    7.15229
+   3.05749 	    0.72930 	    8.27069
+   2.95545 	    0.75782 	    9.34433
+   2.97319 	    1.83988 	   -0.35597
+   3.09326 	    1.84770 	    0.71597
+   3.11607 	    1.85010 	    1.85010
+   3.10531 	    1.84517 	    2.91066
+   3.08904 	    1.83299 	    3.96859
+   3.08904 	    1.83299 	    5.03139
+   3.10531 	    1.84517 	    6.08933
+   3.11607 	    1.85010 	    7.14989
+   3.09326 	    1.84770 	    8.28402
+   2.97319 	    1.83988 	    9.35595
+   2.97376 	    2.90200 	   -0.36745
+   3.09300 	    2.90958 	    0.70643
+   3.10531 	    2.91066 	    1.84518
+   3.09088 	    2.90829 	    2.90829
+   3.07361 	    2.90267 	    3.96714
+   3.07361 	    2.90267 	    5.03285
+   3.09088 	    2.90829 	    6.09170
+   3.10531 	    2.91066 	    7.15481
+   3.09300 	    2.90958 	    8.29356
+   2.97376 	    2.90200 	    9.36744
+   2.96872 	    3.96794 	   -0.37420
+   3.08652 	    3.97102 	    0.69529
+   3.08904 	    3.96859 	    1.83300
+   3.07361 	    3.96714 	    2.90267
+   3.05432 	    3.96549 	    3.96550
+   3.05431 	    3.96549 	    5.03449
+   3.07361 	    3.96714 	    6.09732
+   3.08904 	    3.96859 	    7.16699
+   3.08652 	    3.97102 	    8.30469
+   2.96872 	    3.96795 	    9.37419
+   2.96871 	    5.03204 	   -0.37420
+   3.08652 	    5.02896 	    0.69529
+   3.08904 	    5.03139 	    1.83300
+   3.07361 	    5.03284 	    2.90267
+   3.05431 	    5.03448 	    3.96550
+   3.05431 	    5.03448 	    5.03449
+   3.07361 	    5.03284 	    6.09732
+   3.08904 	    5.03139 	    7.16699
+   3.08652 	    5.02896 	    8.30469
+   2.96872 	    5.03204 	    9.37419
+   2.97376 	    6.09798 	   -0.36745
+   3.09300 	    6.09040 	    0.70643
+   3.10531 	    6.08932 	    1.84518
+   3.09088 	    6.09169 	    2.90829
+   3.07361 	    6.09731 	    3.96714
+   3.07361 	    6.09731 	    5.03285
+   3.09087 	    6.09169 	    6.09170
+   3.10530 	    6.08932 	    7.15481
+   3.09300 	    6.09040 	    8.29355
+   2.97376 	    6.09798 	    9.36744
+   2.97319 	    7.16011 	   -0.35596
+   3.09325 	    7.15228 	    0.71598
+   3.11607 	    7.14988 	    1.85011
+   3.10530 	    7.15481 	    2.91067
+   3.08904 	    7.16699 	    3.96859
+   3.08904 	    7.16699 	    5.03139
+   3.10530 	    7.15481 	    6.08933
+   3.11607 	    7.14988 	    7.14988
+   3.09326 	    7.15228 	    8.28401
+   2.97319 	    7.16010 	    9.35595
+   2.95544 	    8.24217 	   -0.34433
+   3.05749 	    8.27068 	    0.72931
+   3.09326 	    8.28401 	    1.84771
+   3.09300 	    8.29355 	    2.90959
+   3.08652 	    8.30469 	    3.97103
+   3.08652 	    8.30469 	    5.02896
+   3.09300 	    8.29355 	    6.09040
+   3.09326 	    8.28401 	    7.15228
+   3.05749 	    8.27068 	    8.27068
+   2.95545 	    8.24217 	    9.34432
+   2.90429 	    9.32701 	   -0.32701
+   2.95545 	    9.34432 	    0.75782
+   2.97319 	    9.35595 	    1.83989
+   2.97376 	    9.36744 	    2.90201
+   2.96872 	    9.37418 	    3.96795
+   2.96872 	    9.37418 	    5.03204
+   2.97377 	    9.36743 	    6.09798
+   2.97319 	    9.35594 	    7.16010
+   2.95545 	    9.34432 	    8.24217
+   2.90429 	    9.32700 	    9.32701
+   3.72562 	   -0.38399 	   -0.38398
+   3.76167 	   -0.40271 	    0.68064
+   3.77851 	   -0.42482 	    1.76773
+   3.78128 	   -0.44345 	    2.86172
+   3.77647 	   -0.45551 	    3.95407
+   3.77647 	   -0.45550 	    5.04591
+   3.78128 	   -0.44344 	    6.13826
+   3.77851 	   -0.42481 	    7.23226
+   3.76167 	   -0.40270 	    8.31934
+   3.72562 	   -0.38398 	    9.38397
+   3.76167 	    0.68064 	   -0.40270
+   3.81346 	    0.66091 	    0.66092
+   3.84962 	    0.62669 	    1.76739
+   3.85950 	    0.60438 	    2.87231
+   3.85049 	    0.58373 	    3.95824
+   3.85049 	    0.58373 	    5.04174
+   3.85950 	    0.60438 	    6.12768
+   3.84962 	    0.62669 	    7.23259
+   3.81346 	    0.66091 	    8.33907
+   3.76167 	    0.68065 	    9.40269
+   3.77851 	    1.76772 	   -0.42481
+   3.84962 	    1.76738 	    0.62670
+   3.87467 	    1.73960 	    1.73961
+   3.88101 	    1.72561 	    2.86915
+   3.86541 	    1.70160 	    3.95546
+   3.86540 	    1.70160 	    5.04452
+   3.88101 	    1.72561 	    6.13083
+   3.87468 	    1.73961 	    7.26037
+   3.84962 	    1.76739 	    8.37328
+   3.77852 	    1.76773 	    9.42480
+   3.78128 	    2.86172 	   -0.44344
+   3.85951 	    2.87230 	    0.60439
+   3.88101 	    2.86914 	    1.72562
+   3.88987 	    2.86404 	    2.86404
+   3.87526 	    2.85364 	    3.95303
+   3.87526 	    2.85364 	    5.04695
+   3.88987 	    2.86404 	    6.13593
+   3.88101 	    2.86915 	    7.27436
+   3.85951 	    2.87230 	    8.39559
+   3.78129 	    2.86172 	    9.44342
+   3.77648 	    3.95407 	   -0.45550
+   3.85049 	    3.95823 	    0.58374
+   3.86541 	    3.95545 	    1.70161
+   3.87526 	    3.95302 	    2.85365
+   3.85798 	    3.94949 	    3.94950
+   3.85798 	    3.94950 	    5.05047
+   3.87526 	    3.95302 	    6.14633
+   3.86541 	    3.95545 	    7.29837
+   3.85049 	    3.95823 	    8.41624
+   3.77648 	    3.95407 	    9.45548
+   3.77648 	    5.04591 	   -0.45550
+   3.85049 	    5.04174 	    0.58374
+   3.86540 	    5.04451 	    1.70161
+   3.87526 	    5.04694 	    2.85365
+   3.85798 	    5.05046 	    3.94950
+   3.85798 	    5.05046 	    5.05047
+   3.87525 	    5.04694 	    6.14633
+   3.86541 	    5.04451 	    7.29837
+   3.85049 	    5.04174 	    8.41624
+   3.77648 	    5.04590 	    9.45548
+   3.78128 	    6.13826 	   -0.44344
+   3.85950 	    6.12767 	    0.60439
+   3.88101 	    6.13082 	    1.72562
+   3.88986 	    6.13592 	    2.86404
+   3.87526 	    6.14632 	    3.95303
+   3.87525 	    6.14632 	    5.04695
+   3.88986 	    6.13592 	    6.13593
+   3.88101 	    6.13082 	    7.27436
+   3.85951 	    6.12767 	    8.39559
+   3.78129 	    6.13825 	    9.44342
+   3.77851 	    7.23226 	   -0.42481
+   3.84962 	    7.23258 	    0.62670
+   3.87468 	    7.26036 	    1.73961
+   3.88101 	    7.27435 	    2.86915
+   3.86541 	    7.29836 	    3.95546
+   3.86541 	    7.29836 	    5.04452
+   3.88101 	    7.27435 	    6.13083
+   3.87468 	    7.26036 	    7.26036
+   3.84962 	    7.23258 	    8.37328
+   3.77852 	    7.23225 	    9.42479
+   3.76167 	    8.31934 	   -0.40270
+   3.81346 	    8.33906 	    0.66092
+   3.84963 	    8.37328 	    1.76740
+   3.85951 	    8.39558 	    2.87231
+   3.85049 	    8.41623 	    3.95824
+   3.85049 	    8.41623 	    5.04174
+   3.85951 	    8.39558 	    6.12767
+   3.84963 	    8.37327 	    7.23259
+   3.81346 	    8.33906 	    8.33906
+   3.76168 	    8.31933 	    9.40268
+   3.72562 	    9.38397 	   -0.38397
+   3.76168 	    9.40268 	    0.68065
+   3.77852 	    9.42479 	    1.76773
+   3.78129 	    9.44342 	    2.86173
+   3.77648 	    9.45547 	    3.95407
+   3.77648 	    9.45547 	    5.04591
+   3.78129 	    9.44341 	    6.13826
+   3.77852 	    9.42478 	    7.23225
+   3.76168 	    9.40268 	    8.31933
+   3.72563 	    9.38396 	    9.38396
+   4.62923 	   -0.39971 	   -0.39971
+   4.64188 	   -0.41258 	    0.63992
+   4.65025 	   -0.44078 	    1.73207
+   4.65069 	   -0.46336 	    2.83852
+   4.64894 	   -0.47766 	    3.94612
+   4.64894 	   -0.47766 	    5.05386
+   4.65069 	   -0.46335 	    6.16146
+   4.65025 	   -0.44077 	    7.26791
+   4.64188 	   -0.41258 	    8.36007
+   4.62923 	   -0.39970 	    9.39970
+   4.64188 	    0.63991 	   -0.41258
+   4.65900 	    0.64611 	    0.64612
+   4.67817 	    0.61133 	    1.73710
+   4.68020 	    0.58460 	    2.84949
+   4.67713 	    0.56229 	    3.95071
+   4.67713 	    0.56229 	    5.04927
+   4.68020 	    0.58460 	    6.15049
+   4.67817 	    0.61133 	    7.26288
+   4.65900 	    0.64611 	    8.35386
+   4.64188 	    0.63992 	    9.41256
+   4.65025 	    1.73207 	   -0.44077
+   4.67817 	    1.73709 	    0.61134
+   4.69989 	    1.70623 	    1.70624
+   4.70042 	    1.68945 	    2.84587
+   4.69643 	    1.66311 	    3.94925
+   4.69643 	    1.66311 	    5.05072
+   4.70042 	    1.68945 	    6.15410
+   4.69989 	    1.70623 	    7.29374
+   4.67817 	    1.73709 	    8.38864
+   4.65026 	    1.73208 	    9.44076
+   4.65069 	    2.83852 	   -0.46335
+   4.68020 	    2.84948 	    0.58461
+   4.70042 	    2.84586 	    1.68946
+   4.70127 	    2.83954 	    2.83955
+   4.69774 	    2.82755 	    3.94641
+   4.69774 	    2.82755 	    5.05356
+   4.70127 	    2.83954 	    6.16042
+   4.70042 	    2.84587 	    7.31051
+   4.68020 	    2.84949 	    8.41537
+   4.65069 	    2.83852 	    9.46333
+   4.64894 	    3.94612 	   -0.47766
+   4.67713 	    3.95070 	    0.56230
+   4.69643 	    3.94925 	    1.66312
+   4.69774 	    3.94640 	    2.82756
+   4.69364 	    3.94218 	    3.94220
+   4.69364 	    3.94218 	    5.05778
+   4.69774 	    3.94640 	    6.17241
+   4.69643 	    3.94925 	    7.33685
+   4.67713 	    3.95070 	    8.43768
+   4.64894 	    3.94612 	    9.47764
+   4.64894 	    5.05385 	   -0.47765
+   4.67713 	    5.04926 	    0.56230
+   4.69643 	    5.05071 	    1.66312
+   4.69774 	    5.05355 	    2.82756
+   4.69364 	    5.05776 	    3.94220
+   4.69364 	    5.05776 	    5.05778
+   4.69774 	    5.05355 	    6.17241
+   4.69643 	    5.05071 	    7.33685
+   4.67713 	    5.04926 	    8.43768
+   4.64894 	    5.05385 	    9.47764
+   4.65069 	    6.16145 	   -0.46335
+   4.68020 	    6.15048 	    0.58461
+   4.70042 	    6.15409 	    1.68946
+   4.70127 	    6.16041 	    2.83955
+   4.69774 	    6.17240 	    3.94641
+   4.69774 	    6.17240 	    5.05356
+   4.70127 	    6.16041 	    6.16042
+   4.70042 	    6.15409 	    7.31051
+   4.68020 	    6.15048 	    8.41537
+   4.65069 	    6.16145 	    9.46333
+   4.65025 	    7.26790 	   -0.44077
+   4.67817 	    7.26287 	    0.61134
+   4.69989 	    7.29373 	    1.70624
+   4.70042 	    7.31050 	    2.84587
+   4.69643 	    7.33684 	    3.94925
+   4.69643 	    7.33684 	    5.05072
+   4.70042 	    7.31050 	    6.15410
+   4.69989 	    7.29372 	    7.29373
+   4.67817 	    7.26287 	    8.38864
+   4.65026 	    7.26790 	    9.44075
+   4.64188 	    8.36006 	   -0.41257
+   4.65900 	    8.35385 	    0.64612
+   4.67817 	    8.38863 	    1.73710
+   4.68020 	    8.41536 	    2.84949
+   4.67713 	    8.43767 	    3.95071
+   4.67713 	    8.43767 	    5.04927
+   4.68020 	    8.41536 	    6.15048
+   4.67817 	    8.38863 	    7.26288
+   4.65900 	    8.35385 	    8.35386
+   4.64188 	    8.36005 	    9.41256
+   4.62923 	    9.39970 	   -0.39970
+   4.64188 	    9.41256 	    0.63993
+   4.65026 	    9.44075 	    1.73208
+   4.65070 	    9.46332 	    2.83853
+   4.64894 	    9.47763 	    3.94612
+   4.64894 	    9.47763 	    5.05386
+   4.65070 	    9.46332 	    6.16145
+   4.65026 	    9.44074 	    7.26790
+   4.64188 	    9.41255 	    8.36006
+   4.62923 	    9.39969 	    9.39969
+   5.54447 	   -0.39922 	   -0.39922
+   5.53153 	   -0.41202 	    0.64042
+   5.52299 	   -0.44014 	    1.73245
+   5.52261 	   -0.46265 	    2.83874
+   5.52447 	   -0.47691 	    3.94619
+   5.52447 	   -0.47691 	    5.05379
+   5.52261 	   -0.46265 	    6.16124
+   5.52299 	   -0.44013 	    7.26753
+   5.53153 	   -0.41201 	    8.35957
+   5.54446 	   -0.39921 	    9.39921
+   5.53153 	    0.64041 	   -0.41202
+   5.51356 	    0.64667 	    0.64668
+   5.49412 	    0.61201 	    1.73750
+   5.49219 	    0.58533 	    2.84978
+   5.49543 	    0.56311 	    3.95076
+   5.49543 	    0.56311 	    5.04922
+   5.49219 	    0.58533 	    6.15020
+   5.49412 	    0.61201 	    7.26248
+   5.51356 	    0.64668 	    8.35330
+   5.53153 	    0.64042 	    9.41200
+   5.52299 	    1.73245 	   -0.44013
+   5.49412 	    1.73749 	    0.61202
+   5.47214 	    1.70639 	    1.70640
+   5.47172 	    1.68974 	    2.84719
+   5.47570 	    1.66347 	    3.94908
+   5.47570 	    1.66347 	    5.05089
+   5.47172 	    1.68974 	    6.15278
+   5.47214 	    1.70640 	    7.29357
+   5.49412 	    1.73750 	    8.38796
+   5.52299 	    1.73245 	    9.44011
+   5.52261 	    2.83874 	   -0.46264
+   5.49219 	    2.84977 	    0.58534
+   5.47172 	    2.84718 	    1.68975
+   5.47121 	    2.84093 	    2.84095
+   5.47459 	    2.82932 	    3.94611
+   5.47459 	    2.82932 	    5.05387
+   5.47121 	    2.84094 	    6.15903
+   5.47172 	    2.84719 	    7.31022
+   5.49219 	    2.84978 	    8.41463
+   5.52261 	    2.83874 	    9.46263
+   5.52447 	    3.94619 	   -0.47690
+   5.49543 	    3.95075 	    0.56312
+   5.47570 	    3.94908 	    1.66348
+   5.47459 	    3.94610 	    2.82933
+   5.47891 	    3.94198 	    3.94199
+   5.47891 	    3.94198 	    5.05798
+   5.47459 	    3.94610 	    6.17064
+   5.47570 	    3.94908 	    7.33649
+   5.49543 	    3.95075 	    8.43686
+   5.52447 	    3.94619 	    9.47689
+   5.52447 	    5.05378 	   -0.47690
+   5.49543 	    5.04921 	    0.56312
+   5.47570 	    5.05088 	    1.66348
+   5.47459 	    5.05386 	    2.82933
+   5.47891 	    5.05797 	    3.94199
+   5.47891 	    5.05797 	    5.05798
+   5.47459 	    5.05386 	    6.17064
+   5.47570 	    5.05088 	    7.33649
+   5.49543 	    5.04921 	    8.43686
+   5.52447 	    5.05378 	    9.47689
+   5.52261 	    6.16123 	   -0.46264
+   5.49219 	    6.15019 	    0.58534
+   5.47172 	    6.15277 	    1.68975
+   5.47121 	    6.15902 	    2.84095
+   5.47459 	    6.17063 	    3.94611
+   5.47459 	    6.17063 	    5.05387
+   5.47121 	    6.15902 	    6.15903
+   5.47172 	    6.15277 	    7.31022
+   5.49219 	    6.15019 	    8.41463
+   5.52261 	    6.16123 	    9.46262
+   5.52299 	    7.26753 	   -0.44013
+   5.49412 	    7.26247 	    0.61202
+   5.47214 	    7.29356 	    1.70641
+   5.47172 	    7.31021 	    2.84720
+   5.47570 	    7.33648 	    3.94909
+   5.47570 	    7.33648 	    5.05089
+   5.47172 	    7.31021 	    6.15278
+   5.47214 	    7.29356 	    7.29357
+   5.49412 	    7.26246 	    8.38796
+   5.52299 	    7.26752 	    9.44011
+   5.53153 	    8.35956 	   -0.41201
+   5.51356 	    8.35329 	    0.64668
+   5.49412 	    8.38795 	    1.73750
+   5.49219 	    8.41462 	    2.84978
+   5.49543 	    8.43685 	    3.95076
+   5.49543 	    8.43685 	    5.04922
+   5.49219 	    8.41462 	    6.15019
+   5.49412 	    8.38795 	    7.26247
+   5.51356 	    8.35329 	    8.35330
+   5.53153 	    8.35955 	    9.41199
+   5.54446 	    9.39920 	   -0.39921
+   5.53153 	    9.41200 	    0.64043
+   5.52299 	    9.44011 	    1.73246
+   5.52261 	    9.46262 	    2.83875
+   5.52447 	    9.47688 	    3.94619
+   5.52447 	    9.47688 	    5.05379
+   5.52261 	    9.46262 	    6.16123
+   5.52299 	    9.44010 	    7.26752
+   5.53153 	    9.41199 	    8.35956
+   5.54446 	    9.39919 	    9.39920
+   6.44782 	   -0.38259 	   -0.38259
+   6.41165 	   -0.40112 	    0.68200
+   6.39471 	   -0.42303 	    1.76873
+   6.39203 	   -0.44151 	    2.86228
+   6.39692 	   -0.45346 	    3.95425
+   6.39692 	   -0.45346 	    5.04573
+   6.39203 	   -0.44151 	    6.13770
+   6.39471 	   -0.42302 	    7.23125
+   6.41165 	   -0.40111 	    8.31799
+   6.44782 	   -0.38258 	    9.38258
+   6.41165 	    0.68200 	   -0.40111
+   6.35948 	    0.66252 	    0.66253
+   6.32317 	    0.62867 	    1.76854
+   6.31348 	    0.60646 	    2.87292
+   6.32263 	    0.58600 	    3.95839
+   6.32263 	    0.58600 	    5.04159
+   6.31348 	    0.60646 	    6.12707
+   6.32317 	    0.62867 	    7.23144
+   6.35948 	    0.66252 	    8.33746
+   6.41164 	    0.68201 	    9.40110
+   6.39471 	    1.76873 	   -0.42302
+   6.32317 	    1.76853 	    0.62868
+   6.29711 	    1.74130 	    1.74131
+   6.29144 	    1.72729 	    2.86938
+   6.30705 	    1.70331 	    3.95557
+   6.30706 	    1.70331 	    5.04440
+   6.29144 	    1.72729 	    6.13060
+   6.29711 	    1.74130 	    7.25867
+   6.32317 	    1.76853 	    8.37130
+   6.39470 	    1.76874 	    9.42301
+   6.39203 	    2.86228 	   -0.44151
+   6.31348 	    2.87291 	    0.60647
+   6.29144 	    2.86937 	    1.72730
+   6.28360 	    2.86398 	    2.86399
+   6.29796 	    2.85371 	    3.95299
+   6.29796 	    2.85371 	    5.04698
+   6.28360 	    2.86398 	    6.13599
+   6.29144 	    2.86937 	    7.27267
+   6.31348 	    2.87291 	    8.39351
+   6.39202 	    2.86228 	    9.44149
+   6.39691 	    3.95425 	   -0.45346
+   6.32263 	    3.95838 	    0.58601
+   6.30705 	    3.95557 	    1.70332
+   6.29796 	    3.95298 	    2.85372
+   6.31474 	    3.94958 	    3.94959
+   6.31474 	    3.94958 	    5.05038
+   6.29796 	    3.95298 	    6.14626
+   6.30705 	    3.95557 	    7.29665
+   6.32263 	    3.95838 	    8.41397
+   6.39691 	    3.95425 	    9.45344
+   6.39691 	    5.04573 	   -0.45346
+   6.32263 	    5.04159 	    0.58601
+   6.30706 	    5.04440 	    1.70332
+   6.29796 	    5.04697 	    2.85372
+   6.31474 	    5.05037 	    3.94959
+   6.31475 	    5.05037 	    5.05038
+   6.29796 	    5.04697 	    6.14626
+   6.30706 	    5.04439 	    7.29665
+   6.32263 	    5.04159 	    8.41397
+   6.39691 	    5.04573 	    9.45344
+   6.39203 	    6.13770 	   -0.44150
+   6.31348 	    6.12706 	    0.60647
+   6.29144 	    6.13059 	    1.72730
+   6.28360 	    6.13598 	    2.86399
+   6.29796 	    6.14625 	    3.95299
+   6.29796 	    6.14625 	    5.04698
+   6.28360 	    6.13598 	    6.13599
+   6.29144 	    6.13059 	    7.27267
+   6.31348 	    6.12706 	    8.39351
+   6.39202 	    6.13769 	    9.44149
+   6.39471 	    7.23125 	   -0.42302
+   6.32317 	    7.23144 	    0.62868
+   6.29711 	    7.25866 	    1.74131
+   6.29144 	    7.27267 	    2.86938
+   6.30705 	    7.29664 	    3.95557
+   6.30705 	    7.29664 	    5.04440
+   6.29144 	    7.27266 	    6.13060
+   6.29711 	    7.25866 	    7.25866
+   6.32317 	    7.23143 	    8.37130
+   6.39470 	    7.23124 	    9.42300
+   6.41165 	    8.31798 	   -0.40111
+   6.35948 	    8.33745 	    0.66253
+   6.32317 	    8.37129 	    1.76854
+   6.31348 	    8.39350 	    2.87292
+   6.32263 	    8.41396 	    3.95839
+   6.32263 	    8.41396 	    5.04159
+   6.31348 	    8.39350 	    6.12706
+   6.32316 	    8.37129 	    7.23144
+   6.35948 	    8.33745 	    8.33745
+   6.41164 	    8.31797 	    9.40109
+   6.44782 	    9.38258 	   -0.38258
+   6.41164 	    9.40110 	    0.68201
+   6.39470 	    9.42300 	    1.76874
+   6.39202 	    9.44148 	    2.86229
+   6.39691 	    9.45343 	    3.95425
+   6.39691 	    9.45343 	    5.04573
+   6.39202 	    9.44148 	    6.13770
+   6.39470 	    9.42300 	    7.23125
+   6.41164 	    9.40109 	    8.31798
+   6.44781 	    9.38257 	    9.38257
+   7.26951 	   -0.32520 	   -0.32520
+   7.21848 	   -0.34228 	    0.75954
+   7.20078 	   -0.35368 	    1.84109
+   7.20033 	   -0.36501 	    2.90267
+   7.20543 	   -0.37164 	    3.96815
+   7.20543 	   -0.37164 	    5.03184
+   7.20032 	   -0.36501 	    6.09732
+   7.20078 	   -0.35367 	    7.15890
+   7.21848 	   -0.34227 	    8.24045
+   7.26950 	   -0.32519 	    9.32519
+   7.21848 	    0.75954 	   -0.34227
+   7.11621 	    0.73128 	    0.73128
+   7.08028 	    0.71825 	    1.84905
+   7.08070 	    0.70881 	    2.91028
+   7.08730 	    0.69784 	    3.97123
+   7.08730 	    0.69784 	    5.02877
+   7.08070 	    0.70882 	    6.08971
+   7.08028 	    0.71826 	    7.15093
+   7.11621 	    0.73128 	    8.26870
+   7.21848 	    0.75955 	    9.34226
+   7.20078 	    1.84109 	   -0.35367
+   7.08028 	    1.84905 	    0.71826
+   7.05811 	    1.85163 	    1.85164
+   7.06848 	    1.84658 	    2.91131
+   7.08504 	    1.83476 	    3.96944
+   7.08504 	    1.83477 	    5.03055
+   7.06849 	    1.84658 	    6.08868
+   7.05811 	    1.85163 	    7.14835
+   7.08028 	    1.84905 	    8.28172
+   7.20077 	    1.84110 	    9.35366
+   7.20032 	    2.90267 	   -0.36500
+   7.08070 	    2.91028 	    0.70882
+   7.06848 	    2.91130 	    1.84658
+   7.08266 	    2.90911 	    2.90911
+   7.10012 	    2.90364 	    3.96796
+   7.10012 	    2.90364 	    5.03203
+   7.08266 	    2.90911 	    6.09087
+   7.06848 	    2.91130 	    7.15340
+   7.08070 	    2.91028 	    8.29116
+   7.20032 	    2.90267 	    9.36499
+   7.20543 	    3.96815 	   -0.37164
+   7.08730 	    3.97122 	    0.69784
+   7.08504 	    3.96943 	    1.83477
+   7.10012 	    3.96796 	    2.90365
+   7.12001 	    3.96636 	    3.96637
+   7.12001 	    3.96636 	    5.03362
+   7.10012 	    3.96796 	    6.09634
+   7.08504 	    3.96943 	    7.16522
+   7.08729 	    3.97122 	    8.30214
+   7.20543 	    3.96815 	    9.37162
+   7.20543 	    5.03184 	   -0.37164
+   7.08730 	    5.02876 	    0.69784
+   7.08504 	    5.03055 	    1.83477
+   7.10012 	    5.03203 	    2.90365
+   7.12001 	    5.03362 	    3.96637
+   7.12001 	    5.03362 	    5.03362
+   7.10012 	    5.03203 	    6.09634
+   7.08504 	    5.03055 	    7.16522
+   7.08730 	    5.02876 	    8.30214
+   7.20543 	    5.03184 	    9.37162
+   7.20032 	    6.09732 	   -0.36500
+   7.08070 	    6.08970 	    0.70882
+   7.06849 	    6.08868 	    1.84658
+   7.08266 	    6.09087 	    2.90911
+   7.10012 	    6.09633 	    3.96796
+   7.10012 	    6.09634 	    5.03203
+   7.08267 	    6.09087 	    6.09087
+   7.06849 	    6.08868 	    7.15340
+   7.08070 	    6.08970 	    8.29116
+   7.20032 	    6.09732 	    9.36499
+   7.20078 	    7.15889 	   -0.35367
+   7.08028 	    7.15093 	    0.71826
+   7.05811 	    7.14835 	    1.85164
+   7.06849 	    7.15340 	    2.91131
+   7.08504 	    7.16521 	    3.96944
+   7.08504 	    7.16521 	    5.03055
+   7.06849 	    7.15340 	    6.08868
+   7.05812 	    7.14834 	    7.14835
+   7.08028 	    7.15092 	    8.28172
+   7.20077 	    7.15889 	    9.35365
+   7.21848 	    8.24044 	   -0.34227
+   7.11621 	    8.26870 	    0.73129
+   7.08028 	    8.28172 	    1.84906
+   7.08070 	    8.29116 	    2.91028
+   7.08729 	    8.30214 	    3.97123
+   7.08730 	    8.30213 	    5.02876
+   7.08070 	    8.29116 	    6.08971
+   7.08028 	    8.28172 	    7.15093
+   7.11621 	    8.26870 	    8.26870
+   7.21847 	    8.24044 	    9.34226
+   7.26950 	    9.32519 	   -0.32519
+   7.21847 	    9.34226 	    0.75955
+   7.20077 	    9.35365 	    1.84110
+   7.20032 	    9.36499 	    2.90267
+   7.20543 	    9.37162 	    3.96815
+   7.20543 	    9.37162 	    5.03184
+   7.20032 	    9.36498 	    6.09732
+   7.20077 	    9.35365 	    7.15889
+   7.21847 	    9.34225 	    8.24044
+   7.26950 	    9.32518 	    9.32518
+   7.97975 	   -0.22893 	   -0.22893
+   7.99412 	   -0.24676 	    0.88239
+   7.99558 	   -0.24590 	    1.93561
+   7.98716 	   -0.25296 	    2.94887
+   7.99361 	   -0.25186 	    3.98090
+   7.99361 	   -0.25186 	    5.01909
+   7.98716 	   -0.25296 	    6.05112
+   7.99558 	   -0.24589 	    7.06438
+   7.99413 	   -0.24675 	    8.11761
+   7.97975 	   -0.22892 	    9.22893
+   7.99412 	    0.88239 	   -0.24676
+   8.03750 	    0.84341 	    0.84341
+   8.04843 	    0.85904 	    1.91544
+   8.04508 	    0.85451 	    2.92242
+   8.04674 	    0.85891 	    3.97039
+   8.04674 	    0.85891 	    5.02960
+   8.04508 	    0.85451 	    6.07758
+   8.04843 	    0.85905 	    7.08455
+   8.03750 	    0.84341 	    8.15658
+   7.99412 	    0.88239 	    9.24675
+   7.99558 	    1.93561 	   -0.24589
+   8.04843 	    1.91544 	    0.85905
+   8.03696 	    1.92071 	    1.92071
+   8.03790 	    1.92120 	    2.90960
+   8.03553 	    1.92178 	    3.96508
+   8.03553 	    1.92178 	    5.03491
+   8.03790 	    1.92120 	    6.09039
+   8.03696 	    1.92071 	    7.07928
+   8.04843 	    1.91544 	    8.14095
+   7.99557 	    1.93562 	    9.24589
+   7.98716 	    2.94887 	   -0.25296
+   8.04508 	    2.92241 	    0.85451
+   8.03790 	    2.90959 	    1.92120
+   8.04180 	    2.90747 	    2.90747
+   8.03948 	    2.90650 	    3.96459
+   8.03948 	    2.90650 	    5.03539
+   8.04180 	    2.90747 	    6.09252
+   8.03790 	    2.90960 	    7.07880
+   8.04508 	    2.92241 	    8.14548
+   7.98716 	    2.94887 	    9.25295
+   7.99361 	    3.98090 	   -0.25185
+   8.04674 	    3.97038 	    0.85891
+   8.03553 	    3.96507 	    1.92178
+   8.03948 	    3.96459 	    2.90651
+   8.03730 	    3.96450 	    3.96450
+   8.03730 	    3.96450 	    5.03548
+   8.03948 	    3.96459 	    6.09348
+   8.03553 	    3.96507 	    7.07821
+   8.04674 	    3.97038 	    8.14108
+   7.99361 	    3.98090 	    9.25185
+   7.99361 	    5.01909 	   -0.25185
+   8.04674 	    5.02960 	    0.85891
+   8.03553 	    5.03491 	    1.92178
+   8.03948 	    5.03539 	    2.90651
+   8.03730 	    5.03548 	    3.96450
+   8.03730 	    5.03548 	    5.03548
+   8.03948 	    5.03539 	    6.09348
+   8.03553 	    5.03491 	    7.07821
+   8.04674 	    5.02960 	    8.14108
+   7.99361 	    5.01909 	    9.25184
+   7.98716 	    6.05112 	   -0.25295
+   8.04508 	    6.07757 	    0.85451
+   8.03790 	    6.09039 	    1.92120
+   8.04180 	    6.09251 	    2.90747
+   8.03948 	    6.09348 	    3.96459
+   8.03948 	    6.09348 	    5.03539
+   8.04180 	    6.09251 	    6.09252
+   8.03790 	    6.09039 	    7.07879
+   8.04508 	    6.07757 	    8.14548
+   7.98716 	    6.05112 	    9.25295
+   7.99558 	    7.06438 	   -0.24589
+   8.04843 	    7.08455 	    0.85905
+   8.03696 	    7.07928 	    1.92072
+   8.03790 	    7.07879 	    2.90960
+   8.03553 	    7.07821 	    3.96508
+   8.03553 	    7.07821 	    5.03491
+   8.03790 	    7.07879 	    6.09039
+   8.03696 	    7.07928 	    7.07928
+   8.04843 	    7.08454 	    8.14094
+   7.99558 	    7.06438 	    9.24588
+   7.99413 	    8.11761 	   -0.24675
+   8.03750 	    8.15658 	    0.84342
+   8.04843 	    8.14094 	    1.91545
+   8.04508 	    8.14548 	    2.92242
+   8.04674 	    8.14108 	    3.97039
+   8.04674 	    8.14108 	    5.02960
+   8.04508 	    8.14548 	    6.07757
+   8.04843 	    8.14094 	    7.08455
+   8.03750 	    8.15658 	    8.15658
+   7.99413 	    8.11760 	    9.24674
+   7.97975 	    9.22892 	   -0.22892
+   7.99412 	    9.24675 	    0.88239
+   7.99557 	    9.24588 	    1.93562
+   7.98716 	    9.25294 	    2.94887
+   7.99361 	    9.25184 	    3.98090
+   7.99361 	    9.25184 	    5.01909
+   7.98716 	    9.25294 	    6.05112
+   7.99557 	    9.24588 	    7.06438
+   7.99412 	    9.24674 	    8.11760
+   7.97975 	    9.22892 	    9.22892
+   9.00000 	   -0.00000 	    0.00000
+   9.00000 	    0.00000 	    1.00000
+   9.00000 	    0.00000 	    2.00000
+   9.00000 	   -0.00000 	    3.00000
+   9.00000 	   -0.00000 	    4.00000
+   9.00000 	   -0.00000 	    5.00000
+   9.00000 	   -0.00000 	    6.00000
+   9.00000 	    0.00000 	    7.00000
+   9.00000 	    0.00000 	    8.00000
+   9.00000 	    0.00000 	    9.00000
+   9.00000 	    1.00000 	    0.00000
+   9.00000 	    1.00000 	    1.00000
+   9.00000 	    1.00000 	    2.00000
+   9.00000 	    1.00000 	    3.00000
+   9.00000 	    1.00000 	    4.00000
+   9.00000 	    1.00000 	    5.00000
+   9.00000 	    1.00000 	    6.00000
+   9.00000 	    1.00000 	    7.00000
+   9.00000 	    1.00000 	    8.00000
+   9.00000 	    1.00000 	    9.00000
+   9.00000 	    2.00000 	    0.00000
+   9.00000 	    2.00000 	    1.00000
+   9.00000 	    2.00000 	    2.00000
+   9.00000 	    2.00000 	    3.00000
+   9.00000 	    2.00000 	    4.00000
+   9.00000 	    2.00000 	    5.00000
+   9.00000 	    2.00000 	    6.00000
+   9.00000 	    2.00000 	    7.00000
+   9.00000 	    2.00000 	    8.00000
+   9.00000 	    2.00000 	    9.00000
+   9.00000 	    3.00000 	   -0.00000
+   9.00000 	    3.00000 	    1.00000
+   9.00000 	    3.00000 	    2.00000
+   9.00000 	    3.00000 	    3.00000
+   9.00000 	    3.00000 	    4.00000
+   9.00000 	    3.00000 	    5.00000
+   9.00000 	    3.00000 	    6.00000
+   9.00000 	    3.00000 	    7.00000
+   9.00000 	    3.00000 	    8.00000
+   9.00000 	    3.00000 	    9.00000
+   9.00000 	    4.00000 	   -0.00000
+   9.00000 	    4.00000 	    1.00000
+   9.00000 	    4.00000 	    2.00000
+   9.00000 	    4.00000 	    3.00000
+   9.00000 	    4.00000 	    4.00000
+   9.00000 	    4.00000 	    5.00000
+   9.00000 	    4.00000 	    6.00000
+   9.00000 	    4.00000 	    7.00000
+   9.00000 	    4.00000 	    8.00000
+   9.00000 	    4.00000 	    9.00000
+   9.00000 	    5.00000 	   -0.00000
+   9.00000 	    5.00000 	    1.00000
+   9.00000 	    5.00000 	    2.00000
+   9.00000 	    5.00000 	    3.00000
+   9.00000 	    5.00000 	    4.00000
+   9.00000 	    5.00000 	    5.00000
+   9.00000 	    5.00000 	    6.00000
+   9.00000 	    5.00000 	    7.00000
+   9.00000 	    5.00000 	    8.00000
+   9.00000 	    5.00000 	    9.00000
+   9.00000 	    6.00000 	   -0.00000
+   9.00000 	    6.00000 	    1.00000
+   9.00000 	    6.00000 	    2.00000
+   9.00000 	    6.00000 	    3.00000
+   9.00000 	    6.00000 	    4.00000
+   9.00000 	    6.00000 	    5.00000
+   9.00000 	    6.00000 	    6.00000
+   9.00000 	    6.00000 	    7.00000
+   9.00000 	    6.00000 	    8.00000
+   9.00000 	    6.00000 	    9.00000
+   9.00000 	    7.00000 	    0.00000
+   9.00000 	    7.00000 	    1.00000
+   9.00000 	    7.00000 	    2.00000
+   9.00000 	    7.00000 	    3.00000
+   9.00000 	    7.00000 	    4.00000
+   9.00000 	    7.00000 	    5.00000
+   9.00000 	    7.00000 	    6.00000
+   9.00000 	    7.00000 	    7.00000
+   9.00000 	    7.00000 	    8.00000
+   9.00000 	    7.00000 	    9.00000
+   9.00000 	    8.00000 	    0.00000
+   9.00000 	    8.00000 	    1.00000
+   9.00000 	    8.00000 	    2.00000
+   9.00000 	    8.00000 	    3.00000
+   9.00000 	    8.00000 	    4.00000
+   9.00000 	    8.00000 	    5.00000
+   9.00000 	    8.00000 	    6.00000
+   9.00000 	    8.00000 	    7.00000
+   9.00000 	    8.00000 	    8.00000
+   9.00000 	    8.00000 	    9.00000
+   9.00000 	    9.00000 	   -0.00000
+   9.00000 	    9.00000 	    1.00000
+   9.00000 	    9.00000 	    2.00000
+   9.00000 	    9.00000 	    3.00000
+   9.00000 	    9.00000 	    4.00000
+   9.00000 	    9.00000 	    5.00000
+   9.00000 	    9.00000 	    6.00000
+   9.00000 	    9.00000 	    7.00000
+   9.00000 	    9.00000 	    8.00000
+   9.00000 	    9.00000 	    9.00000
 POINT_DATA 1000
 SCALARS C float
 LOOKUP_TABLE default
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
-	            nan
+	      1.6021328
+	      0.8962641
+	      0.9114079
+	      0.9504324
+	      0.9006727
+	      0.9006687
+	      0.9504258
+	      0.9114072
+	      0.8962578
+	      1.6020990
+	      0.8962562
+	      0.1127257
+	      0.1296358
+	      0.1883408
+	      0.1457200
+	      0.1457175
+	      0.1883379
+	      0.1296411
+	      0.1127279
+	      0.8962348
+	      0.9113981
+	      0.1296357
+	      0.1517493
+	      0.2363900
+	      0.1881950
+	      0.1881920
+	      0.2363859
+	      0.1517548
+	      0.1296399
+	      0.9113723
+	      0.9504234
+	      0.1883425
+	      0.2363923
+	      0.3426347
+	      0.2908506
+	      0.2908474
+	      0.3426298
+	      0.2363970
+	      0.1883465
+	      0.9503961
+	      0.9006628
+	      0.1457213
+	      0.1881970
+	      0.2908502
+	      0.2325231
+	      0.2325200
+	      0.2908454
+	      0.1882018
+	      0.1457257
+	      0.9006361
+	      0.9006579
+	      0.1457177
+	      0.1881924
+	      0.2908451
+	      0.2325180
+	      0.2325149
+	      0.2908403
+	      0.1881973
+	      0.1457221
+	      0.9006312
+	      0.9504157
+	      0.1883381
+	      0.2363865
+	      0.3426273
+	      0.2908431
+	      0.2908399
+	      0.3426225
+	      0.2363911
+	      0.1883422
+	      0.9503883
+	      0.9113984
+	      0.1296428
+	      0.1517576
+	      0.2363976
+	      0.1882023
+	      0.1881993
+	      0.2363935
+	      0.1517631
+	      0.1296470
+	      0.9113727
+	      0.8962486
+	      0.1127283
+	      0.1296416
+	      0.1883467
+	      0.1457259
+	      0.1457234
+	      0.1883438
+	      0.1296469
+	      0.1127305
+	      0.8962273
+	      1.6020874
+	      0.8962257
+	      0.9113635
+	      0.9503859
+	      0.9006253
+	      0.9006214
+	      0.9503794
+	      0.9113628
+	      0.8962193
+	      1.6020537
+	      0.1270718
+	      0.0971516
+	      0.0973225
+	      0.1066535
+	      0.1071916
+	      0.1071915
+	      0.1066535
+	      0.0973221
+	      0.0971508
+	      0.1270711
+	      0.0971518
+	      0.1082692
+	      0.1097959
+	      0.1281380
+	      0.1273389
+	      0.1273387
+	      0.1281384
+	      0.1097952
+	      0.1082686
+	      0.0971502
+	      0.0973221
+	      0.1097954
+	      0.0912758
+	      0.1090398
+	      0.1057713
+	      0.1057712
+	      0.1090413
+	      0.0912751
+	      0.1097949
+	      0.0973202
+	      0.1066529
+	      0.1281373
+	      0.1090395
+	      0.1291900
+	      0.1263887
+	      0.1263884
+	      0.1291915
+	      0.1090389
+	      0.1281367
+	      0.1066505
+	      0.1071911
+	      0.1273384
+	      0.1057713
+	      0.1263890
+	      0.1232516
+	      0.1232514
+	      0.1263907
+	      0.1057709
+	      0.1273378
+	      0.1071888
+	      0.1071911
+	      0.1273382
+	      0.1057711
+	      0.1263886
+	      0.1232513
+	      0.1232511
+	      0.1263903
+	      0.1057706
+	      0.1273375
+	      0.1071887
+	      0.1066529
+	      0.1281379
+	      0.1090413
+	      0.1291921
+	      0.1263909
+	      0.1263907
+	      0.1291936
+	      0.1090407
+	      0.1281373
+	      0.1066505
+	      0.0973215
+	      0.1097945
+	      0.0912745
+	      0.1090389
+	      0.1057708
+	      0.1057706
+	      0.1090403
+	      0.0912738
+	      0.1097940
+	      0.0973196
+	      0.0971504
+	      0.1082684
+	      0.1097942
+	      0.1281362
+	      0.1273373
+	      0.1273370
+	      0.1281366
+	      0.1097935
+	      0.1082677
+	      0.0971489
+	      0.1270712
+	      0.0971498
+	      0.0973195
+	      0.1066499
+	      0.1071883
+	      0.1071883
+	      0.1066499
+	      0.0973192
+	      0.0971490
+	      0.1270705
+	      0.2700834
+	      0.2008227
+	      0.1827887
+	      0.1808957
+	      0.1794657
+	      0.1794657
+	      0.1808953
+	      0.1827878
+	      0.2008211
+	      0.2700815
+	      0.2008228
+	      0.1684868
+	      0.1608251
+	      0.1603644
+	      0.1598888
+	      0.1598889
+	      0.1603640
+	      0.1608240
+	      0.1684851
+	      0.2008230
+	      0.1827889
+	      0.1608246
+	      0.1408606
+	      0.1312077
+	      0.1417105
+	      0.1417096
+	      0.1312077
+	      0.1408579
+	      0.1608215
+	      0.1827889
+	      0.1808957
+	      0.1603634
+	      0.1312065
+	      0.1199010
+	      0.1313186
+	      0.1313176
+	      0.1199013
+	      0.1312042
+	      0.1603600
+	      0.1808957
+	      0.1794657
+	      0.1598877
+	      0.1417095
+	      0.1313186
+	      0.1440904
+	      0.1440891
+	      0.1313185
+	      0.1417068
+	      0.1598841
+	      0.1794657
+	      0.1794656
+	      0.1598878
+	      0.1417089
+	      0.1313175
+	      0.1440881
+	      0.1440868
+	      0.1313174
+	      0.1417063
+	      0.1598842
+	      0.1794655
+	      0.1808950
+	      0.1603628
+	      0.1312066
+	      0.1199012
+	      0.1313183
+	      0.1313174
+	      0.1199015
+	      0.1312042
+	      0.1603594
+	      0.1808950
+	      0.1827874
+	      0.1608228
+	      0.1408565
+	      0.1312031
+	      0.1417062
+	      0.1417053
+	      0.1312031
+	      0.1408538
+	      0.1608197
+	      0.1827875
+	      0.2008206
+	      0.1684848
+	      0.1608203
+	      0.1603588
+	      0.1598830
+	      0.1598831
+	      0.1603585
+	      0.1608192
+	      0.1684831
+	      0.2008208
+	      0.2700816
+	      0.2008225
+	      0.1827885
+	      0.1808954
+	      0.1794656
+	      0.1794655
+	      0.1808950
+	      0.1827876
+	      0.2008209
+	      0.2700797
+	      0.2503973
+	      0.2020804
+	      0.1928855
+	      0.1920319
+	      0.1918885
+	      0.1918883
+	      0.1920315
+	      0.1928846
+	      0.2020791
+	      0.2503960
+	      0.2020810
+	      0.1683847
+	      0.1639211
+	      0.1600360
+	      0.1588695
+	      0.1588693
+	      0.1600358
+	      0.1639205
+	      0.1683851
+	      0.2020811
+	      0.1928861
+	      0.1639216
+	      0.2151256
+	      0.2065570
+	      0.2302307
+	      0.2302301
+	      0.2065575
+	      0.2151234
+	      0.1639226
+	      0.1928856
+	      0.1920323
+	      0.1600364
+	      0.2065557
+	      0.1774254
+	      0.2007183
+	      0.2007176
+	      0.1774267
+	      0.2065548
+	      0.1600373
+	      0.1920316
+	      0.1918888
+	      0.1588698
+	      0.2302299
+	      0.2007189
+	      0.2283612
+	      0.2283599
+	      0.2007198
+	      0.2302286
+	      0.1588702
+	      0.1918879
+	      0.1918884
+	      0.1588695
+	      0.2302292
+	      0.2007178
+	      0.2283593
+	      0.2283579
+	      0.2007187
+	      0.2302280
+	      0.1588698
+	      0.1918875
+	      0.1920314
+	      0.1600357
+	      0.2065568
+	      0.1774268
+	      0.2007199
+	      0.2007192
+	      0.1774281
+	      0.2065558
+	      0.1600367
+	      0.1920307
+	      0.1928843
+	      0.1639204
+	      0.2151224
+	      0.2065540
+	      0.2302278
+	      0.2302271
+	      0.2065546
+	      0.2151202
+	      0.1639214
+	      0.1928838
+	      0.2020786
+	      0.1683856
+	      0.1639225
+	      0.1600372
+	      0.1588703
+	      0.1588702
+	      0.1600370
+	      0.1639218
+	      0.1683861
+	      0.2020787
+	      0.2503960
+	      0.2020806
+	      0.1928852
+	      0.1920315
+	      0.1918880
+	      0.1918878
+	      0.1920311
+	      0.1928844
+	      0.2020793
+	      0.2503948
+	      0.1945200
+	      0.1715997
+	      0.1706989
+	      0.1739985
+	      0.1747374
+	      0.1747372
+	      0.1739982
+	      0.1706984
+	      0.1715990
+	      0.1945200
+	      0.1716006
+	      0.1402292
+	      0.1412240
+	      0.1406951
+	      0.1389103
+	      0.1389099
+	      0.1406949
+	      0.1412237
+	      0.1402307
+	      0.1716019
+	      0.1707000
+	      0.1412249
+	      0.1944544
+	      0.1862711
+	      0.2045770
+	      0.2045773
+	      0.1862711
+	      0.1944504
+	      0.1412271
+	      0.1707005
+	      0.1739995
+	      0.1406962
+	      0.1862695
+	      0.1508752
+	      0.1696399
+	      0.1696405
+	      0.1508758
+	      0.1862663
+	      0.1406982
+	      0.1739996
+	      0.1747381
+	      0.1389111
+	      0.2045756
+	      0.1696401
+	      0.1956612
+	      0.1956616
+	      0.1696396
+	      0.2045720
+	      0.1389132
+	      0.1747381
+	      0.1747377
+	      0.1389106
+	      0.2045758
+	      0.1696405
+	      0.1956617
+	      0.1956621
+	      0.1696401
+	      0.2045721
+	      0.1389126
+	      0.1747377
+	      0.1739985
+	      0.1406954
+	      0.1862701
+	      0.1508756
+	      0.1696396
+	      0.1696403
+	      0.1508762
+	      0.1862669
+	      0.1406974
+	      0.1739986
+	      0.1706985
+	      0.1412239
+	      0.1944488
+	      0.1862653
+	      0.2045705
+	      0.2045708
+	      0.1862653
+	      0.1944448
+	      0.1412261
+	      0.1706990
+	      0.1715990
+	      0.1402313
+	      0.1412273
+	      0.1406988
+	      0.1389139
+	      0.1389135
+	      0.1406985
+	      0.1412271
+	      0.1402329
+	      0.1716003
+	      0.1945208
+	      0.1716018
+	      0.1707006
+	      0.1740000
+	      0.1747386
+	      0.1747385
+	      0.1739996
+	      0.1707001
+	      0.1716012
+	      0.1945207
+	      0.1945280
+	      0.1716021
+	      0.1706970
+	      0.1739946
+	      0.1747295
+	      0.1747293
+	      0.1739942
+	      0.1706966
+	      0.1716016
+	      0.1945282
+	      0.1716030
+	      0.1402731
+	      0.1412978
+	      0.1407909
+	      0.1390531
+	      0.1390526
+	      0.1407905
+	      0.1412976
+	      0.1402744
+	      0.1716044
+	      0.1706981
+	      0.1412988
+	      0.1936903
+	      0.1858651
+	      0.2039295
+	      0.2039307
+	      0.1858651
+	      0.1936874
+	      0.1413003
+	      0.1706986
+	      0.1739956
+	      0.1407919
+	      0.1858635
+	      0.1510051
+	      0.1696409
+	      0.1696425
+	      0.1510058
+	      0.1858616
+	      0.1407932
+	      0.1739957
+	      0.1747303
+	      0.1390537
+	      0.2039282
+	      0.1696409
+	      0.1960590
+	      0.1960605
+	      0.1696407
+	      0.2039262
+	      0.1390548
+	      0.1747302
+	      0.1747298
+	      0.1390531
+	      0.2039299
+	      0.1696428
+	      0.1960610
+	      0.1960624
+	      0.1696426
+	      0.2039279
+	      0.1390542
+	      0.1747298
+	      0.1739945
+	      0.1407908
+	      0.1858641
+	      0.1510057
+	      0.1696411
+	      0.1696427
+	      0.1510064
+	      0.1858622
+	      0.1407921
+	      0.1739946
+	      0.1706967
+	      0.1412977
+	      0.1936865
+	      0.1858607
+	      0.2039254
+	      0.2039266
+	      0.1858607
+	      0.1936836
+	      0.1412991
+	      0.1706971
+	      0.1716016
+	      0.1402747
+	      0.1413003
+	      0.1407935
+	      0.1390553
+	      0.1390549
+	      0.1407931
+	      0.1413001
+	      0.1402760
+	      0.1716030
+	      0.1945291
+	      0.1716044
+	      0.1706987
+	      0.1739961
+	      0.1747308
+	      0.1747305
+	      0.1739956
+	      0.1706982
+	      0.1716039
+	      0.1945293
+	      0.2505103
+	      0.2021659
+	      0.1929790
+	      0.1921313
+	      0.1919728
+	      0.1919726
+	      0.1921307
+	      0.1929782
+	      0.2021649
+	      0.2505093
+	      0.2021666
+	      0.1684923
+	      0.1640690
+	      0.1602399
+	      0.1590981
+	      0.1590979
+	      0.1602395
+	      0.1640682
+	      0.1684924
+	      0.2021667
+	      0.1929796
+	      0.1640696
+	      0.2147623
+	      0.2065865
+	      0.2295495
+	      0.2295487
+	      0.2065857
+	      0.2147611
+	      0.1640706
+	      0.1929788
+	      0.1921318
+	      0.1602404
+	      0.2065854
+	      0.1781639
+	      0.2005521
+	      0.2005515
+	      0.1781630
+	      0.2065848
+	      0.1602416
+	      0.1921305
+	      0.1919730
+	      0.1590984
+	      0.2295487
+	      0.2005521
+	      0.2273980
+	      0.2273969
+	      0.2005506
+	      0.2295480
+	      0.1590990
+	      0.1919716
+	      0.1919726
+	      0.1590980
+	      0.2295480
+	      0.2005511
+	      0.2273962
+	      0.2273951
+	      0.2005496
+	      0.2295473
+	      0.1590986
+	      0.1919712
+	      0.1921306
+	      0.1602393
+	      0.2065850
+	      0.1781623
+	      0.2005502
+	      0.2005496
+	      0.1781614
+	      0.2065844
+	      0.1602405
+	      0.1921293
+	      0.1929778
+	      0.1640680
+	      0.2147602
+	      0.2065840
+	      0.2295474
+	      0.2295466
+	      0.2065832
+	      0.2147590
+	      0.1640690
+	      0.1929770
+	      0.2021644
+	      0.1684927
+	      0.1640704
+	      0.1602414
+	      0.1590991
+	      0.1590989
+	      0.1602410
+	      0.1640696
+	      0.1684928
+	      0.2021646
+	      0.2505095
+	      0.2021662
+	      0.1929784
+	      0.1921303
+	      0.1919716
+	      0.1919714
+	      0.1921297
+	      0.1929776
+	      0.2021652
+	      0.2505084
+	      0.2704670
+	      0.2010749
+	      0.1830571
+	      0.1811844
+	      0.1797460
+	      0.1797458
+	      0.1811839
+	      0.1830562
+	      0.2010734
+	      0.2704646
+	      0.2010751
+	      0.1686055
+	      0.1609480
+	      0.1605289
+	      0.1600136
+	      0.1600136
+	      0.1605285
+	      0.1609472
+	      0.1686047
+	      0.2010737
+	      0.1830571
+	      0.1609479
+	      0.1399694
+	      0.1311270
+	      0.1416873
+	      0.1416873
+	      0.1311273
+	      0.1399680
+	      0.1609474
+	      0.1830550
+	      0.1811841
+	      0.1605284
+	      0.1311260
+	      0.1208696
+	      0.1322935
+	      0.1322943
+	      0.1208702
+	      0.1311244
+	      0.1605276
+	      0.1811819
+	      0.1797456
+	      0.1600129
+	      0.1416865
+	      0.1322936
+	      0.1445554
+	      0.1445559
+	      0.1322939
+	      0.1416845
+	      0.1600121
+	      0.1797433
+	      0.1797453
+	      0.1600129
+	      0.1416870
+	      0.1322944
+	      0.1445556
+	      0.1445560
+	      0.1322947
+	      0.1416850
+	      0.1600122
+	      0.1797431
+	      0.1811833
+	      0.1605277
+	      0.1311267
+	      0.1208702
+	      0.1322941
+	      0.1322949
+	      0.1208708
+	      0.1311251
+	      0.1605269
+	      0.1811810
+	      0.1830555
+	      0.1609465
+	      0.1399671
+	      0.1311238
+	      0.1416842
+	      0.1416843
+	      0.1311241
+	      0.1399657
+	      0.1609460
+	      0.1830535
+	      0.2010726
+	      0.1686048
+	      0.1609467
+	      0.1605269
+	      0.1600114
+	      0.1600115
+	      0.1605264
+	      0.1609459
+	      0.1686040
+	      0.2010712
+	      0.2704640
+	      0.2010728
+	      0.1830543
+	      0.1811813
+	      0.1797428
+	      0.1797427
+	      0.1811807
+	      0.1830534
+	      0.2010714
+	      0.2704615
+	      0.1274903
+	      0.0973798
+	      0.0975511
+	      0.1069060
+	      0.1074485
+	      0.1074484
+	      0.1069058
+	      0.0975510
+	      0.0973795
+	      0.1274893
+	      0.0973799
+	      0.1082153
+	      0.1097587
+	      0.1280786
+	      0.1272195
+	      0.1272191
+	      0.1280779
+	      0.1097583
+	      0.1082143
+	      0.0973795
+	      0.0975509
+	      0.1097581
+	      0.0911317
+	      0.1088250
+	      0.1054011
+	      0.1054005
+	      0.1088243
+	      0.0911315
+	      0.1097568
+	      0.0975502
+	      0.1069057
+	      0.1280779
+	      0.1088251
+	      0.1288129
+	      0.1258518
+	      0.1258510
+	      0.1288121
+	      0.1088251
+	      0.1280763
+	      0.1069045
+	      0.1074482
+	      0.1272189
+	      0.1054012
+	      0.1258518
+	      0.1226032
+	      0.1226024
+	      0.1258510
+	      0.1054013
+	      0.1272173
+	      0.1074469
+	      0.1074481
+	      0.1272184
+	      0.1054003
+	      0.1258507
+	      0.1226020
+	      0.1226012
+	      0.1258499
+	      0.1054004
+	      0.1272168
+	      0.1074469
+	      0.1069055
+	      0.1280770
+	      0.1088240
+	      0.1288117
+	      0.1258507
+	      0.1258499
+	      0.1288109
+	      0.1088239
+	      0.1280755
+	      0.1069043
+	      0.0975506
+	      0.1097575
+	      0.0911311
+	      0.1088248
+	      0.1054010
+	      0.1054005
+	      0.1088240
+	      0.0911308
+	      0.1097561
+	      0.0975499
+	      0.0973793
+	      0.1082138
+	      0.1097559
+	      0.1280755
+	      0.1272165
+	      0.1272161
+	      0.1280748
+	      0.1097555
+	      0.1082128
+	      0.0973789
+	      0.1274898
+	      0.0973793
+	      0.0975498
+	      0.1069042
+	      0.1074467
+	      0.1074466
+	      0.1069039
+	      0.0975497
+	      0.0973790
+	      0.1274888
+	      1.6021919
+	      0.8963134
+	      0.9113640
+	      0.9504853
+	      0.9006214
+	      0.9006187
+	      0.9504800
+	      0.9113606
+	      0.8963055
+	      1.6021598
+	      0.8963063
+	      0.1135157
+	      0.1301557
+	      0.1887939
+	      0.1461602
+	      0.1461591
+	      0.1887929
+	      0.1301591
+	      0.1135178
+	      0.8962867
+	      0.9113546
+	      0.1301551
+	      0.1520451
+	      0.2366286
+	      0.1884329
+	      0.1884315
+	      0.2366270
+	      0.1520484
+	      0.1301572
+	      0.9113315
+	      0.9504766
+	      0.1887947
+	      0.2366302
+	      0.3428747
+	      0.2909969
+	      0.2909952
+	      0.3428723
+	      0.2366328
+	      0.1887963
+	      0.9504520
+	      0.9006121
+	      0.1461610
+	      0.1884345
+	      0.2909966
+	      0.2324537
+	      0.2324521
+	      0.2909944
+	      0.1884377
+	      0.1461634
+	      0.9005882
+	      0.9006086
+	      0.1461592
+	      0.1884320
+	      0.2909937
+	      0.2324508
+	      0.2324492
+	      0.2909914
+	      0.1884352
+	      0.1461616
+	      0.9005847
+	      0.9504703
+	      0.1887930
+	      0.2366275
+	      0.3428708
+	      0.2909928
+	      0.2909912
+	      0.3428684
+	      0.2366302
+	      0.1887947
+	      0.9504456
+	      0.9113518
+	      0.1301601
+	      0.1520503
+	      0.2366334
+	      0.1884382
+	      0.1884367
+	      0.2366318
+	      0.1520536
+	      0.1301622
+	      0.9113287
+	      0.8962969
+	      0.1135185
+	      0.1301582
+	      0.1887964
+	      0.1461635
+	      0.1461624
+	      0.1887955
+	      0.1301616
+	      0.1135206
+	      0.8962773
+	      1.6021473
+	      0.8962780
+	      0.9113228
+	      0.9504422
+	      0.9005781
+	      0.9005754
+	      0.9504370
+	      0.9113194
+	      0.8962701
+	      1.6021152

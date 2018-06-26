@@ -59,6 +59,8 @@ class Vector {
     friend void Print(const Vector & V_In);
     friend Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
+    friend void Particle_Tests(void);
+
     // Printing functions
     void Print(void) const;                          // Print vector components
 }; // class Vector {

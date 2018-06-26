@@ -260,7 +260,7 @@ void Particle_Tests(void) {
   printf("\nParticle tests\n\n");
 
   // Loop indicies
-  int i,j,k;
+  unsigned int i,j,k,l;
 
   // Declare an array of particles
   const int Side_Len = 10;
@@ -330,25 +330,74 @@ void Particle_Tests(void) {
   file. */
 
   // Run time steps
-  const double dt = .0001;                                           // Time step        : s
-  const int Num_Steps = 3000;
-  Vector Vel = {10,0,0};                                   // Forced particle velocity   : mm/s
+  const double dt = .00001;                                           // Time step        : s
+  const unsigned int Num_Steps = 10000;
 
   // Computation time measurement variables
-  int Ms_Elapsed;
+  long Ms_Elapsed;
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   clock_t timer = clock();
-  clock_t temp_timer, update_vel_timer = 0, update_P_timer = 0, update_x_timer = 0;
-  int MS_vel, MS_P, MS_x;
+  clock_t temp_timer, update_BC_timer = 0, update_P_timer = 0, update_x_timer = 0;
+  long MS_BC, MS_P, MS_x;
 
-  for(k = 0; k < Num_Steps; k++) {
+  for(l = 0; l < Num_Steps; l++) {
     temp_timer = clock();
-    // Make the k = 0 face have a constant velocity
-    for(i = 0; i < Side_Len*Side_Len; i++) {
-      Particles[i].Set_vel(Vel);
+    ////////////////////////////////////////////////////////////////////////////
+    /* Boundary conditions
+    Here we set the Bc's for the six sides of the cube. these are the front,
+    back, left, right, top, and bottom faces. These faces are named from the
+    perspective of an observer whose face is pointed in the +x direction with
+    up as the +z direction and left as the +y direction (right handed coordinate
+    system). */
+    // Front face (i = 0)
+    i = 0;
+    for(j = 0; j < Side_Len; j++) {
+      for(k = 0; k < Side_Len; k++) {
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {25,0,0};
+      }
     }
-    update_vel_timer += clock() - temp_timer;
 
+    // back face (i = Side_Len-1)
+    i = Side_Len-1;
+    for(j = 0; j < Side_Len; j++) {
+      for(k = 0; k < Side_Len; k++) {
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {0,0,0};
+      }
+    }
+
+    // Right face (j = 0)
+    j = 0;
+    for(i = 0; i < Side_Len; i++) {
+      for(k = 0; k < Side_Len; k++) {
+      }
+    }
+
+    // Left face (i = Side_len-1)
+    j = Side_Len-1;
+    for(i = 0; i < Side_Len; i++) {
+      for(k = 0; k < Side_Len; k++) {
+        //Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1] = 0;
+      }
+    }
+
+    // Bottom face (k = 0)
+    k = 0;
+    for(i = 0; i < Side_Len; i++) {
+      for(j = 0; j < Side_Len; j++) {
+      }
+    }
+
+    // Top face (k = side_len-1) face
+    k = Side_Len-1;
+    for(i = 0; i < Side_Len; i++) {
+      for(j = 0; j < Side_Len; j++) {
+        //Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2] = 0;
+      }
+    }
+
+    update_BC_timer += clock() - temp_timer;
+
+    ////////////////////////////////////////////////////////////////////////////
     // Update each particle's Stress tensor
     temp_timer = clock();
     for(i = 0; i < Num_Particles; i++) {
@@ -356,6 +405,7 @@ void Particle_Tests(void) {
     }
     update_P_timer += clock() - temp_timer;
 
+    ////////////////////////////////////////////////////////////////////////////
     // Update each particle's position
     temp_timer = clock();
     for(i = 0; i < Num_Particles; i++) {
@@ -364,34 +414,22 @@ void Particle_Tests(void) {
     update_x_timer += clock() - temp_timer;
 
     // Print to file evert 100th iteration
-    if((k+1)%100 == 0) {
-      printf("%d iterations complete\n",k+1);
+    if((l+1)%100 == 0) {
+      printf("%d iterations complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
     } // if((k+1)%100 == 0) {
   }
   timer = clock()-timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  MS_vel = (int)((double)update_vel_timer / (double)CLOCKS_PER_MS);
+  MS_BC = (int)((double)update_BC_timer / (double)CLOCKS_PER_MS);
   MS_P = (int)((double)update_P_timer / (double)CLOCKS_PER_MS);
   MS_x = (int)((double)update_x_timer / (double)CLOCKS_PER_MS);
 
-  printf("It took %d ms to perform %ld Particle iterations \n",Ms_Elapsed, Num_Steps);
-  printf("%d ms spent on updating the velocity\n", MS_vel);
-  printf("%d ms spent on updating P\n", MS_P);
-  printf("%d ms spent on updating x\n", MS_x);
-
-  /* Run through a final round of printing (to make sure that the time step(s)
-  worked
-  for(i = 0; i < Side_Len; i++) {
-    for(j = 0; j < Side_Len; j++) {
-      for(k = 0; k < Side_Len; k++) {
-        printf("\nParticle %d: ",Side_Len*Side_Len*i+Side_Len*j+k);
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Print();
-      }
-    }
-  }
-  // */
+  printf("It took %ld ms to perform %d Particle iterations \n",Ms_Elapsed, Num_Steps);
+  printf("%ld ms spent on updating the BC's\n", MS_BC);
+  printf("%ld ms spent on updating P\n", MS_P);
+  printf("%ld ms spent on updating x\n", MS_x);
 
 } // void Particle_Tests(void) {
 
@@ -400,7 +438,7 @@ void Timing_Tests(void) {
 
   // Set up timing variables. Note: All times will be reported in ms
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
-  int Ms_Elapsed;
+  long Ms_Elapsed;
   clock_t timer;
   long Num_Tests = 100000000;
   int i;
@@ -409,7 +447,7 @@ void Timing_Tests(void) {
   Vector V1, V2;
 
   //////////////////////////////////////////////////////////////////////////////
-  /* Tensor-Tensor product timing test
+  /* Tensor-Tensor product timing test */
   // Test tensor-tensor multiplication S3 = S1*S2
 
   // Assign some random values to S1, S2
@@ -423,7 +461,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %d Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %ld Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
 
   // Test compound tensor-tensor multiplication
 
@@ -437,7 +475,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %d compound Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %ld compound Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor-Vector product timing tests */
@@ -451,10 +489,10 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %ld Tensor-Vector products \n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %ld Tensor-Vector products \n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  /* Tensor Inverse timing
+  /* Tensor Inverse timing */
 
   S1 = {0,39,29,59,58,2,9,8,3};           // Just some random tensor... will use to find inverse
   timer = clock();
@@ -464,7 +502,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %ld Tensor inverses\n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %ld Tensor inverses\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Dyadic product timing */
@@ -477,7 +515,7 @@ void Timing_Tests(void) {
   timer = clock()-timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %ld dyadic products\n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %ld dyadic products\n",Ms_Elapsed, Num_Tests);
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor Addition test */
@@ -491,7 +529,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %ld tensor additions products\n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %ld tensor additions products\n",Ms_Elapsed, Num_Tests);
 
   ////////////////////////////////////////////////////////////////////////////////////////
   /* Compound Vector-Vector addition test */
@@ -504,7 +542,7 @@ void Timing_Tests(void) {
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %d ms to compute %ld compound vector-vector additions\n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %ld compound vector-vector additions\n",Ms_Elapsed, Num_Tests);
 } // void Timing_Tests(void) {
 
 #endif
