@@ -152,7 +152,7 @@ Particle & Particle::operator=(const Particle & P_In) {
 // Particle setup methods:
 // Set Neighbors
 
-void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor_ID_List, const Particle * Particles) {
+void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor_ID_Array, const Particle * Particles) {
   /* First check if this particle already has neighbors. This function should
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
@@ -172,26 +172,25 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   Num_Neighbors = N;
 
   // Allocate memory for the Neighbor_IDs, and Grad_W_Tilde array
-  Neighbor_IDs = new unsigned int[N];
-  //r = new Vector[N];
-  R = new Vector[N];                                                           //        : mm
-  W = new double[N];                                                           //        : unitless
-  Grad_W = new Vector[N];                                                      //        : mm^-1
-  //Grad_W_Tilde = new Vector[N];
+  Neighbor_IDs = new unsigned int[Num_Neighbors];
+  //r = new Vector[Num_Neighbors];
+  R = new Vector[Num_Neighbors];                                               //        : mm
+  W = new double[Num_Neighbors];                                               //        : unitless
+  Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
+  //Grad_W_Tilde = new Vector[Num_Neighbors];
 
-  /* Now that we know our neighbors (and where they are), there's a lot that
-  we can find out. We an set the Neighbor_IDs, r, R, Grad_W members and
-  determine the Shape tensor A (and its inverse) in order to populate the
-  Grad_W_Tilde array! */
+  /* Now that we know our neighbors IDs, we can figure out everything that we
+  want to know about them. We an set the Neighbor_IDs, r, R, W, and Grad_W
+  members. These can be used to calculate the shape matrix (and its inverse)! */
 
   int Neighbor_ID;                               // Keep track of current particle
   double Mag_Rj;                                 // magnitude of Rj vector               : mm
   double Vj;                                     // Volume of jth neighbor               : mm^3
   Tensor A{0,0,0,0,0,0,0,0,0};                   // Shape Tensor                         : unitless
 
-  for(int j = 0; j < N; j++) {
-    Neighbor_ID = Neighbor_ID_List[j];           // Get Neighbor ID (index in Particles array)
-    Neighbor_IDs[j] = Neighbor_ID;               // Set Neighbor_IDs member Element
+  for(int j = 0; j < Num_Neighbors; j++) {
+    Neighbor_ID = Neighbor_ID_Array[j];          // Get Neighbor ID (index in Particles array)
+    Neighbor_IDs[j] = Neighbor_ID;               // Set jth element of Neighbor_IDs member
 
     //r[j] = Particles[Neighbor_ID].x - x;       // Spacial displacement vector
     R[j] = Particles[Neighbor_ID].X - X;         // Reference displacement vector        : mm

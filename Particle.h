@@ -63,7 +63,7 @@ class Particle {
     void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm
     void Set_vel(const Vector & vel_In) { vel = vel_In; }  // Set particle's velocity    : mm/s
     void Set_Neighbors(const unsigned int N,
-                       const unsigned int * Neighbor_ID_List,
+                       const unsigned int * Neighbor_ID_Array,
                        const Particle * Particles);        // Set Neighbors
 
     // Methods to access particle data
