@@ -263,13 +263,13 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const int Side_Len = 10;
+  const int Side_Len = 20;
   const int Num_Particles = Side_Len*Side_Len*Side_Len;
 
 
   // Particle paramaters
-  Particle Particles[Num_Particles];
-  double Inter_Particle_Spacing = 1;                                           //        : mm
+  Particle *Particles = new Particle[Num_Particles];                 // Dynamically allocate particles array
+  double Inter_Particle_Spacing = .5;                                          //        : mm
   double Particle_Volume = 1;                                                  //        : mm^3
   double Particle_Density = 1;        // I chose the density of water.         //        : g/mm^3
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g

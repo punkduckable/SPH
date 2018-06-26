@@ -2,6 +2,7 @@
 #include <math.h>
 #include <time.h>
 #include <string>
+#include <unistd.h>
 
 // Type definitions
 typedef signed char Byte;
@@ -34,7 +35,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize static members of particle class
 
-double Particle::h = 4;                                    // Suppoer function raduius   : mm
+double Particle::h = 2;                                    // Suppoer function raduius   : mm
 double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);// Shape function amplitude   : mm^-3
 
 double Particle::Lame = 9;                                 // Lame parameter             : Mpa
