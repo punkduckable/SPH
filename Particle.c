@@ -57,16 +57,17 @@ Particle::Particle(const Particle & P_In) {
   Num_Neighbors = P_In.Num_Neighbors;
 
   Neighbor_IDs = new unsigned int[Num_Neighbors];
-  //r = new Vector[Num_Neighbors];
   R = new Vector[Num_Neighbors];                                               //        : mm
+  Mag_R = new double[Num_Neighbors];                                           //        : mm
   W = new double[Num_Neighbors];                                               //        : unitless
   Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
+
   //Grad_W_Tilde = new Vector[Num_Neighbors];
 
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Neighbor_IDs[j] = P_In.Neighbor_IDs[j];
-    //r[j] = P_In.r[j]
     R[j] = P_In.R[j];                                                          //        : mm
+    Mag_R[j] = P_In.Mag_R[j];                                                  //        : mm
     W[j] = P_In.W[j];                                                          //        : unitless
     Grad_W[j] = P_In.Grad_W[j];                                                //        : mm^-1
     //Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
@@ -78,8 +79,8 @@ Particle::~Particle(void) {
 
   // Note, we should only free the memory if it has been allocated.
   if(Has_Neighbors == true) {
-    //delete [] r;
     delete [] R;                                                               //        : mm
+    delete [] Mag_R;                                                           //        : mm
     delete [] W;                                                               //        : unitless
     delete [] Grad_W;                                                          //        : mm^-1
     //delete [] Grad_W_Tilde;
@@ -128,16 +129,16 @@ Particle & Particle::operator=(const Particle & P_In) {
   Num_Neighbors = P_In.Num_Neighbors;
 
   Neighbor_IDs = new unsigned int[Num_Neighbors];
-  //r = new Vector[Num_Neighbors];
   R = new Vector[Num_Neighbors];                                               //        : mm
+  Mag_R = new double[Num_Neighbors];                                           //        : mm
   W = new double[Num_Neighbors];                                               //        : unitless
   Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
   //Grad_W_Tilde = new Vector[Num_Neighbors];
 
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Neighbor_IDs[j] = P_In.Neighbor_IDs[j];
-    //r[j] = P_In.r[j]
     R[j] = P_In.R[j];                                                          //        : mm
+    Mag_R[j] = P_In.Mag_R[j];                                                  //        : mm
     W[j] = P_In.W[j];                                                          //        : unitless
     Grad_W[j] = P_In.Grad_W[j];                                                //        : mm^-1
     //Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
@@ -173,8 +174,8 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 
   // Allocate memory for the Neighbor_IDs, and Grad_W_Tilde array
   Neighbor_IDs = new unsigned int[Num_Neighbors];
-  //r = new Vector[Num_Neighbors];
   R = new Vector[Num_Neighbors];                                               //        : mm
+  Mag_R = new double[Num_Neighbors];                                           //        : mm
   W = new double[Num_Neighbors];                                               //        : unitless
   Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
   //Grad_W_Tilde = new Vector[Num_Neighbors];
@@ -184,7 +185,6 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   members. These can be used to calculate the shape matrix (and its inverse)! */
 
   int Neighbor_ID;                               // Keep track of current particle
-  double Mag_Rj;                                 // magnitude of Rj vector               : mm
   double Vj;                                     // Volume of jth neighbor               : mm^3
   Tensor A{0,0,0,0,0,0,0,0,0};                   // Shape Tensor                         : unitless
 
@@ -195,11 +195,11 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
     //r[j] = Particles[Neighbor_ID].x - x;       // Spacial displacement vector
     R[j] = Particles[Neighbor_ID].X - X;         // Reference displacement vector        : mm
     Vj = Particles[Neighbor_ID].Vol;             // Neighbor Volume                      : mm^3
-    Mag_Rj = R[j].Magnitude();                   // |R[j]|                               : mm
+    Mag_R[j] = R[j].Magnitude();                   // |R[j]|                               : mm
 
     // Calculate shape function, shape function gradient for jth neighbor
-    W[j] = Shape_Function_Amp*(h - Mag_Rj)*(h - Mag_Rj)*(h - Mag_Rj);                             //        :unitless
-    Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_Rj)*(h - Mag_Rj))*(R[j] / Mag_Rj); //    : mm^-1
+    W[j] = Shape_Function_Amp*(h - Mag_R[j])*(h - Mag_R[j])*(h - Mag_R[j]);                             //        :unitless
+    Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_R[j])*(h - Mag_R[j]))*(R[j] / Mag_R[j]); //    : mm^-1
 
     // Add in the Current Neighbor's contribution to the Shape tensor
     A += Dyadic_Product((Vj*Grad_W[j]), R[j]);                                 //        : unitless
@@ -272,7 +272,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
 
   // Deformation gradient with correction
-  F = F*A_Inv;                                                                 //        : unitless
+  F *= A_Inv;                                                                  //        : unitless
 
   /* Now that we have calculated the deformation gradient, we need to calculate
   the first Piola-Kirchhoff stess tensor. To do this, however, we need to
@@ -291,7 +291,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   F(t), and P_In.F as the 'old' deformation tensor, F(t-dt). We can then use
   the forward difference approximation of the derivative to get an approximation
   for F_Prine. */
-  F_Prime = (1/dt)*(F - P_In.F);                                               //        : s^-1
+  F_Prime = (1./dt)*(F - P_In.F);                                               //        : s^-1
   L = F_Prime*(F^(-1));                                                        //        : s^-1
   Visc = J*mu*(L + (L^(T))*(F^(-T)));                                          //        : Mpa
 
@@ -325,6 +325,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   const double Vi = P_In.Vol;                    // Volume of P_In                       : mm^3
   const Tensor P_i = P_In.P;                     // First Piola-Kirchhoff stress tensor  : Mpa
   const Vector * R = P_In.R;                     // Reference displacement array         : mm
+  const double * Mag_R = P_In.Mag_R;             // Mag of reference displacement array  : mm
   const double * W = P_In.W;                     // Shape function array                 : unitless
   const Vector * Grad_W = P_In.Grad_W;           // Grad_W array                         : 1/mm
   const double Mass = P_In.Mass;                 // P_i's mass                           : g
@@ -332,10 +333,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   const double E = P_In.E;                       // Hourglass stiffness                  : Mpa
 
   /* Hour glass variables */
-  double Mag_Rj;                                                               //        : mm
   double Mag_rj;                                                               //        : mm
-  Vector Error_ij;                                                             //        : mm
-  Vector Error_ji;                                                             //        : mm
   double delta_ij;                                                             //        : mm
   double delta_ji;                                                             //        : mm
 
@@ -343,47 +341,78 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
     // Update Neighbor
     Neighbor_ID = P_In.Neighbor_IDs[j];
 
+    ////////////////////////////////////////////////////////////////////////////
     /* Calculate Internal force */
     Vj = Particles[Neighbor_ID].Vol;                                           //        : mm^3
     P_j = Particles[Neighbor_ID].P;                                            //        : Mpa
     rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
 
     // Force_Int += Vi*Vj*(P_i + P_j)*P_In.Grad_W_Tilde[j];
-    Force_Int += (Vi*Vj)*(P_i + P_j)*Grad_W[j];                                  //        : N
+    Force_Int += (Vi*Vj)*((P_i + P_j)*Grad_W[j]);                                  //        : N
 
+    ////////////////////////////////////////////////////////////////////////////
     /* Calculate external Force */
 
+    ////////////////////////////////////////////////////////////////////////////
     /* Calculate Hour Glass force */
-    Mag_Rj = Magnitude(R[j]);                                                  //        : mm
     Mag_rj = Magnitude(rj);                                                    //        : mm
 
-    // Error_ij = F_i*R_ij - r_ij
-    Error_ij = (P_In.F)*(R[j]) - rj;                                           //        : mm
-    /* Note, to calculate Error_ji, we need to know the the jth particle's
-    deformation gradient, R_ji, and r_ji. We could calculate all of these, but we
-    can save some time by making a few clever observations. From the definion of
-    R,
-             R_ji = X_i - X_j = -(X_j - X_i) = -R_ij
-     Likewise, from the defintion of r, we can decduce that r_ij = -r_ji. Thus,
-            Error_ji = F_j*R_ji - r_ji = F_j*(-R_ij) + r_ij = -F_j*(R_ij) + r_ij
-        */
-    Error_ji = -1*(Particles[Neighbor_ID].F)*(R[j]) + rj;                      //        : mm
+    /* Here we calculate delta_ij.
+    Before discussing this, let us establish the following definitions
+          r_ij = rj - ri
+          R_ij = Rj - Ri
+          rk = spacial position of kth particle
+          Rk = ref position of kth particle
+          Fk = deformation gradient of kth particle)
+    delta_ij is given by,
+          delta_ij = (Error_ij dot r_ij)/|r_ij|
+    where
+          Error_ij = Fi*R_ij - r_ij.
+    since the dot product is distributive, notice that
+          delta_ij = ((Fi*R_ij - r_ij) dot (r_ij))/|r_ij|
+                  = (Fi*R_ij dot r_ij)/|r_ij| - (r_ij dot r_ij)/|r_ij|
+                  = (Fi*R_ij dot r_ij)/|r_ij| - |r_ij|^2/|r_ij|
+                  = (Fi*R_ij dot r_ij)/|r_ij| - |r_ij|
+    Calcualating delta this way actually uses fewer floating point operations
+    and should therefore perform better. */
+    delta_ij = Vector_Dot_Product(P_In.F*R[j], rj)/(Mag_rj) - Mag_rj;          //        : mm
 
-    delta_ij = Vector_Dot_Product(Error_ij, rj)/(Mag_rj);                      //        : mm
-    /* Note: To find delta ji, we wan to take the dot product of Error_ji with
-    r_ji. However, there's no good way of finding r_ji since that would require
-    knowing the appropiate neighbor ID for particle j (Let particle i's jth
-    neighbor be particle j. Particle j will have particle i as a neighbor, but
-    it won't necessairally be j's 'jth' neighbor.
+    /* Here we calculate delta_ji.
+          delta_ji = ( Error_ji dot r_ji )/|r_ji|
+    With
+          Error_ji = F_j*R_ji - r_ji
+    Notice that we need the jth particles deformation gradient to calculate
+    Error_ji. We also need the jth particles R_ji and r_ij. We could calculate all
+    of these, but we can save some time by making a few clever observations.
+    From the definion of R,
+          R_ji = X_i - X_j = -(X_j - X_i) = -R_ij
+    Likewise, from the defintion of r, we can decduce
+          r_ij = -r_ji
+    Thus,
+        Error_ji = F_j*R_ji - r_ji
+                 = F_j*(-R_ij) + r_ij
+                 = -F_j*(R_ij) + r_ij
+    Then, using the fact that the dot product is distributive, we get
+          delta_ji = ( Error_ji dot r_ji ) / |r_ji|
+                   = ( Error_ji dot -r_ij ) / |r_ij|
+                   = -( Error_ji dot r_ij ) / |r_ij|
+                   = -( (-F_j*R_ij + r_ij ) dot r_ij )/|r_ij|
+                   = -( -F_j*R_ij dot r_ij) / |r_ij| - (r_ij dot r_ij)/|r_ij|
+                   = (F_j*R_ij dot r_ij) / |r_ij| - |r_ij|^2/|r_ij|
+                   = (F_j*R_ij dot r_ij) / |r_ij| - |r_ij|
+    Computing delta_ji this way uses fewer arithmetic operations and should
+    therefore improve performnace. */
+    delta_ji = Vector_Dot_Product(Particles[Neighbor_ID].F*R[j], rj)/(Mag_rj) - Mag_rj;//: mm
 
-    Therefore, we need to get r_ji from quantities available in the ith particle.
-    However, r_ji = r_i - r_j = -(r_j - r_i) = -r_ij = -rj. Thus, we can just
-    use the negative of P_In.rj for r_ji! */
-    delta_ji = -1*Vector_Dot_Product(Error_ji, rj)/(Mag_rj);                   //        : mm
-
-    Force_Hg += (-1*alpha*((E*Vi*Vj*W[j])/(2*Mag_Rj*Mag_Rj*Mag_rj))*
-                (delta_ij + delta_ji))*(rj);                                   //        : N
+    /* Finally, we calculate the hour glass force. However, it should be
+    noted that each term of Force_Hg is multiplied by -(1/2), E, alpha,
+    and Vi. However, these four quantities are constants. We can therefore
+    pull these multiplications out of the summations (thereby saving
+    several thousand floating point operations per particle!)*/
+    Force_Hg += (((Vj*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*
+                (delta_ij + delta_ji))*(rj);
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
+  Force_Hg *= -.5*E*Vi*alpha;                                                  //        : N
 
   /* Compute acceleration of particle at new position a(t_i+1).
   Note that all the forces we have calculated have been in units of Newtons.
@@ -403,7 +432,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
   P_In.x = P_In.x + dt*P_In.vel;                 // x_i+1 = x_i + dt*v_(i+1/2)           : mm
   P_In.vel = P_In.vel + dt*acceleration;         // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s
-  
+
   P_In.Force_Int = Force_Int;
   P_In.Force_Ext = Force_Ext;
   P_In.Force_Hg = Force_Hg;

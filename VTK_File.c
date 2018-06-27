@@ -88,16 +88,16 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   double * S31 = new double[Num_Particles];
   double * S32 = new double[Num_Particles];
 
-  double * e11 = new double[Num_Particles];
-  double * e22 = new double[Num_Particles];
-  double * e33 = new double[Num_Particles];
-  double * e21 = new double[Num_Particles];
-  double * e31 = new double[Num_Particles];
-  double * e32 = new double[Num_Particles];
+  double * E11 = new double[Num_Particles];
+  double * E22 = new double[Num_Particles];
+  double * E33 = new double[Num_Particles];
+  double * E21 = new double[Num_Particles];
+  double * E31 = new double[Num_Particles];
+  double * E32 = new double[Num_Particles];
 
   double * J = new double[Num_Particles];
 
-  Tensor F, P, S, e;
+  Tensor F, P, S, E;
   Tensor I{1,0,0,
            0,1,0,
            0,0,1};
@@ -121,16 +121,16 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
     S31[i] = S[3*2 + 0];
     S32[i] = S[3*2 + 1];
 
-    // Now calculate e = (1/2)(F + F^T) - I
-    e = (1./2.)*((F^T) + F) - I;
+    // Now calculate E = (1/2)(C-I)
+    E = (1./2.)*((F^T)*F - I);
 
     // Now get components of E
-    e11[i] = e[3*0 + 0];
-    e22[i] = e[3*1 + 1];
-    e33[i] = e[3*2 + 2];
-    e21[i] = e[3*1 + 0];
-    e31[i] = e[3*2 + 0];
-    e32[i] = e[3*2 + 1];
+    E11[i] = E[3*0 + 0];
+    E22[i] = E[3*1 + 1];
+    E33[i] = E[3*2 + 2];
+    E21[i] = E[3*1 + 0];
+    E31[i] = E[3*2 + 0];
+    E32[i] = E[3*2 + 1];
   } // for(unsinged int i = 0; i < Num_Particles; i++) {
 
   // Now print these values to the file.
@@ -157,23 +157,23 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   Add_Point_Data(File, Weight_Name, Num_Particles, S32);
 
   /* Components of E*/
-  std::strcpy(Weight_Name, "e11");
-  Add_Point_Data(File, Weight_Name, Num_Particles, e11);
+  std::strcpy(Weight_Name, "E11");
+  Add_Point_Data(File, Weight_Name, Num_Particles, E11);
 
-  std::strcpy(Weight_Name, "e22");
-  Add_Point_Data(File, Weight_Name, Num_Particles, e22);
+  std::strcpy(Weight_Name, "E22");
+  Add_Point_Data(File, Weight_Name, Num_Particles, E22);
 
-  std::strcpy(Weight_Name, "e33");
-  Add_Point_Data(File, Weight_Name, Num_Particles, e33);
+  std::strcpy(Weight_Name, "E33");
+  Add_Point_Data(File, Weight_Name, Num_Particles, E33);
 
-  std::strcpy(Weight_Name, "e21");
-  Add_Point_Data(File, Weight_Name, Num_Particles, e21);
+  std::strcpy(Weight_Name, "E21");
+  Add_Point_Data(File, Weight_Name, Num_Particles, E21);
 
-  std::strcpy(Weight_Name, "e31");
-  Add_Point_Data(File, Weight_Name, Num_Particles, e31);
+  std::strcpy(Weight_Name, "E31");
+  Add_Point_Data(File, Weight_Name, Num_Particles, E31);
 
-  std::strcpy(Weight_Name, "e32");
-  Add_Point_Data(File, Weight_Name, Num_Particles, e32);
+  std::strcpy(Weight_Name, "E32");
+  Add_Point_Data(File, Weight_Name, Num_Particles, E32);
 
   /* J */
   std::strcpy(Weight_Name, "J");
@@ -187,12 +187,12 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   delete [] S31;
   delete [] S32;
 
-  delete [] e11;
-  delete [] e22;
-  delete [] e33;
-  delete [] e21;
-  delete [] e31;
-  delete [] e32;
+  delete [] E11;
+  delete [] E22;
+  delete [] E33;
+  delete [] E21;
+  delete [] E31;
+  delete [] E32;
 
   delete [] J;
 

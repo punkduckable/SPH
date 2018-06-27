@@ -514,109 +514,77 @@ void Timing_Tests(void) {
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   long Ms_Elapsed;
   clock_t timer;
-  long Num_Tests = 100000000;
-  int i;
+  const unsigned long Num_Tests = 50000;         // Number of tests (# of times that we cycle through the arrays)
+  const unsigned long Num_El = 10000;            // Number of elements in Vector, Tensor arrays
+  unsigned long i,k;                             // index variables
 
-  Tensor S1, S2, S3;
-  Vector V1, V2;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /* Tensor-Tensor product timing test */
-  // Test tensor-tensor multiplication S3 = S1*S2
-
-  // Assign some random values to S1, S2
-  S1 = {1,2,3,4,5,6,7,8,9};
-  S2 = {9,8,7,6,5,4,3,2,1};
-
-  timer = clock();
-  for(i = 0; i < Num_Tests; i++) {
-    S3 = S1*S2;
-  }
-  timer = clock() - timer;
-
-  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %ld ms to compute %ld Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
-
-  // Test compound tensor-tensor multiplication
-
-  // Make S1 the identity (so that compoud multiplication doesn't blow up the matrix's components)
-  S1 = {1,0,0,0,1,0,0,0,1};
-
-  timer = clock();
-  for(i = 0; i < Num_Tests; i++) {
-    S3 *= S1;
-  }
-  timer = clock() - timer;
-
-  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %ld ms to compute %ld compound Tensor-Tensor products\n",Ms_Elapsed, Num_Tests);
+  // Dynamically allocate tensor, vector arrays
+  Tensor * S1 = new Tensor[Num_El];
+  Tensor * S2 = new Tensor[Num_El];
+  Tensor * S3 = new Tensor[Num_El];
+  Vector * V1 = new Vector[Num_El];
+  Vector * V2 = new Vector[Num_El];
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Tensor-Vector product timing tests */
-  S1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
-  V1 = {1,.2920, -2.392};
 
+  // First, populate the V1 and S1 elements
+  for(i = 0; i < Num_El; i++) {
+    V1[i] = {1,1,1};
+    S1[i] = {1,0,0,
+            0,1,0,
+            0,0,1};
+  }
+
+  // Cycle through the Num_EL tensors Num_Tests times.
   timer = clock();
-  for(i = 0; i < Num_Tests; i++) {
-    V2 = S1*V1;
+  for(k = 0; k < Num_Tests; k++) {
+    for(i = 0; i < Num_El; i++) {
+      V2[i] = S1[i]*V1[i];
+    }
   }
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %ld ms to compute %ld Tensor-Vector products \n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %3.0e Tensor-Vector products \n",Ms_Elapsed, (double)Num_Tests*Num_El);
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  /* Tensor Inverse timing */
+  /* Tensor addition + Multiplication by a vector test*/
 
-  S1 = {0,39,29,59,58,2,9,8,3};           // Just some random tensor... will use to find inverse
+  // Populate the S1, S2, and V1 arrays
+  for(i = 0; i < Num_El; i++) {
+    V1[i] = {1,1,1};
+    S1[i] = {1,2,3,
+             4,5,6,
+             7,8,9};
+    S2[i] = {1,0,0,
+             0,1,0,
+             0,0,1};
+  }
+
+  /* Two random scalars to force the compiler to perform tensor-scalar or vector-scalar
+  multiplication */
+  double d1 = rand();
+  double d2 = rand();
+
+  // Cycle through the Num_El tensors Num_Tests times.
   timer = clock();
-  for(i = 0; i < Num_Tests; i++) {
-    S3 = S1.Inverse();
+  for(k = 0; k < Num_Tests; k++) {
+    for(i = 0; i < Num_El; i++) {
+      V2[i] = (d1*d2)*((S1[i] + S2[i])*V1[i]);
+    }
   }
   timer = clock() - timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %ld ms to compute %ld Tensor inverses\n",Ms_Elapsed, Num_Tests);
+  printf("It took %ld ms to compute %3.0e (T+T)*V's \n",Ms_Elapsed, (double)Num_Tests*Num_El);
 
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /* Dyadic product timing */
-  V1 = {23992.4920,2693.02,5.92941};
-  V2 = {392.4,592.502,-29492.42};
-  timer = clock();
-  for(i = 0; i < Num_Tests; i++) {
-    S1 = Dyadic_Product(V1,V2);
-  }
-  timer = clock()-timer;
-
-  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %ld ms to compute %ld dyadic products\n",Ms_Elapsed, Num_Tests);
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /* Tensor Addition test */
-  S1 = {1, 23.29, 9.293, -2.4920, -49.293002, 0, 302.392, -6003.4920, 102.40249};
-  S2 = S1.Inverse();
-
-  timer = clock();
-  for(i = 0; i < Num_Tests; i++) {
-    S3 = S1 + S2;
-  }
-  timer = clock() - timer;
-
-  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %ld ms to compute %ld tensor additions products\n",Ms_Elapsed, Num_Tests);
-
-  ////////////////////////////////////////////////////////////////////////////////////////
-  /* Compound Vector-Vector addition test */
-
-  V1 = {0,0,0}, V2 = {0,0,0};
-  timer = clock();
-  for(int i = 0; i < Num_Tests; i++) {
-    V1 += V2;
-  }
-  timer = clock() - timer;
-
-  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  printf("It took %ld ms to compute %ld compound vector-vector additions\n",Ms_Elapsed, Num_Tests);
+  // Free the dynamic tensor, vector arrays. 
+  delete [] S1;
+  delete [] S2;
+  delete [] S3;
+  delete [] V1;
+  delete [] V2;
 } // void Timing_Tests(void) {
 
 #endif

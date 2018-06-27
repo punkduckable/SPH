@@ -97,6 +97,7 @@ TODO / development history:
     DONE 6/21: Updated particle methods to use ^-1, ^T and ^-T syntax with tensors.
     DONE 6/22: Make all setting functions (Set_vel, Set_x, etc...) inline
     DONE 6/22: Add units to all particle statements that involve units
+    Reduce operation count for update_x and update_P methods. 
 
   - Linked List class
     DONE 6/12: Write a two way linked list (will be used for neighbor search)
