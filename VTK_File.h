@@ -7,9 +7,9 @@ namespace VTK_File {
   unsigned int File_Number = 0;
   const unsigned int File_Number_Max_Digits = 5;
 
-  bool Append_Digits(unsigned int N, string & Str);
-  void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
   void Get_File_Name(string & Str);
+  void Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_Particles, double * Data);
+  void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 } // namespace VTK_File {
 
 #endif

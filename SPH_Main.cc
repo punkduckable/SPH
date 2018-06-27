@@ -2,6 +2,7 @@
 #include <math.h>
 #include <time.h>
 #include <string>
+#include <cstring>
 #include <unistd.h>
 
 // Type definitions
@@ -14,23 +15,25 @@ typedef unsigned char uByte;
 
 // Header files
 #include "Classes.h"
+#include "Particle_Debugger_File.h"
+#include "VTK_File.h"
+#include "Tests.h"
 #include "Vector.h"
 #include "Tensor.h"
 #include "Particle.h"
 #include "List.h"
-#include "VTK_File.h"
-#include "Tests.h"
 
 // Prototypes
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
 // Source files
+#include "Particle_Debugger_File.c"
+#include "Tests.c"
+#include "VTK_File.c"
 #include "Vector.c"
 #include "Tensor.c"
 #include "Particle.c"
 #include "List.c"
-#include "VTK_File.c"
-#include "Tests.c"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize static members of particle class

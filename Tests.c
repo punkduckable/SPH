@@ -337,8 +337,12 @@ void Particle_Tests(void) {
   long Ms_Elapsed;
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   clock_t timer = clock();
-  clock_t temp_timer, update_BC_timer = 0, update_P_timer = 0, update_x_timer = 0;
-  long MS_BC, MS_P, MS_x;
+  clock_t temp_timer,
+          update_BC_timer = 0,
+          update_P_timer = 0,
+          update_x_timer = 0,
+          Print_timer = 0;
+  long MS_BC, MS_P, MS_x, MS_Print;
 
   for(l = 0; l < Num_Steps; l++) {
     temp_timer = clock();
@@ -353,7 +357,7 @@ void Particle_Tests(void) {
     i = 0;
     for(j = 0; j < Side_Len; j++) {
       for(k = 0; k < Side_Len; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {25,0,0};
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {50,0,0};
       }
     }
 
@@ -376,7 +380,6 @@ void Particle_Tests(void) {
     j = Side_Len-1;
     for(i = 0; i < Side_Len; i++) {
       for(k = 0; k < Side_Len; k++) {
-        //Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1] = 0;
       }
     }
 
@@ -391,9 +394,72 @@ void Particle_Tests(void) {
     k = Side_Len-1;
     for(i = 0; i < Side_Len; i++) {
       for(j = 0; j < Side_Len; j++) {
-        //Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2] = 0;
       }
     }
+
+    /*
+    i = 0;
+    for(j = (Side_Len)/2-5; j < (Side_Len)/2+5; j++) {
+      for(k = (Side_Len)/2-5; k < (Side_Len)/2+5; k++) {
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {17,0,0};
+      }
+    }
+
+    // back face (i = Side_Len-1)
+    i = Side_Len-1;
+    for(j = 0; j < Side_Len; j++) {
+      for(k = 0; k < Side_Len; k++) {
+        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[0];
+        if(vel > 0) {
+          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[0] = 0;
+        }
+      }
+    }
+
+    // Right face (j = 0)
+    j = 0;
+    for(i = 0; i < Side_Len; i++) {
+      for(k = 0; k < Side_Len; k++) {
+        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1];
+        if(vel < 0) {
+          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1] = 0;
+        }
+      }
+    }
+
+    // Left face (i = Side_len-1)
+    j = Side_Len-1;
+    for(i = 0; i < Side_Len; i++) {
+      for(k = 0; k < Side_Len; k++) {
+        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1];
+        if(vel > 0) {
+          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1] = 0;
+        }
+      }
+    }
+
+    // Bottom face (k = 0)
+    k = 0;
+    for(i = 0; i < Side_Len; i++) {
+      for(j = 0; j < Side_Len; j++) {
+        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2];
+        if(vel < 0) {
+          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2] = 0;
+        }
+      }
+    }
+
+    // Top face (k = side_len-1) face
+    k = Side_Len-1;
+    for(i = 0; i < Side_Len; i++) {
+      for(j = 0; j < Side_Len; j++) {
+        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2];
+        if(vel> 0) {
+          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2] = 0;
+        }
+      }
+    }
+    */
 
     update_BC_timer += clock() - temp_timer;
 
@@ -414,22 +480,30 @@ void Particle_Tests(void) {
     update_x_timer += clock() - temp_timer;
 
     // Print to file evert 100th iteration
+    temp_timer = clock();
     if((l+1)%100 == 0) {
       printf("%d iterations complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
+
+      if(l > 9000) {
+        Particle_Debugger_File::Export_Pariticle_Properties(Num_Particles, Particles);
+      }
     } // if((k+1)%100 == 0) {
-  }
+    Print_timer += clock()-temp_timer;
+  } // for(l = 0; l < Num_Steps; l++) {
   timer = clock()-timer;
 
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
   MS_BC = (int)((double)update_BC_timer / (double)CLOCKS_PER_MS);
   MS_P = (int)((double)update_P_timer / (double)CLOCKS_PER_MS);
   MS_x = (int)((double)update_x_timer / (double)CLOCKS_PER_MS);
+  MS_Print = (int)((double)Print_timer / (double)CLOCKS_PER_MS);
 
   printf("It took %ld ms to perform %d Particle iterations \n",Ms_Elapsed, Num_Steps);
   printf("%ld ms to update BC's\n", MS_BC);
   printf("%ld ms to update P\n", MS_P);
   printf("%ld ms to update x\n", MS_x);
+  printf("%ld ms to print data to files\n", MS_Print);
 
 } // void Particle_Tests(void) {
 

@@ -12,7 +12,7 @@ array, V denotes a Vector object, c denotes a scalar. */
 
 class Tensor {
   friend class Particle;
-  
+
   private:
     double S[9];                                  // Holds the 9 components of the Tensor
 
@@ -74,6 +74,9 @@ class Tensor {
     friend double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2);
     friend void Print(const Tensor & T_In);
     friend Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
+
+    // Temporary friends! Should remove asap
+    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 }; // class Tensor {
 
 // Tensor functions that don't belong in the tensor class

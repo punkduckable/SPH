@@ -46,6 +46,11 @@ class Particle {
              0,1,0,
              0,0,1};                                       // deformation gradient       : unitless
 
+    // Forces acting on the particle
+    Vector Force_Int{0,0,0};                              // Internal Force vector       : N
+    Vector Force_Ext{0,0,0};                              // External/body force         : N
+    Vector Force_Hg{0,0,0};                               // Hour-glass force            : N
+
   public:
     // Constructors, destructor
     Particle(void);                                        // Default constructor
@@ -66,11 +71,6 @@ class Particle {
                        const unsigned int * Neighbor_ID_Array,
                        const Particle * Particles);        // Set Neighbors
 
-    // Methods to access particle data
-    Vector Get_x(void) const { return x; }
-    Vector Get_X(void) const { return X; }
-    double Get_P_1_1(void) const { return P[3*0 + 0]; }
-
     // Friend functions
     friend void Update_P(Particle & P_In,
                          const Particle * Particles,
@@ -81,7 +81,11 @@ class Particle {
     friend bool Are_Neighbors(const Particle & P1,
                               const Particle & P2);        // Returns true P1 and P2 are neighbors, false otherwise
 
+
+    // Temp friends... Should be removed!
     friend void Particle_Tests(void);
+    friend void Particle_Debugger_File::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
+    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

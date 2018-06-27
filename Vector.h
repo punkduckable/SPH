@@ -54,12 +54,15 @@ class Vector {
 
     // Friends
     friend Vector operator*(double c, const Vector & V_In);  // Scalar multiplication (defines c*V)
-    friend double Magnitue(const Vector & V_In);
+    friend double Magnitude(const Vector & V_In);
     friend double Vector_Dot_Product(const Vector & V1, const Vector & V2);
     friend void Print(const Vector & V_In);
     friend Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
+    // Temporary friends (should remove)
     friend void Particle_Tests(void);
+    friend void Particle_Debugger_File::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
+    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 
     // Printing functions
     void Print(void) const;                          // Print vector components

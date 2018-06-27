@@ -4,61 +4,31 @@
 #include "VTK_File.h"
 #include "Particle.h"
 
-bool VTK_File::Append_Digits(unsigned int N, string & Str) {
-  /* To convert N into a string, we need to get the digits of N.
-
-  To do this, we first need to figure out the number of digits in N. Once we
-  know that, we can dynamically allocate an array to store the digits of N.
-  To get the actaul digits, we can get the digits of N using integer division!
-
-  To get the 1's place of an int, we can use the following: N - 10*(N/10)
-  (or just N % 10). Once we have that, we can divide N by 10 and repeat. This
-  process continues until the remaining number is equal to zero. */
-
-  // Get number of digits in N
-  unsigned int Num_Digits = 0;
-  unsigned int N_temp = N;
-
-  do {
-    Num_Digits++;
-    N_temp /= 10;
-  } while(N_temp != 0);
-
-  // Check that we are less than the max number of digits.
-  if(Num_Digits > File_Number_Max_Digits) {
-    printf("File Counter is too high! \n");
-    return true;
-  }
-
-  /* Now dynamically allocate a char array to store the digits of N. Note that
-  we allocate an extra element in this string for the 'end-of-string'
-  character */
-  char * Digits = new char[File_Number_Max_Digits+1];
-  Digits[File_Number_Max_Digits] = '\0';
-
-  // Populate the elements of the Digits array
-  for(unsigned int i = File_Number_Max_Digits-1; i >= File_Number_Max_Digits - Num_Digits; i--) {
-    Digits[i] = N%10+48;
-    N /= 10;
-  } // for(unsigned int i = Num_Digits-1; i >= 0; i--) {
-
-  for(unsigned int i = 0; i < File_Number_Max_Digits - Num_Digits; i++) {
-    Digits[i] = '0';
-  } // for(unsigned int i = 0; i < File_Number_Max_Digits - Num_Digits; i++) {
-
-  // Now return the string version of N
-  Str += Digits;
-  return false;
-} // bool Append_Digits(unsigned int N, string & Str) {
-
 void VTK_File::Get_File_Name(string & Str) {
+  char Buf[6];
+  sprintf(Buf,"%05d",File_Number);
   File_Number++;
+
   Str += "_variables_";
-  Append_Digits(File_Number, Str);
+  Str += Buf;
   Str += ".vtk";
 } // void Get_File_Name(string & Str) {
 
+void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_Particles, double * Data) {
+  // Print header.
+  fprintf(File,"SCALARS ");
+  fprintf(File,Weight_Name);
+  fprintf(File," float\n");
+  fprintf(File,"LOOKUP_TABLE default\n");
+
+  // Now print supplied data to file
+  for(unsigned int i = 0; i < Num_Particles; i++) {
+    fprintf(File,"\t %14.7f\n",Data[i]);
+  } // for(unsigned int i = 0; i < Num_Particles; i++) {
+}
+
 void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles) {
+  // Set up file
   string File_Name = "Test";
   Get_File_Name(File_Name);
 
@@ -67,6 +37,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   FILE * File = fopen(File_Path.c_str(), "w");
 
+  //////////////////////////////////////////////////////////////////////////////
   // Print file header
   fprintf(File,"%s\n","# vtk DataFile Version 3.0");
   fprintf(File,"%s\n","test_file");
@@ -74,25 +45,158 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   fprintf(File,"%s\n","DATASET POLYDATA");
   fprintf(File,"POINTS %i float\n",Num_Particles);
 
+  //////////////////////////////////////////////////////////////////////////////
   // Cycle through particles, print spacial positions of each particle
   Vector x;
   for(unsigned int i = 0; i < Num_Particles; i++) {
-    x = Particles[i].Get_x();
+    x = Particles[i].x;
 
-    fprintf(File,"%10.5f \t %10.5f \t %10.5f\n",x(0), x(1), x(2));
+    fprintf(File,"%10.5f \t %10.5f \t %10.5f\n",x[0], x[1], x[2]);
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
-  // Now print weighting information
-  fprintf(File,"POINT_DATA %i\n", Num_Particles);
-  fprintf(File,"SCALARS C float\n");
-  fprintf(File,"LOOKUP_TABLE default\n");
+  //////////////////////////////////////////////////////////////////////////////
+  /* Find the components of S and E for each particle
+  We Calculate each of these by first finding P and F for each particle. We then
+  use these quantities to calculate Sigma and E. The components of each of these
+  tensors are then stored in dynamic arrays. Once this is finished, we write the
+  components to the output file.
 
-  double P_1_1;
+  We choose to store the components in dynamic arrays before writing to the file
+  to improve performnace. Each particle's P, F tensors are in distinct memory
+  locations. If we were to collect each component at a time, we'd have to read
+  in a new cache line for each component from each particle. In other words,
+  we'd only get one double from each cache line. This is bad. To improve this,
+  we only pull from the particles once. We pull in the entire tensor, then write
+  its components to the dynamic arrays. We use all 6 of each tensor's components
+  in each iteration. This means that we can make better usage of cache lines.
+
+  Once the components have been written to the arrays, tensor components
+  belonging to adjacent particles are next to each ther in memory. For example,
+  in the P11 array, P11 component of the 100th particle is stored right next to
+  the P11 component of the 101th particle. when we write to the file, we pull
+  from the dynamic arrays. This allows us to use cache lines efficiently.
+
+  This improves performance.
+  */
+
+  /* Create dynamic arrays for components of S, E (note, both are symmetric, so
+  we only need to store 6 components) and J (det F)*/
+  double * S11 = new double[Num_Particles];
+  double * S22 = new double[Num_Particles];
+  double * S33 = new double[Num_Particles];
+  double * S21 = new double[Num_Particles];
+  double * S31 = new double[Num_Particles];
+  double * S32 = new double[Num_Particles];
+
+  double * e11 = new double[Num_Particles];
+  double * e22 = new double[Num_Particles];
+  double * e33 = new double[Num_Particles];
+  double * e21 = new double[Num_Particles];
+  double * e31 = new double[Num_Particles];
+  double * e32 = new double[Num_Particles];
+
+  double * J = new double[Num_Particles];
+
+  Tensor F, P, S, e;
+  Tensor I{1,0,0,
+           0,1,0,
+           0,0,1};
+
   for(unsigned int i = 0; i < Num_Particles; i++) {
-    P_1_1 = Particles[i].Get_P_1_1();
-    fprintf(File,"\t %14.7f\n",P_1_1);
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
+    // Get F, P from current particle
+    F = Particles[i].F;
+    P = Particles[i].P;
 
+    // Use F to calculate determinant (J)
+    J[i] = Determinant(F);
+
+    // Calculate S from P.
+    S = P*(F^(T))/J[i];
+
+    // Get components of S
+    S11[i] = S[3*0 + 0];
+    S22[i] = S[3*1 + 1];
+    S33[i] = S[3*2 + 2];
+    S21[i] = S[3*1 + 0];
+    S31[i] = S[3*2 + 0];
+    S32[i] = S[3*2 + 1];
+
+    // Now calculate e = (1/2)(F + F^T) - I
+    e = (1./2.)*((F^T) + F) - I;
+
+    // Now get components of E
+    e11[i] = e[3*0 + 0];
+    e22[i] = e[3*1 + 1];
+    e33[i] = e[3*2 + 2];
+    e21[i] = e[3*1 + 0];
+    e31[i] = e[3*2 + 0];
+    e32[i] = e[3*2 + 1];
+  } // for(unsinged int i = 0; i < Num_Particles; i++) {
+
+  // Now print these values to the file.
+  fprintf(File,"POINT_DATA %i\n", Num_Particles);
+  char Weight_Name[5];
+
+  /* Components of S */
+  std::strcpy(Weight_Name, "S11");
+  Add_Point_Data(File, Weight_Name, Num_Particles, S11);
+
+  std::strcpy(Weight_Name, "S22");
+  Add_Point_Data(File, Weight_Name, Num_Particles, S22);
+
+  std::strcpy(Weight_Name, "S33");
+  Add_Point_Data(File, Weight_Name, Num_Particles, S33);
+
+  std::strcpy(Weight_Name, "S21");
+  Add_Point_Data(File, Weight_Name, Num_Particles, S21);
+
+  std::strcpy(Weight_Name, "S31");
+  Add_Point_Data(File, Weight_Name, Num_Particles, S31);
+
+  std::strcpy(Weight_Name, "S32");
+  Add_Point_Data(File, Weight_Name, Num_Particles, S32);
+
+  /* Components of E*/
+  std::strcpy(Weight_Name, "e11");
+  Add_Point_Data(File, Weight_Name, Num_Particles, e11);
+
+  std::strcpy(Weight_Name, "e22");
+  Add_Point_Data(File, Weight_Name, Num_Particles, e22);
+
+  std::strcpy(Weight_Name, "e33");
+  Add_Point_Data(File, Weight_Name, Num_Particles, e33);
+
+  std::strcpy(Weight_Name, "e21");
+  Add_Point_Data(File, Weight_Name, Num_Particles, e21);
+
+  std::strcpy(Weight_Name, "e31");
+  Add_Point_Data(File, Weight_Name, Num_Particles, e31);
+
+  std::strcpy(Weight_Name, "e32");
+  Add_Point_Data(File, Weight_Name, Num_Particles, e32);
+
+  /* J */
+  std::strcpy(Weight_Name, "J");
+  Add_Point_Data(File, Weight_Name, Num_Particles, J);
+
+  // Deallocate dynamic arrays
+  delete [] S11;
+  delete [] S22;
+  delete [] S33;
+  delete [] S21;
+  delete [] S31;
+  delete [] S32;
+
+  delete [] e11;
+  delete [] e22;
+  delete [] e33;
+  delete [] e21;
+  delete [] e31;
+  delete [] e32;
+
+  delete [] J;
+
+  // Free the file
   fclose(File);
 } // void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles) {
 

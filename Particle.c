@@ -403,6 +403,10 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
   P_In.x = P_In.x + dt*P_In.vel;                 // x_i+1 = x_i + dt*v_(i+1/2)           : mm
   P_In.vel = P_In.vel + dt*acceleration;         // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s
+  
+  P_In.Force_Int = Force_Int;
+  P_In.Force_Ext = Force_Ext;
+  P_In.Force_Hg = Force_Hg;
 } // void Update_Particle_Position(Particle & P_In, const Particle * Particles, const double dt) {
 
 bool Are_Neighbors(const Particle & P1, const Particle & P2) {
@@ -437,7 +441,7 @@ void Particle::Print(void) const {
   // If we have neighbors, print neighbor information
   if(Has_Neighbors == true) {
     //unsigned int i;                    // Loop index variable
-    
+
     /* Print neighbor ID's
     printf("Neighbor ID's  : {");
     for(i = 0; i < Num_Neighbors-1; i++) {
