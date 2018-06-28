@@ -111,15 +111,17 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
     J[i] = Determinant(F);
 
     // Calculate S from P.
-    S = P*(F^(T))/J[i];
+    //S = P*(F^(T))/J[i];
 
     // Get components of S
+    /*
     S11[i] = S[3*0 + 0];
     S22[i] = S[3*1 + 1];
     S33[i] = S[3*2 + 2];
     S21[i] = S[3*1 + 0];
     S31[i] = S[3*2 + 0];
     S32[i] = S[3*2 + 1];
+    */
 
     // Now calculate E = (1/2)(C-I)
     E = (1./2.)*((F^T)*F - I);
@@ -138,6 +140,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   char Weight_Name[5];
 
   /* Components of S */
+  /*
   std::strcpy(Weight_Name, "S11");
   Add_Point_Data(File, Weight_Name, Num_Particles, S11);
 
@@ -155,6 +158,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   std::strcpy(Weight_Name, "S32");
   Add_Point_Data(File, Weight_Name, Num_Particles, S32);
+  */
 
   /* Components of E*/
   std::strcpy(Weight_Name, "E11");
@@ -176,8 +180,10 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   Add_Point_Data(File, Weight_Name, Num_Particles, E32);
 
   /* J */
+  /*
   std::strcpy(Weight_Name, "J");
   Add_Point_Data(File, Weight_Name, Num_Particles, J);
+  */
 
   // Deallocate dynamic arrays
   delete [] S11;

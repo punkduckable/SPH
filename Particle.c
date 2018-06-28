@@ -238,7 +238,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   /* First, let's set up the local variables that will be used to update the
   particle's position */
   double Vj;                                     // Volume of jth neighbor               : mm^3
-  int Neighbor_ID;                               // Index of jth neighbor.
+  unsigned int Neighbor_ID;                      // Index of jth neighbor.
 
   Tensor F = {0,0,0,
               0,0,0,
@@ -255,7 +255,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   const double Lame = P_In.Lame;                 // Lame paramater                       : Mpa
   const double mu0 = P_In.mu0;                   // Shear modulus                        : Mpa
   const double mu = P_In.mu;                     // Viscosity                            : Mpa*s
-  const double Num_Neighbors = P_In.Num_Neighbors;
+  const unsigned int Num_Neighbors = P_In.Num_Neighbors;
 
   Tensor F_Prime;                                // F time derivative                    : 1/s
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s
@@ -284,7 +284,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless
   J = Determinant(F);                            // J is det of F                        : unitless
 
-  S = mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1));                                 //        : Mpa
+  S = mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1));                                //        : Mpa
 
   /* Calculate viscosity tensor:
   To do this, we need to calculate the deformation gradient. Luckily, at this
@@ -336,7 +336,7 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   const Tensor P_i = P_In.P;                     // First Piola-Kirchhoff stress tensor  : Mpa
   const Tensor F_i = P_In.F;                     // Deformation gradient                 : unitless
 
-  const unsigned int Num_Neighbors = P_In.Num_Neighbors;  // Number of neighbors of P_In
+  const unsigned int Num_Neighbors = P_In.Num_Neighbors; // Number of neighbors of P_In
   const Vector * R = P_In.R;                     // Reference displacement array         : mm
   const double * Mag_R = P_In.Mag_R;             // Mag of reference displacement array  : mm
   const double * W = P_In.W;                     // Shape function array                 : unitless
@@ -353,12 +353,9 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Internal force */
+
     Vj = Particles[Neighbor_ID].Vol;                                           //        : mm^3
     P_j = Particles[Neighbor_ID].P;                                            //        : Mpa
-    F_j = Particles[Neighbor_ID].F;                                            //        : unitless
-    rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
-
-    // Force_Int += Vi*Vj*(P_i + P_j)*P_In.Grad_W_Tilde[j];
     Force_Int += (Vi*Vj)*((P_i + P_j)*Grad_W[j]);                              //        : N
 
     ////////////////////////////////////////////////////////////////////////////
@@ -366,7 +363,6 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Hour Glass force */
-    Mag_rj = Magnitude(rj);                                                    //        : mm
 
     /* Here we calculate delta_ij.
     Before discussing this, let us establish the following definitions
@@ -386,7 +382,9 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
                   = (Fi*R_ij dot r_ij)/|r_ij| - |r_ij|
     Calcualating delta this way actually uses fewer floating point operations
     and should therefore perform better. */
-    delta_ij = Vector_Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;          //        : mm
+    rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
+    Mag_rj = Magnitude(rj);                                                    //        : mm
+    delta_ij = Vector_Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;             //        : mm
 
     /* Here we calculate delta_ji.
           delta_ji = ( Error_ji dot r_ji )/|r_ji|
@@ -412,7 +410,10 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
                    = (F_j*R_ij dot r_ij) / |r_ij| - |r_ij|^2/|r_ij|
                    = (F_j*R_ij dot r_ij) / |r_ij| - |r_ij|
     Computing delta_ji this way uses fewer arithmetic operations and should
-    therefore improve performnace. */
+    therefore improve performnace.
+    */
+
+    F_j = Particles[Neighbor_ID].F;                                          //        : unitless
     delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;//: mm
 
     /* Finally, we calculate the hour glass force. However, it should be

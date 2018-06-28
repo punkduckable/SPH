@@ -9,7 +9,8 @@ Development Plan:
 
  - Write some SPH code
     DONE: Generate particle list, use this to get each particle's neighbor list
-    - Test that code runs properly
+    DONE: Test that code runs properly
+    DONE: Add Diagnostics for debugging (print forces to file, count operations, etc... See SPH_Diagnostics)
     - Allow program to read data in from a file, write to a file
 
   - Optimize Serial code
@@ -97,7 +98,7 @@ TODO / development history:
     DONE 6/21: Updated particle methods to use ^-1, ^T and ^-T syntax with tensors.
     DONE 6/22: Make all setting functions (Set_vel, Set_x, etc...) inline
     DONE 6/22: Add units to all particle statements that involve units
-    Reduce operation count for update_x and update_P methods. 
+    Reduce operation count for update_x and update_P methods.
 
   - Linked List class
     DONE 6/12: Write a two way linked list (will be used for neighbor search)
