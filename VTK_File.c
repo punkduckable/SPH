@@ -128,11 +128,13 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
     // Now get components of E
     E11[i] = E[3*0 + 0];
+    /*
     E22[i] = E[3*1 + 1];
     E33[i] = E[3*2 + 2];
     E21[i] = E[3*1 + 0];
     E31[i] = E[3*2 + 0];
     E32[i] = E[3*2 + 1];
+    */
   } // for(unsinged int i = 0; i < Num_Particles; i++) {
 
   // Now print these values to the file.
@@ -164,6 +166,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   std::strcpy(Weight_Name, "E11");
   Add_Point_Data(File, Weight_Name, Num_Particles, E11);
 
+  /*
   std::strcpy(Weight_Name, "E22");
   Add_Point_Data(File, Weight_Name, Num_Particles, E22);
 
@@ -178,6 +181,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   std::strcpy(Weight_Name, "E32");
   Add_Point_Data(File, Weight_Name, Num_Particles, E32);
+  */
 
   /* J */
   /*

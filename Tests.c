@@ -263,13 +263,12 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const int Side_Len = 20;
+  const int Side_Len = 47;
   const int Num_Particles = Side_Len*Side_Len*Side_Len;
 
 
   // Particle paramaters
   Particle *Particles = new Particle[Num_Particles];                 // Dynamically allocate particles array
-  double Inter_Particle_Spacing = .5;                                          //        : mm
   double Particle_Volume = 1;                                                  //        : mm^3
   double Particle_Density = 1;        // I chose the density of water.         //        : g/mm^3
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
@@ -357,7 +356,7 @@ void Particle_Tests(void) {
     i = 0;
     for(j = 0; j < Side_Len; j++) {
       for(k = 0; k < Side_Len; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {50,0,0};
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {40,0,0};
       }
     }
 
@@ -399,9 +398,9 @@ void Particle_Tests(void) {
 
     /*
     i = 0;
-    for(j = (Side_Len)/2-5; j < (Side_Len)/2+5; j++) {
-      for(k = (Side_Len)/2-5; k < (Side_Len)/2+5; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {17,0,0};
+    for(j = (Side_Len)/2-2; j < (Side_Len)/2+2; j++) {
+      for(k = (Side_Len)/2-2; k < (Side_Len)/2+2; k++) {
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {30,0,0};
       }
     }
 

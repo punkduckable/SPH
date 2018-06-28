@@ -23,6 +23,21 @@ typedef unsigned char uByte;
 #include "Particle.h"
 #include "List.h"
 
+////////////////////////////////////////////////////1////////////////////////////
+// Initialize static members (particle class) and global variables
+
+double Inter_Particle_Spacing = .5;                                           //        : mm
+double Particle::h = 4*Inter_Particle_Spacing;             // Suppoer function raduius   : mm
+double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);// Shape function amplitude   : mm^-3
+
+double Particle::Lame = 9;                                 // Lame parameter             : Mpa
+double Particle::mu0 = .1;                                 // Shear modulus              : Mpa
+
+double Particle::mu = 5e-3;                                // Viscosity                  : Mpa*s
+
+double Particle::E = .01;                                  // Hourglass stiffness        : Mpa
+double Particle::alpha = 50;                               // Hg control parameter       : Unitless
+
 // Prototypes
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
@@ -34,20 +49,6 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 #include "Tensor.c"
 #include "Particle.c"
 #include "List.c"
-
-////////////////////////////////////////////////////////////////////////////////
-// Initialize static members of particle class
-
-double Particle::h = 2;                                    // Suppoer function raduius   : mm
-double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);// Shape function amplitude   : mm^-3
-
-double Particle::Lame = 9;                                 // Lame parameter             : Mpa
-double Particle::mu0 = .1;                                 // Shear modulus              : Mpa
-
-double Particle::mu = 5e-3;                                // Viscosity                  : Mpa*s
-
-double Particle::E = .01;                                  // Hourglass stiffness        : Mpa
-double Particle::alpha = 50;                               // Hg control parameter       : Unitless
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions
