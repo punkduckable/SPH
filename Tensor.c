@@ -15,23 +15,24 @@ element away from each other. Therefore, S[3*i+j] is the same as T(i,j). */
 // Constuctors and destructor
 
 Tensor::Tensor(void) {
+  //OP_Count::T_Default_Constructor++;             // Increment operator count (See SPH Diagnostics)
   //printf("Tensor default constructor\n");
 } // Tensor::Tensor(void) {
 
 Tensor::Tensor(double t11, double t12, double t13,
                double t21, double t22, double t23,
                double t31, double t32, double t33) {
-    //printf("Tensor component constrctor\n");
 
     // Set the 9 individual components of S using inputs.
     S[0] = t11; S[1] = t12; S[2] = t13; // Row 1
     S[3] = t21; S[4] = t22; S[5] = t23; // Row 2
     S[6] = t31; S[7] = t32; S[8] = t33; // Row 3
+
+    //OP_Count::T_Component_Constructor++;         // Increment operator count (See SPH Diagnostics)
+    //printf("Tensor component constrctor\n");
 } // Tensor:Tensor(double t11,.... double t33) {
 
 Tensor::Tensor(const Tensor & Tensor_In) {
-  //printf("Tensor Copy contructor\n");
-
   /* Here we create one tensor using another. This is done element-by-element.
   Normally, such an operation would require a double nested loop (one for the
   rows and one for the columns).  However, loops have overhead. To eliminate
@@ -61,6 +62,8 @@ Tensor::Tensor(const Tensor & Tensor_In) {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 1; i < 3; i++) {
   */
+  //OP_Count::T_Copy_Constructor++;                // Increment operator count (See SPH Diagnostics)
+  //printf("Tensor Copy contructor\n");
 } // Tensor::Tensor(const Tensor & Tensor_In) {
 
 Tensor::~Tensor(void) {
@@ -101,6 +104,7 @@ Tensor & Tensor::operator=(const Tensor & Tensor_In) {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::T_Equality++;                        // Increment operator count (See SPH Diagnostics)
 
   // return this tensor (element wise equality is done)
   return *this;
@@ -143,6 +147,7 @@ Tensor Tensor::operator+(const Tensor & Tensor_In) const {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 9; i++){
   */
+  //OP_Count::T_T_Addition++;                      // Increment operator count (See SPH Diagnostics)
 
   return Sum;
 } // Tensor Tensor::operator+(const Tensor & Tensor_In) const {
@@ -179,6 +184,7 @@ Tensor Tensor::operator-(const Tensor & Tensor_In) const {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 9; i++){
   */
+  //OP_Count::T_T_Subtraction++;                   // Increment operator count (See SPH Diagnostics)
 
   return Diff;
 } // Tensor Tensor::operator-(const Tensor & Tensor_In) const {
@@ -271,6 +277,7 @@ Tensor Tensor::operator*(const Tensor & Tensor_In) const{
     } // for(int p = 0; p < 3; p++) {
   } // for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::T_T_Multiplication++;                // Increment operator count (See SPH Diagnostics)
 
   return Prod;
 } // Tensor Tensor::operator*(const Tensor & Tensor_In) const{
@@ -304,6 +311,7 @@ Vector Tensor::operator*(const Vector & V_In) const {
                 S[3*i + 2]*V_In[2];
   } //   for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::T_V_Multiplication++;                // Increment operator count (See SPH Diagnostics)
 
   return Prod;
 } // Vector Tensor::operator*(const Vector & V_In) const {
@@ -340,6 +348,7 @@ Tensor Tensor::operator*(const double c) const {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::T_S_Multiplication++;                // Increment operator count (See SPH Diagnostics)
 
   return Prod;
 } // Tensor Tensor::operator*(const double c) const {
@@ -379,6 +388,7 @@ Tensor Tensor::operator/(const double c) const {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::T_S_Division++;                      // Increment operator count (See SPH Diagnostics)
 
   return Quotient;
 } //Tensor Tensor::operator/(const double c) const {
@@ -418,6 +428,7 @@ Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::Compound_T_T_Addition++;             // Increment operator count (See SPH Diagnostics)
 
   // Return this tensor (element wise summation is done)
   return *this;
@@ -453,6 +464,7 @@ Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::Compound_T_T_Subtraction++;          // Increment operator count (See SPH Diagnostics)
 
   // Return this tensor (element wise subtraction is done)
   return *this;
@@ -574,6 +586,7 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
     S[3*i + 2] = Prod(i,2);
   } //   for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::Compound_T_T_Multiplication++;       // Increment operator count (See SPH Diagnostics)
 
   return *this;
 } // Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
@@ -665,6 +678,8 @@ Tensor Tensor::Inverse(void) const{
 
   Tensor_Inv = (1/Det_S)*Tensor_Inv;
 
+  //OP_Count::T_Inverse++;                         // Increment operator count (See SPH Diagnostics)
+
   return Tensor_Inv;
 } // Tensor Inverse(void) const{
 
@@ -676,26 +691,24 @@ Tensor Tensor::operator^(const int exp) {
   with a -1, we return the inverse, and if it is called with a -2 then we
   return the inverse transpose. */
 
-  Tensor S = *this;
-
   // First check if exp = -1. If so then return Inverse of T
   if(exp == -1) {
-    return S.Inverse();
+    return (*this).Inverse();
   } // if(exp == -1) {
 
   // Check if exp is T (T = 2). If so then return transpose
   else if (exp == T){
-    return S.Transpose();
+    return (*this).Transpose();
   }
 
   // Check fi exp is -T (-T = -2). If so then return inverse transpose
   else if(exp == -T) {
-    return S.Inverse().Transpose();
+    return (*this).Inverse().Transpose();
   }
 
   // Otherwise, throw an error message
   printf("Invalid input for ^ operator (Tensor).\n Valid inputs are -1 : Inverse, T (2) : Transpose, and -T (-2) : Inverse transpose\n");
-  return S;
+  return (*this);
 } // Tensor & operator^(const char exp) {
 
 
@@ -704,6 +717,8 @@ Tensor Tensor::operator^(const int exp) {
 // Other Tensor methods
 
 double Tensor::Determinant(void) const {
+  //OP_Count::T_Determinant++;                     // Increment operator count (See SPH Diagnostics)
+
   return (S[0*3 + 0]*(S[1*3 + 1]*S[2*3 + 2]
                      -S[2*3 + 1]*S[1*3 + 2])
          +S[0*3 + 1]*(S[2*3 + 0]*S[1*3 + 2]
@@ -745,6 +760,7 @@ Tensor Tensor::Transpose(void) const {
     } // for(int j = 0; j < 3; j++) {
   } // for(int i = 0; i < 3; i++) {
   */
+  //OP_Count::T_Transpose++;                       // Increment operator count (See SPH Diagnostics)
 
   return T_Transpose;
 } // Tensor Tensor::Transpose(void) const {
@@ -779,6 +795,8 @@ Tensor Transpose(const Tensor & Tensor_In) {
 double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
   /* This returns T1:T2, the tensor dot product of T1 and T2. This is given by
   T1(0,0)*T2(0,0) + T1(0,1)*T2(0,1) + .... T1(2,2)*T2(2,2) */
+
+  //OP_Count::T_Dot_Product++;                     // Increment operator count (See SPH Diagnostics)
 
   return T1[3*0 + 0]*T2[3*0 + 0] + T1[3*0 + 1]*T2[3*0 + 1] + T1[3*0 + 2]*T2[3*0 + 2] +
          T1[3*1 + 0]*T2[3*1 + 0] + T1[3*1 + 1]*T2[3*1 + 1] + T1[3*1 + 2]*T2[3*1 + 2] +

@@ -13,25 +13,28 @@ the same way/give the same result (V[1]= V(1)).
 // Constructors, Destructor
 
 Vector::Vector(void) {
+  //OP_Count::V_Default_Constructor++;             // Increment operator count (See SPH Diagnostics)
   //printf("Vector default constructor\n");
 } // Vector::Vector(void) {
 
 Vector::Vector(const double v0, const double v1, const double v2) {
-  //printf("Vector component constructor\n");
-
   // Initialize components of vector using supplied components
   V[0] = v0;
   V[1] = v1;
   V[2] = v2;
+
+  //OP_Count::V_Component_Constructor++;           // Increment operator count (See SPH Diagnostics)
+  //printf("Vector component constructor\n");
 } // Vector::Vector(const double v0, const double v1, const double v2) {
 
 Vector::Vector(const Vector & V_In) {
-  //printf("Vector copy constructor\n");
-
   // Initialize components of vector using supplied components
   V[0] = V_In[0];
   V[1] = V_In[1];
   V[2] = V_In[2];
+
+  //OP_Count::V_Copy_Constructor++;                // Increment operator count (See SPH Diagnostics)
+  //printf("Vector copy constructor\n");
 } // Vector::Vector(const Vector & V_In) {
 
 Vector::~Vector(void) {
@@ -49,6 +52,8 @@ Vector & Vector::operator=(const double V_In[3]) {
   V[1] = V_In[1];
   V[2] = V_In[2];
 
+  //OP_Count::V_Equality++;                        // Increment operator count (See SPH Diagnostics)
+
   // Return this Vector
   return *this;
 } // Vector & Vector::operator=(const double V_In[3]) {
@@ -58,6 +63,8 @@ Vector & Vector::operator=(const Vector & V_In) {
   V[0] = V_In[0];
   V[1] = V_In[1];
   V[2] = V_In[2];
+
+  //OP_Count::V_Equality++;                        // Increment operator count (See SPH Diagnostics)
 
   // Return this vector
   return *this;
@@ -88,6 +95,8 @@ Vector Vector::operator+(const Vector & V_In) const {
   Sum[1] = V[1] + V_In[1];
   Sum[2] = V[2] + V_In[2];
 
+  //OP_Count::V_V_Addition++;                      // Increment operator count (See SPH Diagnostics)
+
   return Sum;
 } // Vector Vector::operator+(const Vector V) const {
 
@@ -98,6 +107,8 @@ Vector Vector::operator-(const Vector & V_In) const{
   Diff[0] = V[0] - V_In[0];
   Diff[1] = V[1] - V_In[1];
   Diff[2] = V[2] - V_In[2];
+
+  //OP_Count::V_V_Subtraction++;                   // Increment operator count (See SPH Diagnostics)
 
   return Diff;
 } // Vector Vector::operator-(const Vector V) const {
@@ -110,6 +121,8 @@ Vector Vector::operator*(const double c) const {
   Prod[0] = V[0]*c;
   Prod[1] = V[1]*c;
   Prod[2] = V[2]*c;
+
+  //OP_Count::V_S_Multiplication++;                // Increment operator count (See SPH Diagnostics)
 
   return Prod;
 } // Vector Vector::operator*(const double c) const {
@@ -129,6 +142,8 @@ Vector Vector::operator/(const double c) const {
   Quotient[1] = V[1]/c;
   Quotient[2] = V[2]/c;
 
+  //OP_Count::V_S_Division++;                      // Increment operator count (See SPH Diagnostics)
+
   return Quotient;
 } // Vector Vector::operator/(const double c) const {
 
@@ -142,6 +157,8 @@ Vector & Vector::operator+=(const Vector & V_In) {
   V[1] = V[1] + V_In[1];
   V[2] = V[2] + V_In[2];
 
+  //OP_Count::Compound_V_V_Addition++;             // Increment operator count (See SPH Diagnostics)
+
   // Return this vector
   return *this;
 } // Vector & Vector:operator+=(const Vector & V_In) {
@@ -150,6 +167,8 @@ Vector & Vector::operator+=(const double V_In[3]) {
   V[0] = V[0] + V_In[0];
   V[1] = V[1] + V_In[1];
   V[2] = V[2] + V_In[2];
+
+  //OP_Count::Compound_V_V_Addition++;             // Increment operator count (See SPH Diagnostics)
 
   // Return this vector
   return *this;
@@ -160,6 +179,8 @@ Vector & Vector::operator*=(const double c) {
   V[0] = V[0]*c;
   V[1] = V[1]*c;
   V[2] = V[2]*c;
+
+  //OP_Count::Compound_V_S_Multiplication++;       // Increment operator count (See SPH Diagnostics)
 
   // Return this vector (now scalled by c)
   return *this;
@@ -210,10 +231,12 @@ Vector operator*(double c, const Vector & V_In) {
 } //Vector operator*(double c, const Vector & V_In) {
 
 double Magnitude(const Vector & V_In)  {
+  //OP_Count::V_Magnitude++;                       // Increment operator count (See SPH Diagnostics)
   return V_In.Magnitude();
 } // double Magnitude(const Vector V_In)  {
 
 double Vector_Dot_Product(const Vector & V1, const Vector & V2) {
+  //OP_Count::V_Dot_Product++;                     // Increment operator count (See SPH Diagnostics)
   return (V1[0]*V2[0] + V1[1]*V2[1] + V1[2]*V2[2]);
 }
 

@@ -15,7 +15,7 @@ typedef unsigned char uByte;
 
 // Header files
 #include "Classes.h"
-#include "Particle_Debugger_File.h"
+#include "SPH_Diagnostics.h"
 #include "VTK_File.h"
 #include "Tests.h"
 #include "Vector.h"
@@ -27,7 +27,7 @@ typedef unsigned char uByte;
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
 // Source files
-#include "Particle_Debugger_File.c"
+#include "SPH_Diagnostics.c"
 #include "Tests.c"
 #include "VTK_File.c"
 #include "Vector.c"
@@ -81,6 +81,8 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
     S[3*i + 1] = V1[i]*V2[1];
     S[3*i + 2] = V1[i]*V2[2];
   } //   for(int i = 0; i < 3; i++)
+
+  //OP_Count::Dyadic_Product++;                    // Increment operator count (See SPH Diagnostics)
 
   return S;
 } // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {

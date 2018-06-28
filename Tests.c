@@ -579,7 +579,7 @@ void Timing_Tests(void) {
   Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
   printf("It took %ld ms to compute %3.0e (T+T)*V's \n",Ms_Elapsed, (double)Num_Tests*Num_El);
 
-  // Free the dynamic tensor, vector arrays. 
+  // Free the dynamic tensor, vector arrays.
   delete [] S1;
   delete [] S2;
   delete [] S3;
