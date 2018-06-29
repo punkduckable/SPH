@@ -7,17 +7,28 @@ Development Plan:
     - Come up with a way to generate neighbor list (Might need to make a list type object)
     - Test that particles work using a simple 3x3 grid or something
 
- - Write some SPH code
+ - Write SPH code
     DONE: Generate particle list, use this to get each particle's neighbor list
     DONE: Test that code runs properly
     DONE: Add Diagnostics for debugging (print forces to file, count operations, etc... See SPH_Diagnostics)
     - Allow program to read data in from a file, write to a file
 
-  - Optimize Serial code
+  DONE 6/29: Optimize Serial code
+    DONE 6/15 - Optimize tensor, vector methods
+    DONE 6/28-6/29 Optimize operation count and use of memory (cache)
 
-  - Write parallel code
+  - Implement damage
+    - Figure out a quick way to determine maximum principle strain (of C)
+    - Calculate D
+    - Add damage to calculation of S
 
-  - Optimize parallel code
+  - Implement Fracture
+
+  - Implement Contact
+
+  - Implement rigid needle
+
+  - Implement flexible needle
 
 TODO / development history:
  - Vector class:

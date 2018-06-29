@@ -716,6 +716,62 @@ Tensor Tensor::operator^(const int exp) {
 ////////////////////////////////////////////////////////////////////////////////
 // Other Tensor methods
 
+double Tensor::Max_Eigenvalue() {
+  double p, p_inv, p1, p2, q, r, phi;
+  Vector Eig_Values;
+
+  Tensor A = (*this);
+  Tensor B;
+  Tensor I = {1,0,0,
+              0,1,0,
+              0,0,1};
+
+  // First, check if matrix is symmetric
+  p1 = A[3*0 + 1]*A[3*0 + 1] + A[3*0 + 2]*A[3*0 + 2] + A[3*1 + 2]*A[3*1 + 2];
+
+  if(p1 == 0) {
+    Eig_Values[0] = A[3*0 + 0];
+    Eig_Values[1] = A[3*1 + 1];
+    Eig_Values[2] = A[3*2 + 2];
+  } // if(p1 == 0) {
+  else {
+    q = (1./3.)*(A[3*0 + 0] + A[3*1 + 1] + A[3*2 + 2]);
+    p2 = (A[3*0 + 0] - q)*(A[3*0 + 0] - q) +
+         (A[3*1 + 1] - q)*(A[3*1 + 1] - q) +
+         (A[3*2 + 2] - q)*(A[3*2 + 2] - q) +
+         2*p1;
+
+    p = sqrt(p2/6.);
+    p_inv = 1./p;
+    B = A-q*I;
+    r = (.5)*(p_inv)*(p_inv)*(p_inv)*B.Determinant();
+
+    if(r >= 1) {
+      Eig_Values[0] = q + 2*p;
+      Eig_Values[1] = q - p;
+      Eig_Values[2] = Eig_Values[1];
+    } // if(r >= 1) {
+    else if(r <= -1) {
+      Eig_Values[0] = q + p;
+      Eig_Values[1] = q - 2*p;
+      Eig_Values[2] = Eig_Values[0];
+    } // else if(r <= -1) {
+    else {
+      phi = (1./3.)*acos(r);
+      Eig_Values[0] = q + 2*p*cos(phi);
+      Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
+      Eig_Values[2] = 3*q - Eig_Values[0] - Eig_Values[1];
+    } // else {
+  } // else {
+
+  if(Eig_Values[0] > Eig_Values[1] && Eig_Values[0] > Eig_Values[2])
+    return Eig_Values[0];
+  else if(Eig_Values[1] > Eig_Values[2])
+    return Eig_Values[1];
+  else
+    return Eig_Values[2];
+} // double Tensor::Max_Eigenvalue() {
+
 double Tensor::Determinant(void) const {
   //OP_Count::T_Determinant++;                     // Increment operator count (See SPH Diagnostics)
 

@@ -93,8 +93,8 @@ int main() {
   //Vector_Tests();
   //Tensor_Tests();
   //List_Tests();
-  Particle_Tests();
-  //Timing_Tests();
+  //Particle_Tests();
+  Timing_Tests();
 
   return 0;
 } // int main() {
