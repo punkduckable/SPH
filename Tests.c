@@ -263,8 +263,28 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const int Side_Len = 47;
+  const int Side_Len = 20;
   const int Num_Particles = Side_Len*Side_Len*Side_Len;
+
+  // time step paramters
+  const double dt = .00001;                                          // Time step        : s
+  const unsigned int Num_Steps = 10000;                              // Number of time steps
+
+  // Computation time measurement variables
+  #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
+  clock_t timer1,
+          timer2,
+          update_BC_timer = 0,
+          update_P_timer = 0,
+          update_x_timer = 0,
+          Print_timer = 0;
+  unsigned long MS_Gen,
+                MS_Neighbor,
+                MS_Iter,
+                MS_BC,
+                MS_P,
+                MS_x,
+                MS_Print;                                            // Timers (store number of MS for each operation)
 
 
   // Particle paramaters
@@ -275,6 +295,8 @@ void Particle_Tests(void) {
 
 
   // Initialize particle masses, volumes, etc..
+  printf("Generating particles....\n");
+  timer1 = clock();
   for(i = 0; i < Side_Len; i++) {
     for(j = 0; j < Side_Len; j++) {
       for(k = 0; k < Side_Len; k++) {
@@ -293,58 +315,25 @@ void Particle_Tests(void) {
       }
     }
   }
-
-  // Have each particle print out its data (so we can tell that stuff worked)
-  /*
-  for(i = 0; i < Side_Len; i++) {
-    for(j = 0; j < Side_Len; j++) {
-      for(k = 0; k < Side_Len; k++) {
-        printf("\nParticle %d:\n",Side_Len*Side_Len*i+Side_Len*j+k);
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Print();
-      }
-    }
-  }
-  */
+  timer1 = clock()-timer1;
+  MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+  printf("Done! took %lums\n\n",MS_Gen);
 
   // Now let's set each particle's neighbors!
+  printf("Generating Neighbor lists....\n");
+  timer1 = clock();
   Generate_Neighbor_Lists(Num_Particles, Particles);
-
-  /* Run through another round of printing to test that neighbor paramaters
-  have been set up.*/
-
-  /*
-  for(i = 0; i < Side_Len; i++) {
-    for(j = 0; j < Side_Len; j++) {
-      for(k = 0; k < Side_Len; k++) {
-        printf("\nParticle %d:\n",Side_Len*Side_Len*i+Side_Len*j+k);
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Print();
-      }
-    }
-  }
-  */
+  timer1 = clock() - timer1;
+  MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+  printf("Done! took %lums\n\n",MS_Neighbor);
 
   /* Now we want to perform some time steps. We want to compare the initial and
   final configuration. To do this, we will save the initial configuration to a
   file, then run some time steps and store the final configuration in another
   file. */
-
-  // Run time steps
-  const double dt = .00001;                                           // Time step        : s
-  const unsigned int Num_Steps = 10000;
-
-  // Computation time measurement variables
-  long Ms_Elapsed;
-  #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
-  clock_t timer = clock();
-  clock_t temp_timer,
-          update_BC_timer = 0,
-          update_P_timer = 0,
-          update_x_timer = 0,
-          Print_timer = 0;
-  long MS_BC, MS_P, MS_x, MS_Print;
-
+  printf("Running particle iterations....\n");
   for(l = 0; l < Num_Steps; l++) {
-    temp_timer = clock();
+    timer2 = clock();
     ////////////////////////////////////////////////////////////////////////////
     /* Boundary conditions
     Here we set the Bc's for the six sides of the cube. these are the front,
@@ -356,7 +345,7 @@ void Particle_Tests(void) {
     i = 0;
     for(j = 0; j < Side_Len; j++) {
       for(k = 0; k < Side_Len; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {40,0,0};
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {0,50,0};
       }
     }
 
@@ -460,49 +449,52 @@ void Particle_Tests(void) {
     }
     */
 
-    update_BC_timer += clock() - temp_timer;
+    update_BC_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's Stress tensor
-    temp_timer = clock();
+    timer2 = clock();
     for(i = 0; i < Num_Particles; i++) {
       Update_P(Particles[i],Particles, dt);
     }
-    update_P_timer += clock() - temp_timer;
+    update_P_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's position
-    temp_timer = clock();
+    timer2 = clock();
     for(i = 0; i < Num_Particles; i++) {
       Update_Particle_Position(Particles[i],Particles,dt);
     }
-    update_x_timer += clock() - temp_timer;
+    update_x_timer += clock() - timer2;
 
     // Print to file evert 100th iteration
-    temp_timer = clock();
+    timer2 = clock();
     if((l+1)%100 == 0) {
       printf("%d iterations complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
 
+      /*
       if(l > 9000) {
         Particle_Debugger_File::Export_Pariticle_Properties(Num_Particles, Particles);
       }
+      */
     } // if((k+1)%100 == 0) {
-    Print_timer += clock()-temp_timer;
+    Print_timer += clock()-timer2;
   } // for(l = 0; l < Num_Steps; l++) {
-  timer = clock()-timer;
+  printf("Done!\n\n");
+  timer1 = clock()-timer1;
 
-  Ms_Elapsed = (int)((double)timer / (double)CLOCKS_PER_MS);
-  MS_BC = (int)((double)update_BC_timer / (double)CLOCKS_PER_MS);
-  MS_P = (int)((double)update_P_timer / (double)CLOCKS_PER_MS);
-  MS_x = (int)((double)update_x_timer / (double)CLOCKS_PER_MS);
-  MS_Print = (int)((double)Print_timer / (double)CLOCKS_PER_MS);
+  MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
+  MS_BC = (unsigned long)((double)update_BC_timer / (double)CLOCKS_PER_MS);
+  MS_P = (unsigned long)((double)update_P_timer / (double)CLOCKS_PER_MS);
+  MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
+  MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
 
-  printf("It took %ld ms to perform %d Particle iterations \n",Ms_Elapsed, Num_Steps);
-  printf("%ld ms to update BC's\n", MS_BC);
-  printf("%ld ms to update P\n", MS_P);
-  printf("%ld ms to update x\n", MS_x);
-  printf("%ld ms to print data to files\n", MS_Print);
+  printf("It took %lu ms to perform %d Particle iterations \n",MS_Iter, Num_Steps);
+  printf("%lu ms to update BC's\n", MS_BC);
+  printf("%lu ms to update P\n", MS_P);
+  printf("%lu ms to update x\n", MS_x);
+  printf("%lu ms to print data to files\n", MS_Print);
 
 } // void Particle_Tests(void) {
 

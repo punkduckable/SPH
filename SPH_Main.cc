@@ -26,8 +26,8 @@ typedef unsigned char uByte;
 ////////////////////////////////////////////////////1////////////////////////////
 // Initialize static members (particle class) and global variables
 
-double Inter_Particle_Spacing = .5;                                           //        : mm
-double Particle::h = 4*Inter_Particle_Spacing;             // Suppoer function raduius   : mm
+double Inter_Particle_Spacing = .5;                                             //        : mm
+double Particle::h =3*Inter_Particle_Spacing;             // Suppoer function raduius   : mm
 double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);// Shape function amplitude   : mm^-3
 
 double Particle::Lame = 9;                                 // Lame parameter             : Mpa
