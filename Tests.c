@@ -345,7 +345,7 @@ void Particle_Tests(void) {
     i = 0;
     for(j = 0; j < Side_Len; j++) {
       for(k = 0; k < Side_Len; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {0,50,0};
+        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {-50,0,0};
       }
     }
 
@@ -505,7 +505,7 @@ void Timing_Tests(void) {
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)
   long Ms_Elapsed;
   clock_t timer;
-  const unsigned long Num_Tests = 1000;         // Number of tests (# of times that we cycle through the arrays)
+  const unsigned long Num_Tests = 10000;         // Number of tests (# of times that we cycle through the arrays)
   const unsigned long Num_El = 10000;            // Number of elements in Vector, Tensor arrays
   unsigned long i,k;                             // index variables
 
@@ -585,7 +585,7 @@ void Timing_Tests(void) {
 
   for(k = 0; k < Num_Tests; k++) {
     for(i = 0; i < Num_El; i++) {
-      C1[i] = S1[i].Max_Eigenvalue();
+      C1[i] = Max_Eigenvalue(S1[i],'F');
     }
   }
   timer = clock() - timer;

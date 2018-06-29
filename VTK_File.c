@@ -81,6 +81,8 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   /* Create dynamic arrays for components of S, E (note, both are symmetric, so
   we only need to store 6 components) and J (det F)*/
+  double * Max_Stretch = new double[Num_Particles];
+  /*
   double * S11 = new double[Num_Particles];
   double * S22 = new double[Num_Particles];
   double * S33 = new double[Num_Particles];
@@ -96,19 +98,21 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   double * E32 = new double[Num_Particles];
 
   double * J = new double[Num_Particles];
-
+  */
   Tensor F, P, S, E;
   Tensor I{1,0,0,
            0,1,0,
            0,0,1};
 
   for(unsigned int i = 0; i < Num_Particles; i++) {
+    Max_Stretch[i] = Particles[i].Max_Stretch;
+
     // Get F, P from current particle
-    F = Particles[i].F;
-    P = Particles[i].P;
+    //F = Particles[i].F;
+    //P = Particles[i].P;
 
     // Use F to calculate determinant (J)
-    J[i] = Determinant(F);
+    //J[i] = Determinant(F);
 
     // Calculate S from P.
     //S = P*(F^(T))/J[i];
@@ -124,10 +128,10 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
     */
 
     // Now calculate E = (1/2)(C-I)
-    E = (1./2.)*((F^T)*F - I);
+    //E = (1./2.)*((F^T)*F - I);
 
     // Now get components of E
-    E11[i] = E[3*0 + 0];
+    //E11[i] = E[3*0 + 0];
     /*
     E22[i] = E[3*1 + 1];
     E33[i] = E[3*2 + 2];
@@ -140,6 +144,9 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   // Now print these values to the file.
   fprintf(File,"POINT_DATA %i\n", Num_Particles);
   char Weight_Name[5];
+
+  std::strcpy(Weight_Name, "LamM");
+  Add_Point_Data(File, Weight_Name, Num_Particles, Max_Stretch);
 
   /* Components of S */
   /*
@@ -163,10 +170,10 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   */
 
   /* Components of E*/
+  /*
   std::strcpy(Weight_Name, "E11");
   Add_Point_Data(File, Weight_Name, Num_Particles, E11);
 
-  /*
   std::strcpy(Weight_Name, "E22");
   Add_Point_Data(File, Weight_Name, Num_Particles, E22);
 
@@ -190,6 +197,8 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   */
 
   // Deallocate dynamic arrays
+  delete [] Max_Stretch;
+  /*
   delete [] S11;
   delete [] S22;
   delete [] S33;
@@ -205,6 +214,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   delete [] E32;
 
   delete [] J;
+  */
 
   // Free the file
   fclose(File);

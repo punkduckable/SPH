@@ -17,6 +17,7 @@ typedef unsigned char uByte;
 #include "Classes.h"
 #include "SPH_Diagnostics.h"
 #include "VTK_File.h"
+#include "Quick_Math.h"
 #include "Tests.h"
 #include "Vector.h"
 #include "Tensor.h"
@@ -93,8 +94,8 @@ int main() {
   //Vector_Tests();
   //Tensor_Tests();
   //List_Tests();
-  //Particle_Tests();
-  Timing_Tests();
+  Particle_Tests();
+  //Timing_Tests();
 
   return 0;
 } // int main() {

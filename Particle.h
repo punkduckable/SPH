@@ -47,6 +47,8 @@ class Particle {
     Tensor F{1,0,0,
              0,1,0,
              0,0,1};                                       // deformation gradient       : unitless
+    double Max_Stretch = 0;
+    const double Critical_Stretch = 1.3;
 
     // Forces acting on the particle
     Vector Force_Int{0,0,0};                              // Internal Force vector       : N

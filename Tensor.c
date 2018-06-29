@@ -716,62 +716,6 @@ Tensor Tensor::operator^(const int exp) {
 ////////////////////////////////////////////////////////////////////////////////
 // Other Tensor methods
 
-double Tensor::Max_Eigenvalue() {
-  double p, p_inv, p1, p2, q, r, phi;
-  Vector Eig_Values;
-
-  Tensor A = (*this);
-  Tensor B;
-  Tensor I = {1,0,0,
-              0,1,0,
-              0,0,1};
-
-  // First, check if matrix is symmetric
-  p1 = A[3*0 + 1]*A[3*0 + 1] + A[3*0 + 2]*A[3*0 + 2] + A[3*1 + 2]*A[3*1 + 2];
-
-  if(p1 == 0) {
-    Eig_Values[0] = A[3*0 + 0];
-    Eig_Values[1] = A[3*1 + 1];
-    Eig_Values[2] = A[3*2 + 2];
-  } // if(p1 == 0) {
-  else {
-    q = (1./3.)*(A[3*0 + 0] + A[3*1 + 1] + A[3*2 + 2]);
-    p2 = (A[3*0 + 0] - q)*(A[3*0 + 0] - q) +
-         (A[3*1 + 1] - q)*(A[3*1 + 1] - q) +
-         (A[3*2 + 2] - q)*(A[3*2 + 2] - q) +
-         2*p1;
-
-    p = sqrt(p2/6.);
-    p_inv = 1./p;
-    B = A-q*I;
-    r = (.5)*(p_inv)*(p_inv)*(p_inv)*B.Determinant();
-
-    if(r >= 1) {
-      Eig_Values[0] = q + 2*p;
-      Eig_Values[1] = q - p;
-      Eig_Values[2] = Eig_Values[1];
-    } // if(r >= 1) {
-    else if(r <= -1) {
-      Eig_Values[0] = q + p;
-      Eig_Values[1] = q - 2*p;
-      Eig_Values[2] = Eig_Values[0];
-    } // else if(r <= -1) {
-    else {
-      phi = (1./3.)*acos(r);
-      Eig_Values[0] = q + 2*p*cos(phi);
-      Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
-      Eig_Values[2] = 3*q - Eig_Values[0] - Eig_Values[1];
-    } // else {
-  } // else {
-
-  if(Eig_Values[0] > Eig_Values[1] && Eig_Values[0] > Eig_Values[2])
-    return Eig_Values[0];
-  else if(Eig_Values[1] > Eig_Values[2])
-    return Eig_Values[1];
-  else
-    return Eig_Values[2];
-} // double Tensor::Max_Eigenvalue() {
-
 double Tensor::Determinant(void) const {
   //OP_Count::T_Determinant++;                     // Increment operator count (See SPH Diagnostics)
 
@@ -831,6 +775,87 @@ void Tensor::Print(void) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Friend functions
+
+double Max_Eigenvalue(const Tensor & S_In,const char Mode) {
+  double p, p_inv, p1, p2, q, r, phi;
+  double Eig_Values[3];
+  Tensor B;
+  Tensor I = {1,0,0,
+              0,1,0,
+              0,0,1};
+
+  // First, check if matrix is symmetric
+  p1 = S_In[3*0 + 1]*S_In[3*0 + 1] + S_In[3*0 + 2]*S_In[3*0 + 2] + S_In[3*1 + 2]*S_In[3*1 + 2];
+
+  if(p1 == 0) {
+    Eig_Values[0] = S_In[3*0 + 0];
+    Eig_Values[1] = S_In[3*1 + 1];
+    Eig_Values[2] = S_In[3*2 + 2];
+  } // if(p1 == 0) {
+  else {
+    q = (1./3.)*(S_In[3*0 + 0] + S_In[3*1 + 1] + S_In[3*2 + 2]);
+
+    p2 = (S_In[3*0 + 0] - q)*(S_In[3*0 + 0] - q) +
+         (S_In[3*1 + 1] - q)*(S_In[3*1 + 1] - q) +
+         (S_In[3*2 + 2] - q)*(S_In[3*2 + 2] - q) +
+         2*p1;
+
+    p = sqrt(p2/6.);
+    p_inv = 1./p;
+    B = S_In - q*I;
+    r = (.5)*(p_inv)*(p_inv)*(p_inv)*B.Determinant();
+
+    /* In theory, r should be in (-1,1). However, because of floating point
+    rounding errors, it is possible for r to be bigger than 1 or smaller
+    than -1. However, we need r to be in -1,1 to use our acos function. Thus,
+    if r is out of bounds then we move r back into bounds. */
+    if(r >= 1) {
+      /* This corresponds to phi = 0. However, if phi = 0, then cos(phi) = 1
+      and cos(phi + 2*pi/3) = -1/2. */
+      Eig_Values[0] = q + 2*p;
+      Eig_Values[1] = q - p;
+      Eig_Values[2] = Eig_Values[1];
+    } // if(r >= 1) {
+    else if(r <= -1) {
+      /* This corresponds to phi = PI/3. However, if phi = PI/3 then cos(phi) = 1/2
+      and cos(phi + 2*Pi/3) = -1 */
+      Eig_Values[0] = q + p;
+      Eig_Values[1] = q - 2*p;
+      Eig_Values[2] = Eig_Values[0];
+    } // else if(r <= -1) {
+    else {
+
+      // Fast mode: Use my approximation methods
+      if(Mode == 'F') {
+        phi = (1./3.)*Quick_Math::Acos(r);
+        Eig_Values[0] = q + 2*p*Quick_Math::cos(phi);
+        Eig_Values[1] = q + 2*p*Quick_Math::cos(phi + 2.*PI/3.);
+      } // if(Mode == 'F') {
+
+      // Accurate mode, use C's built in cost functions
+      else if(Mode == 'A') {
+        phi = (1./3.)*acos(r);
+        Eig_Values[0] = q + 2*p*cos(phi);
+        Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
+      } // else if(Mode == 'A') {
+      else {
+        printf("Invalid mode selection! 'F' = Fast mode, 'A' = Accurate mode\n");
+        return 0;
+      } // else {
+
+      Eig_Values[2] = 3*q - Eig_Values[0] - Eig_Values[1];
+    } // else {
+  } // else {
+
+  if(Eig_Values[0] > Eig_Values[1] && Eig_Values[0] > Eig_Values[2])
+    return Eig_Values[0];
+  else if(Eig_Values[1] > Eig_Values[2])
+    return Eig_Values[1];
+  else
+    return Eig_Values[2];
+} // double Max_Eigenvalue(const Tensor & S_In) {
+
+
 
 Tensor operator*(const double c, const Tensor & Tensor_In) {
   return Tensor_In*c;

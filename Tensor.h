@@ -61,12 +61,12 @@ class Tensor {
     Tensor Inverse(void) const;                   // Tensor Inverse. Returns T^(-1)
 
     // Other methods
-    double Max_Eigenvalue(void);
     double Determinant(void) const;               // Tensor Determinant. Returns Det(T)
     Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T (Tranpose of T)
     void Print(void) const;                       // Print tensor components
 
     // Friends
+    friend double Max_Eigenvalue(const Tensor & S_In, const char Mode);
     friend Tensor operator*(double c,
                             const Tensor & T_In); // Scalar multiplication (defines c*T)
     friend Tensor Inverse(const Tensor & T_In);

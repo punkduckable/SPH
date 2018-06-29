@@ -251,6 +251,9 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
               0,1,0,
               0,0,1};                            // Identity tensor
 
+  double Max_Principle_Stretch;
+  const double Critical_Stretch = P_In.Critical_Stretch;
+
   Tensor A_Inv = P_In.A_Inv;                     // Inverse of shape tensor              : unitless
   const double Lame = P_In.Lame;                 // Lame paramater                       : Mpa
   const double mu0 = P_In.mu0;                   // Shear modulus                        : Mpa
@@ -277,12 +280,25 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   // Deformation gradient with correction
   F *= A_Inv;                                                                  //        : unitless
 
+  /* Calculate Damage. Here we calculate the 'damage'.
+  to do this, we first need to find the principle stretch. To do this, we
+  need to find the square root of the biggest eigenvalue of the (right)
+  Cauchy Green strain tensor. Luckily, this tensor will be used for later
+  calculations. */
+  C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless
+  J = Determinant(F);                            // J is det of F                        : unitless
+
+  // Calculate current principle stretch.
+  Max_Principle_Stretch = sqrt(Max_Eigenvalue(C,'F'));
+
+  if(Max_Principle_Stretch > Critical_Stretch && Max_Principle_Stretch > P_In.Max_Stretch)
+    P_In.Max_Stretch = Max_Principle_Stretch;
+
+
   /* Now that we have calculated the deformation gradient, we need to calculate
   the first Piola-Kirchhoff stess tensor. To do this, however, we need to
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
 
-  C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless
-  J = Determinant(F);                            // J is det of F                        : unitless
 
   S = mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1));                                //        : Mpa
 
