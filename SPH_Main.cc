@@ -12,6 +12,7 @@ typedef unsigned char uByte;
 // Definitions
 #define PI 3.1415926535897932384626
 #define T 2
+#define SUPPORT_RADIUS 3
 
 // Header files
 #include "Classes.h"
@@ -27,8 +28,8 @@ typedef unsigned char uByte;
 ////////////////////////////////////////////////////1////////////////////////////
 // Initialize static members (particle class) and global variables
 
-double Inter_Particle_Spacing = .5;                                             //        : mm
-double Particle::h =3*Inter_Particle_Spacing;             // Suppoer function raduius   : mm
+double Inter_Particle_Spacing = 1;                                             //        : mm
+double Particle::h =SUPPORT_RADIUS*Inter_Particle_Spacing;             // Suppoer function raduius   : mm
 double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);// Shape function amplitude   : mm^-3
 
 double Particle::Lame = 9;                                 // Lame parameter             : Mpa

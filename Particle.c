@@ -571,4 +571,142 @@ void Generate_Neighbor_Lists(const unsigned int Num_Particles, Particle * Partic
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 } // void Generate_Neighbor_Lists(const unsigned int Num_Particles, const Particle * Particles) {
 
+void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
+                                 const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+                                 const unsigned int Support_Radius) {
+  /* This function is a modified version of the Neighbor List generating
+  function that is specialized for Box particle geometries. By box, I mean
+  some kind of cuboid.
+
+  Let us establish a few definitions:
+  By a 'Layer' we mean a sheet of particles that all have the same x coordinate
+  By a 'Vertical column' we mean a set of particles with the same x and y
+  coordinates.
+  By a 'Row' we mean a set of particles with the same x and z
+  coordinates.
+
+  This function assumes that the particles are stored in 'Vertical-Column'
+  major, 'Layer' semi-major order. This menas that vertical columns of
+  particles are stored in contiguous memory and that vertical columns in the
+  same layer are stored in contiguous memory.
+
+  Thus, if working with a cube with sidelength N, the (1,1,1) particle will be
+  N*N particles away from the (2,1,1) partilce in the, N particles away from the
+  (1,2,1) particle and 1 particle away from the (1,1,2) particle in the
+  Particles array.
+
+  So why does this function exist?
+  A generic neighbor search is slow. For a given particle to find its neighbors,
+  it has no choice but to search through EVERY other particle in the Particles
+  array. If the Particles array has M particles then there are a total of M*M
+  neighbor tests performed in all. This is highly inefficient. However, if
+  we're working with a cuboid of particles, then the particles are stored in
+  a regular grid pattern. Rather than searching through every particle in
+  the Particles array, we can just search through the grid elements that are
+  close to the current particle! This reduces the number of searches with a M
+  particle array from M*M to M*(Support_Radius^3), where Support radius is in
+  units of inter particle spacings.
+
+  So how do you use this function?
+  This function is used just like the Generage_Neighbor_List function but with a
+  few extra arguments. the num_x, num_y, and num_z arguments specify the
+  dimensions of the cuboid in the x, y, and z directions respectivly. Thus, if
+  the cuboid has n layers, then num_x is n. If the cuboid has p particles in a
+  vertical column then num_z is p. For a 100x50x200 cuboid of particles, num_x
+  is 100, num_y is 50, and num_z is 200 */
+
+  unsigned int i,j,k,p,q,r;            // Loop index variables
+  unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
+  List Particle_Neighbor_List;         // Linked list to store known neighbors
+  unsigned int Num_Neighbors;          // Number of neighbors found
+  unsigned int *Neighbor_IDs;          // Array that holds final list of neighbors
+
+  /* Cycle through the particles. For each particle, check if the particles near us in the cuboid grid
+  are neighbors. */
+  for(i = 0; i < num_x; i++) {
+    for(j = 0; j < num_y; j++) {
+      for(k = 0; k < num_z; k++) {
+
+        /* If we are near the edge of the cube then we need to adjust which
+        particles we search through
+
+        Note: Because unsigned integers rollover, we need to be careful to
+        structure our tests such that they do not modify i j or k. For example,
+        if k = 0 then check if k - Support_Radius < 0 will ALWAYS return
+        false since 0 - Support_Radius = ~4 billion (rollover!). However,
+        structuring the checks in this way makes them less readible, so I have
+        included a logically equivalent (if rollover is ignored) if statement
+        as a comment for each check */
+
+        // i index (x coordinate) checks
+        if(i < Support_Radius)                   // Same as if(i - Support_Radius < 0).
+          p_min = 0;
+        else
+          p_min  = i - Support_Radius;
+
+        if(i > (num_x - 1) - Support_Radius)     // Same as if(i + Support_Radius > num_x -1)
+          p_max = num_x - 1;
+        else
+          p_max = i + Support_Radius;
+
+        // j index (y coordinate) checks
+        if(j < Support_Radius)                   // Same as if(j - Support_Radius < 0)
+          q_min = 0;
+        else
+          q_min = j - Support_Radius;
+
+        if(j > (num_y - 1) - Support_Radius)     // Same as if(j + Support_Radius > num_y - 1)
+          q_max = num_y - 1;
+        else
+          q_max = j + Support_Radius;
+
+        // k index (z coordinate) checks
+        if(k < Support_Radius)                   // Same as if(k - Support_Radius < 0)
+          r_min = 0;
+        else
+          r_min = k - Support_Radius;
+
+        if(k > (num_z - 1) - Support_Radius)     // Same as if(k + Support_Radius > num_z - 1)
+          r_max = num_z - 1;
+        else
+          r_max = k + Support_Radius;
+
+        // Loop through potential neighbors, generate neighbor list
+        for(p = p_min; p <= p_max; p++) {
+          for(q = q_min; q <= q_max; q++) {
+            for(r = r_min; r <= r_max; r++) {
+              // a given particle is NOT its own neighbor
+              if(i == p && j == q && k == r)
+                continue;
+
+              if(Are_Neighbors(Particles[i*(num_z*num_y) + j*(num_z) + k] , Particles[p*(num_z*num_y) + q*(num_z) + r])) {
+                Particle_Neighbor_List.Add_Back(p*(num_z*num_y) + q*(num_z) + r);
+              }
+            } // for(r = r_min; r <= r_max; r++) {
+          } // for(q = q_min; q <= q_max; q++) {
+        } // for(p = p_min; p <= p_max; p++) {
+
+        /* Now that we have the neighbor list, we can make it into an array. To do
+        this, we allocate an array whose length is equal to the length of the
+        neighbor list. We then populate this array with the elements of the list
+        and finally send this off to the particle (whose neighbors we found) */
+        Num_Neighbors = Particle_Neighbor_List.Node_Count();
+        Neighbor_IDs = new unsigned int[Num_Neighbors];
+
+        for(p = 0; p < Num_Neighbors; p++) {
+          Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front();
+        } // for(j = 0; j < Num_Neighbors; j++) {
+
+        // Now sent the Neighbor list to the particle
+        Particles[i*(num_z*num_y) + j*(num_z) + k].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
+
+        /* Now free Neighbor_IDs array for next particle! */
+        delete [] Neighbor_IDs;
+      } // for(k = 0; k < k_max; k++) {
+    } // for(j = 0; j < j_max; j++) {
+  } // for(i = 0; i < i_max; i++) {
+} // void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
+  //                                  const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+  //                                  const unsigned int Support_Radius) {
+
 #endif

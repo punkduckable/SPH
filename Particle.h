@@ -88,6 +88,9 @@ class Particle {
 
     // Temp friends... Should be removed!
     friend void Particle_Tests(void);
+    friend void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
+                                    const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+                                    const unsigned int Support_Radius);
     friend void Particle_Debugger_File::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
     friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 
@@ -100,5 +103,9 @@ void Print(const Particle & P_In);                         // Calls Print method
 
 void Generate_Neighbor_Lists(const unsigned int Num_Particles,
                              Particle * Particles);        // Generate neighbor list for every particle in 'Partilces' array
+
+void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
+                                const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+                                const unsigned int Support_Radius);  // Generate neighbor list for a 'box' or 'cuboid' geometry
 
 #endif

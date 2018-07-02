@@ -263,8 +263,8 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const int Side_Len = 20;
-  const int Num_Particles = Side_Len*Side_Len*Side_Len;
+  const unsigned int x_Side_Len = 30, y_Side_Len = 20, z_Side_Len = 10;
+  const unsigned int Num_Particles = x_Side_Len*y_Side_Len*z_Side_Len;
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
@@ -297,9 +297,9 @@ void Particle_Tests(void) {
   // Initialize particle masses, volumes, etc..
   printf("Generating particles....\n");
   timer1 = clock();
-  for(i = 0; i < Side_Len; i++) {
-    for(j = 0; j < Side_Len; j++) {
-      for(k = 0; k < Side_Len; k++) {
+  for(i = 0; i < x_Side_Len; i++) {
+    for(j = 0; j < y_Side_Len; j++) {
+      for(k = 0; k < z_Side_Len; k++) {
         Vector X{(double)i,(double)j,(double)k};
         X *= Inter_Particle_Spacing;                                           //        : mm
         Vector x = X;                                                          //        : mm
@@ -307,11 +307,11 @@ void Particle_Tests(void) {
 
         Vector vel = {0.,0.,0.};                                               //        : mm/s
 
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Mass(Particle_Mass);    //   : g
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_Vol(Particle_Volume);   //   : mm^3
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_X(X);              //        : mm
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_x(x);              //        : mm
-        Particles[Side_Len*Side_Len*i + Side_Len*j + k].Set_vel(vel);          //        : mm/s
+        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_Mass(Particle_Mass); //        : g
+        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_Vol(Particle_Volume);//        : mm^3
+        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_X(X);      //        : mm
+        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_x(x);      //        : mm
+        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_vel(vel);  //        : mm/s
       }
     }
   }
@@ -322,7 +322,7 @@ void Particle_Tests(void) {
   // Now let's set each particle's neighbors!
   printf("Generating Neighbor lists....\n");
   timer1 = clock();
-  Generate_Neighbor_Lists(Num_Particles, Particles);
+  Generate_Neighbor_Lists_Box(Num_Particles, Particles, x_Side_Len, y_Side_Len, z_Side_Len, SUPPORT_RADIUS);
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Neighbor);
@@ -343,111 +343,47 @@ void Particle_Tests(void) {
     system). */
     // Front face (i = 0)
     i = 0;
-    for(j = 0; j < Side_Len; j++) {
-      for(k = 0; k < Side_Len; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {-50,0,0};
+    for(j = 0; j < y_Side_Len; j++) {
+      for(k = 0; k < z_Side_Len; k++) {
+        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {-40,0,0};
       }
     }
 
-    // back face (i = Side_Len-1)
-    i = Side_Len-1;
-    for(j = 0; j < Side_Len; j++) {
-      for(k = 0; k < Side_Len; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {0,0,0};
-      }
-    }
-
-    // Right face (j = 0)
-    j = 0;
-    for(i = 0; i < Side_Len; i++) {
-      for(k = 0; k < Side_Len; k++) {
-      }
-    }
-
-    // Left face (i = Side_len-1)
-    j = Side_Len-1;
-    for(i = 0; i < Side_Len; i++) {
-      for(k = 0; k < Side_Len; k++) {
-      }
-    }
-
-    // Bottom face (k = 0)
-    k = 0;
-    for(i = 0; i < Side_Len; i++) {
-      for(j = 0; j < Side_Len; j++) {
-      }
-    }
-
-    // Top face (k = side_len-1) face
-    k = Side_Len-1;
-    for(i = 0; i < Side_Len; i++) {
-      for(j = 0; j < Side_Len; j++) {
-      }
-    }
-
-    /*
-    i = 0;
-    for(j = (Side_Len)/2-2; j < (Side_Len)/2+2; j++) {
-      for(k = (Side_Len)/2-2; k < (Side_Len)/2+2; k++) {
-        Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel = {30,0,0};
-      }
-    }
-
-    // back face (i = Side_Len-1)
-    i = Side_Len-1;
-    for(j = 0; j < Side_Len; j++) {
-      for(k = 0; k < Side_Len; k++) {
-        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[0];
-        if(vel > 0) {
-          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[0] = 0;
-        }
+    // back face (i = x_Side_Len-1)
+    i = x_Side_Len-1;
+    for(j = 0; j < y_Side_Len; j++) {
+      for(k = 0; k < z_Side_Len; k++) {
+        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,0,0};
       }
     }
 
     // Right face (j = 0)
     j = 0;
-    for(i = 0; i < Side_Len; i++) {
-      for(k = 0; k < Side_Len; k++) {
-        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1];
-        if(vel < 0) {
-          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1] = 0;
-        }
+    for(i = 0; i < x_Side_Len; i++) {
+      for(k = 0; k < z_Side_Len; k++) {
       }
     }
 
-    // Left face (i = Side_len-1)
-    j = Side_Len-1;
-    for(i = 0; i < Side_Len; i++) {
-      for(k = 0; k < Side_Len; k++) {
-        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1];
-        if(vel > 0) {
-          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[1] = 0;
-        }
+    // Left face (i = x_Side_len-1)
+    j = y_Side_Len-1;
+    for(i = 0; i < x_Side_Len; i++) {
+      for(k = 0; k < z_Side_Len; k++) {
       }
     }
 
     // Bottom face (k = 0)
     k = 0;
-    for(i = 0; i < Side_Len; i++) {
-      for(j = 0; j < Side_Len; j++) {
-        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2];
-        if(vel < 0) {
-          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2] = 0;
-        }
+    for(i = 0; i < x_Side_Len; i++) {
+      for(j = 0; j < y_Side_Len; j++) {
       }
     }
 
-    // Top face (k = side_len-1) face
-    k = Side_Len-1;
-    for(i = 0; i < Side_Len; i++) {
-      for(j = 0; j < Side_Len; j++) {
-        vel = Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2];
-        if(vel> 0) {
-          Particles[i*Side_Len*Side_Len + j*Side_Len + k].vel[2] = 0;
-        }
+    // Top face (k = z_Side_Len-1) face
+    k = z_Side_Len-1;
+    for(i = 0; i < x_Side_Len; i++) {
+      for(j = 0; j < y_Side_Len; j++) {
       }
     }
-    */
 
     update_BC_timer += clock() - timer2;
 
