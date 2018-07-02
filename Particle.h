@@ -4,19 +4,19 @@
 class Particle {
   private:
     // Kernel paramaters
-    static double h;                                       // Support radius             : mm
-    static double Shape_Function_Amp;                      // Shape function Amplitude   : mm^-3
+    const static double h;                                 // Support radius             : mm
+    const static double Shape_Function_Amp;                // Shape function Amplitude   : mm^-3
 
     // Strain energy function parameters
-    static double Lame;                                    // Lame paramater             : Mpa
-    static double mu0;                                     // Shear modulus              : Mpa
+    const static double Lame;                              // Lame paramater             : Mpa
+    const static double mu0;                               // Shear modulus              : Mpa
 
     // Viscosity paramaters
-    static double mu;                                      // Viscosity                  : Mpa*s
+    const static double mu;                                // Viscosity                  : Mpa*s
 
     // Hourglass (Hg) correction parameters
-    static double E;                                       // Hourglass stiffness        : Mpa
-    static double alpha;                                   // Hg control parameter       : unitless
+    const static double E;                                 // Hourglass stiffness        : Mpa
+    const static double alpha;                             // Hg control parameter       : unitless
 
     // Particle dimensions (Mass, Vol, etc...)
     double Mass;                                           // Particle Mass              : g
@@ -38,7 +38,7 @@ class Particle {
     // Particle dynamics variables
     Vector X{0,0,0};                                       // reference position         : mm
     Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        :  mm
-    Vector vel{0,0,0};                                     // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog)    :  mm/s
+    Vector vel{0,0,0};                                     // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog):  mm/s
 
     bool First_Iteration = true;                           // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
     Tensor P{0,0,0,
@@ -47,13 +47,17 @@ class Particle {
     Tensor F{1,0,0,
              0,1,0,
              0,0,1};                                       // deformation gradient       : unitless
-    double Max_Stretch = 0;
-    const double Critical_Stretch = 1.3;
+
+    // Damage parameters
+    double Max_Stretch = 0;                                // Max principle stretch so far        : unitless
+    const static double Critical_Stretch;                  // If Principle stretch excedes Critical then particle incures damage : unitless
+    double D = 0;                                          // Damage parameter           : unitless
+    const static double Tau;                               // Damage rate paramater (see eq 26)
 
     // Forces acting on the particle
-    Vector Force_Int{0,0,0};                              // Internal Force vector       : N
-    Vector Force_Ext{0,0,0};                              // External/body force         : N
-    Vector Force_Hg{0,0,0};                               // Hour-glass force            : N
+    Vector Force_Int{0,0,0};                               // Internal Force vector       : N
+    Vector Force_Ext{0,0,0};                               // External/body force         : N
+    Vector Force_Hg{0,0,0};                                // Hour-glass force            : N
 
   public:
     // Constructors, destructor
@@ -88,9 +92,10 @@ class Particle {
 
     // Temp friends... Should be removed!
     friend void Particle_Tests(void);
-    friend void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
-                                    const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                                    const unsigned int Support_Radius);
+    friend void Generate_Neighbor_List_Box(Particle & P_In, Particle * Particles,
+                                           const unsigned int i, const unsigned int j, const unsigned int k,
+                                           const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+                                           const unsigned int Support_Radius);
     friend void Particle_Debugger_File::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
     friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 
@@ -101,11 +106,12 @@ class Particle {
 
 void Print(const Particle & P_In);                         // Calls Print method
 
-void Generate_Neighbor_Lists(const unsigned int Num_Particles,
-                             Particle * Particles);        // Generate neighbor list for every particle in 'Partilces' array
+void Find_Neighbors(const unsigned int Num_Particles,
+                    Particle * Particles);                 // Generate neighbor list for every particle in 'Partilces' array
 
-void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
-                                const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                                const unsigned int Support_Radius);  // Generate neighbor list for a 'box' or 'cuboid' geometry
+void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
+                        const unsigned int i, const unsigned int j, const unsigned int k,
+                        const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+                        const unsigned int Support_Radius);  // Generate neighbor list for a 'box' or 'cuboid' geometry
 
 #endif

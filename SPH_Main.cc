@@ -28,17 +28,20 @@ typedef unsigned char uByte;
 ////////////////////////////////////////////////////1////////////////////////////
 // Initialize static members (particle class) and global variables
 
-double Inter_Particle_Spacing = 1;                                             //        : mm
-double Particle::h =SUPPORT_RADIUS*Inter_Particle_Spacing;             // Suppoer function raduius   : mm
-double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);// Shape function amplitude   : mm^-3
+const double Inter_Particle_Spacing = .5;                                      //        : mm
+const double Particle::h =SUPPORT_RADIUS*Inter_Particle_Spacing;     // Support function raduius   : mm
+const double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);    // Shape function amplitude   : mm^-3
 
-double Particle::Lame = 9;                                 // Lame parameter             : Mpa
-double Particle::mu0 = .1;                                 // Shear modulus              : Mpa
+const double Particle::Lame = 9;                           // Lame parameter             : Mpa
+const double Particle::mu0 = .1;                           // Shear modulus              : Mpa
 
-double Particle::mu = 5e-3;                                // Viscosity                  : Mpa*s
+const double Particle::mu = 5e-3;                          // Viscosity                  : Mpa*s
 
-double Particle::E = .01;                                  // Hourglass stiffness        : Mpa
-double Particle::alpha = 50;                               // Hg control parameter       : Unitless
+const double Particle::E = .01;                            // Hourglass stiffness        : Mpa
+const double Particle::alpha = 50;                         // Hg control parameter       : Unitless
+
+const double Particle::Critical_Stretch = 1.3;             // Critical principle stretch : unitless
+const double Particle::Tau = .1;                           // Damage rate paramater      : unitless
 
 // Prototypes
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);

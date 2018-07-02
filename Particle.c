@@ -253,6 +253,8 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
 
   double Max_Principle_Stretch;
   const double Critical_Stretch = P_In.Critical_Stretch;
+  double D = P_In.D;
+  const double Tau = P_In.Tau;
 
   Tensor A_Inv = P_In.A_Inv;                     // Inverse of shape tensor              : unitless
   const double Lame = P_In.Lame;                 // Lame paramater                       : Mpa
@@ -266,6 +268,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   Vector *Grad_W = P_In.Grad_W;                  // Pointer to P_In's Grad_W array.      : mm^-1
   Vector rj;                                     // Displacemtn vector of jth neighbor   : mm
 
+  //////////////////////////////////////////////////////////////////////////////
   /* Now, we can calculate F by cycling through the neighbors. The contribution
   to F by the jth neighbor is dj (Dyadic Product) Vj Grad_W(Rj, h) */
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
@@ -280,8 +283,10 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   // Deformation gradient with correction
   F *= A_Inv;                                                                  //        : unitless
 
-  /* Calculate Damage. Here we calculate the 'damage'.
-  to do this, we first need to find the principle stretch. To do this, we
+  //////////////////////////////////////////////////////////////////////////////
+  /* Calculate Damage:
+
+  To do this, we first need to find the principle stretch. To do this, we
   need to find the square root of the biggest eigenvalue of the (right)
   Cauchy Green strain tensor. Luckily, this tensor will be used for later
   calculations. */
@@ -291,16 +296,20 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   // Calculate current principle stretch.
   Max_Principle_Stretch = sqrt(Max_Eigenvalue(C,'F'));
 
-  if(Max_Principle_Stretch > Critical_Stretch && Max_Principle_Stretch > P_In.Max_Stretch)
+  if(Max_Principle_Stretch > Critical_Stretch && Max_Principle_Stretch > P_In.Max_Stretch) {
     P_In.Max_Stretch = Max_Principle_Stretch;
+    D = exp(((Max_Principle_Stretch - Critical_Stretch)*(Max_Principle_Stretch - Critical_Stretch))/(Tau*Tau)) - 1;
+  }
+  if(D > 1)
+    D = 1;                                                                     //        : unitless
 
-
+  //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate
   the first Piola-Kirchhoff stess tensor. To do this, however, we need to
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
 
 
-  S = mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1));                                //        : Mpa
+  S = (1-D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                        //        : Mpa
 
   /* Calculate viscosity tensor:
   To do this, we need to calculate the deformation gradient. Luckily, at this
@@ -317,6 +326,7 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
   P_In.P = (F*S + Visc)*A_Inv;                                                 //         : Mpa
   P_In.F = F;                                                                  //         : unitless
+  P_In.D = D;                                                                  //         : unitless
 
 } // void Update_P(const Particle & P_In, const Particle * Particles, const double dt) {
 
@@ -531,7 +541,7 @@ void Print(const Particle & P_In) {
 ////////////////////////////////////////////////////////////////////////////////
 // Generate particles
 
-void Generate_Neighbor_Lists(const unsigned int Num_Particles, Particle * Particles) {
+void Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
   unsigned int i,j;                    // Loop index variables
   List Particle_Neighbor_List;         // Linked list to store known neighbors
   unsigned int Num_Neighbors;          // Number of neighbors found
@@ -569,11 +579,12 @@ void Generate_Neighbor_Lists(const unsigned int Num_Particles, Particle * Partic
     /* Now free Neighbor_IDs array for next particle! */
     delete [] Neighbor_IDs;
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
-} // void Generate_Neighbor_Lists(const unsigned int Num_Particles, const Particle * Particles) {
+} // void Find_Neighbors(const unsigned int Num_Particles, const Particle * Particles) {
 
-void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
-                                 const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                                 const unsigned int Support_Radius) {
+void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
+                        const unsigned int i, const unsigned int j, const unsigned int k,
+                        const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+                        const unsigned int Support_Radius) {
   /* This function is a modified version of the Neighbor List generating
   function that is specialized for Box particle geometries. By box, I mean
   some kind of cuboid.
@@ -615,98 +626,90 @@ void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Pa
   vertical column then num_z is p. For a 100x50x200 cuboid of particles, num_x
   is 100, num_y is 50, and num_z is 200 */
 
-  unsigned int i,j,k,p,q,r;            // Loop index variables
+  unsigned int p,q,r;                  // Loop index variables
   unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
   List Particle_Neighbor_List;         // Linked list to store known neighbors
   unsigned int Num_Neighbors;          // Number of neighbors found
   unsigned int *Neighbor_IDs;          // Array that holds final list of neighbors
 
-  /* Cycle through the particles. For each particle, check if the particles near us in the cuboid grid
-  are neighbors. */
-  for(i = 0; i < num_x; i++) {
-    for(j = 0; j < num_y; j++) {
-      for(k = 0; k < num_z; k++) {
+  /* If we are near the edge of the cube then we need to adjust which
+  particles we search through
 
-        /* If we are near the edge of the cube then we need to adjust which
-        particles we search through
+  Note: Because unsigned integers rollover, we need to be careful to
+  structure our tests such that they do not modify i j or k. For example,
+  if k = 0 then check if k - Support_Radius < 0 will ALWAYS return
+  false since 0 - Support_Radius = ~4 billion (rollover!). However,
+  structuring the checks in this way makes them less readible, so I have
+  included a logically equivalent (if rollover is ignored) if statement
+  as a comment for each check */
 
-        Note: Because unsigned integers rollover, we need to be careful to
-        structure our tests such that they do not modify i j or k. For example,
-        if k = 0 then check if k - Support_Radius < 0 will ALWAYS return
-        false since 0 - Support_Radius = ~4 billion (rollover!). However,
-        structuring the checks in this way makes them less readible, so I have
-        included a logically equivalent (if rollover is ignored) if statement
-        as a comment for each check */
+  // i index (x coordinate) checks
+  if(i < Support_Radius)                   // Same as if(i - Support_Radius < 0).
+    p_min = 0;
+  else
+    p_min  = i - Support_Radius;
 
-        // i index (x coordinate) checks
-        if(i < Support_Radius)                   // Same as if(i - Support_Radius < 0).
-          p_min = 0;
-        else
-          p_min  = i - Support_Radius;
+  if(i > (num_x - 1) - Support_Radius)     // Same as if(i + Support_Radius > num_x -1)
+    p_max = num_x - 1;
+  else
+    p_max = i + Support_Radius;
 
-        if(i > (num_x - 1) - Support_Radius)     // Same as if(i + Support_Radius > num_x -1)
-          p_max = num_x - 1;
-        else
-          p_max = i + Support_Radius;
+  // j index (y coordinate) checks
+  if(j < Support_Radius)                   // Same as if(j - Support_Radius < 0)
+    q_min = 0;
+  else
+    q_min = j - Support_Radius;
 
-        // j index (y coordinate) checks
-        if(j < Support_Radius)                   // Same as if(j - Support_Radius < 0)
-          q_min = 0;
-        else
-          q_min = j - Support_Radius;
+  if(j > (num_y - 1) - Support_Radius)     // Same as if(j + Support_Radius > num_y - 1)
+    q_max = num_y - 1;
+  else
+    q_max = j + Support_Radius;
 
-        if(j > (num_y - 1) - Support_Radius)     // Same as if(j + Support_Radius > num_y - 1)
-          q_max = num_y - 1;
-        else
-          q_max = j + Support_Radius;
+  // k index (z coordinate) checks
+  if(k < Support_Radius)                   // Same as if(k - Support_Radius < 0)
+    r_min = 0;
+  else
+    r_min = k - Support_Radius;
 
-        // k index (z coordinate) checks
-        if(k < Support_Radius)                   // Same as if(k - Support_Radius < 0)
-          r_min = 0;
-        else
-          r_min = k - Support_Radius;
+  if(k > (num_z - 1) - Support_Radius)     // Same as if(k + Support_Radius > num_z - 1)
+    r_max = num_z - 1;
+  else
+    r_max = k + Support_Radius;
 
-        if(k > (num_z - 1) - Support_Radius)     // Same as if(k + Support_Radius > num_z - 1)
-          r_max = num_z - 1;
-        else
-          r_max = k + Support_Radius;
+  // Loop through potential neighbors, generate neighbor list
+  for(p = p_min; p <= p_max; p++) {
+    for(q = q_min; q <= q_max; q++) {
+      for(r = r_min; r <= r_max; r++) {
+        // a given particle is NOT its own neighbor
+        if(i == p && j == q && k == r)
+          continue;
 
-        // Loop through potential neighbors, generate neighbor list
-        for(p = p_min; p <= p_max; p++) {
-          for(q = q_min; q <= q_max; q++) {
-            for(r = r_min; r <= r_max; r++) {
-              // a given particle is NOT its own neighbor
-              if(i == p && j == q && k == r)
-                continue;
+        if(Are_Neighbors(Particles[i*(num_z*num_y) + j*(num_z) + k] , Particles[p*(num_z*num_y) + q*(num_z) + r])) {
+          Particle_Neighbor_List.Add_Back(p*(num_z*num_y) + q*(num_z) + r);
+        }
+      } // for(r = r_min; r <= r_max; r++) {
+    } // for(q = q_min; q <= q_max; q++) {
+  } // for(p = p_min; p <= p_max; p++) {
 
-              if(Are_Neighbors(Particles[i*(num_z*num_y) + j*(num_z) + k] , Particles[p*(num_z*num_y) + q*(num_z) + r])) {
-                Particle_Neighbor_List.Add_Back(p*(num_z*num_y) + q*(num_z) + r);
-              }
-            } // for(r = r_min; r <= r_max; r++) {
-          } // for(q = q_min; q <= q_max; q++) {
-        } // for(p = p_min; p <= p_max; p++) {
+  /* Now that we have the neighbor list, we can make it into an array. To do
+  this, we allocate an array whose length is equal to the length of the
+  neighbor list. We then populate this array with the elements of the list
+  and finally send this off to the particle (whose neighbors we found) */
+  Num_Neighbors = Particle_Neighbor_List.Node_Count();
+  Neighbor_IDs = new unsigned int[Num_Neighbors];
 
-        /* Now that we have the neighbor list, we can make it into an array. To do
-        this, we allocate an array whose length is equal to the length of the
-        neighbor list. We then populate this array with the elements of the list
-        and finally send this off to the particle (whose neighbors we found) */
-        Num_Neighbors = Particle_Neighbor_List.Node_Count();
-        Neighbor_IDs = new unsigned int[Num_Neighbors];
+  for(p = 0; p < Num_Neighbors; p++) {
+    Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front();
+  } // for(j = 0; j < Num_Neighbors; j++) {
 
-        for(p = 0; p < Num_Neighbors; p++) {
-          Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front();
-        } // for(j = 0; j < Num_Neighbors; j++) {
+  // Now sent the Neighbor list to the particle
+  P_In.Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
 
-        // Now sent the Neighbor list to the particle
-        Particles[i*(num_z*num_y) + j*(num_z) + k].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
-
-        /* Now free Neighbor_IDs array for next particle! */
-        delete [] Neighbor_IDs;
-      } // for(k = 0; k < k_max; k++) {
-    } // for(j = 0; j < j_max; j++) {
-  } // for(i = 0; i < i_max; i++) {
-} // void Generate_Neighbor_Lists_Box(const unsigned int Num_Particles, Particle * Particles,
-  //                                  const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-  //                                  const unsigned int Support_Radius) {
+  /* Now free Neighbor_IDs array for next particle! */
+  delete [] Neighbor_IDs;
+} // void Find_Neighbors(Particle & P_In, Particle * Particles,
+  //                                 const unsigned int i, const unsigned int j, const unsigned int k,
+  //                                 const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+  //                                 const unsigned int Support_Radius) {
 
 #endif

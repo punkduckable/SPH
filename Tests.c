@@ -263,7 +263,7 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const unsigned int x_Side_Len = 30, y_Side_Len = 20, z_Side_Len = 10;
+  const unsigned int x_Side_Len = 20, y_Side_Len = 40, z_Side_Len = 20;
   const unsigned int Num_Particles = x_Side_Len*y_Side_Len*z_Side_Len;
 
   // time step paramters
@@ -300,7 +300,8 @@ void Particle_Tests(void) {
   for(i = 0; i < x_Side_Len; i++) {
     for(j = 0; j < y_Side_Len; j++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Vector X{(double)i,(double)j,(double)k};
+        Vector X = {(double)i,(double)j,(double)k};
+
         X *= Inter_Particle_Spacing;                                           //        : mm
         Vector x = X;                                                          //        : mm
 
@@ -322,7 +323,13 @@ void Particle_Tests(void) {
   // Now let's set each particle's neighbors!
   printf("Generating Neighbor lists....\n");
   timer1 = clock();
-  Generate_Neighbor_Lists_Box(Num_Particles, Particles, x_Side_Len, y_Side_Len, z_Side_Len, SUPPORT_RADIUS);
+  for(i = 0; i < x_Side_Len; i++) {
+    for(j = 0; j < y_Side_Len; j++) {
+      for(k = 0; k < z_Side_Len; k++) {
+        Find_Neighbors_Box(Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k], Particles, i, j, k, x_Side_Len, y_Side_Len, z_Side_Len, SUPPORT_RADIUS);
+      }
+    }
+  }
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Neighbor);
@@ -336,49 +343,63 @@ void Particle_Tests(void) {
     timer2 = clock();
     ////////////////////////////////////////////////////////////////////////////
     /* Boundary conditions
-    Here we set the Bc's for the six sides of the cube. these are the front,
-    back, left, right, top, and bottom faces. These faces are named from the
-    perspective of an observer whose face is pointed in the +x direction with
-    up as the +z direction and left as the +y direction (right handed coordinate
-    system). */
+    Here we set the Bc's for the six sides of the cube. The faces are named
+    'Front', 'Back', 'Top', 'Bottom', 'Left' and 'Right'. We give the faces
+    these names based on the following coordinate axis layout:
+
+                              Y
+                              |        X
+                              |      /
+                              |    /
+                              |  /
+                          _ _ |/_ _ _ _ _ _ _ Z
+                             /|
+                           /  |
+
+    The Normal vector to the 'Front' and 'Back' faces point in the +X and -X
+    directions respectivly. The Normal vector to the 'Top' and 'Bottom' faces
+    point in the +Y and -Y directions respectivly. Finally, the Normal vector
+    to the 'Left' and 'Right' faces point in the -Z and +Z directions
+    respectivly. */
+
     // Front face (i = 0)
     i = 0;
     for(j = 0; j < y_Side_Len; j++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {-40,0,0};
       }
     }
 
-    // back face (i = x_Side_Len-1)
+    // Back face (i = x_Side_Len-1)
     i = x_Side_Len-1;
     for(j = 0; j < y_Side_Len; j++) {
+      for(k = 0; k < z_Side_Len; k++) {
+      }
+    }
+
+    // Bottom face (j = 0)
+    j = 0;
+    for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
         Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,0,0};
       }
     }
 
-    // Right face (j = 0)
-    j = 0;
-    for(i = 0; i < x_Side_Len; i++) {
-      for(k = 0; k < z_Side_Len; k++) {
-      }
-    }
-
-    // Left face (i = x_Side_len-1)
+    // Top face (j = y_Side_len-1)
     j = y_Side_Len-1;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
+        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,100,0};
       }
     }
 
-    // Bottom face (k = 0)
+    // Left face (k = 0)
     k = 0;
     for(i = 0; i < x_Side_Len; i++) {
       for(j = 0; j < y_Side_Len; j++) {
       }
     }
 
-    // Top face (k = z_Side_Len-1) face
+    // Right face (k = z_Side_Len-1)
     k = z_Side_Len-1;
     for(i = 0; i < x_Side_Len; i++) {
       for(j = 0; j < y_Side_Len; j++) {
