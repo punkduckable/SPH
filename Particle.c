@@ -553,20 +553,20 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
   some kind of cuboid.
 
   Let us establish a few definitions:
-  By a 'Layer' we mean a sheet of particles that all have the same x coordinate
-  By a 'Vertical column' we mean a set of particles with the same x and y
+  By a 'Vertical Layer' we mean a sheet of particles that all have the same x
+  coordinate
+  By a 'Vertical column' we mean a set of particles with the same x and z
   coordinates.
-  By a 'Row' we mean a set of particles with the same x and z
-  coordinates.
+  By a 'Row' we mean a set of particles with the same x and y coordinates.
 
   This function assumes that the particles are stored in 'Vertical-Column'
-  major, 'Layer' semi-major order. This menas that vertical columns of
+  major, 'Vertical Layer' semi-major order. This menas that vertical columns of
   particles are stored in contiguous memory and that vertical columns in the
-  same layer are stored in contiguous memory.
+  same vertical layer are stored in contiguous memory.
 
   Thus, if working with a cube with sidelength N, the (1,1,1) particle will be
   N*N particles away from the (2,1,1) partilce in the, N particles away from the
-  (1,2,1) particle and 1 particle away from the (1,1,2) particle in the
+  (1,1,2) particle and 1 particle away from the (1,2,1) particle in the
   Particles array.
 
   So why does this function exist?
@@ -641,17 +641,17 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
 
   // Loop through potential neighbors, generate neighbor list
   for(p = p_min; p <= p_max; p++) {
-    for(q = q_min; q <= q_max; q++) {
-      for(r = r_min; r <= r_max; r++) {
+    for(r = r_min; r <= r_max; r++) {
+      for(q = q_min; q <= q_max; q++) {
         // a given particle is NOT its own neighbor
         if(i == p && j == q && k == r)
           continue;
 
-        if(Are_Neighbors(Particles[i*(num_z*num_y) + j*(num_z) + k] , Particles[p*(num_z*num_y) + q*(num_z) + r])) {
-          Particle_Neighbor_List.Add_Back(p*(num_z*num_y) + q*(num_z) + r);
+        if(Are_Neighbors(Particles[i*(num_y*num_z) + k*(num_y) + j] , Particles[p*(num_y*num_z) + r*(num_y) + q])) {
+          Particle_Neighbor_List.Add_Back(p*(num_y*num_z) + r*(num_y) + q);
         }
-      } // for(r = r_min; r <= r_max; r++) {
-    } // for(q = q_min; q <= q_max; q++) {
+      } // for(q = q_min; q <= q_max; q++) {
+    } // for(r = r_min; r <= r_max; r++) {
   } // for(p = p_min; p <= p_max; p++) {
 
   /* Now that we have the neighbor list, we can make it into an array. To do

@@ -299,9 +299,13 @@ void Particle_Tests(void) {
   printf("Generating particles....\n");
   timer1 = clock();
 
+  /* Store particles in 'Vertical Column' major 'Row' semi-major order
+  A vertical column is a set of particles with the same x and z coordinates,
+  while a row is a set of particles with the same y and x coordinates. This
+  ordering method places particles with the same */
   for(i = 0; i < x_Side_Len; i++) {
-    for(j = 0; j < y_Side_Len; j++) {
-      for(k = 0; k < z_Side_Len; k++) {
+    for(k = 0; k < z_Side_Len; k++) {
+      for(j = 0; j < y_Side_Len; j++) {
         Vector X;
         if(i == 0 && j == (y_Side_Len)/2)
           X = {(double)i-50.,(double)j,(double)k};
@@ -314,15 +318,15 @@ void Particle_Tests(void) {
 
         Vector vel = {0.,0.,0.};                                               //        : mm/s
 
-        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].ID = i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k;
-        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_Mass(Particle_Mass); //        : g
-        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_Vol(Particle_Volume);//        : mm^3
-        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_X(X);      //        : mm
-        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_x(x);      //        : mm
-        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_vel(vel);  //        : mm/s
-      }
-    }
-  }
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].ID = i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j;
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_Mass(Particle_Mass); //        : g
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_Vol(Particle_Volume);//        : mm^3
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_X(X);      //        : mm
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_x(x);      //        : mm
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_vel(vel);  //        : mm/s
+      } // for(j = 0; j < y_Side_Len; j++) {
+    } // for(k = 0; k < z_Side_Len; k++) {
+  } // for(i = 0; i < x_Side_Len; i++) {
   timer1 = clock()-timer1;
   MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Gen);
@@ -336,7 +340,7 @@ void Particle_Tests(void) {
         if(i == 0 && j == (y_Side_Len)/2)
           continue;
 
-        Find_Neighbors_Box(Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k], Particles, i, j, k, x_Side_Len, y_Side_Len, z_Side_Len, SUPPORT_RADIUS);
+        Find_Neighbors_Box(Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j], Particles, i, j, k, x_Side_Len, y_Side_Len, z_Side_Len, SUPPORT_RADIUS);
       } // for(k = 0; k < z_Side_Len; k++) {
     } // for(j = 0; j < y_Side_Len; j++) {
   } // for(i = 0; i < x_Side_Len; i++) {
@@ -390,7 +394,7 @@ void Particle_Tests(void) {
     j = 0;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,-20,0};
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,-20,0};
       }
     }
 
@@ -398,7 +402,7 @@ void Particle_Tests(void) {
     j = y_Side_Len-1;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,20,0};
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,20,0};
       }
     }
 
@@ -422,14 +426,14 @@ void Particle_Tests(void) {
     // Update each particle's Stress tensor
     timer2 = clock();
     for(i = 0; i < x_Side_Len; i++) {
-      for(j = 0; j < y_Side_Len; j++) {
-        for(k = 0; k < z_Side_Len; k++) {
+      for(k = 0; k < z_Side_Len; k++) {
+        for(j = 0; j < y_Side_Len; j++) {
           if(i == 0 && j == (y_Side_Len)/2)
             continue;
 
-          Update_P(Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k], Particles, dt);
-        } // for(k = 0; k < z_Side_Len; k++) {
-      } // for(j = 0; j < y_Side_Len; j++) {
+          Update_P(Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j], Particles, dt);
+        } // for(j = 0; j < y_Side_Len; j++) {
+      } // for(k = 0; k < z_Side_Len; k++) {
     } // for(i = 0; i < Num_Particles; i++) {
     update_P_timer += clock() - timer2;
 
@@ -437,14 +441,14 @@ void Particle_Tests(void) {
     // Update each particle's position
     timer2 = clock();
     for(i = 0; i < x_Side_Len; i++) {
-      for(j = 0; j < y_Side_Len; j++) {
-        for(k = 0; k < z_Side_Len; k++) {
+      for(k = 0; k < z_Side_Len; k++) {
+        for(j = 0; j < y_Side_Len; j++) {
           if(i == 0 && j == (y_Side_Len)/2)
             continue;
 
-          Update_x(Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k], Particles, dt);
-        } // for(k = 0; k < z_Side_Len; k++) {
-      } // for(j = 0; j < y_Side_Len; j++) {
+          Update_x(Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j], Particles, dt);
+        } // for(j = 0; j < y_Side_Len; j++) {
+      } // for(k = 0; k < z_Side_Len; k++) {
     } // for(i = 0; i < Num_Particles; i++) {
     update_x_timer += clock() - timer2;
 
@@ -467,7 +471,7 @@ void Particle_Tests(void) {
   MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
   MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
 
-  printf("It took %lu ms to perform %d Particle iterations \n",MS_Iter, Num_Steps);
+  printf("It took %lu ms to perform %u Particle iterations \n",MS_Iter, Num_Steps);
   printf("%lu ms to update BC's\n", MS_BC);
   printf("%lu ms to update P\n", MS_P);
   printf("%lu ms to update x\n", MS_x);
