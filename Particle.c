@@ -220,7 +220,11 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 ////////////////////////////////////////////////////////////////////////////////
 // Friend functions (Update P, Update particle position)
 
-void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
+void Update_P(Particle & P_In, Particle * Particles, const double dt) {
+  // Check if particle is damaged (if so, we skip this particle)
+  if( P_In.D >= 1)
+    return;
+
   /* The purpose of this function is to calculate the First Piola-Kirchhoff
   stress tensor for the particle P_In.
 
@@ -252,14 +256,14 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
               0,0,1};                            // Identity tensor
 
   double Max_Principle_Stretch;
-  const double Critical_Stretch = P_In.Critical_Stretch;
+  const double Critical_Stretch = Particle::Critical_Stretch;
   double D = P_In.D;
-  const double Tau = P_In.Tau;
+  const double Tau = Particle::Tau;
 
   Tensor A_Inv = P_In.A_Inv;                     // Inverse of shape tensor              : unitless
-  const double Lame = P_In.Lame;                 // Lame paramater                       : Mpa
-  const double mu0 = P_In.mu0;                   // Shear modulus                        : Mpa
-  const double mu = P_In.mu;                     // Viscosity                            : Mpa*s
+  const double Lame = Particle::Lame;            // Lame paramater                       : Mpa
+  const double mu0 = Particle::mu0;              // Shear modulus                        : Mpa
+  const double mu = Particle::mu;                // Viscosity                            : Mpa*s
   const unsigned int Num_Neighbors = P_In.Num_Neighbors;
 
   Tensor F_Prime;                                // F time derivative                    : 1/s
@@ -296,12 +300,19 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   // Calculate current principle stretch.
   Max_Principle_Stretch = sqrt(Max_Eigenvalue(C,'F'));
 
-  if(Max_Principle_Stretch > Critical_Stretch && Max_Principle_Stretch > P_In.Max_Stretch) {
+  // If this stretch is greater than max stretch, update particle's Max stretch.
+  if(Max_Principle_Stretch > P_In.Max_Stretch)
     P_In.Max_Stretch = Max_Principle_Stretch;
+
+  // if Max is greater than crticial, start adding damage
+  if(Max_Principle_Stretch > Critical_Stretch && Max_Principle_Stretch > P_In.Max_Stretch)
     D = exp(((Max_Principle_Stretch - Critical_Stretch)*(Max_Principle_Stretch - Critical_Stretch))/(Tau*Tau)) - 1;
+
+  // If particle is fully damaged, remove it from array. 
+  if(D >= 1) {
+    Remove_Damaged_Particle(P_In, Particles);
+    return;
   }
-  if(D > 1)
-    D = 1;                                                                     //        : unitless
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate
@@ -328,9 +339,13 @@ void Update_P(Particle & P_In, const Particle * Particles, const double dt) {
   P_In.F = F;                                                                  //         : unitless
   P_In.D = D;                                                                  //         : unitless
 
-} // void Update_P(const Particle & P_In, const Particle * Particles, const double dt) {
+} // void Update_P(const Particle & P_In, Particle * Particles, const double dt) {
 
-void Update_Particle_Position(Particle & P_In, const Particle * Particles, const double dt) {
+void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
+  // Check if particle is damaged (if so, we skip this particle)
+  if( P_In.D >= 1)
+    return;
+
   /* This function assumes that every particle in the Particle's array has
   an updated P tensor. Likewise, it assumes that the E and alpha static
   member variables have been set. This function should not be run until
@@ -353,8 +368,8 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   /* P_In aliases (ith particle variables).
   notice that P_In/P_i does not chnage throughout this function. Therefore,
   all P_In variables are declared as consts to avoid accidential modification */
-  const double alpha = P_In.alpha;               // alpha static member                  : unitless
-  const double E = P_In.E;                       // Hourglass stiffness                  : Mpa
+  const double alpha = Particle::alpha;               // alpha static member                  : unitless
+  const double E = Particle::E;                       // Hourglass stiffness                  : Mpa
 
   const double Vi = P_In.Vol;                    // Volume of P_In                       : mm^3
   const double Mass = P_In.Mass;                 // P_i's mass                           : g
@@ -474,7 +489,10 @@ void Update_Particle_Position(Particle & P_In, const Particle * Particles, const
   P_In.Force_Int = Force_Int;
   P_In.Force_Ext = Force_Ext;
   P_In.Force_Hg = Force_Hg;
-} // void Update_Particle_Position(Particle & P_In, const Particle * Particles, const double dt) {
+} // void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
+
+////////////////////////////////////////////////////////////////////////////////
+// Neighbor methods!
 
 bool Are_Neighbors(const Particle & P1, const Particle & P2) {
   /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
@@ -483,63 +501,7 @@ bool Are_Neighbors(const Particle & P1, const Particle & P2) {
   neighbor of P2. */
 
   return ( P1.h > Magnitude(P1.X - P2.X));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Printing functions
-
-void Particle::Print(void) const {
-  // Print basic particle parameters.
-  printf("Mass :   %f\n",Mass);
-  printf("Volume: %f\n",Vol);
-  printf("X:   ");
-  X.Print();
-  printf("x:   ");
-  x.Print();
-  printf("vel: ");
-  vel.Print();
-  printf("F:   \n");
-  F.Print();
-  printf("P:   \n");
-  P.Print();
-  printf("A^(-1)\n");
-  A_Inv.Print();
-
-  // If we have neighbors, print neighbor information
-  if(Has_Neighbors == true) {
-    //unsigned int i;                    // Loop index variable
-
-    /* Print neighbor ID's
-    printf("Neighbor ID's  : {");
-    for(i = 0; i < Num_Neighbors-1; i++) {
-      printf("%5d, ",Neighbor_IDs[i]);
-    } // for(i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5d } \n", Neighbor_IDs[Num_Neighbors-1]);  // */
-
-    /* Print Grad_W magnitudes
-    printf("%p\n",Grad_W);
-    printf("|Grad_W|       : {");
-    for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
-      printf("%5.3f, ",Magnitude(Grad_W[i]));
-    } // for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1])); // */
-
-    /* Print Grad_W_Tilde magnitudes
-    printf("|Grad_W_Tilde| : {");
-    for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
-      printf("%5.3f, ",Magnitude(Grad_W_Tilde[i]));
-    } // for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Magnitude(Grad_W_Tilde[Num_Neighbors-1])); // */
-
-  } // if(Has_Neighbors == true) {
-} // void Particle::Print(void) const {
-
-void Print(const Particle & P_In) {
-  P_In.Print();
-} // void Print(const Particle & P_In) {
-
-////////////////////////////////////////////////////////////////////////////////
-// Generate particles
+} // bool Are_Neighbors(const Particle & P1, const Particle & P2) {
 
 void Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
   unsigned int i,j;                    // Loop index variables
@@ -711,5 +673,182 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
   //                                 const unsigned int i, const unsigned int j, const unsigned int k,
   //                                 const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
   //                                 const unsigned int Support_Radius) {
+
+////////////////////////////////////////////////////////////////////////////////
+// Damage methods
+
+void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
+  printf("Particle %d being removed \n",P_In.ID);
+  /* Find the set of particles that are in a sqrt(3) radius of the damaged
+  particle, all of these should be removed. */
+  unsigned int i,j,k;                                      // index variables
+  const double ROOT_THREE = 1.73205081;                    // square root of 3           : inter-particle spacings
+  const double Inter_Particle_Spacing = Particle::Inter_Particle_Spacing;      //        : mm
+
+  unsigned int Num_Neighbors = P_In.Num_Neighbors;         // Neighbors of damaged particle
+  unsigned int Neighbor_ID;                                // Current neighbor ID
+  List Damaged_Neighbor_List;                              // A list of the ID's of the particles within a sqrt(3) radius of the damaged particle. These particles must go
+  Damaged_Neighbor_List.Add_Front(P_In.ID);                     // Add Damaged particle to the lists
+  unsigned int Num_Damaged_Neighbors = 1;                  // How many particles we have found within a sqrt(3) radius of the damaged particles
+
+
+  Vector X = P_In.X;                                       // Reference position of damaged particle
+  Vector X_Neighbor;
+
+  /* Cycle through the damaged particle's neighbors, searching for ones
+  inside of the sqrt(3) radius (that we intend to remove) */
+  for(i = 0; i < Num_Neighbors; i++) {
+    Neighbor_ID = P_In.Neighbor_IDs[i];
+    X_Neighbor = Particles[i].X;
+
+    /* if particle is within that sart(3) radius (in units of inter-particle
+    of the damaged particle, then we need to remove it from the block. Add
+    it to the Damaged particle list. */
+    if(P_In.Mag_R[i] < ROOT_THREE*Inter_Particle_Spacing) {
+      Damaged_Neighbor_List.Add_Front((int)Neighbor_ID);
+      Num_Damaged_Neighbors++;
+    } // if(Magnitude(X_Neighbor - X) < ROOT_THREE) {
+  } // for(i = 0; i < Num_Neighbors; i++) {
+
+  // Copy damaged particle list to an array. Each damaged particle needs to be
+  // designated as such (set each damaged particle's D to 1)
+  unsigned int * Damaged_Particle_IDs = new unsigned int[Num_Damaged_Neighbors];
+  for(i = 0; i < Num_Damaged_Neighbors; i++) {
+    Damaged_Particle_IDs[i] = (unsigned int)Damaged_Neighbor_List.Remove_Front();
+    Particles[Damaged_Particle_IDs[i]].D = 1;
+  } // for(i = 0; i < Num_Damaged_Neighbors; i++) {
+
+  /* Now that we know which particles need to be removed, we can causally remove
+  them from the particles array. To do this, we need to find the set of all
+  particles that have the damaged particle as a neighbor. Luckily, we know
+  that for all particles A and B, if A is neighbor of B then B is a neighbor of
+  A. We can begin with the damaged particle's Neighbor IDs. For each neighbor
+  particle we can redo its neighbors list to exclude the damaged particle.
+  Once we have don this, we can recalibrate the neighbor particle's members
+  using the new reduced list. */
+  unsigned int Damaged_Particle_ID;                        // ID of the particle we want to causally remove from the array
+  unsigned int Damaged_Particle_Num_Neighbors;             // Number of neighbors of the particle that we're removing
+  unsigned int * Damaged_Particle_Neighbors;               // Points to the neighbor list of the damaged particle
+
+  // The Old and New variables corresond to the neighbor of a damaged particle
+  unsigned int Old_Num_Neighbors;                          // for the neighbor of a damaged particle: Number of neighbors before removing damaged particle
+  unsigned int * Old_Neighbors;                            // for the neighbor of a damaged particle: Old neighbor_IDs array
+
+  unsigned int New_Num_Neighbors;                          // for the neighbor of a damaged particle: Number of neighbors now
+  unsigned int * New_Neighbors;                            // for the neighbor of a damaged particle: New neighbor_IDs array
+  unsigned int k_new;                                      // placement index for New_Neighbors (see explanation in for loop)
+
+  // Cycle through the damaged particles
+  for(i = 0; i < Num_Damaged_Neighbors; i++) {
+    // For each damaged particle, get its neighbors
+    Damaged_Particle_ID = Damaged_Particle_IDs[i];
+    Damaged_Particle_Num_Neighbors = Particles[Damaged_Particle_ID].Num_Neighbors;
+    Damaged_Particle_Neighbors = Particles[Damaged_Particle_ID].Neighbor_IDs;
+
+    // Cycle through the neighbors of the damaged particle
+    for(j = 0; j < Damaged_Particle_Num_Neighbors; j++) {
+      /* For each neighbor of a damaged particle, remove the damaged particle
+      from its Neighbor_IDs list then recalculate members like A_Inv, R, etc...
+      (using set_neighbors). */
+
+      Neighbor_ID = Damaged_Particle_Neighbors[j];
+      Old_Num_Neighbors = Particles[Neighbor_ID].Num_Neighbors;
+      Old_Neighbors = Particles[Neighbor_ID].Neighbor_IDs;
+
+      New_Num_Neighbors = Old_Num_Neighbors-1;
+      New_Neighbors = new unsigned int[New_Num_Neighbors];
+
+      // Remove the damaged particle from neighboring particle's Neighbo_IDs array
+      k_new = 0;
+      for(k = 0; k < Old_Num_Neighbors; k++) {
+        // Skip damaged particle
+        if(Old_Neighbors[k] == Damaged_Particle_ID)
+          continue;
+
+        /* If a given neighbor is not damaged, we add it to the new neighbor
+        list.
+
+        Notice that we use the 'k_new' index in the new neighbor array and the
+        'k' index of the old neighbor array. The reason is that we want the
+        new array to skip the damaged element. before the damaged element, k
+        and k_new are the same, after it k is one more than k_new. This way,
+        by the end, k = Old_Num_Neighbors - 1 and k_new = New_Num_Neighbors - 1
+        ( = Old_Num_Neighbors - 2)*/
+        New_Neighbors[k_new] = Old_Neighbors[k];
+        k_new++;
+      } // for(k = 0; k < Num_Neighbors; k++) {
+
+      // We need to set the 'Has_Neighbors' paramater to false. Otherwise, we
+      // won't be able to set the neighbors.
+      Particles[Neighbor_ID].Has_Neighbors = false;
+      delete [] Particles[Neighbor_ID].Neighbor_IDs;
+      Particles[Neighbor_ID].Set_Neighbors(New_Num_Neighbors, New_Neighbors, Particles);
+
+      delete [] New_Neighbors;
+    } // for(j = 0; j < Damaged_Particle_Num_Neighbors; j++) {
+  } // for(i = 0; i < Num_Damaged_Neighbors; i++) {
+
+  /* Now that we've causally removed the damaged particles from the particles
+  array, we need to make the damaged particle think it has no neighbors */
+  for(i = 0; i < Num_Damaged_Neighbors; i++) {
+    Particles[Damaged_Particle_IDs[i]].Num_Neighbors = 0;
+  } // for(i = 0; i < Num_Damaged_Neighbors; i++) {
+
+  // Free the 'Damaged_Particles_IDs' dynamic array
+  delete [] Damaged_Particle_IDs;
+} // void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
+
+////////////////////////////////////////////////////////////////////////////////
+// Printing functions
+
+void Particle::Print(void) const {
+  // Print basic particle parameters.
+  printf("Mass :   %f\n",Mass);
+  printf("Volume: %f\n",Vol);
+  printf("X:   ");
+  X.Print();
+  printf("x:   ");
+  x.Print();
+  printf("vel: ");
+  vel.Print();
+  printf("F:   \n");
+  F.Print();
+  printf("P:   \n");
+  P.Print();
+  printf("A^(-1)\n");
+  A_Inv.Print();
+
+  // If we have neighbors, print neighbor information
+  if(Has_Neighbors == true) {
+    //unsigned int i;                    // Loop index variable
+
+    /* Print neighbor ID's
+    printf("Neighbor ID's  : {");
+    for(i = 0; i < Num_Neighbors-1; i++) {
+      printf("%5d, ",Neighbor_IDs[i]);
+    } // for(i = 0; i < Num_Neighbors-1; i++) {
+    printf("%5d } \n", Neighbor_IDs[Num_Neighbors-1]);  // */
+
+    /* Print Grad_W magnitudes
+    printf("%p\n",Grad_W);
+    printf("|Grad_W|       : {");
+    for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
+      printf("%5.3f, ",Magnitude(Grad_W[i]));
+    } // for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
+    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1])); // */
+
+    /* Print Grad_W_Tilde magnitudes
+    printf("|Grad_W_Tilde| : {");
+    for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
+      printf("%5.3f, ",Magnitude(Grad_W_Tilde[i]));
+    } // for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
+    printf("%5.3f } \n", Magnitude(Grad_W_Tilde[Num_Neighbors-1])); // */
+
+  } // if(Has_Neighbors == true) {
+} // void Particle::Print(void) const {
+
+void Print(const Particle & P_In) {
+  P_In.Print();
+} // void Print(const Particle & P_In) {
 
 #endif

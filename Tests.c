@@ -263,12 +263,12 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const unsigned int x_Side_Len = 20, y_Side_Len = 40, z_Side_Len = 20;
+  const unsigned int x_Side_Len = 20, y_Side_Len = 20, z_Side_Len = 20;
   const unsigned int Num_Particles = x_Side_Len*y_Side_Len*z_Side_Len;
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 10000;                              // Number of time steps
+  const unsigned int Num_Steps = 20000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -300,14 +300,19 @@ void Particle_Tests(void) {
   for(i = 0; i < x_Side_Len; i++) {
     for(j = 0; j < y_Side_Len; j++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Vector X = {(double)i,(double)j,(double)k};
+        Vector X;
+        if(i == 0 && j == (y_Side_Len)/2)
+          X = {(double)i-50.,(double)j,(double)k};
+        else
+          X = {(double)i,(double)j,(double)k};
 
-        X *= Inter_Particle_Spacing;                                           //        : mm
+        X *= Particle::Inter_Particle_Spacing;                                 //        : mm
         Vector x = X;                                                          //        : mm
 
 
         Vector vel = {0.,0.,0.};                                               //        : mm/s
 
+        Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].ID = i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k;
         Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_Mass(Particle_Mass); //        : g
         Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_Vol(Particle_Volume);//        : mm^3
         Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k].Set_X(X);      //        : mm
@@ -326,10 +331,13 @@ void Particle_Tests(void) {
   for(i = 0; i < x_Side_Len; i++) {
     for(j = 0; j < y_Side_Len; j++) {
       for(k = 0; k < z_Side_Len; k++) {
+        if(i == 0 && j == (y_Side_Len)/2)
+          continue;
+
         Find_Neighbors_Box(Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k], Particles, i, j, k, x_Side_Len, y_Side_Len, z_Side_Len, SUPPORT_RADIUS);
-      }
-    }
-  }
+      } // for(k = 0; k < z_Side_Len; k++) {
+    } // for(j = 0; j < y_Side_Len; j++) {
+  } // for(i = 0; i < x_Side_Len; i++) {
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Neighbor);
@@ -338,7 +346,7 @@ void Particle_Tests(void) {
   final configuration. To do this, we will save the initial configuration to a
   file, then run some time steps and store the final configuration in another
   file. */
-  printf("Running particle iterations....\n");
+  printf("Running particle time steps....\n");
   for(l = 0; l < Num_Steps; l++) {
     timer2 = clock();
     ////////////////////////////////////////////////////////////////////////////
@@ -388,7 +396,7 @@ void Particle_Tests(void) {
     j = y_Side_Len-1;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,100,0};
+        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,50,0};
       }
     }
 
@@ -411,23 +419,37 @@ void Particle_Tests(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's Stress tensor
     timer2 = clock();
-    for(i = 0; i < Num_Particles; i++) {
-      Update_P(Particles[i],Particles, dt);
-    }
+    for(i = 0; i < x_Side_Len; i++) {
+      for(j = 0; j < y_Side_Len; j++) {
+        for(k = 0; k < z_Side_Len; k++) {
+          if(i == 0 && j == (y_Side_Len)/2)
+            continue;
+
+          Update_P(Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k], Particles, dt);
+        } // for(k = 0; k < z_Side_Len; k++) {
+      } // for(j = 0; j < y_Side_Len; j++) {
+    } // for(i = 0; i < Num_Particles; i++) {
     update_P_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's position
     timer2 = clock();
-    for(i = 0; i < Num_Particles; i++) {
-      Update_Particle_Position(Particles[i],Particles,dt);
-    }
+    for(i = 0; i < x_Side_Len; i++) {
+      for(j = 0; j < y_Side_Len; j++) {
+        for(k = 0; k < z_Side_Len; k++) {
+          if(i == 0 && j == (y_Side_Len)/2)
+            continue;
+
+          Update_x(Particles[i*(z_Side_Len*y_Side_Len) + j*z_Side_Len + k], Particles, dt);
+        } // for(k = 0; k < z_Side_Len; k++) {
+      } // for(j = 0; j < y_Side_Len; j++) {
+    } // for(i = 0; i < Num_Particles; i++) {
     update_x_timer += clock() - timer2;
 
     // Print to file evert 100th iteration
     timer2 = clock();
     if((l+1)%100 == 0) {
-      printf("%d iterations complete\n",l+1);
+      printf("%d time steps complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
 
       /*

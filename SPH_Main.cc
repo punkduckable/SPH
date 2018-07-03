@@ -28,7 +28,7 @@ typedef unsigned char uByte;
 ////////////////////////////////////////////////////1////////////////////////////
 // Initialize static members (particle class) and global variables
 
-const double Inter_Particle_Spacing = .5;                                      //        : mm
+const double Particle::Inter_Particle_Spacing = .5;                            //        : mm
 const double Particle::h =SUPPORT_RADIUS*Inter_Particle_Spacing;     // Support function raduius   : mm
 const double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);    // Shape function amplitude   : mm^-3
 

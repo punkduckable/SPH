@@ -4,6 +4,7 @@
 class Particle {
   private:
     // Kernel paramaters
+    const static double Inter_Particle_Spacing;            //                            : mm
     const static double h;                                 // Support radius             : mm
     const static double Shape_Function_Amp;                // Shape function Amplitude   : mm^-3
 
@@ -26,6 +27,7 @@ class Particle {
     bool Has_Neighbors = false;                            // True if the particle has neighbors, false otherwise
     unsigned int Num_Neighbors;                            // Keeps track of number of Neighbors
     unsigned int *Neighbor_IDs;                            // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
+    unsigned int ID;                                       // Particle ID in the Particle's array.
 
     Vector *R;                                             // Dynamic array that stores neighbor reference displacement
     double *Mag_R;                                         // Dynamic array that stores the magnitude of each neighbor's reference displacement
@@ -49,7 +51,7 @@ class Particle {
              0,0,1};                                       // deformation gradient       : unitless
 
     // Damage parameters
-    double Max_Stretch = 0;                                // Max principle stretch so far        : unitless
+    double Max_Stretch = 0;                                // Max principle stretch so far         : unitless
     const static double Critical_Stretch;                  // If Principle stretch excedes Critical then particle incures damage : unitless
     double D = 0;                                          // Damage parameter           : unitless
     const static double Tau;                               // Damage rate paramater (see eq 26)
@@ -79,23 +81,32 @@ class Particle {
                        const unsigned int * Neighbor_ID_Array,
                        const Particle * Particles);        // Set Neighbors
 
-    // Friend functions
+    // Update P
     friend void Update_P(Particle & P_In,
-                         const Particle * Particles,
+                         Particle * Particles,
                          const double dt);                 // Updates P_In's Second Piola-Kirchhoff stress tensor
-    friend void Update_Particle_Position(Particle & P_In,
-                                         const Particle * Particles,
-                                         const double dt); // Updates P_In's x (spacial position)
+
+    // Update x
+    friend void Update_x(Particle & P_In,
+                         const Particle * Particles,
+                         const double dt); // Updates P_In's spacial position
+
+    // Neighbor methods
     friend bool Are_Neighbors(const Particle & P1,
                               const Particle & P2);        // Returns true P1 and P2 are neighbors, false otherwise
+    friend void Find_Neighbors(const unsigned int Num_Particles,
+                               Particle * Particles);      // Generate neighbor list for every particle in 'Partilces' array
 
+    friend void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
+                                   const unsigned int i, const unsigned int j, const unsigned int k,
+                                   const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
+                                   const unsigned int Support_Radius);
+
+    // Damage methods
+    friend void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
 
     // Temp friends... Should be removed!
     friend void Particle_Tests(void);
-    friend void Generate_Neighbor_List_Box(Particle & P_In, Particle * Particles,
-                                           const unsigned int i, const unsigned int j, const unsigned int k,
-                                           const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                                           const unsigned int Support_Radius);
     friend void Particle_Debugger_File::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
     friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 
@@ -104,14 +115,16 @@ class Particle {
 
 };
 
-void Print(const Particle & P_In);                         // Calls Print method
-
 void Find_Neighbors(const unsigned int Num_Particles,
                     Particle * Particles);                 // Generate neighbor list for every particle in 'Partilces' array
 
 void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
                         const unsigned int i, const unsigned int j, const unsigned int k,
                         const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                        const unsigned int Support_Radius);  // Generate neighbor list for a 'box' or 'cuboid' geometry
+                        const unsigned int Support_Radius);// Generate neighbor list for a 'box' or 'cuboid' geometry
+
+void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
+
+void Print(const Particle & P_In);                         // Calls Print method
 
 #endif
