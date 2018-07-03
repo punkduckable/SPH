@@ -46,6 +46,9 @@ class Particle {
     Tensor P{0,0,0,
              0,0,0,
              0,0,0};                                       // First Piola-Kirchhoff stress tensor  : Mpa
+    Tensor Visc{0,0,0,
+                0,0,0,
+                0,0,0};
     Tensor F{1,0,0,
              0,1,0,
              0,0,1};                                       // deformation gradient       : unitless
@@ -59,6 +62,7 @@ class Particle {
 
     // Forces acting on the particle
     Vector Force_Int{0,0,0};                               // Internal Force vector       : N
+    Vector Force_Visc{0,0,0};
     Vector Force_Ext{0,0,0};                               // External/body force         : N
     Vector Force_Hg{0,0,0};                                // Hour-glass force            : N
 

@@ -263,12 +263,12 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const unsigned int x_Side_Len = 10, y_Side_Len = 30, z_Side_Len = 20;
+  const unsigned int x_Side_Len = 10, y_Side_Len = 30, z_Side_Len = 10;
   const unsigned int Num_Particles = x_Side_Len*y_Side_Len*z_Side_Len;
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 10000;                              // Number of time steps
+  const unsigned int Num_Steps = 20000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -394,7 +394,7 @@ void Particle_Tests(void) {
     j = 0;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,-20,0};
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,-15,0};
       }
     }
 
@@ -402,7 +402,7 @@ void Particle_Tests(void) {
     j = y_Side_Len-1;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,20,0};
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,15,0};
       }
     }
 

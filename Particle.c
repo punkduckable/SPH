@@ -338,6 +338,7 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
 
   /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
   P_In.P = (F*S + Visc)*A_Inv;                                                 //         : Mpa
+  P_In.Visc = Visc*A_Inv;
   P_In.F = F;                                                                  //         : unitless
 
 } // void Update_P(const Particle & P_In, Particle * Particles, const double dt) {
@@ -353,6 +354,7 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
   these assumptions are valid. */
 
   Vector Force_Int{0,0,0};                       // Internal Force vector                : N
+  Vector Force_Visc{0,0,0};
   Vector Force_Ext{0,0,0};                       // External/body force                  : N
   Vector Force_Hg{0,0,0};                        // Hour-glass force                     : N
 
@@ -399,6 +401,7 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
     Vj = Particles[Neighbor_ID].Vol;                                           //        : mm^3
     P_j = Particles[Neighbor_ID].P;                                            //        : Mpa
     Force_Int += (Vi*Vj)*((P_i + P_j)*Grad_W[j]);                              //        : N
+    Force_Visc += (Vi*Vj)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate external Force */
@@ -488,6 +491,7 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
   P_In.vel += dt*acceleration;                   // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s
 
   P_In.Force_Int = Force_Int;
+  P_In.Force_Visc = Force_Visc;
   P_In.Force_Ext = Force_Ext;
   P_In.Force_Hg = Force_Hg;
 } // void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
@@ -821,20 +825,26 @@ void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
 
 void Particle::Print(void) const {
   // Print basic particle parameters.
-  printf("Mass :   %f\n",Mass);
-  printf("Volume: %f\n",Vol);
   printf("X:   ");
   X.Print();
-  printf("x:   ");
-  x.Print();
-  printf("vel: ");
-  vel.Print();
-  printf("F:   \n");
-  F.Print();
-  printf("P:   \n");
-  P.Print();
-  printf("A^(-1)\n");
-  A_Inv.Print();
+  //printf("x:   ");
+  //x.Print();
+  //printf("vel: ");
+  //vel.Print();
+  //printf("F:   \n");
+  //F.Print();
+  //printf("P:   \n");
+  //P.Print();
+  //printf("A^(-1)\n");
+  //A_Inv.Print();
+  printf("Num Neighbors: %d\n",Num_Neighbors);
+  printf("F_Int = ");
+  Force_Int.Print();
+  printf("F_Visc = ");
+  Force_Visc.Print();
+  printf("F_Hg = ");
+  Force_Hg.Print();
+  printf("\n");
 
   // If we have neighbors, print neighbor information
   if(Has_Neighbors == true) {

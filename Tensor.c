@@ -826,14 +826,14 @@ double Max_Eigenvalue(const Tensor & S_In,const char Mode) {
     else {
 
       // Fast mode: Use my approximation methods
-      if(Mode == 'F') {
+      if(Mode == 'F' || Mode == 'f') {
         phi = (1./3.)*Quick_Math::Acos(r);
         Eig_Values[0] = q + 2*p*Quick_Math::cos(phi);
         Eig_Values[1] = q + 2*p*Quick_Math::cos(phi + 2.*PI/3.);
       } // if(Mode == 'F') {
 
       // Accurate mode, use C's built in cost functions
-      else if(Mode == 'A') {
+      else if(Mode == 'A' || Mode == 'a') {
         phi = (1./3.)*acos(r);
         Eig_Values[0] = q + 2*p*cos(phi);
         Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
