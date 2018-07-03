@@ -34,7 +34,6 @@ class Particle {
 
     double *W;                                             // Dynamic array that stores shape function value for each neighbor
     Vector *Grad_W;                                        // Dynamic array that stores Gradient of the Shape function at each neighbors
-    //Vector *Grad_W_Tilde;                                // Dynamic array that stores Grad_W_Tilde
     Tensor A_Inv;                                          // Inverse of shape tensor
 
     // Particle dynamics variables
@@ -46,9 +45,9 @@ class Particle {
     Tensor P{0,0,0,
              0,0,0,
              0,0,0};                                       // First Piola-Kirchhoff stress tensor  : Mpa
-    Tensor Visc{0,0,0,
+    /*Tensor Visc{0,0,0,
                 0,0,0,
-                0,0,0};
+                0,0,0}; */                                   // For debugging
     Tensor F{1,0,0,
              0,1,0,
              0,0,1};                                       // deformation gradient       : unitless
@@ -62,9 +61,10 @@ class Particle {
 
     // Forces acting on the particle
     Vector Force_Int{0,0,0};                               // Internal Force vector       : N
-    Vector Force_Visc{0,0,0};
     Vector Force_Ext{0,0,0};                               // External/body force         : N
     Vector Force_Hg{0,0,0};                                // Hour-glass force            : N
+    //Vector Force_Visc{0,0,0};                              // For debugging
+
 
   public:
     // Constructors, destructor

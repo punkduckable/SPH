@@ -17,18 +17,21 @@ Development Plan:
     DONE 6/15 - Optimize tensor, vector methods
     DONE 6/28-6/29 Optimize operation count and use of memory (cache)
 
-  - Implement damage
-    - Figure out a quick way to determine maximum principle strain (of C)
-    - Calculate D
-    - Add damage to calculation of S
+  DONE: 7/3 Implement damage
+    DONE 6/30: Figure out a quick way to determine maximum principle strain (of C)
+    DONE 7/2: Calculate D
+    DONE 7/2: Add damage to calculation of S
+    DONE 7/3: Debug/make it work
 
-  - Implement Fracture
+  DONE: 7/3: Implement Fracture
 
   - Implement Contact
 
   - Implement rigid needle
 
   - Implement flexible needle
+
+  - Parallelize (using OpenMP)
 
 TODO / development history:
  - Vector class:
@@ -109,7 +112,7 @@ TODO / development history:
     DONE 6/21: Updated particle methods to use ^-1, ^T and ^-T syntax with tensors.
     DONE 6/22: Make all setting functions (Set_vel, Set_x, etc...) inline
     DONE 6/22: Add units to all particle statements that involve units
-    Reduce operation count for update_x and update_P methods.
+    DONE 6/25-7/3: Reduce operation count for update_x and update_P methods.
 
   - Linked List class
     DONE 6/12: Write a two way linked list (will be used for neighbor search)

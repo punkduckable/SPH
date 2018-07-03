@@ -47,15 +47,15 @@ Particle::Particle(const Particle & P_In) {
 
   /* Deep copy of pointer members.
   To do this, we need to give the new particle the same content as the origional
-  neighbor list and Grad_W_Tilde arrays, but have these array's stored in a new
-  memory location. This way, when the copy particle is deleted, it doesn't
-  delete the origional particle's array.
+  dynamic arrays (R, neighbor list, etc.), but have the new parricle's copies
+  stored in a different memory location than the origionals. This way, when the
+  copy particle is deleted, it doesn't delete the origional particle's array.
 
   The new particle will have the same number of neighbors as the origional
-  particle. The neighbor list and Grad_W_Tilde array's of the new particle
-  should therefore be of length Num_Neighbors. Likewise, we need to copy the
-  origional particle's array contents into the new particle's array conetents.
-  We do this on an element by element basis. */
+  particle. The dynamic arrays of the new particle should therefore be of length
+  Num_Neighbors. Likewise, we need to copy the origional particle's array
+  contents into the new particle's array conetents. We do this on an element by
+  element basis. */
   Has_Neighbors = P_In.Has_Neighbors;
   Num_Neighbors = P_In.Num_Neighbors;
 
@@ -65,15 +65,12 @@ Particle::Particle(const Particle & P_In) {
   W = new double[Num_Neighbors];                                               //        : unitless
   Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
 
-  //Grad_W_Tilde = new Vector[Num_Neighbors];
-
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Neighbor_IDs[j] = P_In.Neighbor_IDs[j];
     R[j] = P_In.R[j];                                                          //        : mm
     Mag_R[j] = P_In.Mag_R[j];                                                  //        : mm
     W[j] = P_In.W[j];                                                          //        : unitless
     Grad_W[j] = P_In.Grad_W[j];                                                //        : mm^-1
-    //Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
   } // for(unsinged int j = 0; j < Num_Neighbors; j++) {
 } // Particle::Particle(const Particle & P_In) {
 
@@ -86,7 +83,6 @@ Particle::~Particle(void) {
     delete [] Mag_R;                                                           //        : mm
     delete [] W;                                                               //        : unitless
     delete [] Grad_W;                                                          //        : mm^-1
-    //delete [] Grad_W_Tilde;
     delete [] Neighbor_IDs;
   }
 } // Particle::~Particle(void) {
@@ -119,15 +115,15 @@ Particle & Particle::operator=(const Particle & P_In) {
 
   /* Deep copy of pointer members.
   To do this, we need to give the new particle the same content as the origional
-  neighbor list and Grad_W_Tilde arrays, but have these array's stored in a new
-  memory location. This way, when the copy particle is deleted, it doesn't
-  delete the origional particle's array.
+  dynamic arrays (R, neighbor list, etc.), but have the new parricle's copies
+  stored in a different memory location than the origionals. This way, when the
+  copy particle is deleted, it doesn't delete the origional particle's array.
 
   The new particle will have the same number of neighbors as the origional
-  particle. The neighbor list and Grad_W_Tilde array's of the new particle
-  should therefore be of length Num_Neighbors. Likewise, we need to copy the
-  origional particle's array contents into the new particle's array conetents.
-  We do this on an element by element basis. */
+  particle. The dynamic arrays of the new particle should therefore be of length
+  Num_Neighbors. Likewise, we need to copy the origional particle's array
+  contents into the new particle's array conetents. We do this on an element by
+  element basis. */
   Has_Neighbors = P_In.Has_Neighbors;
   Num_Neighbors = P_In.Num_Neighbors;
 
@@ -136,7 +132,6 @@ Particle & Particle::operator=(const Particle & P_In) {
   Mag_R = new double[Num_Neighbors];                                           //        : mm
   W = new double[Num_Neighbors];                                               //        : unitless
   Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
-  //Grad_W_Tilde = new Vector[Num_Neighbors];
 
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Neighbor_IDs[j] = P_In.Neighbor_IDs[j];
@@ -144,7 +139,6 @@ Particle & Particle::operator=(const Particle & P_In) {
     Mag_R[j] = P_In.Mag_R[j];                                                  //        : mm
     W[j] = P_In.W[j];                                                          //        : unitless
     Grad_W[j] = P_In.Grad_W[j];                                                //        : mm^-1
-    //Grad_W_Tilde[j] = P_In.Grad_W_Tilde[j];
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
 
   return *this;
@@ -175,46 +169,42 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   // Set Num_Neighbors using input
   Num_Neighbors = N;
 
-  // Allocate memory for the Neighbor_IDs, and Grad_W_Tilde array
+  // Allocate memory for the Dynamic arrays
   Neighbor_IDs = new unsigned int[Num_Neighbors];
   R = new Vector[Num_Neighbors];                                               //        : mm
   Mag_R = new double[Num_Neighbors];                                           //        : mm
   W = new double[Num_Neighbors];                                               //        : unitless
   Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
-  //Grad_W_Tilde = new Vector[Num_Neighbors];
 
   /* Now that we know our neighbors IDs, we can figure out everything that we
   want to know about them. We an set the Neighbor_IDs, r, R, W, and Grad_W
   members. These can be used to calculate the shape matrix (and its inverse)! */
 
   int Neighbor_ID;                               // Keep track of current particle
-  double Vj;                                     // Volume of jth neighbor               : mm^3
-  Tensor A{0,0,0,0,0,0,0,0,0};                   // Shape Tensor                         : unitless
+  double V_j;                                    // Volume of jth neighbor               : mm^3
+  Tensor A{0,0,0,
+           0,0,0,
+           0,0,0};                               // Shape Tensor (zero initialized)      : unitless
 
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Neighbor_ID = Neighbor_ID_Array[j];          // Get Neighbor ID (index in Particles array)
     Neighbor_IDs[j] = Neighbor_ID;               // Set jth element of Neighbor_IDs member
 
-    //r[j] = Particles[Neighbor_ID].x - x;       // Spacial displacement vector
+    // Calculate displacement vectors
     R[j] = Particles[Neighbor_ID].X - X;         // Reference displacement vector        : mm
-    Vj = Particles[Neighbor_ID].Vol;             // Neighbor Volume                      : mm^3
-    Mag_R[j] = R[j].Magnitude();                   // |R[j]|                               : mm
+    Mag_R[j] = R[j].Magnitude();                 // |R[j]|                               : mm
 
     // Calculate shape function, shape function gradient for jth neighbor
     W[j] = Shape_Function_Amp*(h - Mag_R[j])*(h - Mag_R[j])*(h - Mag_R[j]);                             //        :unitless
     Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_R[j])*(h - Mag_R[j]))*(R[j] / Mag_R[j]); //    : mm^-1
 
     // Add in the Current Neighbor's contribution to the Shape tensor
-    A += Dyadic_Product((Vj*Grad_W[j]), R[j]);                                 //        : unitless
+    V_j = Particles[Neighbor_ID].Vol;            // Neighbor Volume                      : mm^3
+    A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless
   } // for(unsigned int j = 0; j < N; j++) {
 
   // Now we can calculate A^(-1) from A.
   A_Inv = A^(-1);                                                              //        : unitless
-
-  /* Now we can popuate the Grad_W_Tilde array
-  for(unsigned int j = 0; j < N; j++) {
-    Grad_W_Tilde[j] = A_Inv*Grad_W[j];
-  } // for(unsigned int j = 0; j < N; j++) { */
 
   // Now that neighbors have been set, we set 'Has_Neighbors' to true
   Has_Neighbors = true;
@@ -233,8 +223,8 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
 
   This function assumes that the position of each of P_In's neighbors has
   been updated to the previous time step. It also assumes that each particle has
-  a neighbor list, has calculate A^(-1), and has populated its Grad_W_Tilde
-  vector. Finally, it assumes that the static member variables k1, k2,
+  a neighbor list, has calculate A^(-1), and has populated its dynamic array
+  members. Finally, it assumes that the static member variables k1, k2,
   and mu0 have been set.This function should not be called until these
   assumptions are valid.
 
@@ -244,7 +234,7 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
 
   /* First, let's set up the local variables that will be used to update the
   particle's position */
-  double Vj;                                     // Volume of jth neighbor               : mm^3
+  double V_j;                                     // Volume of jth neighbor               : mm^3
   unsigned int Neighbor_ID;                      // Index of jth neighbor.
 
   Tensor F = {0,0,0,
@@ -258,10 +248,9 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
               0,1,0,
               0,0,1};                            // Identity tensor
 
-  double Max_Principle_Stretch;
+  double Stretch_Max_Principle;
   const double Tau = Particle::Tau;
 
-  Tensor A_Inv = P_In.A_Inv;                     // Inverse of shape tensor              : unitless
   const double Lame = Particle::Lame;            // Lame paramater                       : Mpa
   const double mu0 = Particle::mu0;              // Shear modulus                        : Mpa
   const double mu = Particle::mu;                // Viscosity                            : Mpa*s
@@ -275,18 +264,18 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now, we can calculate F by cycling through the neighbors. The contribution
-  to F by the jth neighbor is dj (Dyadic Product) Vj Grad_W(Rj, h) */
+  to F by the jth neighbor is dj (Dyadic Product) V_j Grad_W(Rj, h) */
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Neighbor_ID = P_In.Neighbor_IDs[j];
-    Vj = Particles[Neighbor_ID].Vol;                                           //        : mm^3
+    V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
     rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
 
-    //F += Dyadic_Product(P_In.rj, Vj*P_In.Grad_W_Tilde[j]);
-    F += Dyadic_Product(rj, Vj*Grad_W[j]);                                     //        : unitless
+    //F += Dyadic_Product(P_In.rj, V_j*P_In.Grad_W[j])*A^(-1);
+    F += Dyadic_Product(rj, V_j*Grad_W[j]);                                    //        : unitless
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
 
   // Deformation gradient with correction
-  F *= A_Inv;                                                                  //        : unitless
+  F *= P_In.A_Inv;                                                             //        : unitless
 
   //////////////////////////////////////////////////////////////////////////////
   /* Calculate Damage:
@@ -299,12 +288,12 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   J = Determinant(F);                            // J is det of F                        : unitless
 
   // Calculate current principle stretch.
-  Max_Principle_Stretch = sqrt(Max_Eigenvalue(C,'F'));
+  Stretch_Max_Principle = sqrt(Max_Eigenvalue(C,'F'));
 
   // If this stretch is greater than max stretch, update particle's Max stretch.
-  P_In.Stretch_M = Max_Principle_Stretch;
-  if(Max_Principle_Stretch > P_In.Stretch_H)
-    P_In.Stretch_H = Max_Principle_Stretch;
+  P_In.Stretch_M = Stretch_Max_Principle;
+  if(Stretch_Max_Principle > P_In.Stretch_H)
+    P_In.Stretch_H = Stretch_Max_Principle;
 
   // if Max is greater than crticial, start adding damage
   if(P_In.Stretch_H > P_In.Stretch_Critical)
@@ -337,9 +326,9 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                        //        : Mpa
 
   /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
-  P_In.P = (F*S + Visc)*A_Inv;                                                 //         : Mpa
-  P_In.Visc = Visc*A_Inv;
+  P_In.P = (F*S + Visc)*P_In.A_Inv;                                            //         : Mpa
   P_In.F = F;                                                                  //         : unitless
+  //P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
 
 } // void Update_P(const Particle & P_In, Particle * Particles, const double dt) {
 
@@ -353,17 +342,17 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
   member variables have been set. This function should not be run until
   these assumptions are valid. */
 
-  Vector Force_Int{0,0,0};                       // Internal Force vector                : N
-  Vector Force_Visc{0,0,0};
-  Vector Force_Ext{0,0,0};                       // External/body force                  : N
-  Vector Force_Hg{0,0,0};                        // Hour-glass force                     : N
+  P_In.Force_Int = {0,0,0};                      // Internal Force vector                : N
+  P_In.Force_Ext = {0,0,0};                      // External/body force                  : N
+  P_In.Force_Hg = {0,0,0};                       // Hour-glass force                     : N
+  //P_In.Force_Visc = {0,0,0};                     // For debugging
 
   Vector acceleration;                           // acceleration vector                  : mm/s^2
 
   unsigned int Neighbor_ID;                      // ID of current neighbor particle (in paritlce's array)
 
   /* Jth particle variables */
-  double Vj;                                     // Volume of jth particle               : mm^3
+  double V_j;                                    // Volume of jth particle               : mm^3
   Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa
   Tensor F_j;                                    // Deformation gradient                 : unitless
   Vector rj;                                     // Displacement vector                  : mm
@@ -371,11 +360,10 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
   /* P_In aliases (ith particle variables).
   notice that P_In/P_i does not chnage throughout this function. Therefore,
   all P_In variables are declared as consts to avoid accidential modification */
-  const double alpha = Particle::alpha;               // alpha static member                  : unitless
-  const double E = Particle::E;                       // Hourglass stiffness                  : Mpa
+  const double alpha = Particle::alpha;          // alpha static member                  : unitless
+  const double E = Particle::E;                  // Hourglass stiffness                  : Mpa
 
-  const double Vi = P_In.Vol;                    // Volume of P_In                       : mm^3
-  const double Mass = P_In.Mass;                 // P_i's mass                           : g
+  const double V_i = P_In.Vol;                   // Volume of P_In                       : mm^3
 
   const Tensor P_i = P_In.P;                     // First Piola-Kirchhoff stress tensor  : Mpa
   const Tensor F_i = P_In.F;                     // Deformation gradient                 : unitless
@@ -398,10 +386,17 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Internal force */
 
-    Vj = Particles[Neighbor_ID].Vol;                                           //        : mm^3
+    /* Note, each term in the internal force sum is multiplied by Vi. If  we
+    we were to multiply through by Vi in this loop, we'd peerform this operation
+    Num_Neighbors times. By moving it out of the summation (mutiplying Force_Int
+    by Vi after the loop) we reduce the number of multiplications to 1, thereby
+    reducing the number of FLOPs required to calculate the internal force and
+    speeding up the program. */
+
+    V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
     P_j = Particles[Neighbor_ID].P;                                            //        : Mpa
-    Force_Int += (Vi*Vj)*((P_i + P_j)*Grad_W[j]);                              //        : N
-    Force_Visc += (Vi*Vj)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
+    P_In.Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                           //        : N
+    //P_In.Force_Visc += (V_j)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); // For debugging
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate external Force */
@@ -458,7 +453,7 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
     therefore improve performnace.
     */
 
-    F_j = Particles[Neighbor_ID].F;                                          //        : unitless
+    F_j = Particles[Neighbor_ID].F;                                            //        : unitless
     delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;//: mm
 
     /* Finally, we calculate the hour glass force. However, it should be
@@ -466,10 +461,12 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
     and Vi. However, these four quantities are constants. We can therefore
     pull these multiplications out of the summations (thereby saving
     several thousand floating point operations per particle!)*/
-    Force_Hg += (((Vj*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*
+    P_In.Force_Hg += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*
                 (delta_ij + delta_ji))*(rj);
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
-  Force_Hg *= -.5*E*Vi*alpha;                                                  //        : N
+  P_In.Force_Hg *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling it out of sum improved runtime
+  P_In.Force_Int *= V_i;               // Each term in F_Int sum is multiplied by Vi, pulling it out of sum improved runtime
+  //P_In.Force_Visc *= V_i;              // for debugging
 
   /* Compute acceleration of particle at new position a(t_i+1).
   Note that all the forces we have calculated have been in units of Newtons.
@@ -477,7 +474,9 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
   mm/s^2. To get that, we note that 1N = 10^6(g*mm/s^2). Therefore, if we
   multiply our force, in Newtons, by 10^6 and then divide by the mass, in grams,
   then we get acceleration in mm/s^2. */
-  acceleration = ((1e+6)*(1./Mass))*(Force_Int + Force_Ext + Force_Hg);        //        : mm/s^2
+  acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int +
+                                          P_In.Force_Ext +
+                                          P_In.Force_Hg);                      //        : mm/s^2
 
   /* Now update the velocity, position vectors. This is done using the
   'leap-frog' integration scheme. However, during the first step of this
@@ -489,11 +488,6 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
 
   P_In.x += dt*P_In.vel;                         // x_i+1 = x_i + dt*v_(i+1/2)           : mm
   P_In.vel += dt*acceleration;                   // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s
-
-  P_In.Force_Int = Force_Int;
-  P_In.Force_Visc = Force_Visc;
-  P_In.Force_Ext = Force_Ext;
-  P_In.Force_Hg = Force_Hg;
 } // void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -841,8 +835,8 @@ void Particle::Print(void) const {
   printf("F_Int = ");
   Force_Int.Print();
   printf("F_Visc = ");
-  Force_Visc.Print();
-  printf("F_Hg = ");
+  //Force_Visc.Print();                          // For debugging
+  //printf("F_Hg = ");
   Force_Hg.Print();
   printf("\n");
 
@@ -864,13 +858,6 @@ void Particle::Print(void) const {
       printf("%5.3f, ",Magnitude(Grad_W[i]));
     } // for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
     printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1])); // */
-
-    /* Print Grad_W_Tilde magnitudes
-    printf("|Grad_W_Tilde| : {");
-    for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
-      printf("%5.3f, ",Magnitude(Grad_W_Tilde[i]));
-    } // for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Magnitude(Grad_W_Tilde[Num_Neighbors-1])); // */
 
   } // if(Has_Neighbors == true) {
 } // void Particle::Print(void) const {
