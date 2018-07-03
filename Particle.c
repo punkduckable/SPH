@@ -15,8 +15,11 @@ Particle::Particle(void) {
   Num_Neighbors = 0;
   Vol = 0;                                                                     //        : mm^3
   Mass = 0;                                                                    //        : g
-  /* Note: all tensor and vector members will be default initialized to zero
-  (because that's how those class's constructors work) */
+
+  // Now randomly set critical stress
+  std::default_random_engine generator;
+  std::normal_distribution<double> distribution(1.3,.1);
+  Stretch_Critical = distribution(generator);
 } // Particle::Particle(void) {
 
 Particle::Particle(const Particle & P_In) {
@@ -222,7 +225,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 
 void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   // Check if particle is damaged (if so, we skip this particle)
-  if( P_In.D >= 1)
+  if(P_In.D >= 1)
     return;
 
   /* The purpose of this function is to calculate the First Piola-Kirchhoff
@@ -256,8 +259,6 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
               0,0,1};                            // Identity tensor
 
   double Max_Principle_Stretch;
-  const double Critical_Stretch = Particle::Critical_Stretch;
-  double D = P_In.D;
   const double Tau = Particle::Tau;
 
   Tensor A_Inv = P_In.A_Inv;                     // Inverse of shape tensor              : unitless
@@ -301,15 +302,16 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   Max_Principle_Stretch = sqrt(Max_Eigenvalue(C,'F'));
 
   // If this stretch is greater than max stretch, update particle's Max stretch.
-  if(Max_Principle_Stretch > P_In.Max_Stretch)
-    P_In.Max_Stretch = Max_Principle_Stretch;
+  P_In.Stretch_M = Max_Principle_Stretch;
+  if(Max_Principle_Stretch > P_In.Stretch_H)
+    P_In.Stretch_H = Max_Principle_Stretch;
 
   // if Max is greater than crticial, start adding damage
-  if(Max_Principle_Stretch > Critical_Stretch && Max_Principle_Stretch > P_In.Max_Stretch)
-    D = exp(((Max_Principle_Stretch - Critical_Stretch)*(Max_Principle_Stretch - Critical_Stretch))/(Tau*Tau)) - 1;
+  if(P_In.Stretch_H > P_In.Stretch_Critical)
+    P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
 
-  // If particle is fully damaged, remove it from array. 
-  if(D >= 1) {
+  // If particle is fully damaged, remove it from array.
+  if(P_In.D >= 1) {
     Remove_Damaged_Particle(P_In, Particles);
     return;
   }
@@ -320,7 +322,7 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
 
 
-  S = (1-D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                        //        : Mpa
+  S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                        //        : Mpa
 
   /* Calculate viscosity tensor:
   To do this, we need to calculate the deformation gradient. Luckily, at this
@@ -337,7 +339,6 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
   P_In.P = (F*S + Visc)*A_Inv;                                                 //         : Mpa
   P_In.F = F;                                                                  //         : unitless
-  P_In.D = D;                                                                  //         : unitless
 
 } // void Update_P(const Particle & P_In, Particle * Particles, const double dt) {
 
@@ -678,7 +679,7 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
 // Damage methods
 
 void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
-  printf("Particle %d being removed \n",P_In.ID);
+  printf("Particle %d is being removed \n",P_In.ID);
   /* Find the set of particles that are in a sqrt(3) radius of the damaged
   particle, all of these should be removed. */
   unsigned int i,j,k;                                      // index variables
@@ -778,12 +779,29 @@ void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
         k_new++;
       } // for(k = 0; k < Num_Neighbors; k++) {
 
+      //////////////////////////////////////////////////////////////////////////
+      // Reset the neighbors for the 'neighboring' particle (reset its neighbor
+      // members without the damaged particle)
+
+      /* When we set new neighbors, the Set_Neighbors function will allocate
+      new dynamic arrays for the Particle's members (for the W, Grad_W, etc..
+      dynamic arrays). Thus, before we can set the new neighbors, we need to
+      free the old dynamic arrays, thereby preventing a memory leak. */
+      delete [] Particles[Neighbor_ID].R;                                      //        : mm
+      delete [] Particles[Neighbor_ID].Mag_R;                                  //        : mm
+      delete [] Particles[Neighbor_ID].W;                                      //        : unitless
+      delete [] Particles[Neighbor_ID].Grad_W;                                 //        : mm^-1
+      delete [] Particles[Neighbor_ID].Neighbor_IDs;
+
       // We need to set the 'Has_Neighbors' paramater to false. Otherwise, we
       // won't be able to set the neighbors.
       Particles[Neighbor_ID].Has_Neighbors = false;
-      delete [] Particles[Neighbor_ID].Neighbor_IDs;
+
+      // Now we can reset the neighbors
       Particles[Neighbor_ID].Set_Neighbors(New_Num_Neighbors, New_Neighbors, Particles);
 
+      // Now we can free the New_Neighbors array (it will be reallocated in the
+      // next loop cycle, we free it to prevent a memory leak)
       delete [] New_Neighbors;
     } // for(j = 0; j < Damaged_Particle_Num_Neighbors; j++) {
   } // for(i = 0; i < Num_Damaged_Neighbors; i++) {
@@ -794,7 +812,7 @@ void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
     Particles[Damaged_Particle_IDs[i]].Num_Neighbors = 0;
   } // for(i = 0; i < Num_Damaged_Neighbors; i++) {
 
-  // Free the 'Damaged_Particles_IDs' dynamic array
+  // Free the 'Damaged_Particles_IDs' dynamic array to prevent memory leak
   delete [] Damaged_Particle_IDs;
 } // void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
 

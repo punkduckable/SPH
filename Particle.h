@@ -51,8 +51,9 @@ class Particle {
              0,0,1};                                       // deformation gradient       : unitless
 
     // Damage parameters
-    double Max_Stretch = 0;                                // Max principle stretch so far         : unitless
-    const static double Critical_Stretch;                  // If Principle stretch excedes Critical then particle incures damage : unitless
+    double Stretch_H = 0;                                  // Historical max stretch     : unitless
+    double Stretch_M = 0;                                  // Current max stretch        : unitless
+    double Stretch_Critical;                               // If Principle stretch excedes Critical then particle incures damage : unitless
     double D = 0;                                          // Damage parameter           : unitless
     const static double Tau;                               // Damage rate paramater (see eq 26)
 

@@ -263,12 +263,12 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const unsigned int x_Side_Len = 20, y_Side_Len = 20, z_Side_Len = 20;
+  const unsigned int x_Side_Len = 10, y_Side_Len = 30, z_Side_Len = 20;
   const unsigned int Num_Particles = x_Side_Len*y_Side_Len*z_Side_Len;
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 20000;                              // Number of time steps
+  const unsigned int Num_Steps = 10000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -289,7 +289,8 @@ void Particle_Tests(void) {
 
   // Particle paramaters
   Particle *Particles = new Particle[Num_Particles];                 // Dynamically allocate particles array
-  double Particle_Volume = 1;                                                  //        : mm^3
+  double IPC = Particle::Inter_Particle_Spacing;                               // mm
+  double Particle_Volume = IPC*IPC*IPC;                                        //        : mm^3
   double Particle_Density = 1;        // I chose the density of water.         //        : g/mm^3
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
 
@@ -297,6 +298,7 @@ void Particle_Tests(void) {
   // Initialize particle masses, volumes, etc..
   printf("Generating particles....\n");
   timer1 = clock();
+
   for(i = 0; i < x_Side_Len; i++) {
     for(j = 0; j < y_Side_Len; j++) {
       for(k = 0; k < z_Side_Len; k++) {
@@ -388,7 +390,7 @@ void Particle_Tests(void) {
     j = 0;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,0,0};
+        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,-20,0};
       }
     }
 
@@ -396,7 +398,7 @@ void Particle_Tests(void) {
     j = y_Side_Len-1;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,50,0};
+        Particles[i*(z_Side_Len*y_Side_Len) + j*(z_Side_Len) + k].vel = {0,20,0};
       }
     }
 
@@ -452,11 +454,7 @@ void Particle_Tests(void) {
       printf("%d time steps complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
 
-      /*
-      if(l > 9000) {
-        Particle_Debugger_File::Export_Pariticle_Properties(Num_Particles, Particles);
-      }
-      */
+      Particle_Debugger_File::Export_Pariticle_Properties(Num_Particles, Particles);
     } // if((k+1)%100 == 0) {
     Print_timer += clock()-timer2;
   } // for(l = 0; l < Num_Steps; l++) {
