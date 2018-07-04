@@ -263,7 +263,7 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const unsigned int x_Side_Len = 10, y_Side_Len = 30, z_Side_Len = 10;
+  const unsigned int x_Side_Len = 40, y_Side_Len = 100, z_Side_Len = 40;
   const unsigned int Num_Particles = x_Side_Len*y_Side_Len*z_Side_Len;
 
   // time step paramters
@@ -394,7 +394,7 @@ void Particle_Tests(void) {
     j = 0;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,-15,0};
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,-60,0};
       }
     }
 
@@ -402,7 +402,7 @@ void Particle_Tests(void) {
     j = y_Side_Len-1;
     for(i = 0; i < x_Side_Len; i++) {
       for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,15,0};
+        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,60,0};
       }
     }
 
@@ -458,7 +458,7 @@ void Particle_Tests(void) {
       printf("%d time steps complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
 
-      Particle_Debugger_File::Export_Pariticle_Properties(Num_Particles, Particles);
+      Particle_Debugger::Export_Pariticle_Properties(Num_Particles, Particles);
     } // if((k+1)%100 == 0) {
     Print_timer += clock()-timer2;
   } // for(l = 0; l < Num_Steps; l++) {

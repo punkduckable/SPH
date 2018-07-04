@@ -645,8 +645,8 @@ Tensor Tensor::Inverse(void) const{
   Inverse. Thus, we should hault computation if the determinant is zero. */
 
   if(Det_S == 0) {
-    printf("This tensor is singular. No Inverse exists!\n");
-    return Tensor_Inv;
+    printf("This tensor is singular. No Inverse exists! Returning origional tensor\n");
+    return *this;
   }
 
   Tensor_Inv[3*0 + 0] = -S[2*3 + 1]*S[1*3 + 2]

@@ -1,7 +1,7 @@
 #if !defined(PARTICLE_FILE_HEADER)
 #define PARTICLE_FILE_HEADER
 
-namespace Particle_Debugger_File {
+namespace Particle_Debugger {
   using std::string;
 
   unsigned int File_Number = 0;

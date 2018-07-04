@@ -29,7 +29,7 @@ typedef unsigned char uByte;
 ////////////////////////////////////////////////////1////////////////////////////
 // Initialize static members (particle class) and global variables
 
-const double Particle::Inter_Particle_Spacing = .25;                          //        : mm
+const double Particle::Inter_Particle_Spacing = .5;                          //        : mm
 const double Particle::h = SUPPORT_RADIUS*Inter_Particle_Spacing;     // Support function raduius   : mm
 const double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);    // Shape function amplitude   : mm^-3
 
@@ -38,7 +38,7 @@ const double Particle::mu0 = .1;                           // Shear modulus     
 
 const double Particle::mu = 3e-4;                          // Viscosity                  : Mpa*s
 
-const double Particle::E = 0.298901;                       // Hourglass stiffness        : Mpa
+const double Particle::E = 0.298901;                       // Youngs modulus/Hourglass stiffness   : Mpa
 const double Particle::alpha = 10;                         // Hg control parameter       : Unitless
 
 const double Particle::Tau = .10;                          // Damage rate paramater      : unitless

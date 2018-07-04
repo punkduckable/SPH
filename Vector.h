@@ -61,7 +61,7 @@ class Vector {
 
     // Temporary friends (should remove)
     friend void Particle_Tests(void);
-    friend void Particle_Debugger_File::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
+    friend void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
     friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
 
     // Printing functions

@@ -4,7 +4,7 @@
 #include "SPH_Diagnostics.h"
 #include "Particle.h"
 
-void Particle_Debugger_File::Get_File_Name(string & Str) {
+void Particle_Debugger::Get_File_Name(string & Str) {
   char Buf[6];
   sprintf(Buf,"%05d",File_Number);
   File_Number++;
@@ -14,7 +14,7 @@ void Particle_Debugger_File::Get_File_Name(string & Str) {
   Str += ".txt";
 } // void Get_File_Name(string & Str) {
 
-void Particle_Debugger_File::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles) {
+void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles) {
   string File_Name = "Particle";
   Get_File_Name(File_Name);
 
