@@ -151,7 +151,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   char Weight_Name[5];
 
   /* Damage paramaters */
-  
+
   std::strcpy(Weight_Name, "LamM");
   Add_Point_Data(File, Weight_Name, Num_Particles, LamM);
 
@@ -214,6 +214,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   // Deallocate dynamic arrays
   delete [] LamM;
   delete [] LamH;
+  delete [] LamC;
   delete [] D;
   /*
   delete [] S11;
