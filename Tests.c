@@ -263,12 +263,11 @@ void Particle_Tests(void) {
   unsigned int i,j,k,l;
 
   // Declare an array of particles
-  const unsigned int x_Side_Len = 40, y_Side_Len = 100, z_Side_Len = 40;
-  const unsigned int Num_Particles = x_Side_Len*y_Side_Len*z_Side_Len;
+  const unsigned int Num_Particles = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 20000;                              // Number of time steps
+  const unsigned int Num_Steps = 30000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -303,11 +302,11 @@ void Particle_Tests(void) {
   A vertical column is a set of particles with the same x and z coordinates,
   while a row is a set of particles with the same y and x coordinates. This
   ordering method places particles with the same */
-  for(i = 0; i < x_Side_Len; i++) {
-    for(k = 0; k < z_Side_Len; k++) {
-      for(j = 0; j < y_Side_Len; j++) {
+  for(i = 0; i < X_SIDE_LENGTH; i++) {
+    for(k = 0; k < Z_SIDE_LENGTH; k++) {
+      for(j = 0; j < Y_SIDE_LENGTH; j++) {
         Vector X;
-        if(i == 0 && j == (y_Side_Len)/2)
+        if((i == 0 || i == 1 || i == 2) && (j == (Y_SIDE_LENGTH)/2 || j == (Y_SIDE_LENGTH)/2 +1 || j == (Y_SIDE_LENGTH)/2 - 1))
           X = {(double)i-50.,(double)j,(double)k};
         else
           X = {(double)i,(double)j,(double)k};
@@ -318,15 +317,19 @@ void Particle_Tests(void) {
 
         Vector vel = {0.,0.,0.};                                               //        : mm/s
 
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].ID = i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j;
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_Mass(Particle_Mass); //        : g
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_Vol(Particle_Volume);//        : mm^3
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_X(X);      //        : mm
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_x(x);      //        : mm
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].Set_vel(vel);  //        : mm/s
-      } // for(j = 0; j < y_Side_Len; j++) {
-    } // for(k = 0; k < z_Side_Len; k++) {
-  } // for(i = 0; i < x_Side_Len; i++) {
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[0] = i;     // i coordinate. Remove if not using cuboid
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[1] = j;     // j coordinate. Remove if not using cuboid
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[2] = k;     // k coordinate. Remove if not using cuboid
+
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ID = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass); //         : g
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume);//         : mm^3
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_X(X);       //        : mm
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_x(x);       //        : mm
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_vel(vel);   //        : mm/s
+      } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
+    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+  } // for(i = 0; i < X_SIDE_LENGTH; i++) {
   timer1 = clock()-timer1;
   MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Gen);
@@ -334,16 +337,16 @@ void Particle_Tests(void) {
   // Now let's set each particle's neighbors!
   printf("Generating Neighbor lists....\n");
   timer1 = clock();
-  for(i = 0; i < x_Side_Len; i++) {
-    for(j = 0; j < y_Side_Len; j++) {
-      for(k = 0; k < z_Side_Len; k++) {
-        if(i == 0 && j == (y_Side_Len)/2)
+  for(i = 0; i < X_SIDE_LENGTH; i++) {
+    for(j = 0; j < Y_SIDE_LENGTH; j++) {
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        if((i == 0 || i == 1 || i == 2) && (j == (Y_SIDE_LENGTH)/2 || j == (Y_SIDE_LENGTH)/2 +1 || j == (Y_SIDE_LENGTH)/2 - 1))
           continue;
 
-        Find_Neighbors_Box(Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j], Particles, i, j, k, x_Side_Len, y_Side_Len, z_Side_Len, SUPPORT_RADIUS);
-      } // for(k = 0; k < z_Side_Len; k++) {
-    } // for(j = 0; j < y_Side_Len; j++) {
-  } // for(i = 0; i < x_Side_Len; i++) {
+        Find_Neighbors_Box(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
+      } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+    } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
+  } // for(i = 0; i < X_SIDE_LENGTH; i++) {
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Neighbor);
@@ -353,6 +356,13 @@ void Particle_Tests(void) {
   file, then run some time steps and store the final configuration in another
   file. */
   printf("Running particle time steps....\n");
+
+  // Print initial data
+  printf("0 time steps complete\n");
+  VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
+  Particle_Debugger::Export_Pariticle_Properties(Num_Particles, Particles);
+
+  // Run time steps
   for(l = 0; l < Num_Steps; l++) {
     timer2 = clock();
     ////////////////////////////////////////////////////////////////////////////
@@ -378,45 +388,45 @@ void Particle_Tests(void) {
 
     // Front face (i = 0)
     i = 0;
-    for(j = 0; j < y_Side_Len; j++) {
-      for(k = 0; k < z_Side_Len; k++) {
+    for(j = 0; j < Y_SIDE_LENGTH; j++) {
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {
       }
     }
 
-    // Back face (i = x_Side_Len-1)
-    i = x_Side_Len-1;
-    for(j = 0; j < y_Side_Len; j++) {
-      for(k = 0; k < z_Side_Len; k++) {
+    // Back face (i = X_SIDE_LENGTH-1)
+    i = X_SIDE_LENGTH-1;
+    for(j = 0; j < Y_SIDE_LENGTH; j++) {
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {
       }
     }
 
     // Bottom face (j = 0)
     j = 0;
-    for(i = 0; i < x_Side_Len; i++) {
-      for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,-60,0};
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].vel = {0,-15,0};
       }
     }
 
     // Top face (j = y_Side_len-1)
-    j = y_Side_Len-1;
-    for(i = 0; i < x_Side_Len; i++) {
-      for(k = 0; k < z_Side_Len; k++) {
-        Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j].vel = {0,60,0};
+    j = Y_SIDE_LENGTH-1;
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].vel = {0,15,0};
       }
     }
 
     // Left face (k = 0)
     k = 0;
-    for(i = 0; i < x_Side_Len; i++) {
-      for(j = 0; j < y_Side_Len; j++) {
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
+      for(j = 0; j < Y_SIDE_LENGTH; j++) {
       }
     }
 
-    // Right face (k = z_Side_Len-1)
-    k = z_Side_Len-1;
-    for(i = 0; i < x_Side_Len; i++) {
-      for(j = 0; j < y_Side_Len; j++) {
+    // Right face (k = Z_SIDE_LENGTH-1)
+    k = Z_SIDE_LENGTH-1;
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
+      for(j = 0; j < Y_SIDE_LENGTH; j++) {
       }
     }
 
@@ -425,30 +435,30 @@ void Particle_Tests(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's Stress tensor
     timer2 = clock();
-    for(i = 0; i < x_Side_Len; i++) {
-      for(k = 0; k < z_Side_Len; k++) {
-        for(j = 0; j < y_Side_Len; j++) {
-          if(i == 0 && j == (y_Side_Len)/2)
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        for(j = 0; j < Y_SIDE_LENGTH; j++) {
+          if((i == 0 || i == 1 || i == 2) && (j == (Y_SIDE_LENGTH)/2 || j == (Y_SIDE_LENGTH)/2 +1 || j == (Y_SIDE_LENGTH)/2 - 1))
             continue;
 
-          Update_P(Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j], Particles, dt);
-        } // for(j = 0; j < y_Side_Len; j++) {
-      } // for(k = 0; k < z_Side_Len; k++) {
+          Update_P(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles, dt);
+        } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
+      } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(i = 0; i < Num_Particles; i++) {
     update_P_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's position
     timer2 = clock();
-    for(i = 0; i < x_Side_Len; i++) {
-      for(k = 0; k < z_Side_Len; k++) {
-        for(j = 0; j < y_Side_Len; j++) {
-          if(i == 0 && j == (y_Side_Len)/2)
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        for(j = 0; j < Y_SIDE_LENGTH; j++) {
+          if((i == 0 || i == 1 || i == 2) && (j == (Y_SIDE_LENGTH)/2 || j == (Y_SIDE_LENGTH)/2 +1 || j == (Y_SIDE_LENGTH)/2 - 1))
             continue;
 
-          Update_x(Particles[i*(y_Side_Len*z_Side_Len) + k*y_Side_Len + j], Particles, dt);
-        } // for(j = 0; j < y_Side_Len; j++) {
-      } // for(k = 0; k < z_Side_Len; k++) {
+          Update_x(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles, dt);
+        } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
+      } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(i = 0; i < Num_Particles; i++) {
     update_x_timer += clock() - timer2;
 
@@ -471,7 +481,7 @@ void Particle_Tests(void) {
   MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
   MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
 
-  printf("It took %lu ms to perform %u Particle iterations \n",MS_Iter, Num_Steps);
+  printf("It took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
   printf("%lu ms to update BC's\n", MS_BC);
   printf("%lu ms to update P\n", MS_P);
   printf("%lu ms to update x\n", MS_x);

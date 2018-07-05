@@ -3,8 +3,11 @@
 
 class Particle {
   private:
-    // Kernel paramaters
+    // Cuboid paramaters (should be deleted if not working with a rectangle)
     const static double Inter_Particle_Spacing;            //                            : mm
+    unsigned int ijk[3];                                   // ijk position of particle in the cuboid
+
+    // Kernel paramaters
     const static double h;                                 // Support radius             : mm
     const static double Shape_Function_Amp;                // Shape function Amplitude   : mm^-3
 
@@ -41,7 +44,7 @@ class Particle {
     Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        :  mm
     Vector vel{0,0,0};                                     // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog):  mm/s
 
-    bool First_Iteration = true;                           // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
+    bool First_Time_Step = true;                           // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
     Tensor P{0,0,0,
              0,0,0,
              0,0,0};                                       // First Piola-Kirchhoff stress tensor  : Mpa
@@ -102,10 +105,7 @@ class Particle {
     friend void Find_Neighbors(const unsigned int Num_Particles,
                                Particle * Particles);      // Generate neighbor list for every particle in 'Partilces' array
 
-    friend void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
-                                   const unsigned int i, const unsigned int j, const unsigned int k,
-                                   const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                                   const unsigned int Support_Radius);
+    friend void Find_Neighbors_Box(Particle & P_In, Particle * Particles);
 
     // Damage methods
     friend void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
@@ -123,10 +123,7 @@ class Particle {
 void Find_Neighbors(const unsigned int Num_Particles,
                     Particle * Particles);                 // Generate neighbor list for every particle in 'Partilces' array
 
-void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
-                        const unsigned int i, const unsigned int j, const unsigned int k,
-                        const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                        const unsigned int Support_Radius);// Generate neighbor list for a 'box' or 'cuboid' geometry
+void Find_Neighbors_Box(Particle & P_In, Particle * Particles);// Generate neighbor list for a 'box' or 'cuboid' geometry
 
 void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
 

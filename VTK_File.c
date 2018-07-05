@@ -84,6 +84,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   double * LamM = new double[Num_Particles];
   double * LamH = new double[Num_Particles];
+  double * LamC = new double[Num_Particles];
   double * D = new double[Num_Particles];
   /*
   double * S11 = new double[Num_Particles];
@@ -110,6 +111,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   for(unsigned int i = 0; i < Num_Particles; i++) {
     LamM[i] = Particles[i].Stretch_M;
     LamH[i] = Particles[i].Stretch_H;
+    LamC[i] = Particles[i].Stretch_Critical;
     D[i] = Particles[i].D;
 
     // Get F, P from current particle
@@ -148,11 +150,16 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   fprintf(File,"POINT_DATA %i\n", Num_Particles);
   char Weight_Name[5];
 
+  /* Damage paramaters */
+  
   std::strcpy(Weight_Name, "LamM");
   Add_Point_Data(File, Weight_Name, Num_Particles, LamM);
 
   std::strcpy(Weight_Name, "LamH");
   Add_Point_Data(File, Weight_Name, Num_Particles, LamH);
+
+  std::strcpy(Weight_Name, "LamC");
+  Add_Point_Data(File, Weight_Name, Num_Particles, LamC);
 
   std::strcpy(Weight_Name, "D");
   Add_Point_Data(File, Weight_Name, Num_Particles, D);

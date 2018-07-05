@@ -17,8 +17,9 @@ Particle::Particle(void) {
   Mass = 0;                                                                    //        : g
 
   // Now randomly set critical stress
-  std::default_random_engine generator;
-  std::normal_distribution<double> distribution(1.3,.1);
+  unsigned seed = std::rand();
+  std::default_random_engine generator (seed);
+  std::normal_distribution<double> distribution(1.3,.05);
   Stretch_Critical = distribution(generator);
 } // Particle::Particle(void) {
 
@@ -41,7 +42,7 @@ Particle::Particle(const Particle & P_In) {
   x = P_In.x;                                                                  //        : mm
   vel = P_In.vel;                                                              //        : mm/s
 
-  First_Iteration = P_In.First_Iteration;
+  First_Time_Step = P_In.First_Time_Step;
   P = P_In.P;                                                                  //        : Mpa
   F = P_In.F;                                                                  //        : unitless
 
@@ -109,7 +110,7 @@ Particle & Particle::operator=(const Particle & P_In) {
   x = P_In.x;                                                                  //        : mm
   vel = P_In.vel;                                                              //        : mm/s
 
-  First_Iteration = P_In.First_Iteration;
+  First_Time_Step = P_In.First_Time_Step;
   P = P_In.P;                                                                  //        : Mpa
   F = P_In.F;                                                                  //        : unitless
 
@@ -287,7 +288,7 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless
   J = Determinant(F);                            // J is det of F                        : unitless
 
-  // Calculate current principle stretch.
+  // Calculate current principle stretch
   Stretch_Max_Principle = sqrt(Max_Eigenvalue(C,'F'));
 
   // If this stretch is greater than max stretch, update particle's Max stretch.
@@ -295,15 +296,18 @@ void Update_P(Particle & P_In, Particle * Particles, const double dt) {
   if(Stretch_Max_Principle > P_In.Stretch_H)
     P_In.Stretch_H = Stretch_Max_Principle;
 
-  // if Max is greater than crticial, start adding damage
-  if(P_In.Stretch_H > P_In.Stretch_Critical)
-    P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
+  // if Max is greater than crticial and the particle is in the rip zone then
+  // start adding damage
+  if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1 || P_In.ijk[1] == Y_SIDE_LENGTH/2+1) {
+    if(P_In.Stretch_H > P_In.Stretch_Critical)
+      P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
 
-  // If particle is fully damaged, remove it from array.
-  if(P_In.D >= 1) {
-    Remove_Damaged_Particle(P_In, Particles);
-    return;
-  }
+    // If particle is fully damaged, remove it from array.
+    if(P_In.D >= 1) {
+      Remove_Damaged_Particle(P_In, Particles);
+      return;
+    } // if(P_In.D >= 1) {
+  } // if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1) {
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate
@@ -481,10 +485,10 @@ void Update_x(Particle & P_In, const Particle * Particles, const double dt) {
   /* Now update the velocity, position vectors. This is done using the
   'leap-frog' integration scheme. However, during the first step of this
   scheme, we need to use forward euler to get the initial velocity.*/
-  if(P_In.First_Iteration == true) {
-    P_In.First_Iteration = false;
+  if(P_In.First_Time_Step == true) {
+    P_In.First_Time_Step = false;
     P_In.vel += (dt/2.)*acceleration;            // velocity starts at t_i+1/2           : mm/s
-  } //   if(P_In.First_Iteration == true) {
+  } //   if(P_In.First_Time_Step == true) {
 
   P_In.x += dt*P_In.vel;                         // x_i+1 = x_i + dt*v_(i+1/2)           : mm
   P_In.vel += dt*acceleration;                   // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s
@@ -542,10 +546,7 @@ void Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 } // void Find_Neighbors(const unsigned int Num_Particles, const Particle * Particles) {
 
-void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
-                        const unsigned int i, const unsigned int j, const unsigned int k,
-                        const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-                        const unsigned int Support_Radius) {
+void Find_Neighbors_Box(Particle & P_In, Particle * Particles) {
   /* This function is a modified version of the Neighbor List generating
   function that is specialized for Box particle geometries. By box, I mean
   some kind of cuboid.
@@ -581,12 +582,13 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
 
   So how do you use this function?
   This function is used just like the Generage_Neighbor_List function but with a
-  few extra arguments. the num_x, num_y, and num_z arguments specify the
+  few extra arguments. the X_SIDE_LENGTH, Y_SIDE_LENGTH, and Z_SIDE_LENGTH arguments specify the
   dimensions of the cuboid in the x, y, and z directions respectivly. Thus, if
-  the cuboid has n layers, then num_x is n. If the cuboid has p particles in a
-  vertical column then num_z is p. For a 100x50x200 cuboid of particles, num_x
-  is 100, num_y is 50, and num_z is 200 */
+  the cuboid has n layers, then X_SIDE_LENGTH is n. If the cuboid has p particles in a
+  vertical column then Z_SIDE_LENGTH is p. For a 100x50x200 cuboid of particles, X_SIDE_LENGTH
+  is 100, Y_SIDE_LENGTH is 50, and Z_SIDE_LENGTH is 200 */
 
+  unsigned int i = P_In.ijk[0], j = P_In.ijk[1], k = P_In.ijk[2];
   unsigned int p,q,r;                  // Loop index variables
   unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
   List Particle_Neighbor_List;         // Linked list to store known neighbors
@@ -598,44 +600,44 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
 
   Note: Because unsigned integers rollover, we need to be careful to
   structure our tests such that they do not modify i j or k. For example,
-  if k = 0 then check if k - Support_Radius < 0 will ALWAYS return
-  false since 0 - Support_Radius = ~4 billion (rollover!). However,
+  if k = 0 then check if k - SUPPORT_RADIUS < 0 will ALWAYS return
+  false since 0 - SUPPORT_RADIUS = ~4 billion (rollover!). However,
   structuring the checks in this way makes them less readible, so I have
   included a logically equivalent (if rollover is ignored) if statement
   as a comment for each check */
 
   // i index (x coordinate) checks
-  if(i < Support_Radius)                   // Same as if(i - Support_Radius < 0).
+  if(i < SUPPORT_RADIUS)                         // Same as if(i - SUPPORT_RADIUS < 0).
     p_min = 0;
   else
-    p_min  = i - Support_Radius;
+    p_min  = i - SUPPORT_RADIUS;
 
-  if(i > (num_x - 1) - Support_Radius)     // Same as if(i + Support_Radius > num_x -1)
-    p_max = num_x - 1;
+  if(i > (X_SIDE_LENGTH - 1) - SUPPORT_RADIUS)   // Same as if(i + SUPPORT_RADIUS > X_SIDE_LENGTH -1)
+    p_max = X_SIDE_LENGTH - 1;
   else
-    p_max = i + Support_Radius;
+    p_max = i + SUPPORT_RADIUS;
 
   // j index (y coordinate) checks
-  if(j < Support_Radius)                   // Same as if(j - Support_Radius < 0)
+  if(j < SUPPORT_RADIUS)                         // Same as if(j - SUPPORT_RADIUS < 0)
     q_min = 0;
   else
-    q_min = j - Support_Radius;
+    q_min = j - SUPPORT_RADIUS;
 
-  if(j > (num_y - 1) - Support_Radius)     // Same as if(j + Support_Radius > num_y - 1)
-    q_max = num_y - 1;
+  if(j > (Y_SIDE_LENGTH - 1) - SUPPORT_RADIUS)   // Same as if(j + SUPPORT_RADIUS > Y_SIDE_LENGTH - 1)
+    q_max = Y_SIDE_LENGTH - 1;
   else
-    q_max = j + Support_Radius;
+    q_max = j + SUPPORT_RADIUS;
 
   // k index (z coordinate) checks
-  if(k < Support_Radius)                   // Same as if(k - Support_Radius < 0)
+  if(k < SUPPORT_RADIUS)                         // Same as if(k - SUPPORT_RADIUS < 0)
     r_min = 0;
   else
-    r_min = k - Support_Radius;
+    r_min = k - SUPPORT_RADIUS;
 
-  if(k > (num_z - 1) - Support_Radius)     // Same as if(k + Support_Radius > num_z - 1)
-    r_max = num_z - 1;
+  if(k > (Z_SIDE_LENGTH - 1) - SUPPORT_RADIUS)   // Same as if(k + SUPPORT_RADIUS > Z_SIDE_LENGTH - 1)
+    r_max = Z_SIDE_LENGTH - 1;
   else
-    r_max = k + Support_Radius;
+    r_max = k + SUPPORT_RADIUS;
 
   // Loop through potential neighbors, generate neighbor list
   for(p = p_min; p <= p_max; p++) {
@@ -645,9 +647,8 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
         if(i == p && j == q && k == r)
           continue;
 
-        if(Are_Neighbors(Particles[i*(num_y*num_z) + k*(num_y) + j] , Particles[p*(num_y*num_z) + r*(num_y) + q])) {
-          Particle_Neighbor_List.Add_Back(p*(num_y*num_z) + r*(num_y) + q);
-        }
+        if(Are_Neighbors(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j], Particles[p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q]))
+          Particle_Neighbor_List.Add_Back(p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q);
       } // for(q = q_min; q <= q_max; q++) {
     } // for(r = r_min; r <= r_max; r++) {
   } // for(p = p_min; p <= p_max; p++) {
@@ -668,10 +669,9 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles,
 
   /* Now free Neighbor_IDs array for next particle! */
   delete [] Neighbor_IDs;
-} // void Find_Neighbors(Particle & P_In, Particle * Particles,
-  //                                 const unsigned int i, const unsigned int j, const unsigned int k,
-  //                                 const unsigned int num_x, const unsigned int num_y, const unsigned int num_z,
-  //                                 const unsigned int Support_Radius) {
+} // void Find_Neighbors(Particle & P_In, Particle * Particles) {
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods

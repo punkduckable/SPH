@@ -10,6 +10,10 @@ been defined. Each method has a comment explaining what that method does. T, T1,
 and T2 denote 2nd order Tensor objects, S[9] denotes a tensor stored as a 9 element
 array, V denotes a Vector object, c denotes a scalar. */
 
+#if !defined(T)
+  #define T 2
+#endif
+
 class Tensor {
   friend class Particle;
 
