@@ -584,7 +584,7 @@ void Find_Neighbors_Box(Particle & P_In, Particle * Particles) {
 // Damage methods
 
 void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
-  printf("Particle %d is being removed \n",P_In.ID);
+  printf("Particle %d is damaged.\n",P_In.ID);
   /* Find the set of particles that are in a sqrt(3) radius of the damaged
   particle, all of these should be removed. */
   unsigned int i,j,k;                                      // index variables
