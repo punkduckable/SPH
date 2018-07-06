@@ -257,8 +257,10 @@ void List_Tests(void) {
 } // void List_Tests(void) {
 
 void Particle_Tests(void) {
+  using namespace Particle_Helpers;
+
   printf("\nParticle tests\n\n");
-  
+
   //////////////////////////////////////////////////////////////////////////////
   // Set up test variables
 

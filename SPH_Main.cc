@@ -17,6 +17,7 @@ typedef unsigned char uByte;
 #include "Quick_Math.h"
 #include "Vector.h"
 #include "Tensor.h"
+#include "Particle_Helpers.h"
 #include "Particle.h"
 #include "List.h"
 #include "Tests.h"
@@ -25,13 +26,17 @@ typedef unsigned char uByte;
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
 // Source files
-#include "SPH_Diagnostics.c"
-#include "VTK_File.c"
-#include "Vector.c"
-#include "Tensor.c"
-#include "Particle.c"
-#include "List.c"
-#include "Tests.c"
+#include "SPH_Diagnostics.cc"
+#include "VTK_File.cc"
+#include "Vector.cc"
+#include "Tensor.cc"
+#include "Particle.cc"
+#include "Particle_Neighbors.cc"
+#include "Particle_Update.cc"
+#include "Particle_Damage.cc"
+#include "Particle_Contact.cc"
+#include "List.cc"
+#include "Tests.cc"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions

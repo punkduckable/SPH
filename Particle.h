@@ -90,25 +90,25 @@ class Particle {
                        const Particle * Particles);        // Set Neighbors
 
     // Update P
-    friend void Update_P(Particle & P_In,
+    friend void Particle_Helpers::Update_P(Particle & P_In,
                          Particle * Particles,
                          const double dt);                 // Updates P_In's Second Piola-Kirchhoff stress tensor
 
     // Update x
-    friend void Update_x(Particle & P_In,
+    friend void Particle_Helpers::Update_x(Particle & P_In,
                          const Particle * Particles,
                          const double dt); // Updates P_In's spacial position
 
     // Neighbor methods
-    friend bool Are_Neighbors(const Particle & P1,
+    friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,
                               const Particle & P2);        // Returns true P1 and P2 are neighbors, false otherwise
-    friend void Find_Neighbors(const unsigned int Num_Particles,
+    friend void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles,
                                Particle * Particles);      // Generate neighbor list for every particle in 'Partilces' array
 
-    friend void Find_Neighbors_Box(Particle & P_In, Particle * Particles);
+    friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles);
 
     // Damage methods
-    friend void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
+    friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
 
     // Temp friends... Should be removed!
     friend void Particle_Tests(void);
@@ -119,13 +119,6 @@ class Particle {
   void Print(void) const;                                  // Print's info about particle (mostly for testing)
 
 };
-
-void Find_Neighbors(const unsigned int Num_Particles,
-                    Particle * Particles);                 // Generate neighbor list for every particle in 'Partilces' array
-
-void Find_Neighbors_Box(Particle & P_In, Particle * Particles);// Generate neighbor list for a 'box' or 'cuboid' geometry
-
-void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
 
 void Print(const Particle & P_In);                         // Calls Print method
 
