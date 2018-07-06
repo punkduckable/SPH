@@ -44,6 +44,7 @@ class Vector {
 
     Vector & operator+=(const Vector & V_In);        // Compound Vector addition (Defines V1 += V2)
     Vector & operator+=(const double V_In[3]);       // Compound Vector addition with a 3 element array (Defines V1 += V2[3])
+    Vector & operator-=(const Vector & V_In);
     Vector & operator*=(const double c);             // Compound Scalar multiplication (defines V *= c)
 
     double & operator()(const uByte index);          // Write to a component of the vector (runs checks, safer)

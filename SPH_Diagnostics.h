@@ -44,6 +44,7 @@ namespace OP_Count {
   unsigned int V_S_Multiplication = 0;
   unsigned int V_S_Division = 0;
   unsigned int Compound_V_V_Addition = 0;
+  unsigned int Compound_V_V_Subtraction = 0;
   unsigned int Compound_V_S_Multiplication = 0;
   unsigned int V_Magnitude = 0;
   unsigned int V_Dot_Product = 0;

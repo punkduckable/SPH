@@ -26,18 +26,18 @@ void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Parti
   // Print header.
   fprintf(File," Particle Pos |");
   fprintf(File,"        Internal Force       |");
-  //fprintf(File,"        Viscous Force        |");
-  //fprintf(File,"        External Force       |");
+  fprintf(File,"        Viscous Force        |");
+  fprintf(File,"        Contact Force        |");
   fprintf(File,"        Hourglass Force      |");
   fprintf(File,"\n");
 
   // Cycle through particles, print spacial positions of each particle
   for(unsigned int i = 0; i < Num_Particles; i++) {
     fprintf(File,"%4.1f,%4.1f,%4.1f| ",Particles[i].X[0], Particles[i].X[1], Particles[i].X[2]);
-    fprintf(File,"<%8.3f,%8.3f,%8.3f>|",Particles[i].Force_Int[0], Particles[i].Force_Int[1], Particles[i].Force_Int[2]);
-    //fprintf(File,"<%8.3f,%8.3f,%8.3f>|",Particles[i].Force_Visc[0], Particles[i].Force_Visc[1], Particles[i].Force_Visc[2]);
-    //fprintf(File,"<%8.3f,%10.3f,%8.3f>|",Particles[i].Force_Ext[0], Particles[i].Force_Ext[1], Particles[i].Force_Ext[2]);
-    fprintf(File,"<%8.3f,%10.3f,%8.3f>\n",Particles[i].Force_Hg[0], Particles[i].Force_Hg[1], Particles[i].Force_Hg[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e>|",Particles[i].Force_Int[0], Particles[i].Force_Int[1], Particles[i].Force_Int[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e>|",Particles[i].Force_Visc[0], Particles[i].Force_Visc[1], Particles[i].Force_Visc[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e>|",Particles[i].Force_Contact[0], Particles[i].Force_Contact[1], Particles[i].Force_Contact[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",Particles[i].Force_Hg[0], Particles[i].Force_Hg[1], Particles[i].Force_Hg[2]);
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   fclose(File);
@@ -77,6 +77,7 @@ void OP_Count::Reset_Counts(void) {
   V_S_Multiplication = 0;
   V_S_Division = 0;
   Compound_V_V_Addition = 0;
+  Compound_V_V_Subtraction = 0;
   Compound_V_S_Multiplication = 0;
   V_Magnitude = 0;
   V_Dot_Product = 0;
@@ -117,6 +118,7 @@ void OP_Count::Print_Counts(void) {
   printf("Vector-Scalar Multiplication =         %u\n",V_S_Multiplication);
   printf("Vector-Scalar Division =               %u\n",V_S_Division);
   printf("Compound Vector-Vector Addition =      %u\n",Compound_V_V_Addition);
+  printf("Compound Vector-Vector Subtraction =   %u\n",Compound_V_V_Subtraction);
   printf("Compound Vector-Scalar Multiplication =%u\n",Compound_V_S_Multiplication);
   printf("Vector Magnitude =                     %u\n",V_Magnitude);
   printf("Vector Dot Product =                   %u\n",V_Dot_Product);

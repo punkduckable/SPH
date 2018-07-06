@@ -90,6 +90,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
 
   // if Max is greater than crticial and the particle is in the rip zone then
   // start adding damage
+  /*
   if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1 || P_In.ijk[1] == Y_SIDE_LENGTH/2+1) {
     if(P_In.Stretch_H > P_In.Stretch_Critical)
       P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
@@ -100,6 +101,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
       return;
     } // if(P_In.D >= 1) {
   } // if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1) {
+  */
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate
@@ -124,7 +126,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
   P_In.P = (F*S + Visc)*P_In.A_Inv;                                            //         : Mpa
   P_In.F = F;                                                                  //         : unitless
-  //P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
+  P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
 
 } // void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const double dt) {
 
@@ -139,10 +141,10 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   these assumptions are valid. */
 
   P_In.Force_Int = {0,0,0};                      // Internal Force vector                : N
-  P_In.Force_Ext = {0,0,0};                      // External/body force                  : N
   P_In.Force_Hg = {0,0,0};                       // Hour-glass force                     : N
   //P_In.Force_Visc = {0,0,0};                     // For debugging
 
+  const Vector g = {0,-9810, 0};                 // Gravity                              : mm/s^2
   Vector acceleration;                           // acceleration vector                  : mm/s^2
 
   unsigned int Neighbor_ID;                      // ID of current neighbor particle (in paritlce's array)
@@ -192,10 +194,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
     P_j = Particles[Neighbor_ID].P;                                            //        : Mpa
     P_In.Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                           //        : N
-    //P_In.Force_Visc += (V_j)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); // For debugging
-
-    ////////////////////////////////////////////////////////////////////////////
-    /* Calculate external Force */
+    P_In.Force_Visc += (V_j)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); // For debugging
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Hour Glass force */
@@ -262,7 +261,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
   P_In.Force_Hg *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling it out of sum improved runtime
   P_In.Force_Int *= V_i;               // Each term in F_Int sum is multiplied by Vi, pulling it out of sum improved runtime
-  //P_In.Force_Visc *= V_i;              // for debugging
+  P_In.Force_Visc *= V_i;              // for debugging
 
   /* Compute acceleration of particle at new position a(t_i+1).
   Note that all the forces we have calculated have been in units of Newtons.
@@ -270,9 +269,10 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   mm/s^2. To get that, we note that 1N = 10^6(g*mm/s^2). Therefore, if we
   multiply our force, in Newtons, by 10^6 and then divide by the mass, in grams,
   then we get acceleration in mm/s^2. */
-  acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int +
-                                          P_In.Force_Ext +
-                                          P_In.Force_Hg);                      //        : mm/s^2
+  acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int +                     //        : mm/s^2
+                                          P_In.Force_Contact +
+                                          P_In.Force_Hg) +
+                                          g;                      // gravity
 
   /* Now update the velocity, position vectors. This is done using the
   'leap-frog' integration scheme. However, during the first step of this

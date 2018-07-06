@@ -48,9 +48,6 @@ class Particle {
     Tensor P{0,0,0,
              0,0,0,
              0,0,0};                                       // First Piola-Kirchhoff stress tensor  : Mpa
-    /*Tensor Visc{0,0,0,
-                0,0,0,
-                0,0,0}; */                                   // For debugging
     Tensor F{1,0,0,
              0,1,0,
              0,0,1};                                       // deformation gradient       : unitless
@@ -64,10 +61,13 @@ class Particle {
 
     // Forces acting on the particle
     Vector Force_Int{0,0,0};                               // Internal Force vector       : N
-    Vector Force_Ext{0,0,0};                               // External/body force         : N
+    Vector Force_Contact{0,0,0};                           // Contact Force Vector        : N
     Vector Force_Hg{0,0,0};                                // Hour-glass force            : N
-    //Vector Force_Visc{0,0,0};                              // For debugging
 
+    Vector Force_Visc{0,0,0};                              // For debugging
+    Tensor Visc{0,0,0,
+                0,0,0,
+                0,0,0};                                    // For debugging
 
   public:
     // Constructors, destructor
@@ -110,7 +110,12 @@ class Particle {
     // Damage methods
     friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
 
-    // Temp friends... Should be removed!
+    // Contact methods
+    friend void Particle_Helpers::Contact(Particle * Body_A, const unsigned int Num_Particles_A,
+                                          Particle * Body_B, const unsigned int Num_Particles_B,
+                                          const double h_particle, const double IPS);
+
+    // Other friends
     friend void Particle_Tests(void);
     friend void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
     friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
