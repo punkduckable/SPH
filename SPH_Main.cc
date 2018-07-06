@@ -10,50 +10,28 @@
 typedef signed char Byte;
 typedef unsigned char uByte;
 
-// Definitions
-#if !defined(PI)
-  #define PI 3.1415926535897932384626
-#endif
-
 // Header files
 #include "Classes.h"
 #include "SPH_Diagnostics.h"
 #include "VTK_File.h"
 #include "Quick_Math.h"
-#include "Tests.h"
 #include "Vector.h"
 #include "Tensor.h"
 #include "Particle.h"
 #include "List.h"
-
-////////////////////////////////////////////////////1////////////////////////////
-// Initialize static members (particle class) and global variables
-
-const double Particle::Inter_Particle_Spacing = .25;                           //        : mm
-const double Particle::h = SUPPORT_RADIUS*Inter_Particle_Spacing;     // Support function raduius   : mm
-const double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);    // Shape function amplitude   : mm^-3
-
-const double Particle::Lame = 9;                           // Lame parameter             : Mpa
-const double Particle::mu0 = .1;                           // Shear modulus              : Mpa
-
-const double Particle::mu = 3e-4;                          // Viscosity                  : Mpa*s
-
-const double Particle::E = 0.298901;                       // Youngs modulus/Hourglass stiffness   : Mpa
-const double Particle::alpha = 10;                         // Hg control parameter       : Unitless
-
-const double Particle::Tau = .15;                          // Damage rate paramater      : unitless
+#include "Tests.h"
 
 // Prototypes
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 
 // Source files
 #include "SPH_Diagnostics.c"
-#include "Tests.c"
 #include "VTK_File.c"
 #include "Vector.c"
 #include "Tensor.c"
 #include "Particle.c"
 #include "List.c"
+#include "Tests.c"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions

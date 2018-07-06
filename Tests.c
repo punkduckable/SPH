@@ -258,6 +258,9 @@ void List_Tests(void) {
 
 void Particle_Tests(void) {
   printf("\nParticle tests\n\n");
+  
+  //////////////////////////////////////////////////////////////////////////////
+  // Set up test variables
 
   // Loop indicies
   unsigned int i,j,k,l;
@@ -294,6 +297,7 @@ void Particle_Tests(void) {
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
 
 
+  //////////////////////////////////////////////////////////////////////////////
   // Initialize particle masses, volumes, etc..
   printf("Generating particles....\n");
   timer1 = clock();
@@ -334,7 +338,8 @@ void Particle_Tests(void) {
   MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Gen);
 
-  // Now let's set each particle's neighbors!
+  //////////////////////////////////////////////////////////////////////////////
+  // Set each particle's neighbors!
   printf("Generating Neighbor lists....\n");
   timer1 = clock();
   for(i = 0; i < X_SIDE_LENGTH; i++) {
@@ -351,10 +356,9 @@ void Particle_Tests(void) {
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Neighbor);
 
-  /* Now we want to perform some time steps. We want to compare the initial and
-  final configuration. To do this, we will save the initial configuration to a
-  file, then run some time steps and store the final configuration in another
-  file. */
+  //////////////////////////////////////////////////////////////////////////////
+  // Run time steps
+
   printf("Running particle time steps....\n");
 
   // Print initial data
@@ -362,7 +366,7 @@ void Particle_Tests(void) {
   VTK_File::Export_Pariticle_Positions(Num_Particles, Particles);
   Particle_Debugger::Export_Pariticle_Properties(Num_Particles, Particles);
 
-  // Run time steps
+  // Time step loop
   for(l = 0; l < Num_Steps; l++) {
     timer2 = clock();
     ////////////////////////////////////////////////////////////////////////////

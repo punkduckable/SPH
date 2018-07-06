@@ -1,8 +1,12 @@
 #if !defined(QUICK_MATH_HEADER)
 #define QUICK_MATH_HEADER
 
+#if !defined(PI)
+  #define PI 3.1415926535897932384626
+#endif
+
 #if !defined(PI_SQUARED)
-#define PI_SQUARED 9.86960440109
+  #define PI_SQUARED 9.86960440109
 #endif
 
 namespace Quick_Math {

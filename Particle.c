@@ -24,55 +24,8 @@ Particle::Particle(void) {
 } // Particle::Particle(void) {
 
 Particle::Particle(const Particle & P_In) {
-  //printf("Particle copy constructor\n");
-
-  /* Copy elements from P_In to local elements. Note that an object of one class
-  is able to access private data of another object of that class.
-
-  Note: because the Particle class contains pointers, we need to perform a deep
-  copy of those pointers to ensure that the pointed too location isn't deleted
-  when a temporary object is created and then destroyed by the copy constructor.
-  */
-
-  // Element wise copy of NON-POINTER members
-  Vol = P_In.Vol;                                                              //        : mm^3
-  Mass = P_In.Mass;                                                            //        : g
-
-  X = P_In.X;                                                                  //        : mm
-  x = P_In.x;                                                                  //        : mm
-  vel = P_In.vel;                                                              //        : mm/s
-
-  First_Time_Step = P_In.First_Time_Step;
-  P = P_In.P;                                                                  //        : Mpa
-  F = P_In.F;                                                                  //        : unitless
-
-  /* Deep copy of pointer members.
-  To do this, we need to give the new particle the same content as the origional
-  dynamic arrays (R, neighbor list, etc.), but have the new parricle's copies
-  stored in a different memory location than the origionals. This way, when the
-  copy particle is deleted, it doesn't delete the origional particle's array.
-
-  The new particle will have the same number of neighbors as the origional
-  particle. The dynamic arrays of the new particle should therefore be of length
-  Num_Neighbors. Likewise, we need to copy the origional particle's array
-  contents into the new particle's array conetents. We do this on an element by
-  element basis. */
-  Has_Neighbors = P_In.Has_Neighbors;
-  Num_Neighbors = P_In.Num_Neighbors;
-
-  Neighbor_IDs = new unsigned int[Num_Neighbors];
-  R = new Vector[Num_Neighbors];                                               //        : mm
-  Mag_R = new double[Num_Neighbors];                                           //        : mm
-  W = new double[Num_Neighbors];                                               //        : unitless
-  Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
-
-  for(unsigned int j = 0; j < Num_Neighbors; j++) {
-    Neighbor_IDs[j] = P_In.Neighbor_IDs[j];
-    R[j] = P_In.R[j];                                                          //        : mm
-    Mag_R[j] = P_In.Mag_R[j];                                                  //        : mm
-    W[j] = P_In.W[j];                                                          //        : unitless
-    Grad_W[j] = P_In.Grad_W[j];                                                //        : mm^-1
-  } // for(unsinged int j = 0; j < Num_Neighbors; j++) {
+  // Do nothing copy constructor
+  printf("Bad! You tried using the particle copy constructor. Don't do that!\n");
 } // Particle::Particle(const Particle & P_In) {
 
 Particle::~Particle(void) {
@@ -94,54 +47,8 @@ Particle::~Particle(void) {
 //  Particle equality
 
 Particle & Particle::operator=(const Particle & P_In) {
-  /* Copy elements from P_In to local elements. Note that an object of one class
-  is able to access private data of another object of that class.
-
-  Note: because the Particle class contains pointers, we need to perform a deep
-  copy of those pointers to ensure that the pointed too location isn't deleted
-  when a temporary object is created and then destroyed by the copy constructor.
-  */
-
-  // Element wise copy of NON-POINTER members
-  Vol = P_In.Vol;                                                              //        : mm^3
-  Mass = P_In.Mass;                                                            //        : g
-
-  X = P_In.X;                                                                  //        : mm
-  x = P_In.x;                                                                  //        : mm
-  vel = P_In.vel;                                                              //        : mm/s
-
-  First_Time_Step = P_In.First_Time_Step;
-  P = P_In.P;                                                                  //        : Mpa
-  F = P_In.F;                                                                  //        : unitless
-
-  /* Deep copy of pointer members.
-  To do this, we need to give the new particle the same content as the origional
-  dynamic arrays (R, neighbor list, etc.), but have the new parricle's copies
-  stored in a different memory location than the origionals. This way, when the
-  copy particle is deleted, it doesn't delete the origional particle's array.
-
-  The new particle will have the same number of neighbors as the origional
-  particle. The dynamic arrays of the new particle should therefore be of length
-  Num_Neighbors. Likewise, we need to copy the origional particle's array
-  contents into the new particle's array conetents. We do this on an element by
-  element basis. */
-  Has_Neighbors = P_In.Has_Neighbors;
-  Num_Neighbors = P_In.Num_Neighbors;
-
-  Neighbor_IDs = new unsigned int[Num_Neighbors];
-  R = new Vector[Num_Neighbors];                                               //        : mm
-  Mag_R = new double[Num_Neighbors];                                           //        : mm
-  W = new double[Num_Neighbors];                                               //        : unitless
-  Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
-
-  for(unsigned int j = 0; j < Num_Neighbors; j++) {
-    Neighbor_IDs[j] = P_In.Neighbor_IDs[j];
-    R[j] = P_In.R[j];                                                          //        : mm
-    Mag_R[j] = P_In.Mag_R[j];                                                  //        : mm
-    W[j] = P_In.W[j];                                                          //        : unitless
-    Grad_W[j] = P_In.Grad_W[j];                                                //        : mm^-1
-  } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
-
+  // Do nothing = operator overload.
+  printf("You can't use equality with particles!\n");
   return *this;
 }
 
@@ -702,8 +609,10 @@ void Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
 
     /* if particle is within that sart(3) radius (in units of inter-particle
     of the damaged particle, then we need to remove it from the block. Add
-    it to the Damaged particle list. */
-    if(P_In.Mag_R[i] < ROOT_THREE*Inter_Particle_Spacing) {
+    it to the Damaged particle list. Note that we add a little bit on to root
+    three to account for roundoff errors/ensure that everything within a sqrt(3)
+    radius is effected. */
+    if(P_In.Mag_R[i] < ROOT_THREE*Inter_Particle_Spacing + .01) {
       Damaged_Neighbor_List.Add_Front((int)Neighbor_ID);
       Num_Damaged_Neighbors++;
     } // if(Magnitude(X_Neighbor - X) < ROOT_THREE) {
