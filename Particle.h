@@ -113,7 +113,7 @@ class Particle {
     // Contact methods
     friend void Particle_Helpers::Contact(Particle * Body_A, const unsigned int Num_Particles_A,
                                           Particle * Body_B, const unsigned int Num_Particles_B,
-                                          const double h_particle, const double IPS);
+                                          const double h_In);
 
     // Other friends
     friend void Particle_Tests(void);

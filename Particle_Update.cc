@@ -47,7 +47,6 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   const double Lame = Particle::Lame;            // Lame paramater                       : Mpa
   const double mu0 = Particle::mu0;              // Shear modulus                        : Mpa
   const double mu = Particle::mu;                // Viscosity                            : Mpa*s
-  const unsigned int Num_Neighbors = P_In.Num_Neighbors;
 
   Tensor F_Prime;                                // F time derivative                    : 1/s
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s
@@ -58,7 +57,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   //////////////////////////////////////////////////////////////////////////////
   /* Now, we can calculate F by cycling through the neighbors. The contribution
   to F by the jth neighbor is dj (Dyadic Product) V_j Grad_W(Rj, h) */
-  for(unsigned int j = 0; j < Num_Neighbors; j++) {
+  for(unsigned int j = 0; j < P_In.Num_Neighbors; j++) {
     Neighbor_ID = P_In.Neighbor_IDs[j];
     V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
     rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
@@ -109,7 +108,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
 
 
-  S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                        //        : Mpa
+  S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                   //        : Mpa
 
   /* Calculate viscosity tensor:
   To do this, we need to calculate the deformation gradient. Luckily, at this
@@ -166,10 +165,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   const Tensor P_i = P_In.P;                     // First Piola-Kirchhoff stress tensor  : Mpa
   const Tensor F_i = P_In.F;                     // Deformation gradient                 : unitless
 
-  const unsigned int Num_Neighbors = P_In.Num_Neighbors; // Number of neighbors of P_In
   const Vector * R = P_In.R;                     // Reference displacement array         : mm
-  const double * Mag_R = P_In.Mag_R;             // Mag of reference displacement array  : mm
-  const double * W = P_In.W;                     // Shape function array                 : unitless
   const Vector * Grad_W = P_In.Grad_W;           // Grad_W array                         : 1/mm
 
   /* Hour glass variables */
@@ -177,7 +173,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   double delta_ij;                                                             //        : mm
   double delta_ji;                                                             //        : mm
 
-  for(unsigned int j = 0; j < Num_Neighbors; j++) {
+  for(unsigned int j = 0; j < P_In.Num_Neighbors; j++) {
     // Update Neighbor
     Neighbor_ID = P_In.Neighbor_IDs[j];
 
@@ -256,7 +252,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     and Vi. However, these four quantities are constants. We can therefore
     pull these multiplications out of the summations (thereby saving
     several thousand floating point operations per particle!)*/
-    P_In.Force_Hg += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*
+    P_In.Force_Hg += (((V_j*P_In.W[j])/(P_In.Mag_R[j]*P_In.Mag_R[j]*Mag_rj))*
                 (delta_ij + delta_ji))*(rj);
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
   P_In.Force_Hg *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling it out of sum improved runtime
