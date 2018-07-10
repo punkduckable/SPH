@@ -29,7 +29,7 @@ namespace Particle_Helpers {
   //////////////////////////////////////////////////////////////////////////////
   // Contact methods. Function definitions are in Particle_Contact.c
 
-  double K = 250;
+  double K = 100;
 
   void Contact(Particle * Body_A, const unsigned int Num_Particles_A,
                Particle * Body_B, const unsigned int Num_Particles_B,

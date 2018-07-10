@@ -273,7 +273,7 @@ void Particle_Tests(void) {
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 20000;                              // Number of time steps
+  const unsigned int Num_Steps = 10000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -301,7 +301,7 @@ void Particle_Tests(void) {
   // Particle properties
   double IPS = Particle::Inter_Particle_Spacing;                               // mm
   double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
-  double Particle_Density = 10;        // I chose the density of water.      //        : g/mm^3
+  double Particle_Density = 1;                                                //        : g/mm^3
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
   const double h = Particle::h;
 
