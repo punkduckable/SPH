@@ -1,4 +1,4 @@
-Development Plan:
+Development History:
  DONE: Create Vector, Tensor Classes
      - Write definitions + test all methods... see that they're working
 
@@ -25,7 +25,11 @@ Development Plan:
 
   DONE: 7/3: Implement Fracture
 
-  - Implement Contact
+  DONE: 7/6-7/9: Implement Contact
+
+  - Tweak particle parameters to maximize stability
+
+  - Implement 'ray based' damage.
 
   - Implement rigid needle
 

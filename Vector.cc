@@ -174,6 +174,17 @@ Vector & Vector::operator+=(const double V_In[3]) {
   return *this;
 } // Vector & Vector::operator+=(const double V_In[3]) {
 
+Vector & Vector::operator-=(const Vector & V_In) {
+  V[0] = V[0] - V_In[0];
+  V[1] = V[1] - V_In[1];
+  V[2] = V[2] - V_In[2];
+
+  //OP_Count::Compound_V_V_Subtraction++;        // Increment operator count (See SPH Diagnostics)
+
+  // Return this vector
+  return *this;
+} // Vector & Vector::operator-=(const double V_In[3]) {
+
 Vector & Vector::operator*=(const double c) {
   // Scale the components of V by c.
   V[0] = V[0]*c;

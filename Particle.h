@@ -48,9 +48,6 @@ class Particle {
     Tensor P{0,0,0,
              0,0,0,
              0,0,0};                                       // First Piola-Kirchhoff stress tensor  : Mpa
-    /*Tensor Visc{0,0,0,
-                0,0,0,
-                0,0,0}; */                                   // For debugging
     Tensor F{1,0,0,
              0,1,0,
              0,0,1};                                       // deformation gradient       : unitless
@@ -64,10 +61,13 @@ class Particle {
 
     // Forces acting on the particle
     Vector Force_Int{0,0,0};                               // Internal Force vector       : N
-    Vector Force_Ext{0,0,0};                               // External/body force         : N
+    Vector Force_Contact{0,0,0};                           // Contact Force Vector        : N
     Vector Force_Hg{0,0,0};                                // Hour-glass force            : N
-    //Vector Force_Visc{0,0,0};                              // For debugging
 
+    Vector Force_Visc{0,0,0};                              // For debugging
+    Tensor Visc{0,0,0,
+                0,0,0,
+                0,0,0};                                    // For debugging
 
   public:
     // Constructors, destructor
@@ -90,27 +90,32 @@ class Particle {
                        const Particle * Particles);        // Set Neighbors
 
     // Update P
-    friend void Update_P(Particle & P_In,
+    friend void Particle_Helpers::Update_P(Particle & P_In,
                          Particle * Particles,
                          const double dt);                 // Updates P_In's Second Piola-Kirchhoff stress tensor
 
     // Update x
-    friend void Update_x(Particle & P_In,
+    friend void Particle_Helpers::Update_x(Particle & P_In,
                          const Particle * Particles,
                          const double dt); // Updates P_In's spacial position
 
     // Neighbor methods
-    friend bool Are_Neighbors(const Particle & P1,
+    friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,
                               const Particle & P2);        // Returns true P1 and P2 are neighbors, false otherwise
-    friend void Find_Neighbors(const unsigned int Num_Particles,
+    friend void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles,
                                Particle * Particles);      // Generate neighbor list for every particle in 'Partilces' array
 
-    friend void Find_Neighbors_Box(Particle & P_In, Particle * Particles);
+    friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles);
 
     // Damage methods
-    friend void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
+    friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
 
-    // Temp friends... Should be removed!
+    // Contact methods
+    friend void Particle_Helpers::Contact(Particle * Body_A, const unsigned int Num_Particles_A,
+                                          Particle * Body_B, const unsigned int Num_Particles_B,
+                                          const double h_In);
+
+    // Other friends
     friend void Particle_Tests(void);
     friend void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
     friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
@@ -119,13 +124,6 @@ class Particle {
   void Print(void) const;                                  // Print's info about particle (mostly for testing)
 
 };
-
-void Find_Neighbors(const unsigned int Num_Particles,
-                    Particle * Particles);                 // Generate neighbor list for every particle in 'Partilces' array
-
-void Find_Neighbors_Box(Particle & P_In, Particle * Particles);// Generate neighbor list for a 'box' or 'cuboid' geometry
-
-void Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
 
 void Print(const Particle & P_In);                         // Calls Print method
 
