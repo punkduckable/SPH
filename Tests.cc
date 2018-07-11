@@ -273,7 +273,7 @@ void Particle_Tests(void) {
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 10000;                              // Number of time steps
+  const unsigned int Num_Steps = 30000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -346,7 +346,7 @@ void Particle_Tests(void) {
   // Set up Boundary
   for(i = 0; i < 2*X_SIDE_LENGTH; i++) {
     for(k = 0; k < 2*Z_SIDE_LENGTH; k++) {
-      X = {(double)i - .5*(double)X_SIDE_LENGTH, -10. , (double)k - .5*(double)Z_SIDE_LENGTH};
+      X = {(double)i - .5*(double)X_SIDE_LENGTH, -15. , (double)k - .5*(double)Z_SIDE_LENGTH};
       X *= IPS;
       x = X;
       vel = {0.,0.,0.};
