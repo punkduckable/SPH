@@ -61,8 +61,6 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
     Neighbor_ID = P_In.Neighbor_IDs[j];
     V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
     rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
-
-    //F += Dyadic_Product(P_In.rj, V_j*P_In.Grad_W[j])*A^(-1);
     F += Dyadic_Product(rj, V_j*Grad_W[j]);                                    //        : unitless
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
 
@@ -89,7 +87,6 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
 
   // if Max is greater than crticial and the particle is in the rip zone then
   // start adding damage
-  /*
   if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1 || P_In.ijk[1] == Y_SIDE_LENGTH/2+1) {
     if(P_In.Stretch_H > P_In.Stretch_Critical)
       P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
@@ -100,7 +97,6 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
       return;
     } // if(P_In.D >= 1) {
   } // if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1) {
-  */
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate
@@ -143,7 +139,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   P_In.Force_Hg = {0,0,0};                       // Hour-glass force                     : N
   //P_In.Force_Visc = {0,0,0};                     // For debugging
 
-  const Vector g = {0,-9810, 0};                 // Gravity                              : mm/s^2
+  const Vector g = {0,0,0};                 // Gravity                              : mm/s^2
   Vector acceleration;                           // acceleration vector                  : mm/s^2
 
   unsigned int Neighbor_ID;                      // ID of current neighbor particle (in paritlce's array)

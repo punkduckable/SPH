@@ -646,6 +646,7 @@ Tensor Tensor::Inverse(void) const{
 
   if(Det_S == 0) {
     printf("This tensor is singular. No Inverse exists! Returning origional tensor\n");
+    (*this).Print();
     return *this;
   }
 

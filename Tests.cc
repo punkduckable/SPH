@@ -269,11 +269,11 @@ void Particle_Tests(void) {
 
   // Declare an array of particles
   const unsigned int Num_Particles_Body = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
-  const unsigned int Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
+  //const unsigned int Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 30000;                              // Number of time steps
+  const unsigned int Num_Steps = 20000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -281,7 +281,7 @@ void Particle_Tests(void) {
           timer2,
           update_BC_timer = 0,
           update_P_timer = 0,
-          contact_timer = 0,
+  //        contact_timer = 0,
           update_x_timer = 0,
           Print_timer = 0;
   unsigned long MS_Gen,
@@ -289,14 +289,14 @@ void Particle_Tests(void) {
                 MS_Iter,
                 MS_BC,
                 MS_P,
-                MS_Contact,
+  //              MS_Contact,
                 MS_x,
                 MS_Print;                                            // Timers (store number of MS for each operation)
 
 
   // Partile bodies
   Particle *Body = new Particle[Num_Particles_Body];                 // Dynamically allocate Body array
-  Particle *Boundary = new Particle[Num_Particles_Boundary];         // Dynamically allocate Boundary array
+  //Particle *Boundary = new Particle[Num_Particles_Boundary];         // Dynamically allocate Boundary array
 
   // Particle properties
   double IPS = Particle::Inter_Particle_Spacing;                               // mm
@@ -319,10 +319,9 @@ void Particle_Tests(void) {
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
-        /*
-        if((i == 0 || i == 1 || i == 2) && (j == (Y_SIDE_LENGTH)/2 || j == (Y_SIDE_LENGTH)/2 +1 || j == (Y_SIDE_LENGTH)/2 - 1))
+        if(i == 0 && j == (Y_SIDE_LENGTH)/2)
           X = {(double)i-50.,(double)j,(double)k};
-        else */
+        else
           X = {(double)i,(double)j,(double)k};
 
         X *= IPS;                                                              //        : mm
@@ -344,6 +343,7 @@ void Particle_Tests(void) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
   // Set up Boundary
+  /*
   for(i = 0; i < 2*X_SIDE_LENGTH; i++) {
     for(k = 0; k < 2*Z_SIDE_LENGTH; k++) {
       X = {(double)i - .5*(double)X_SIDE_LENGTH, -15. , (double)k - .5*(double)Z_SIDE_LENGTH};
@@ -356,14 +356,14 @@ void Particle_Tests(void) {
       Boundary[i*2*Z_SIDE_LENGTH + k].ijk[2] = k;            // k coordinate. Remove if not using cuboid
 
       Boundary[i*2*Z_SIDE_LENGTH + k].ID = i*Z_SIDE_LENGTH + k;
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Mass(Particle_Mass);                   //         : g
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Vol(Particle_Volume);                  //         : mm^3
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_X(X);                                  //        : mm
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_x(x);                                  //        : mm
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_vel(vel);                              //        : mm/s
+      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Mass(Particle_Mass);                 //         : g
+      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Vol(Particle_Volume);                //        : mm^3
+      Boundary[i*2*Z_SIDE_LENGTH + k].Set_X(X);                                //        : mm
+      Boundary[i*2*Z_SIDE_LENGTH + k].Set_x(x);                                //        : mm
+      Boundary[i*2*Z_SIDE_LENGTH + k].Set_vel(vel);                            //        : mm/s
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
-
+  */
   timer1 = clock()-timer1;
   MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf("Done! took %lums\n\n",MS_Gen);
@@ -375,6 +375,9 @@ void Particle_Tests(void) {
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        if(i == 0 && j == (Y_SIDE_LENGTH)/2)
+          continue;
+
         Find_Neighbors_Box(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body);
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
@@ -435,6 +438,7 @@ void Particle_Tests(void) {
     j = 0;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].vel = {0,-40,0};
       }
     }
 
@@ -442,6 +446,7 @@ void Particle_Tests(void) {
     j = Y_SIDE_LENGTH-1;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].vel = {0,40,0};
       }
     }
 
@@ -467,6 +472,9 @@ void Particle_Tests(void) {
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
+          if(i == 0 && j == (Y_SIDE_LENGTH)/2)
+            continue;
+
           Update_P(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body, dt);
         } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
@@ -475,9 +483,9 @@ void Particle_Tests(void) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Detect contact
-    timer2 = clock();
-    Contact(Body, Num_Particles_Body, Boundary, Num_Particles_Boundary, h);
-    contact_timer += clock() - timer2;
+    //timer2 = clock();
+    //Contact(Body, Num_Particles_Body, Boundary, Num_Particles_Boundary, h);
+    //contact_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's position
@@ -485,6 +493,9 @@ void Particle_Tests(void) {
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
+          if(i == 0 && j == (Y_SIDE_LENGTH)/2)
+            continue;
+
           Update_x(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body, dt);
         } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
@@ -507,20 +518,20 @@ void Particle_Tests(void) {
   MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
   MS_BC = (unsigned long)((double)update_BC_timer / (double)CLOCKS_PER_MS);
   MS_P = (unsigned long)((double)update_P_timer / (double)CLOCKS_PER_MS);
-  MS_Contact = (unsigned long)((double)contact_timer / (double)CLOCKS_PER_MS);
+  //MS_Contact = (unsigned long)((double)contact_timer / (double)CLOCKS_PER_MS);
   MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
   MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
 
   printf("It took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
   printf("%lu ms to update BC's\n", MS_BC);
   printf("%lu ms to update P\n", MS_P);
-  printf("%lu ms to update Contact\n", MS_Contact);
+  //printf("%lu ms to update Contact\n", MS_Contact);
   printf("%lu ms to update x\n", MS_x);
   printf("%lu ms to print data to files\n", MS_Print);
 
   // Free memory
   delete [] Body;
-  delete [] Boundary;
+  //delete [] Boundary;
 
 } // void Particle_Tests(void) {
 

@@ -30,7 +30,7 @@ class List {
 
     // Methods to get list info
     int Node_Count(void) const;          // Returns number of nodes
-    void Print_Node_Info(void) const;  // For testing
+    void Print_Node_Info(void) const;    // For testing
 };
 
 #endif
