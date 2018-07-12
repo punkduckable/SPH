@@ -25,6 +25,7 @@ class Particle {
     // Particle dimensions (Mass, Vol, etc...)
     double Mass;                                           // Particle Mass              : g
     double Vol;                                            // Particle volume            : mm^3
+    double Radius;                                         // Particle radius            : mm
 
     // Neighbor variables
     bool Has_Neighbors = false;                            // True if the particle has neighbors, false otherwise
@@ -34,7 +35,6 @@ class Particle {
 
     Vector *R;                                             // Dynamic array that stores neighbor reference displacement
     double *Mag_R;                                         // Dynamic array that stores the magnitude of each neighbor's reference displacement
-
     double *W;                                             // Dynamic array that stores shape function value for each neighbor
     Vector *Grad_W;                                        // Dynamic array that stores Gradient of the Shape function at each neighbors
     Tensor A_Inv;                                          // Inverse of shape tensor
@@ -80,8 +80,9 @@ class Particle {
     Particle & operator=(const Particle & P_In);           // Defines P1 = P2 (performs a deep copy)
 
     // Particle setup methods
-    void Set_Mass(const double Mass_In) { Mass = Mass_In; }// Set particle's mass        : g
-    void Set_Vol(const double Vol_In) { Vol = Vol_In; }    // Set particle's volume      : mm^3
+    void Set_Mass(const double Mass_In) { Mass = Mass_In; }                    //        : g
+    void Set_Vol(const double Vol_In) { Vol = Vol_In; }                        //        : mm^3
+    void Set_Radius(const double Radius_In) { Radius = Radius_In; }            //        : mm
     void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm
     void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm
     void Set_vel(const Vector & vel_In) { vel = vel_In; }  // Set particle's velocity    : mm/s

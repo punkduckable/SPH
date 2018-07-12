@@ -301,7 +301,8 @@ void Particle_Tests(void) {
   // Particle properties
   double IPS = Particle::Inter_Particle_Spacing;                               // mm
   double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
-  double Particle_Density = 1;                                                //        : g/mm^3
+  double Particle_Radius = IPS/2;                                              //        : mm
+  double Particle_Density = 1;                                                 //        : g/mm^3
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
   const double h = Particle::h;
 
@@ -326,15 +327,16 @@ void Particle_Tests(void) {
 
         X *= IPS;                                                              //        : mm
         x = X;                                                                 //        : mm
-        vel = {0.,0.,0.};                                                   //        : mm/s
+        vel = {0.,0.,0.};                                                      //        : mm/s
 
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[0] = i;     // i coordinate. Remove if not using cuboid
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[1] = j;     // j coordinate. Remove if not using cuboid
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[2] = k;     // k coordinate. Remove if not using cuboid
 
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ID = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass); //         : g
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume);//         : mm^3
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass);  //        : g
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume); //        : mm^3
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Radius(Particle_Radius);   //   : mm
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_X(X);       //        : mm
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_x(x);       //        : mm
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_vel(vel);   //        : mm/s

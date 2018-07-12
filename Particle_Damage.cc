@@ -8,44 +8,91 @@
 
 void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
   printf("Particle %d is damaged.\n",P_In.ID);
-  /* Particle P_In is damaged. This basically means that we must causally remove
-  it from the Particles array. How do we do this? By modifying neighbor lists!
-  A damaged particle creates a 'shadow region'. For any two particles, P_i and
-  P_j, if the ray between P_i and P_j passes through the damaged particle, then
-  P_j is considered to be in the 'shawdow region' of P_i. For any particle P_i,
-  if any of its neighbors are damaged or are in the shadow region of a damaged
-  particle then we remove those neighbors.
+  /* Particle P_In is damaged. We want to causally remove P_In from the
+  Particles array. This means that the position of P_In can no longer impact
+  the stress or motion of any particles in the array. How do we do this? By
+  removing P_In from every other particle's neighbor lists! But we must do
+  more. Let P_i, P_j and P_In be particles with the following reference
+  configuration
+
+         P_i              P_In             P_j
+         ()               ()               ()
+
+  Suppose that P_In is damaged. Further suppose that P_i and P_j are neighbors.
+  Since P_In is damaged, if the body breaks at P_In, then there can't be any
+  connection from P_i to P_j. Therefore, if P_In is infront of P_j, then P_i
+  shouldn't be neighbors with P_j. We say that P_j is in P_In's 'shadow region'
+  Basically, if P_i were a light and P_In were some obstical, then any particle
+  P_j in the 'shadow region' would be covered by the shadow of P_In. More
+  More formally, for any two particles, P_i and P_j, if the ray between P_i and
+  P_j passes through the damaged particle, then P_j is in the 'shadow region' of
+  P_In. For any particle P_i, we remove all neighbors that are damaged or in the
+  shadow region of a damaged particle.
 
   Throughout this discission, all rays (position vectors) are with respect to
-  REFERENCE positions. We do not care about the current positions.
+  REFERENCE positions. We do not care about spatial positions.
 
   We can actually greatly speed up this process by making a fundamental
   observation: If the ray between P_i and P_j passes through P_In, then P_In
-  must be closer to P_i than P_j. This means that P_In must ALSO be an neighbor
+  must be closer to P_i than P_j. This means that P_In must ALSO be a neighbor
   of P_i! Since neighborship is symmetric, this means that P_i must be one of
-  P_In's neighbors. Thus, we don't really need to search through the entire
-  Particle's array; rather, we only need to search through the damaged particle's
-  neighbor list!
+  P_In's neighbors. Therefore, for any damaged particle P_In, the only particles
+  that can be in P_In's shadow region are neighbors of P_In. Thus, we don't
+  really need to search through the entire Particle's array; rather, we only
+  need to search through the damaged particle's neighbor list!
 
   How do we actually detect if the ray from P_i to P_j intersects the damaged
-  particle? Each particle has a 'radius'. We treat the particle as the sphere
-  enclosed by that radius (that is centered at the particle's position). The
-  radius is usually the inter-particle-spacing. if the Ray from P_i to P_j
-  interescts the sphere, then we remove P_i and P_j's neighbor status.
+  particle? Each particle has a 'radius' r. We treat the particle as a sphere
+  centered at the Particle's reference position with radius r. This radius is
+  typically half the inter-particle spacing. If the Ray from P_i to P_j
+  interescts the sphere, then P_j is in P_In's shadow region and is therefore
+  no longer one of P_i's neighbors.
 
-  So how do we detect if the ray intersects the sphere? Let R_i R_j and R_In
-  denote the position vectors of P_i P_j and P_In respectivly. if the ray between
-  R_i and R_j intersects the sphere around R_In, then the scalar projection
-  of (R_In-R_i) onto (R_j - R_i) must be positive. If its negative then the ray
-  between P_i and P_j goes away from P_In, meaning that the ray can not
-  intersect P_In's sphere. Therefore, our first condition for intersection is:
+  So how do we detect if the ray intersects the sphere? There are three
+  necessairry conditions for ray-sphere intersection:
 
-        (R_In - R_i) dot (R_j - R_i) > 0
+  For the fist condition, Let R_i R_j and R_In denote the reference position
+  vectors of P_i P_j and P_In respectivly. If the ray from R_i to R_j intersects
+  P_In's sphere, then the scalar projection of (R_In-R_i) onto (R_j - R_i) must
+  be positive. Why is this? Well, if this projection is negaitve then
+  (R_In - R_i) must go in away from (R_j - R_i) and therefore can not intersect
+  the sphere. Therefore, our first condition for intersection is:
+
+         (R_In - R_i) dot (R_j - R_i) > 0
 
 
-  Assuming that the above condition checks out, then we at least know that the
-  ray is pointed in the correct direction. Further, consider the following
-  diagram:
+  For the second condition, we need to check the lengths of (R_In - R_i) and
+  (R_j - R_i). If the ray (R_j - R_i) is to pass through P_In's sphere, then
+  (R_j - R_i) must be longer than (R_In - R_i)? To understand why, consider the
+  following diagrams:
+
+
+                                 Intersection:
+             R_i                       ____                      R_j
+             ()----------------------/-----\---------------------()
+                                    |  ()  |
+                                    \_____/
+                                      R_In
+
+
+                               No Intersection:
+
+             R_i            R_j        ____
+             ()-------------()       /     \
+                                    |  ()  |
+                                    \_____/
+                                      R_In
+
+  Even if (R_i - R_j) is pointed in the same direction as (R_In - R_i) (the
+  scalar projection of (R_In - R_i) onto (R_i - R_j) is positive), intersection
+  occurs only if Notice that if (R_i - R_j) is LONGER than (R_i - R_In).
+  Therefore, our second necessairry condition for intersction is:
+
+         |R_In - R_i| < |R_j - R_i|
+
+  For the third conidition: Assuming that the two conditions avbove check out
+  then we need to find the shortest distance between a point on (R-i - R_j) and
+  R_In. Consider the following diagram:
 
   R_i                                                                  R_j
   ()___________________________________________________________________()
@@ -58,13 +105,18 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
   Notice that the rays (R_i - R_j), d, and (R_In - R_i) form a right triangle.
   If the ray (R_j - R_i) intersects P_In's sphere then d^2 < r^2 where r is the
   radius of P_In's sphere. However, notice that
-        d^2 = ((R_In - R_i) dot (R_In - R_i)) - ((R_In - R_i) dot (R_i - R_j)/|R_i - R_j|))^2
-  With this, we can check the second condition, d^2 < r^2. If true, then P_j is
-  in the shadow region of P_In; thus, we remove P_i and P_j's neighbor status.
-  */
+
+         d^2 = ((R_In - R_i) dot (R_In - R_i)) - ((R_In - R_i) dot (R_i - R_j)/|R_i - R_j|))^2
+
+  With this, we can check our third and final condition,
+
+         d^2 < r^2.
+
+  If all three conditions are passed, then P_j is in the shadow region of P_In;
+  thus, we remove P_i and P_j's neighbor status. */
 
   unsigned int i,j,k;                           // index variables
-  const double r_Squared = P_In.Inter_Particle_Spacing*P_In.Inter_Particle_Spacing/4.;      //        : mm^2
+  const double r_Squared = P_In.Radius*P_In.Radius;                            //        : mm^2
 
   // Damaged particle (P_In) paramaters
   unsigned int Damaged_Particle_ID = P_In.ID;    // ID of the damaged particle
@@ -79,8 +131,8 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
   unsigned int Pj_ID;                            // ID of P_j
 
   // Rays (Vectors between particle's Reference positions)
-  Vector Rj_Ri;                                  // R_j - R_i                  : mm
-  Vector RIn_Ri;                                 // R_In - R_i                 : mm
+  Vector Rj_Ri;                                  // R_j - R_i                            : mm
+  Vector RIn_Ri;                                 // R_In - R_i                           : mm
   double RIn_Ri_Dot_RIn_Ri;                      // Dot product of RIn_Ri and RIn_Ri (= |RIn_Ri|^2). Used to determine intersection
   double RIn_Ri_Dot_Rj_Ri;                       // Dot product of RIn_Ri and Rj_Ri. Used to calculate d^2.            : mm^2
   double Rj_Ri_Dot_Rj_Ri;                        // Dot product of Rj_Ri and Rj_Ri (= |Rj-Ri|^2). Used to calculate d^2: mm^2
