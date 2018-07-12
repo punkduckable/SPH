@@ -207,6 +207,12 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
 
       d_Squared = Vector_Dot_Product(RIn_Ri, RIn_Ri) - (RIn_Ri_Dot_Rj_Ri * RIn_Ri_Dot_Rj_Ri) / Rj_Ri_Dot_Rj_Ri;
 
+      if(P_In.ID == 615) {
+        Particles[Pi_ID].X.Print();
+        printf("%d: %f, ",Pj_ID, d_Squared);
+        Particles[Pj_ID].X.Print();
+      }
+
       // Check if d^2 < r^2
       if(d_Squared <= r_Squared) {
         // if so, then P_j is in P_i's shadow region!

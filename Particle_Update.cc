@@ -85,18 +85,15 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   if(Stretch_Max_Principle > P_In.Stretch_H)
     P_In.Stretch_H = Stretch_Max_Principle;
 
-  // if Max is greater than crticial and the particle is in the rip zone then
-  // start adding damage
-  if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1 || P_In.ijk[1] == Y_SIDE_LENGTH/2+1) {
-    if(P_In.Stretch_H > P_In.Stretch_Critical)
-      P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
+  // if Max is greater than crticial then start adding damage
+  if(P_In.Stretch_H > P_In.Stretch_Critical)
+    P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
 
-    // If particle is fully damaged, remove it from array.
-    if(P_In.D >= 1) {
-      Remove_Damaged_Particle(P_In, Particles);
-      return;
-    } // if(P_In.D >= 1) {
-  } // if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1) {
+  // If particle is fully damaged, remove it from array.
+  if(P_In.D >= 1) {
+    Remove_Damaged_Particle(P_In, Particles);
+    return;
+  } // if(P_In.D >= 1) {
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate

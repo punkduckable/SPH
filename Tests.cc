@@ -301,7 +301,7 @@ void Particle_Tests(void) {
   // Particle properties
   double IPS = Particle::Inter_Particle_Spacing;                               // mm
   double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
-  double Particle_Radius = IPS/2;                                              //        : mm
+  double Particle_Radius = IPS*.578;                                            //        : mm
   double Particle_Density = 1;                                                 //        : g/mm^3
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
   const double h = Particle::h;
@@ -503,6 +503,16 @@ void Particle_Tests(void) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(i = 0; i < X_SIDE_LENGTH; i++) {
     update_x_timer += clock() - timer2;
+
+    if(l == 11500) {
+      unsigned int NID;
+      for(unsigned int m = 0; m < Body[614].Num_Neighbors; m++) {
+        NID = Body[614].Neighbor_IDs[m];
+        printf("%d %d:",m,NID);
+        Body[NID].X.Print();
+      }
+    }
+
 
     // Print to file evert 100th iteration
     timer2 = clock();

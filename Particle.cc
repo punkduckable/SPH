@@ -19,7 +19,7 @@ Particle::Particle(void) {
   // Now randomly set critical stress
   unsigned seed = std::rand();
   std::default_random_engine generator (seed);
-  std::normal_distribution<double> distribution(1.3,.05);
+  std::normal_distribution<double> distribution(1.3,.02);
   Stretch_Critical = distribution(generator);
 } // Particle::Particle(void) {
 
