@@ -107,6 +107,7 @@ class Particle {
                                Particle * Particles);      // Generate neighbor list for every particle in 'Partilces' array
 
     friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles);
+    void Remove_Neighbor(const unsigned int Remove_Neighbor_ID, const Particle * Particles);
 
     // Damage methods
     friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles);

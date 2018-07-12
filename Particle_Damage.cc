@@ -7,7 +7,9 @@
 // Damage methods
 
 void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
-  printf("Particle %d is damaged.\n",P_In.ID);
+  printf("Particle %d is damaged. ",P_In.ID);
+  P_In.X.Print();
+
   /* Particle P_In is damaged. We want to causally remove P_In from the
   Particles array. This means that the position of P_In can no longer impact
   the stress or motion of any particles in the array. How do we do this? By
@@ -209,7 +211,17 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
 
       // Check if d^2 < r^2
       if(d_Squared <= r_Squared) {
-        // if so, then P_j is in P_i's shadow region!
+        /* if so, then P_j is in P_i's shadow region! This means that P_i is
+        no longer a neighbor of P_j, and that P_j is no longer a neighbor of
+        P_i. To things need to happen for this to work, P_i needs to stop
+        being a neighbor with P_j and P_j needs to stop being a neighbor
+        with P_i. To prevent P_i from being a neighbor with P_j all we have to
+        do is NOT include P_j on P_i's new neighbor list. To make P_i not a
+        neighbor of P_j, we need to re-do P_j's neighbor list, including
+        every old neighbor except for P_i. This is done in the 'Remove Neighbor
+        member function' */
+        Particles[Pj_ID].Remove_Neighbor(Pi_ID, Particles);
+
         continue;
       } // if(d_squared < r_squared) {
 
