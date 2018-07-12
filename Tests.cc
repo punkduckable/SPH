@@ -504,16 +504,6 @@ void Particle_Tests(void) {
     } // for(i = 0; i < X_SIDE_LENGTH; i++) {
     update_x_timer += clock() - timer2;
 
-    if(l == 11500) {
-      unsigned int NID;
-      for(unsigned int m = 0; m < Body[614].Num_Neighbors; m++) {
-        NID = Body[614].Neighbor_IDs[m];
-        printf("%d %d:",m,NID);
-        Body[NID].X.Print();
-      }
-    }
-
-
     // Print to file evert 100th iteration
     timer2 = clock();
     if((l+1)%100 == 0) {
