@@ -148,7 +148,9 @@ void Particle::Remove_Neighbor(const unsigned int Remove_Neighbor_ID, const Part
   double *New_Mag_R = new double[Num_Neighbors - 1];
   double *New_W = new double[Num_Neighbors - 1];
   Vector *New_Grad_W = new Vector[Num_Neighbors - 1];
-  Tensor New_A, New_A_Inv;
+  Tensor New_A{0,0,0,
+               0,0,0,
+               0,0,0};
 
   for(i = 0; i < Num_Neighbors; i++) {
     // Check if ith neighbor ID matches Remove_Neighbor_ID

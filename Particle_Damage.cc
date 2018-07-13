@@ -120,9 +120,6 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
   unsigned int i,j,k;                           // index variables
   const double r_Squared = P_In.Radius*P_In.Radius;                            //        : mm^2
 
-  // Damaged particle (P_In) paramaters
-  unsigned int Damaged_Particle_ID = P_In.ID;    // ID of the damaged particle
-
   // Particle i (P_j) paramaters
   unsigned int Pi_ID;                            // ID of P_i
   unsigned int Pi_New_Num_Neighbors;             // Number of neighbors of P_i
@@ -164,7 +161,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
       Pj_ID = Particles[Pi_ID].Neighbor_IDs[j];
 
       // First, check if P_j is the damaged particle
-      if(Pj_ID == Damaged_Particle_ID)
+      if(Pj_ID == P_In.ID)
         continue;
 
       //////////////////////////////////////////////////////////////////////////
@@ -254,7 +251,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
     delete [] Particles[Pi_ID].Neighbor_IDs;
 
     // We need to set the 'Has_Neighbors' paramater to false. Otherwise, we
-    // won't be able to set the neighbors.
+    // won't be able to set the neighbors
     Particles[Pi_ID].Has_Neighbors = false;
 
     // Now we can reset the neighbors
