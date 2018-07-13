@@ -130,8 +130,8 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
   unsigned int Pj_ID;                            // ID of P_j
 
   // Rays (Vectors between particle's Reference positions)
-  Vector Rj_Ri;                                  // R_j - R_i                            : mm
-  Vector RIn_Ri;                                 // R_In - R_i                           : mm
+  Vector Rj_Ri;                                  // R_j - R_i                            : mm Vector
+  Vector RIn_Ri;                                 // R_In - R_i                           : mm Vector
   double RIn_Ri_Dot_RIn_Ri;                      // Dot product of RIn_Ri and RIn_Ri (= |RIn_Ri|^2). Used to determine intersection
   double RIn_Ri_Dot_Rj_Ri;                       // Dot product of RIn_Ri and Rj_Ri. Used to calculate d^2.            : mm^2
   double Rj_Ri_Dot_Rj_Ri;                        // Dot product of Rj_Ri and Rj_Ri (= |Rj-Ri|^2). Used to calculate d^2: mm^2
@@ -155,7 +155,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
     list. Thus, we need to cycle through P_i's neighbors. */
     Pi_ID = P_In.Neighbor_IDs[i];
 
-    RIn_Ri = P_In.X - Particles[Pi_ID].X;
+    RIn_Ri = P_In.X - Particles[Pi_ID].X;                                      //        : mm Vector
 
     for(j = 0; j < Particles[Pi_ID].Num_Neighbors; j++) {
       Pj_ID = Particles[Pi_ID].Neighbor_IDs[j];
@@ -166,7 +166,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
 
       //////////////////////////////////////////////////////////////////////////
       // Checks: Now we check if P_j is in P_In's shadow region
-      Rj_Ri = Particles[Pj_ID].X - Particles[Pi_ID].X;
+      Rj_Ri = Particles[Pj_ID].X - Particles[Pi_ID].X;                         //        : mm Vecor
 
       //////////////////////////////////////////////////////////////////////////
       // First check:
@@ -186,8 +186,8 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
       // check. To do this, we make sure that the magnitude of RIn_Rj is less
       // than the magnitude of Rj_Ri.
 
-      RIn_Ri_Dot_RIn_Ri = Vector_Dot_Product(RIn_Ri, RIn_Ri);
-      Rj_Ri_Dot_Rj_Ri = Vector_Dot_Product(Rj_Ri, Rj_Ri);
+      RIn_Ri_Dot_RIn_Ri = Vector_Dot_Product(RIn_Ri, RIn_Ri);                  //        : mm
+      Rj_Ri_Dot_Rj_Ri = Vector_Dot_Product(Rj_Ri, Rj_Ri);                      //        : mm
 
       if(RIn_Ri_Dot_RIn_Ri >= Rj_Ri_Dot_Rj_Ri) {
         // if |RIn_Ri| > |Rj_Ri| then P_j is NOT in the shadow region of P_In.
@@ -202,9 +202,9 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
       // by calculating d^2 and comparing it to r^2.
 
       // Calculate d^2
-      RIn_Ri_Dot_Rj_Ri = Vector_Dot_Product(RIn_Ri, Rj_Ri);
+      RIn_Ri_Dot_Rj_Ri = Vector_Dot_Product(RIn_Ri, Rj_Ri);                    //        : mm
 
-      d_Squared = Vector_Dot_Product(RIn_Ri, RIn_Ri) - (RIn_Ri_Dot_Rj_Ri * RIn_Ri_Dot_Rj_Ri) / Rj_Ri_Dot_Rj_Ri;
+      d_Squared = Vector_Dot_Product(RIn_Ri, RIn_Ri) - (RIn_Ri_Dot_Rj_Ri * RIn_Ri_Dot_Rj_Ri) / Rj_Ri_Dot_Rj_Ri;        // mm
 
       // Check if d^2 < r^2
       if(d_Squared <= r_Squared) {
@@ -217,7 +217,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
         neighbor of P_j, we need to re-do P_j's neighbor list, including
         every old neighbor except for P_i. This is done in the 'Remove Neighbor
         member function' */
-        Particles[Pj_ID].Remove_Neighbor(Pi_ID, Particles);
+        Particle_Helpers::Remove_Neighbor(Particles[Pj_ID], Pi_ID, Particles);
 
         continue;
       } // if(d_squared < r_squared) {
@@ -244,10 +244,10 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
     new dynamic arrays for the Particle's members (for the W, Grad_W, etc..
     dynamic arrays). Thus, before we can set the new neighbors, we need to
     free the old dynamic arrays, thereby preventing a memory leak. */
-    delete [] Particles[Pi_ID].R;                                              //        : mm
+    delete [] Particles[Pi_ID].R;                                              //        : mm Vector
     delete [] Particles[Pi_ID].Mag_R;                                          //        : mm
-    delete [] Particles[Pi_ID].W;                                              //        : unitless
-    delete [] Particles[Pi_ID].Grad_W;                                         //        : mm^-1
+    delete [] Particles[Pi_ID].W;                                              //        : unitless Vector
+    delete [] Particles[Pi_ID].Grad_W;                                         //        : 1/mm
     delete [] Particles[Pi_ID].Neighbor_IDs;
 
     // We need to set the 'Has_Neighbors' paramater to false. Otherwise, we

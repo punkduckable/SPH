@@ -12,9 +12,9 @@
 ////////////////////////////////////////////////////1////////////////////////////
 // Initialize static particle class members
 
-const double Particle::Inter_Particle_Spacing = 1;                            //        : mm
+const double Particle::Inter_Particle_Spacing = 1;                             //        : mm
 const double Particle::h = SUPPORT_RADIUS*Inter_Particle_Spacing;    // Support function radius   : mm
-const double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);    // Shape function amplitude  : mm^-3
+const double Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);    // Shape function amplitude  : 1/mm^3
 
 const double Particle::Lame = 1.125;                       // Lame parameter             : Mpa
 const double Particle::mu0 = .275;                         // Shear modulus              : Mpa

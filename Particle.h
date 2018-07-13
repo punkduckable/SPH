@@ -9,7 +9,7 @@ class Particle {
 
     // Kernel paramaters
     const static double h;                                 // Support radius             : mm
-    const static double Shape_Function_Amp;                // Shape function Amplitude   : mm^-3
+    const static double Shape_Function_Amp;                // Shape function Amplitude   : 1/mm^3
 
     // Strain energy function parameters
     const static double Lame;                              // Lame paramater             : Mpa
@@ -40,17 +40,17 @@ class Particle {
     Tensor A_Inv;                                          // Inverse of shape tensor
 
     // Particle dynamics variables
-    Vector X{0,0,0};                                       // reference position         : mm
-    Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        :  mm
-    Vector vel{0,0,0};                                     // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog):  mm/s
+    Vector X{0,0,0};                                       // reference position         : mm Vector
+    Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        :  mm Vector
+    Vector vel{0,0,0};                                     // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog):  mm/s Vector
 
     bool First_Time_Step = true;                           // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
-    Tensor P{0,0,0,
+    Tensor P{0,0,0,                                        // First Piola-Kirchhoff stress tensor  : Mpa Tensor
              0,0,0,
-             0,0,0};                                       // First Piola-Kirchhoff stress tensor  : Mpa
-    Tensor F{1,0,0,
+             0,0,0};
+    Tensor F{1,0,0,                                        // deformation gradient       : unitless Tensor
              0,1,0,
-             0,0,1};                                       // deformation gradient       : unitless
+             0,0,1};
 
     // Damage parameters
     double Stretch_H = 0;                                  // Historical max stretch     : unitless
@@ -60,14 +60,14 @@ class Particle {
     const static double Tau;                               // Damage rate paramater (see eq 26)
 
     // Forces acting on the particle
-    Vector Force_Int{0,0,0};                               // Internal Force vector       : N
-    Vector Force_Contact{0,0,0};                           // Contact Force Vector        : N
-    Vector Force_Hg{0,0,0};                                // Hour-glass force            : N
+    Vector Force_Int{0,0,0};                               // Internal Force vector       : N Vector
+    Vector Force_Contact{0,0,0};                           // Contact Force Vector        : N Vector
+    Vector Force_Hg{0,0,0};                                // Hour-glass force            : N Vector
 
-    Vector Force_Visc{0,0,0};                              // For debugging
-    Tensor Visc{0,0,0,
-                0,0,0,
-                0,0,0};                                    // For debugging
+    //Vector Force_Visc{0,0,0};                              // For debugging
+    //Tensor Visc{0,0,0,                                     // For debugging
+    //            0,0,0,
+    //            0,0,0};
 
   public:
     // Constructors, destructor
@@ -83,44 +83,55 @@ class Particle {
     void Set_Mass(const double Mass_In) { Mass = Mass_In; }                    //        : g
     void Set_Vol(const double Vol_In) { Vol = Vol_In; }                        //        : mm^3
     void Set_Radius(const double Radius_In) { Radius = Radius_In; }            //        : mm
-    void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm
-    void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm
-    void Set_vel(const Vector & vel_In) { vel = vel_In; }  // Set particle's velocity    : mm/s
+    void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm Vector
+    void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm Vector
+    void Set_vel(const Vector & vel_In) { vel = vel_In; }  // Set particle's velocity    : mm/s Vector
     void Set_Neighbors(const unsigned int N,
                        const unsigned int * Neighbor_ID_Array,
                        const Particle * Particles);        // Set Neighbors
 
     // Update P
     friend void Particle_Helpers::Update_P(Particle & P_In,
-                         Particle * Particles,
-                         const double dt);                 // Updates P_In's Second Piola-Kirchhoff stress tensor
+                                           Particle * Particles,
+                                           const double dt);                   // Updates P_In's Second Piola-Kirchhoff stress tensor
 
     // Update x
     friend void Particle_Helpers::Update_x(Particle & P_In,
-                         const Particle * Particles,
-                         const double dt); // Updates P_In's spacial position
+                                           const Particle * Particles,
+                                           const double dt);                   // Updates P_In's spacial position
 
     // Neighbor methods
     friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,
-                              const Particle & P2);        // Returns true P1 and P2 are neighbors, false otherwise
-    friend void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles,
-                               Particle * Particles);      // Generate neighbor list for every particle in 'Partilces' array
+                                                const Particle & P2);          // Returns true P1 and P2 are neighbors, false otherwise
 
-    friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles);
-    void Remove_Neighbor(const unsigned int Remove_Neighbor_ID, const Particle * Particles);
+    friend void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles,
+                                                 Particle * Particles);        // Generate neighbor list for every particle in 'Partilces' array
+
+    friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In,
+                                                     Particle * Particles);
+
+    friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
+                                                  const unsigned int Remove_Neighbor_ID,
+                                                  const Particle * Particles);
 
     // Damage methods
-    friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles);
+    friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
+                                                          Particle * Particles);
 
     // Contact methods
-    friend void Particle_Helpers::Contact(Particle * Body_A, const unsigned int Num_Particles_A,
-                                          Particle * Body_B, const unsigned int Num_Particles_B,
+    friend void Particle_Helpers::Contact(Particle * Body_A,
+                                          const unsigned int Num_Particles_A,
+                                          Particle * Body_B,
+                                          const unsigned int Num_Particles_B,
                                           const double h_In);
 
     // Other friends
     friend void Particle_Tests(void);
-    friend void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles);
-    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
+    friend void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Particles,
+                                                               const Particle * Particles);
+
+    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles,
+                                                     const Particle * Particles);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)
