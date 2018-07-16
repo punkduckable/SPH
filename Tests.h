@@ -2,7 +2,7 @@
 #define TESTS_HEADER
 
 #define X_SIDE_LENGTH 10
-#define Y_SIDE_LENGTH 30
+#define Y_SIDE_LENGTH 31
 #define Z_SIDE_LENGTH 10
 #define SUPPORT_RADIUS 4
 #if !defined(PI)

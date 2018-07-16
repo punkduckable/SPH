@@ -320,10 +320,7 @@ void Particle_Tests(void) {
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
-        if(i == 0 && j == (Y_SIDE_LENGTH)/2)
-          X = {(double)i-50.,(double)j,(double)k};
-        else
-          X = {(double)i,(double)j,(double)k};
+        X = {(double)i,(double)j,(double)k};
 
         X *= IPS;                                                              //        : mm
         x = X;                                                                 //        : mm
@@ -377,15 +374,19 @@ void Particle_Tests(void) {
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        if(i == 0 && j == (Y_SIDE_LENGTH)/2)
-          continue;
-
         Find_Neighbors_Box(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body);
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+
+  // Damage the 'cut'
+  for(k = 0; k < Z_SIDE_LENGTH; k++) {
+    Body[0*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].D = 1;
+    Particle_Helpers::Remove_Damaged_Particle(Body[0*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Body);
+  } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+
   printf("Done! took %lums\n\n",MS_Neighbor);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -474,9 +475,6 @@ void Particle_Tests(void) {
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
-          if(i == 0 && j == (Y_SIDE_LENGTH)/2)
-            continue;
-
           Update_P(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body, dt);
         } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
@@ -495,9 +493,6 @@ void Particle_Tests(void) {
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
-          if(i == 0 && j == (Y_SIDE_LENGTH)/2)
-            continue;
-
           Update_x(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body, dt);
         } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
