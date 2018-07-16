@@ -4,7 +4,6 @@
 #include "Particle.h"
 #include "Tensor.h"
 #include "Vector.h"
-#include "List.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors and destructor

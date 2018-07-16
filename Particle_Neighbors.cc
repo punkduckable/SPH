@@ -16,10 +16,10 @@ bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
 } // bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
 
 void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
-  unsigned int i,j;                    // Loop index variables
-  List Particle_Neighbor_List;         // Linked list to store known neighbors
-  unsigned int Num_Neighbors;          // Number of neighbors found
-  unsigned int *Neighbor_IDs;          // Array that holds final list of neighbors
+  unsigned int i,j;                              // Loop index variables
+  List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
+  unsigned int Num_Neighbors;                    // Number of neighbors found
+  unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
 
   // Cycle through the particles
   for(i = 0; i < Num_Particles; i++) {
@@ -98,11 +98,11 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles)
   is 100, Y_SIDE_LENGTH is 50, and Z_SIDE_LENGTH is 200 */
 
   unsigned int i = P_In.ijk[0], j = P_In.ijk[1], k = P_In.ijk[2];
-  unsigned int p,q,r;                  // Loop index variables
+  unsigned int p,q,r;                             // Loop index variables
   unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
-  List Particle_Neighbor_List;         // Linked list to store known neighbors
-  unsigned int Num_Neighbors;          // Number of neighbors found
-  unsigned int *Neighbor_IDs;          // Array that holds final list of neighbors
+  List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
+  unsigned int Num_Neighbors;                    // Number of neighbors found
+  unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
 
   /* If we are near the edge of the cube then we need to adjust which
   particles we search through

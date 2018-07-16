@@ -227,7 +227,7 @@ void Tensor_Tests(void) {
 
 void List_Tests(void) {
   // Create a new Node, test that the two ends point to NULL
-  List L1;
+  List<unsigned int> L1;
   printf("Newly created node. \n");
   L1.Print_Node_Info();
 
@@ -254,6 +254,7 @@ void List_Tests(void) {
   L1.Add_Back(4);
   printf("Added {0,1,2,3,4} in strange order \n");
   L1.Print_Node_Info();
+
 } // void List_Tests(void) {
 
 void Particle_Tests(void) {

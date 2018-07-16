@@ -123,7 +123,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
   // Particle i (P_j) paramaters
   unsigned int Pi_ID;                            // ID of P_i
   unsigned int Pi_New_Num_Neighbors;             // Number of neighbors of P_i
-  List Pi_New_Neighbor_List;                     // List of all of P_i's neighbors that are not damaged or in P_In's shadow region
+  List<unsigned int> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in P_In's shadow region
   unsigned int * Pi_New_Neighbors;               // Stores P_i's new neighbors.
 
   // Particle j (P_j) paramaters
