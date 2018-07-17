@@ -4,7 +4,6 @@
 #include "Particle.h"
 #include "Tensor.h"
 #include "Vector.h"
-#include "List.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors and destructor
@@ -19,7 +18,7 @@ Particle::Particle(void) {
   // Now randomly set critical stress
   unsigned seed = std::rand();
   std::default_random_engine generator (seed);
-  std::normal_distribution<double> distribution(1.3,.05);
+  std::normal_distribution<double> distribution(1.3,.02);
   Stretch_Critical = distribution(generator);
 } // Particle::Particle(void) {
 
@@ -33,10 +32,10 @@ Particle::~Particle(void) {
 
   // Note, we should only free the memory if it has been allocated.
   if(Has_Neighbors == true) {
-    delete [] R;                                                               //        : mm
+    delete [] R;                                                               //        : mm Vectro
     delete [] Mag_R;                                                           //        : mm
     delete [] W;                                                               //        : unitless
-    delete [] Grad_W;                                                          //        : mm^-1
+    delete [] Grad_W;                                                          //        : 1/mm Vector
     delete [] Neighbor_IDs;
   }
 } // Particle::~Particle(void) {
@@ -79,10 +78,10 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 
   // Allocate memory for the Dynamic arrays
   Neighbor_IDs = new unsigned int[Num_Neighbors];
-  R = new Vector[Num_Neighbors];                                               //        : mm
+  R = new Vector[Num_Neighbors];                                               //        : mm Vector
   Mag_R = new double[Num_Neighbors];                                           //        : mm
   W = new double[Num_Neighbors];                                               //        : unitless
-  Grad_W = new Vector[Num_Neighbors];                                          //        : mm^-1
+  Grad_W = new Vector[Num_Neighbors];                                          //        : 1/mm Vector
 
   /* Now that we know our neighbors IDs, we can figure out everything that we
   want to know about them. We an set the Neighbor_IDs, r, R, W, and Grad_W
@@ -90,29 +89,29 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 
   int Neighbor_ID;                               // Keep track of current particle
   double V_j;                                    // Volume of jth neighbor               : mm^3
-  Tensor A{0,0,0,
+  Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
            0,0,0,
-           0,0,0};                               // Shape Tensor (zero initialized)      : unitless
+           0,0,0};
 
   for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Neighbor_ID = Neighbor_ID_Array[j];          // Get Neighbor ID (index in Particles array)
     Neighbor_IDs[j] = Neighbor_ID;               // Set jth element of Neighbor_IDs member
 
     // Calculate displacement vectors
-    R[j] = Particles[Neighbor_ID].X - X;         // Reference displacement vector        : mm
+    R[j] = Particles[Neighbor_ID].X - X;         // Reference displacement vector        : mm Vector
     Mag_R[j] = R[j].Magnitude();                 // |R[j]|                               : mm
 
     // Calculate shape function, shape function gradient for jth neighbor
-    W[j] = Shape_Function_Amp*(h - Mag_R[j])*(h - Mag_R[j])*(h - Mag_R[j]);                             //        :unitless
-    Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_R[j])*(h - Mag_R[j]))*(R[j] / Mag_R[j]); //    : mm^-1
+    W[j] = Shape_Function_Amp*(h - Mag_R[j])*(h - Mag_R[j])*(h - Mag_R[j]);    //        : unitless
+    Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_R[j])*(h - Mag_R[j]))*(R[j] / Mag_R[j]); // 1/mm Vector
 
     // Add in the Current Neighbor's contribution to the Shape tensor
     V_j = Particles[Neighbor_ID].Vol;            // Neighbor Volume                      : mm^3
-    A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless
+    A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless Tensor
   } // for(unsigned int j = 0; j < N; j++) {
 
   // Now we can calculate A^(-1) from A.
-  A_Inv = A^(-1);                                                              //        : unitless
+  A_Inv = A^(-1);                                                              //        : unitless Tensor
 
   // Now that neighbors have been set, we set 'Has_Neighbors' to true
   Has_Neighbors = true;
@@ -148,7 +147,7 @@ void Particle::Print(void) const {
 
   // If we have neighbors, print neighbor information
   if(Has_Neighbors == true) {
-    //unsigned int i;                    // Loop index variable
+    //unsigned int i;                              // Loop index variable
 
     /* Print neighbor ID's
     printf("Neighbor ID's  : {");

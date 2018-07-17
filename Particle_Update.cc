@@ -27,32 +27,32 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
 
   /* First, let's set up the local variables that will be used to update the
   particle's position */
-  double V_j;                                     // Volume of jth neighbor               : mm^3
+  double V_j;                                    // Volume of jth neighbor               : mm^3
   unsigned int Neighbor_ID;                      // Index of jth neighbor.
 
-  Tensor F = {0,0,0,
+  Tensor F = {0,0,0,                             // Deformation gradient                 : unitless Tensor
               0,0,0,
-              0,0,0};                            // Deformation gradient                 : unitless
+              0,0,0};
 
-  Tensor C;                                      // Richt-Cauchy stress tensor           : unitless
+  Tensor C;                                      // Richt-Cauchy stress tensor           : unitless Tensor
   double J;                                      // Deformation gradient determinant     : unitless
-  Tensor S;                                      // Second Poila-Kirchhoff stress tensor : Mpa
+  Tensor S;                                      // Second Poila-Kirchhoff stress tensor : Mpa Tensor
   Tensor I = {1,0,0,
               0,1,0,
               0,0,1};                            // Identity tensor
 
-  double Stretch_Max_Principle;
-  const double Tau = Particle::Tau;
+  double Stretch_Max_Principle;                                                //        : unitless
+  const double Tau = Particle::Tau;                                            //        : unitless
 
   const double Lame = Particle::Lame;            // Lame paramater                       : Mpa
   const double mu0 = Particle::mu0;              // Shear modulus                        : Mpa
   const double mu = Particle::mu;                // Viscosity                            : Mpa*s
 
-  Tensor F_Prime;                                // F time derivative                    : 1/s
-  Tensor L;                                      // symmetric part of velocity gradient  : 1/s
-  Tensor Visc;                                   // Viscosity correction term for P      : Mpa*s
-  Vector *Grad_W = P_In.Grad_W;                  // Pointer to P_In's Grad_W array.      : mm^-1
-  Vector rj;                                     // Displacemtn vector of jth neighbor   : mm
+  Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
+  Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
+  Tensor Visc;                                   // Viscosity correction term for P      : Mpa*s Tensor
+  Vector *Grad_W = P_In.Grad_W;                  // Pointer to P_In's Grad_W array.      : 1/mm Vector
+  Vector rj;                                     // Displacemtn vector of jth neighbor   : mm Vector
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now, we can calculate F by cycling through the neighbors. The contribution
@@ -60,14 +60,12 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   for(unsigned int j = 0; j < P_In.Num_Neighbors; j++) {
     Neighbor_ID = P_In.Neighbor_IDs[j];
     V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
-    rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
-
-    //F += Dyadic_Product(P_In.rj, V_j*P_In.Grad_W[j])*A^(-1);
-    F += Dyadic_Product(rj, V_j*Grad_W[j]);                                    //        : unitless
+    rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm Vector
+    F += Dyadic_Product(rj, V_j*Grad_W[j]);                                    //        : unitless Tensor
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
 
   // Deformation gradient with correction
-  F *= P_In.A_Inv;                                                             //        : unitless
+  F *= P_In.A_Inv;                                                             //        : unitless Tensor
 
   //////////////////////////////////////////////////////////////////////////////
   /* Calculate Damage:
@@ -76,8 +74,8 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   need to find the square root of the biggest eigenvalue of the (right)
   Cauchy Green strain tensor. Luckily, this tensor will be used for later
   calculations. */
-  C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless
-  J = Determinant(F);                            // J is det of F                        : unitless
+  C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless Tensor
+  J = Determinant(F);                            // J is det of F                        : unitless Tensor
 
   // Calculate current principle stretch
   Stretch_Max_Principle = sqrt(Max_Eigenvalue(C,'F'));
@@ -87,20 +85,15 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   if(Stretch_Max_Principle > P_In.Stretch_H)
     P_In.Stretch_H = Stretch_Max_Principle;
 
-  // if Max is greater than crticial and the particle is in the rip zone then
-  // start adding damage
-  /*
-  if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1 || P_In.ijk[1] == Y_SIDE_LENGTH/2+1) {
-    if(P_In.Stretch_H > P_In.Stretch_Critical)
-      P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
+  // if Max is greater than crticial then start adding damage
+  if(P_In.Stretch_H > P_In.Stretch_Critical)
+    P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
 
-    // If particle is fully damaged, remove it from array.
-    if(P_In.D >= 1) {
-      Remove_Damaged_Particle(P_In, Particles);
-      return;
-    } // if(P_In.D >= 1) {
-  } // if(P_In.ijk[1] == Y_SIDE_LENGTH/2 || P_In.ijk[1] == Y_SIDE_LENGTH/2-1) {
-  */
+  // If particle is fully damaged, remove it from array.
+  if(P_In.D >= 1) {
+    Remove_Damaged_Particle(P_In, Particles);
+    return;
+  } // if(P_In.D >= 1) {
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate
@@ -108,7 +101,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
 
 
-  S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                   //        : Mpa
+  S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                   //        : Mpa Tensor
 
   /* Calculate viscosity tensor:
   To do this, we need to calculate the deformation gradient. Luckily, at this
@@ -118,14 +111,14 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   F(t), and P_In.F as the 'old' deformation tensor, F(t-dt). We can then use
   the forward difference approximation of the derivative to get an approximation
   for F_Prine. */
-  F_Prime = (1./dt)*(F - P_In.F);                                              //        : s^-1
-  L = F_Prime*(F^(-1));                                                        //        : s^-1
-  Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                        //        : Mpa
+  F_Prime = (1./dt)*(F - P_In.F);                                              //        : s^-1 Tensor
+  L = F_Prime*(F^(-1));                                                        //        : s^-1 Tensor
+  Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                        //        : Mpa Tensor
 
   /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
-  P_In.P = (F*S + Visc)*P_In.A_Inv;                                            //         : Mpa
-  P_In.F = F;                                                                  //         : unitless
-  P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
+  P_In.P = (F*S + Visc)*P_In.A_Inv;                                            //         : Mpa Tensor
+  P_In.F = F;                                                                  //         : unitless Tensor
+  //P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
 
 } // void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const double dt) {
 
@@ -139,20 +132,20 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   member variables have been set. This function should not be run until
   these assumptions are valid. */
 
-  P_In.Force_Int = {0,0,0};                      // Internal Force vector                : N
-  P_In.Force_Hg = {0,0,0};                       // Hour-glass force                     : N
+  P_In.Force_Int = {0,0,0};                      // Internal Force vector                : N Vector
+  P_In.Force_Hg = {0,0,0};                       // Hour-glass force                     : N Vector
   //P_In.Force_Visc = {0,0,0};                     // For debugging
 
-  const Vector g = {0,-9810, 0};                 // Gravity                              : mm/s^2
-  Vector acceleration;                           // acceleration vector                  : mm/s^2
+  const Vector g = {0,0,0};                      // Gravity                              : mm/s^2 Vector
+  Vector acceleration;                           // acceleration vector                  : mm/s^2 Vector
 
   unsigned int Neighbor_ID;                      // ID of current neighbor particle (in paritlce's array)
 
   /* Jth particle variables */
   double V_j;                                    // Volume of jth particle               : mm^3
-  Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa
-  Tensor F_j;                                    // Deformation gradient                 : unitless
-  Vector rj;                                     // Displacement vector                  : mm
+  Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
+  Tensor F_j;                                    // Deformation gradient                 : unitless Tensor
+  Vector rj;                                     // Displacement vector                  : mm Vector
 
   /* P_In aliases (ith particle variables).
   notice that P_In/P_i does not chnage throughout this function. Therefore,
@@ -162,11 +155,11 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
 
   const double V_i = P_In.Vol;                   // Volume of P_In                       : mm^3
 
-  const Tensor P_i = P_In.P;                     // First Piola-Kirchhoff stress tensor  : Mpa
-  const Tensor F_i = P_In.F;                     // Deformation gradient                 : unitless
+  const Tensor P_i = P_In.P;                     // First Piola-Kirchhoff stress tensor  : Mpa Tensor
+  const Tensor F_i = P_In.F;                     // Deformation gradient                 : unitless Tensor
 
-  const Vector * R = P_In.R;                     // Reference displacement array         : mm
-  const Vector * Grad_W = P_In.Grad_W;           // Grad_W array                         : 1/mm
+  const Vector * R = P_In.R;                     // Reference displacement array         : mm Vector
+  const Vector * Grad_W = P_In.Grad_W;           // Grad_W array                         : 1/mm Vector
 
   /* Hour glass variables */
   double Mag_rj;                                                               //        : mm
@@ -188,9 +181,9 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     speeding up the program. */
 
     V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
-    P_j = Particles[Neighbor_ID].P;                                            //        : Mpa
-    P_In.Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                           //        : N
-    P_In.Force_Visc += (V_j)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); // For debugging
+    P_j = Particles[Neighbor_ID].P;                                            //        : Mpa Tensor
+    P_In.Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                           //        : N Vector
+    //P_In.Force_Visc += (V_j)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); // For debugging
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Hour Glass force */
@@ -213,7 +206,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
                   = (Fi*R_ij dot r_ij)/|r_ij| - |r_ij|
     Calcualating delta this way actually uses fewer floating point operations
     and should therefore perform better. */
-    rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm
+    rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm Vector
     Mag_rj = Magnitude(rj);                                                    //        : mm
     delta_ij = Vector_Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;             //        : mm
 
@@ -244,7 +237,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     therefore improve performnace.
     */
 
-    F_j = Particles[Neighbor_ID].F;                                            //        : unitless
+    F_j = Particles[Neighbor_ID].F;                                            //        : unitless Tensor
     delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;//: mm
 
     /* Finally, we calculate the hour glass force. However, it should be
@@ -252,12 +245,12 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     and Vi. However, these four quantities are constants. We can therefore
     pull these multiplications out of the summations (thereby saving
     several thousand floating point operations per particle!)*/
-    P_In.Force_Hg += (((V_j*P_In.W[j])/(P_In.Mag_R[j]*P_In.Mag_R[j]*Mag_rj))*
+    P_In.Force_Hg += (((V_j*P_In.W[j])/(P_In.Mag_R[j]*P_In.Mag_R[j]*Mag_rj))*  //        : N Vector
                 (delta_ij + delta_ji))*(rj);
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
   P_In.Force_Hg *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling it out of sum improved runtime
   P_In.Force_Int *= V_i;               // Each term in F_Int sum is multiplied by Vi, pulling it out of sum improved runtime
-  P_In.Force_Visc *= V_i;              // for debugging
+  //P_In.Force_Visc *= V_i;              // for debugging
 
   /* Compute acceleration of particle at new position a(t_i+1).
   Note that all the forces we have calculated have been in units of Newtons.
@@ -265,21 +258,21 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   mm/s^2. To get that, we note that 1N = 10^6(g*mm/s^2). Therefore, if we
   multiply our force, in Newtons, by 10^6 and then divide by the mass, in grams,
   then we get acceleration in mm/s^2. */
-  acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int +                     //        : mm/s^2
+  acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int +                     //        : mm/s^2 Vector
                                           P_In.Force_Contact +
                                           P_In.Force_Hg) +
-                                          g;                      // gravity
+                                          g;                         // gravity
 
   /* Now update the velocity, position vectors. This is done using the
   'leap-frog' integration scheme. However, during the first step of this
   scheme, we need to use forward euler to get the initial velocity.*/
   if(P_In.First_Time_Step == true) {
     P_In.First_Time_Step = false;
-    P_In.vel += (dt/2.)*acceleration;            // velocity starts at t_i+1/2           : mm/s
+    P_In.vel += (dt/2.)*acceleration;            // velocity starts at t_i+1/2           : mm/s Vector
   } //   if(P_In.First_Time_Step == true) {
 
-  P_In.x += dt*P_In.vel;                         // x_i+1 = x_i + dt*v_(i+1/2)           : mm
-  P_In.vel += dt*acceleration;                   // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s
+  P_In.x += dt*P_In.vel;                         // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
+  P_In.vel += dt*acceleration;                   // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
 } // void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, const double dt) {
 
 #endif

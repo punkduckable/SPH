@@ -27,9 +27,9 @@ Development History:
 
   DONE: 7/6-7/9: Implement Contact
 
-  - Tweak particle parameters to maximize stability
+  DONE 7/10 - 7/11: Tweak particle parameters to maximize stability
 
-  - Implement 'ray based' damage.
+  DONE 7/12 - 7/16: Implement 'ray based' damage.
 
   - Implement rigid needle
 
@@ -121,6 +121,7 @@ TODO / development history:
   - Linked List class
     DONE 6/12: Write a two way linked list (will be used for neighbor search)
     DONE 6/12: Add tests for list class
+    DONE 7/16: Make List a template.
     - functions that allocate arrays return 1 if allocation of memory fails
 
 SERIAL OPTIMIZATION

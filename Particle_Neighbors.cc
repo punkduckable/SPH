@@ -16,10 +16,10 @@ bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
 } // bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
 
 void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
-  unsigned int i,j;                    // Loop index variables
-  List Particle_Neighbor_List;         // Linked list to store known neighbors
-  unsigned int Num_Neighbors;          // Number of neighbors found
-  unsigned int *Neighbor_IDs;          // Array that holds final list of neighbors
+  unsigned int i,j;                              // Loop index variables
+  List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
+  unsigned int Num_Neighbors;                    // Number of neighbors found
+  unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
 
   // Cycle through the particles
   for(i = 0; i < Num_Particles; i++) {
@@ -98,11 +98,11 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles)
   is 100, Y_SIDE_LENGTH is 50, and Z_SIDE_LENGTH is 200 */
 
   unsigned int i = P_In.ijk[0], j = P_In.ijk[1], k = P_In.ijk[2];
-  unsigned int p,q,r;                  // Loop index variables
+  unsigned int p,q,r;                             // Loop index variables
   unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
-  List Particle_Neighbor_List;         // Linked list to store known neighbors
-  unsigned int Num_Neighbors;          // Number of neighbors found
-  unsigned int *Neighbor_IDs;          // Array that holds final list of neighbors
+  List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
+  unsigned int Num_Neighbors;                    // Number of neighbors found
+  unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
 
   /* If we are near the edge of the cube then we need to adjust which
   particles we search through
@@ -179,5 +179,88 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles)
   /* Now free Neighbor_IDs array for next particle! */
   delete [] Neighbor_IDs;
 } // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles) {
+
+
+void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle * Particles) {
+  // This function is used to remove 1 neighbor from an existing particle.
+
+  // To be able to remove a neighbor, we need to have neighbors!
+  if(P_In.Has_Neighbors == false || P_In.Num_Neighbors == 0)
+    printf("Particle %d has no neighbors! We can't remove %d\n", P_In.ID, Remove_Neighbor_ID);
+
+  /* Note: We use the term 'Neighbor Arrays' to refer to the dynamic particle
+  member varialbes that hold neighbor information (R, W, Grad_W, etc...)
+
+  So how do we remove a neighbor? Simple, we keep every old neighbor except
+  for the specified one. We do this by allocating new arrays with one fewer than
+  the old number of neighbors! We then cycle through this particles old
+  neihbors. For each old neighbor, we check if its ID matches Remove_Neighbor_ID.
+  If it doesn't match, then we copy that neighbor's data from the old Neighbor
+  arrays into the new Neighbor arrays. If it does match, then we skip that
+  neighbor (don't copy its info over). Once we are finished, we delete the old
+  Neighbor arrays and point this particle's arrays to the new Neighbor
+  arrays. */
+
+  unsigned int i, j = -1;                              // index variables
+  double V_j;
+
+  // New neighbor arrays
+  unsigned int *New_Neighbor_IDs = new unsigned int[P_In.Num_Neighbors - 1];   //        : unitless
+  Vector *New_R = new Vector[P_In.Num_Neighbors - 1];                          //        : mm Vector
+  double *New_Mag_R = new double[P_In.Num_Neighbors - 1];                      //        : mm
+  double *New_W = new double[P_In.Num_Neighbors - 1];                          //        : unitless
+  Vector *New_Grad_W = new Vector[P_In.Num_Neighbors - 1];                     //        : 1/mm Vector
+  Tensor New_A{0,0,0,
+               0,0,0,
+               0,0,0};
+
+  for(i = 0; i < P_In.Num_Neighbors; i++) {
+    // Check if ith neighbor ID matches Remove_Neighbor_ID
+    if(P_In.Neighbor_IDs[i] == Remove_Neighbor_ID)
+      continue;
+
+    // If not, then this is a new neighbor, increment j.
+    j++;
+
+    // Check if j == Num_Neighbors - 1. If this is the case, then Remove_Particle_ID
+    // was NOT one of this particle's neighbors!
+    if(j == P_In.Num_Neighbors - 1) {
+      printf("%d was not a neighbor of %d\n",Remove_Neighbor_ID, P_In.ID);
+      return;
+    }
+
+    // Copy old Neighbor data to New Neighbor arrays.
+    New_Neighbor_IDs[j] = P_In.Neighbor_IDs[i];                                //        : unitless
+    New_R[j] = P_In.R[i];                                                      //        : mm Vector
+    New_Mag_R[j] = P_In.Mag_R[i];                                              //        : mm
+    New_W[j] = P_In.W[i];                                                      //        : unitless
+    New_Grad_W[j] = P_In.Grad_W[i];                                            //        : 1/mm Vector
+
+    // Calculate New shape tensor.
+    V_j = Particles[P_In.Neighbor_IDs[j]].Vol;                                 //        : mm^3
+    New_A += Dyadic_Product((V_j*New_Grad_W[j]), New_R[j]);          // New shape tensor : unitless Tensor
+  } // for(i = 0; i < Num_Neighbors; i++) {
+
+  // Now that we have our new neighbor arrays, we can replace/delete the old
+  // neighbor arrays
+  delete [] P_In.Neighbor_IDs;
+  delete [] P_In.R;
+  delete [] P_In.Mag_R;
+  delete [] P_In.W;
+  delete [] P_In.Grad_W;
+
+  P_In.Neighbor_IDs = New_Neighbor_IDs;                                        //        : unitless
+  P_In.R = New_R;                                                              //        : mm Vector
+  P_In.Mag_R = New_Mag_R;                                                      //        : mm
+  P_In.W = New_W;                                                              //        : unitless
+  P_In.Grad_W = New_Grad_W;                                                    //        : 1/mm Vector
+
+  // Decrement number of neighbors by 1.
+  P_In.Num_Neighbors--;
+
+  // Now we can calculate the new A^(-1) from New_A.
+  P_In.A_Inv = New_A^(-1);                                                     //        : unitless Tensor
+
+} // void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle * Particles) {
 
 #endif

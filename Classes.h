@@ -4,6 +4,8 @@
   class Tensor;
   class Vector;
   class Particle;
+  
+  template <typename Type>
   class List;
 
 #endif

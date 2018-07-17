@@ -56,7 +56,7 @@ class Tensor {
 
     // Component access (public)
     double & operator()(const uByte row,
-                      const uByte col);           // Write to a component of the tensor (defines T(i,j) = ....) (runs checks, safer)
+                       const uByte col);          // Write to a component of the tensor (defines T(i,j) = ....) (runs checks, safer)
     double operator()(const uByte row,
                       const uByte col) const;     // Read a component of the tensor (defines ... = T(i,j)) (runs checks, safer)
 
@@ -70,25 +70,30 @@ class Tensor {
     void Print(void) const;                       // Print tensor components
 
     // Friends
-    friend double Max_Eigenvalue(const Tensor & S_In, const char Mode);
+    friend double Max_Eigenvalue(const Tensor & S_In,
+                                 const char Mode);
     friend Tensor operator*(double c,
                             const Tensor & T_In); // Scalar multiplication (defines c*T)
     friend Tensor Inverse(const Tensor & T_In);
     friend double Determinant(const Tensor & T_In);
     friend Tensor Transpose(const Tensor & T_In);
-    friend double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2);
+    friend double Tensor_Dot_Product(const Tensor & T1,
+                                     const Tensor & T2);
     friend void Print(const Tensor & T_In);
-    friend Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
+    friend Tensor Dyadic_Product(const Vector & V1,
+                                 const Vector & V2);
 
     // Temporary friends! Should remove asap
-    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles);
+    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles,
+                                                     const Particle * Particles);
 }; // class Tensor {
 
 // Tensor functions that don't belong in the tensor class
 Tensor Inverse(const Tensor & T_In);
 double Determinant(const Tensor & T_In);
 Tensor Transpose(const Tensor & T_In);
-double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2);
+double Tensor_Dot_Product(const Tensor & T1,
+                          const Tensor & T2);
 void Print(const Tensor & T_In);
 
 #endif

@@ -84,8 +84,8 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   double * LamM = new double[Num_Particles];
   //double * LamH = new double[Num_Particles];
-  //double * LamC = new double[Num_Particles];
-  //double * D = new double[Num_Particles];
+  double * LamC = new double[Num_Particles];
+  double * D = new double[Num_Particles];
   /*
   double * S11 = new double[Num_Particles];
   double * S22 = new double[Num_Particles];
@@ -111,8 +111,8 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   for(unsigned int i = 0; i < Num_Particles; i++) {
     LamM[i] = Particles[i].Stretch_M;
     //LamH[i] = Particles[i].Stretch_H;
-    //LamC[i] = Particles[i].Stretch_Critical;
-    //D[i] = Particles[i].D;
+    LamC[i] = Particles[i].Stretch_Critical;
+    D[i] = Particles[i].D;
 
     // Get F, P from current particle
     //F = Particles[i].F;
@@ -154,16 +154,15 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   std::strcpy(Weight_Name, "LamM");
   Add_Point_Data(File, Weight_Name, Num_Particles, LamM);
-  /*
-  std::strcpy(Weight_Name, "LamH");
-  Add_Point_Data(File, Weight_Name, Num_Particles, LamH);
+
+  //std::strcpy(Weight_Name, "LamH");
+  //Add_Point_Data(File, Weight_Name, Num_Particles, LamH);
 
   std::strcpy(Weight_Name, "LamC");
   Add_Point_Data(File, Weight_Name, Num_Particles, LamC);
 
   std::strcpy(Weight_Name, "D");
   Add_Point_Data(File, Weight_Name, Num_Particles, D);
-  */
   /* Components of S */
   /*
   std::strcpy(Weight_Name, "S11");
@@ -214,8 +213,8 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   // Deallocate dynamic arrays
   delete [] LamM;
   //delete [] LamH;
-  //delete [] LamC;
-  //delete [] D;
+  delete [] LamC;
+  delete [] D;
   /*
   delete [] S11;
   delete [] S22;
