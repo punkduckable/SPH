@@ -14,6 +14,7 @@ typedef unsigned char uByte;
 #include "Classes.h"
 #include "SPH_Diagnostics.h"
 #include "VTK_File.h"
+#include "Data_Dump.h"
 #include "Quick_Math.h"
 #include "Vector.h"
 #include "Tensor.h"
@@ -35,6 +36,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 #include "Particle_Update.cc"
 #include "Particle_Damage.cc"
 #include "Particle_Contact.cc"
+#include "Data_Dump.cc"
 #include "Tests.cc"
 
 ////////////////////////////////////////////////////////////////////////////////

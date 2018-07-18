@@ -97,7 +97,7 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles)
   vertical column then Z_SIDE_LENGTH is p. For a 100x50x200 cuboid of particles, X_SIDE_LENGTH
   is 100, Y_SIDE_LENGTH is 50, and Z_SIDE_LENGTH is 200 */
 
-  unsigned int i = P_In.ijk[0], j = P_In.ijk[1], k = P_In.ijk[2];
+  unsigned int i = P_In.i, j = P_In.j, k = P_In.k;
   unsigned int p,q,r;                             // Loop index variables
   unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
   List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors

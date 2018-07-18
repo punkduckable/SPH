@@ -274,7 +274,7 @@ void Particle_Tests(void) {
 
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 20000;                              // Number of time steps
+  const unsigned int Num_Steps = 10000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -307,6 +307,8 @@ void Particle_Tests(void) {
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
   const double h = Particle::h;
 
+  Vector X, x, V;
+
   //////////////////////////////////////////////////////////////////////////////
   // Initialize particle masses, volumes, etc..
   printf("Generating particles....\n");
@@ -317,7 +319,6 @@ void Particle_Tests(void) {
   A vertical column is a set of particles with the same x and z coordinates,
   while a row is a set of particles with the same y and x coordinates. This
   ordering method places particles with the same */
-  Vector X, x, vel;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
@@ -325,11 +326,11 @@ void Particle_Tests(void) {
 
         X *= IPS;                                                              //        : mm
         x = X;                                                                 //        : mm
-        vel = {0.,0.,0.};                                                      //        : mm/s
+        V = {0.,0.,0.};                                                        //        : mm/s
 
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[0] = i;     // i coordinate. Remove if not using cuboid
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[1] = j;     // j coordinate. Remove if not using cuboid
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ijk[2] = k;     // k coordinate. Remove if not using cuboid
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].i = i;     // i coordinate. Remove if not using cuboid
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].j = j;     // j coordinate. Remove if not using cuboid
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].k = k;     // k coordinate. Remove if not using cuboid
 
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ID = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass);  //        : g
@@ -337,7 +338,7 @@ void Particle_Tests(void) {
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Radius(Particle_Radius);   //   : mm
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_X(X);       //        : mm
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_x(x);       //        : mm
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_vel(vel);   //        : mm/s
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_V(V);       //        : mm/s
       } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
@@ -383,10 +384,12 @@ void Particle_Tests(void) {
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
 
   // Damage the 'cut'
-  for(k = 0; k < Z_SIDE_LENGTH; k++) {
-    Body[0*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].D = 1;
-    Particle_Helpers::Remove_Damaged_Particle(Body[0*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Body);
-  } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+  for(i = 0; i < 1; i++) {                  // Depth of cut
+    for(k = 0; k < Z_SIDE_LENGTH; k++) {    // Length of cut
+      Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].D = 1;
+      Particle_Helpers::Remove_Damaged_Particle(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Body);
+    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+  } // for(i = 0; i < 3; i++) {
 
   printf("Done! took %lums\n\n",MS_Neighbor);
 
@@ -398,7 +401,7 @@ void Particle_Tests(void) {
   // Print initial data
   printf("0 time steps complete\n");
   VTK_File::Export_Pariticle_Positions(Num_Particles_Body, Body);
-  Particle_Debugger::Export_Pariticle_Properties(Num_Particles_Body, Body);
+  //Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
 
   // Time step loop
   for(l = 0; l < Num_Steps; l++) {
@@ -442,7 +445,7 @@ void Particle_Tests(void) {
     j = 0;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].vel = {0,-40,0};
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-40,0};
       }
     }
 
@@ -450,7 +453,7 @@ void Particle_Tests(void) {
     j = Y_SIDE_LENGTH-1;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].vel = {0,40,0};
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,40,0};
       }
     }
 
@@ -506,13 +509,17 @@ void Particle_Tests(void) {
       printf("%d time steps complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles_Body, Body);
 
-      Particle_Debugger::Export_Pariticle_Properties(Num_Particles_Body, Body);
+      //Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
     } // if((k+1)%100 == 0) {
     Print_timer += clock()-timer2;
   } // for(l = 0; l < Num_Steps; l++) {
   printf("Done!\n\n");
   timer1 = clock()-timer1;
 
+  // Dump particle data to file
+  Data_Dump::Print_Data_To_File(Body, Num_Particles_Body);
+
+  // Print timing data
   MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
   MS_BC = (unsigned long)((double)update_BC_timer / (double)CLOCKS_PER_MS);
   MS_P = (unsigned long)((double)update_P_timer / (double)CLOCKS_PER_MS);

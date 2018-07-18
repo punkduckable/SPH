@@ -142,7 +142,7 @@ void Particle::Print(void) const {
   printf("F_Visc = ");
   //Force_Visc.Print();                          // For debugging
   //printf("F_Hg = ");
-  Force_Hg.Print();
+  Force_HG.Print();
   printf("\n");
 
   // If we have neighbors, print neighbor information
