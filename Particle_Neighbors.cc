@@ -185,7 +185,7 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remov
   // This function is used to remove 1 neighbor from an existing particle.
 
   // To be able to remove a neighbor, we need to have neighbors!
-  if(P_In.Has_Neighbors == false || P_In.Num_Neighbors == 0)
+  if(P_In.Neighbors_Are_Set == false || P_In.Num_Neighbors == 0)
     printf("Particle %d has no neighbors! We can't remove %d\n", P_In.ID, Remove_Neighbor_ID);
 
   /* Note: We use the term 'Neighbor Arrays' to refer to the dynamic particle

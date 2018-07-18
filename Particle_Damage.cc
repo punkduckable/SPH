@@ -250,9 +250,9 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
     delete [] Particles[Pi_ID].Grad_W;                                         //        : 1/mm
     delete [] Particles[Pi_ID].Neighbor_IDs;
 
-    // We need to set the 'Has_Neighbors' paramater to false. Otherwise, we
-    // won't be able to set the neighbors
-    Particles[Pi_ID].Has_Neighbors = false;
+    // We need to set the 'Neighbors_Are_Set' paramater to false. Otherwise, we
+    // won't be able to reset P_i's neighbors
+    Particles[Pi_ID].Neighbors_Are_Set = false;
 
     // Now we can reset the neighbors
     Particles[Pi_ID].Set_Neighbors(Pi_New_Num_Neighbors, Pi_New_Neighbors, Particles);

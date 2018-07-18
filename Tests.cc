@@ -268,13 +268,9 @@ void Particle_Tests(void) {
   // Loop indicies
   unsigned int i,j,k,l;
 
-  // Declare an array of particles
-  const unsigned int Num_Particles_Body = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
-  //const unsigned int Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
-
   // time step paramters
   const double dt = .00001;                                          // Time step        : s
-  const unsigned int Num_Steps = 10000;                              // Number of time steps
+  const unsigned int Num_Steps = 5000;                              // Number of time steps
 
   // Computation time measurement variables
   #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
@@ -294,111 +290,124 @@ void Particle_Tests(void) {
                 MS_x,
                 MS_Print;                                            // Timers (store number of MS for each operation)
 
-
   // Partile bodies
-  Particle *Body = new Particle[Num_Particles_Body];                 // Dynamically allocate Body array
-  //Particle *Boundary = new Particle[Num_Particles_Boundary];         // Dynamically allocate Boundary array
+  Particle *Body;
+  //Particle *Boundary;
 
-  // Particle properties
-  double IPS = Particle::Inter_Particle_Spacing;                               // mm
-  double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
-  double Particle_Radius = IPS*.578;                                            //        : mm
-  double Particle_Density = 1;                                                 //        : g/mm^3
-  double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
-  const double h = Particle::h;
+  unsigned int Num_Particles_Body;
+  //const unsigned int Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
 
-  Vector X, x, V;
+  // Check if we should read from file or generate a new particle's array
+  if(Read_From_Particles_File == 1)
+    Body = Data_Dump::Load_Data_From_File(Num_Particles_Body);
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Initialize particle masses, volumes, etc..
-  printf("Generating particles....\n");
-  timer1 = clock();
+  else {
+    // First, establish the particle arrays (the body (and boundary))
+    Num_Particles_Body = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
+    Body = new Particle[Num_Particles_Body];
+    //Boundary = new Particle[Num_Particles_Boundary];
 
-  // Set up Body
-  /* Store particles in 'Vertical Column' major 'Row' semi-major order
-  A vertical column is a set of particles with the same x and z coordinates,
-  while a row is a set of particles with the same y and x coordinates. This
-  ordering method places particles with the same */
-  for(i = 0; i < X_SIDE_LENGTH; i++) {
-    for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      for(j = 0; j < Y_SIDE_LENGTH; j++) {
-        X = {(double)i,(double)j,(double)k};
+    // Set particle paramaters
+    double IPS = Particle::Inter_Particle_Spacing;                             //        : mm
+    double Particle_Volume = IPS*IPS*IPS;                                      //        : mm^3
+    double Particle_Radius = IPS*.578;                                         //        : mm
+    double Particle_Density = 1;                                               //        : g/mm^3
+    double Particle_Mass = Particle_Volume*Particle_Density;                   //        : g
+    const double h = Particle::h;
 
-        X *= IPS;                                                              //        : mm
-        x = X;                                                                 //        : mm
-        V = {0.,0.,0.};                                                        //        : mm/s
+    Vector X, x, V;
 
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].i = i;     // i coordinate. Remove if not using cuboid
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].j = j;     // j coordinate. Remove if not using cuboid
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].k = k;     // k coordinate. Remove if not using cuboid
+    //////////////////////////////////////////////////////////////////////////////
+    // Initialize particle masses, volumes, etc..
+    printf("Generating particles....\n");
+    timer1 = clock();
 
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ID = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass);  //        : g
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume); //        : mm^3
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Radius(Particle_Radius);   //   : mm
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_X(X);       //        : mm
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_x(x);       //        : mm
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_V(V);       //        : mm/s
-      } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
-    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
-  } // for(i = 0; i < X_SIDE_LENGTH; i++) {
-
-  // Set up Boundary
-  /*
-  for(i = 0; i < 2*X_SIDE_LENGTH; i++) {
-    for(k = 0; k < 2*Z_SIDE_LENGTH; k++) {
-      X = {(double)i - .5*(double)X_SIDE_LENGTH, -15. , (double)k - .5*(double)Z_SIDE_LENGTH};
-      X *= IPS;
-      x = X;
-      vel = {0.,0.,0.};
-
-      Boundary[i*2*Z_SIDE_LENGTH + k] .ijk[0] = i;           // i coordinate. Remove if not using cuboid
-      Boundary[i*2*Z_SIDE_LENGTH + k].ijk[1] = 1;            // j coordinate. Remove if not using cuboid
-      Boundary[i*2*Z_SIDE_LENGTH + k].ijk[2] = k;            // k coordinate. Remove if not using cuboid
-
-      Boundary[i*2*Z_SIDE_LENGTH + k].ID = i*Z_SIDE_LENGTH + k;
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Mass(Particle_Mass);                 //         : g
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Vol(Particle_Volume);                //        : mm^3
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_X(X);                                //        : mm
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_x(x);                                //        : mm
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_vel(vel);                            //        : mm/s
-    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
-  } // for(i = 0; i < X_SIDE_LENGTH; i++) {
-  */
-  timer1 = clock()-timer1;
-  MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
-  printf("Done! took %lums\n\n",MS_Gen);
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Set up Neighbors in Body
-  printf("Generating Neighbor lists....\n");
-  timer1 = clock();
-  for(i = 0; i < X_SIDE_LENGTH; i++) {
-    for(j = 0; j < Y_SIDE_LENGTH; j++) {
+    // Set up Body
+    /* Store particles in 'Vertical Column' major 'Row' semi-major order
+    A vertical column is a set of particles with the same x and z coordinates,
+    while a row is a set of particles with the same y and x coordinates. This
+    ordering method places particles with the same */
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        Find_Neighbors_Box(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body);
+        for(j = 0; j < Y_SIDE_LENGTH; j++) {
+          X = {(double)i,(double)j,(double)k};
+
+          X *= IPS;                                                            //        : mm
+          x = X;                                                               //        : mm
+          V = {0.,0.,0.};                                                      //        : mm/s
+
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].i = i;   // i coordinate. Remove if not using cuboid
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].j = j;   // j coordinate. Remove if not using cuboid
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].k = k;   // k coordinate. Remove if not using cuboid
+
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].ID = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass);     //        : g
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume);    //        : mm^3
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Radius(Particle_Radius); //   : mm
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_X(X);//        : mm
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_x(x);//        : mm
+          Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_V(V);//        : mm/s
+        } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
-    } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
-  } // for(i = 0; i < X_SIDE_LENGTH; i++) {
-  timer1 = clock() - timer1;
-  MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+    } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
-  // Damage the 'cut'
-  for(i = 0; i < 1; i++) {                  // Depth of cut
-    for(k = 0; k < Z_SIDE_LENGTH; k++) {    // Length of cut
-      Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].D = 1;
-      Particle_Helpers::Remove_Damaged_Particle(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Body);
-    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
-  } // for(i = 0; i < 3; i++) {
+    // Set up Boundary
+    /*
+    for(i = 0; i < 2*X_SIDE_LENGTH; i++) {
+      for(k = 0; k < 2*Z_SIDE_LENGTH; k++) {
+        X = {(double)i - .5*(double)X_SIDE_LENGTH, -15. , (double)k - .5*(double)Z_SIDE_LENGTH};
+        X *= IPS;
+        x = X;
+        vel = {0.,0.,0.};
 
-  printf("Done! took %lums\n\n",MS_Neighbor);
+        Boundary[i*2*Z_SIDE_LENGTH + k] .ijk[0] = i;       // i coordinate. Remove if not using cuboid
+        Boundary[i*2*Z_SIDE_LENGTH + k].ijk[1] = 1;        // j coordinate. Remove if not using cuboid
+        Boundary[i*2*Z_SIDE_LENGTH + k].ijk[2] = k;        // k coordinate. Remove if not using cuboid
+
+        Boundary[i*2*Z_SIDE_LENGTH + k].ID = i*Z_SIDE_LENGTH + k;
+        Boundary[i*2*Z_SIDE_LENGTH + k].Set_Mass(Particle_Mass);               //         : g
+        Boundary[i*2*Z_SIDE_LENGTH + k].Set_Vol(Particle_Volume);              //        : mm^3
+        Boundary[i*2*Z_SIDE_LENGTH + k].Set_X(X);                              //        : mm
+        Boundary[i*2*Z_SIDE_LENGTH + k].Set_x(x);                              //        : mm
+        Boundary[i*2*Z_SIDE_LENGTH + k].Set_vel(vel);                          //        : mm/s
+      } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+    } // for(i = 0; i < X_SIDE_LENGTH; i++) {
+    */
+    timer1 = clock()-timer1;
+    MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+    printf("Done! took %lums\n\n",MS_Gen);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Set up Neighbors in Body
+    printf("Generating Neighbor lists....\n");
+    timer1 = clock();
+    for(i = 0; i < X_SIDE_LENGTH; i++) {
+      for(j = 0; j < Y_SIDE_LENGTH; j++) {
+        for(k = 0; k < Z_SIDE_LENGTH; k++) {
+          Find_Neighbors_Box(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Body);
+        } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+      } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
+    } // for(i = 0; i < X_SIDE_LENGTH; i++) {
+    timer1 = clock() - timer1;
+    MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+
+    // Damage the 'cut'
+    for(i = 0; i < 1; i++) {                     // Depth of cut
+      for(k = 0; k < Z_SIDE_LENGTH; k++) {       // Length of cut
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].D = 1;
+        Particle_Helpers::Remove_Damaged_Particle(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Body);
+      } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+    } // for(i = 0; i < 3; i++) {
+
+    printf("Done! took %lums\n\n",MS_Neighbor);
+  } // else {
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
-
   printf("Running particle time steps....\n");
 
   // Print initial data
+  timer1 = clock();
   printf("0 time steps complete\n");
   VTK_File::Export_Pariticle_Positions(Num_Particles_Body, Body);
   //Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
@@ -516,8 +525,9 @@ void Particle_Tests(void) {
   printf("Done!\n\n");
   timer1 = clock()-timer1;
 
-  // Dump particle data to file
-  Data_Dump::Print_Data_To_File(Body, Num_Particles_Body);
+  // If saving is enabled, Dump particle data to file
+  if(Save_Data_To_File == 1)
+    Data_Dump::Print_Data_To_File(Body, Num_Particles_Body);
 
   // Print timing data
   MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);

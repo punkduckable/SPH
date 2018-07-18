@@ -4,23 +4,23 @@
 class Particle {
   private:
     // Cuboid parameters (should be deleted if not working with a rectangle)
-    const static double Inter_Particle_Spacing;            //                            : mm
+    static double Inter_Particle_Spacing;                  //                            : mm
     unsigned int i,j,k;                                    // ijk position of particle in the cuboid
 
     // Kernel parameters
-    const static double h;                                 // Support radius             : mm
-    const static double Shape_Function_Amp;                // Shape function Amplitude   : 1/mm^3
+    static double h;                                       // Support radius             : mm
+    static double Shape_Function_Amp;                      // Shape function Amplitude   : 1/mm^3
 
     // Strain energy function parameters
-    const static double Lame;                              // Lame parameter             : Mpa
-    const static double mu0;                               // Shear modulus              : Mpa
+    static double Lame;                                    // Lame parameter             : Mpa
+    static double mu0;                                     // Shear modulus              : Mpa
 
     // Viscosity parameters
-    const static double mu;                                // Viscosity                  : Mpa*s
+    static double mu;                                      // Viscosity                  : Mpa*s
 
     // Hourglass (Hg) correction parameters
-    const static double E;                                 // Hourglass stiffness        : Mpa
-    const static double alpha;                             // Hg control parameter       : unitless
+    static double E;                                       // Hourglass stiffness        : Mpa
+    static double alpha;                                   // Hg control parameter       : unitless
 
     // Particle ID
     unsigned int ID;                                       // Particle ID in the Particle's array.
@@ -35,7 +35,7 @@ class Particle {
     Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        :  mm Vector
     Vector V{0,0,0};                                       // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog):  mm/s Vector
 
-    bool First_Time_Step = true;                           // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
+    unsigned int First_Time_Step = true;                   // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
     Tensor P{0,0,0,                                        // First Piola-Kirchhoff stress tensor  : Mpa Tensor
              0,0,0,
              0,0,0};
@@ -58,10 +58,10 @@ class Particle {
     double Stretch_M = 0;                                  // Current max stretch        : unitless
     double Stretch_Critical;                               // If Principle stretch excedes Critical then particle incures damage : unitless
     double D = 0;                                          // Damage parameter           : unitless
-    const static double Tau;                               // Damage rate parameter (see eq 26)
+    static double Tau;                                     // Damage rate parameter (see eq 26)
 
     // Neighbor variables
-    bool Has_Neighbors = false;                            // True if the particle has neighbors, false otherwise
+    unsigned int Neighbors_Are_Set = false;                // True if the particle has neighbors, false otherwise
     unsigned int Num_Neighbors;                            // Keeps track of number of Neighbors
     unsigned int *Neighbor_IDs;                            // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
     Vector *R;                                             // Dynamic array that stores neighbor reference displacement
@@ -137,6 +137,11 @@ class Particle {
 
     friend void Data_Dump::Print_Particle_To_File(const Particle & P_In,
                                                   FILE * File);
+
+    friend Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles);
+
+    friend void Data_Dump::Load_Particle_From_File(Particle & P_In,
+                                                   FILE * File);
 
     friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles,
                                                      const Particle * Particles);
