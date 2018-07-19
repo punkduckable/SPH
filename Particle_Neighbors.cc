@@ -30,10 +30,10 @@ void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle
       if(j == i)
         continue;
 
-      // Test if jth particle is inside support radius of ith particle
-      if(Are_Neighbors(Particles[i], Particles[j])) {
+      // Test if jth particle is inside support radius of ith particle. If so,
+      // add P_j to P_i's neighbor list.
+      if(Are_Neighbors(Particles[i], Particles[j]))
         Particle_Neighbor_List.Add_Back(j);
-      } // if(Are_Neighbors(Particles[i], Particles[j])) {
     } // for(unsigned int j = 0; j < Num_Particles; j++) {
 
     /* Now that we have the neighbor list, we can make it into an array. To do
@@ -43,9 +43,8 @@ void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle
     Num_Neighbors = Particle_Neighbor_List.Node_Count();
     Neighbor_IDs = new unsigned int[Num_Neighbors];
 
-    for(j = 0; j < Num_Neighbors; j++) {
+    for(j = 0; j < Num_Neighbors; j++)
       Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front();
-    } // for(j = 0; j < Num_Neighbors; j++) {
 
     // Now sent the Neighbor list to the particle
     Particles[i].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);

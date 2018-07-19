@@ -22,9 +22,8 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_
   fprintf(File,"LOOKUP_TABLE default\n");
 
   // Now print supplied data to file
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned int i = 0; i < Num_Particles; i++)
     fprintf(File,"\t %8.3f\n",Data[i]);
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
 }
 
 void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles) {

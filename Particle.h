@@ -82,12 +82,19 @@ class Particle {
     Particle & operator=(const Particle & P_In);           // Defines P1 = P2 (performs a deep copy)
 
     // Particle setup methods
+    void Set_ijk(const unsigned int i_in, const unsigned int j_in, const unsigned int k_in) {
+      i = i_in;
+      j = j_in;
+      k = k_in;
+    }
+    void Set_ID(const unsigned int ID_In) { ID = ID_In; }
     void Set_Mass(const double Mass_In) { Mass = Mass_In; }                    //        : g
     void Set_Vol(const double Vol_In) { Vol = Vol_In; }                        //        : mm^3
     void Set_Radius(const double Radius_In) { Radius = Radius_In; }            //        : mm
     void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm Vector
     void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm Vector
     void Set_V(const Vector & V_In) { V = V_In; }          // Set particle's velocity    : mm/s Vector
+    void Set_D(const double D_In) { D = D_In; }
     void Set_Neighbors(const unsigned int N,
                        const unsigned int * Neighbor_ID_Array,
                        const Particle * Particles);        // Set Neighbors

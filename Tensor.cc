@@ -767,9 +767,8 @@ Tensor Tensor::Transpose(void) const {
 } // Tensor Tensor::Transpose(void) const {
 
 void Tensor::Print(void) const {
-  for(int i = 0; i < 3; i++) {
+  for(int i = 0; i < 3; i++)
     printf("| %9.2e %9.2e %9.2e |\n",S[i*3], S[i*3 + 1], S[i*3 + 2]);
-  }
 } // void Tensor::Print(void) const {
 
 

@@ -236,9 +236,8 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
     Pi_New_Num_Neighbors = Pi_New_Neighbor_List.Node_Count();
     Pi_New_Neighbors = new unsigned int[Pi_New_Num_Neighbors];
 
-    for(k = 0; k < Pi_New_Num_Neighbors; k++) {
+    for(k = 0; k < Pi_New_Num_Neighbors; k++)
         Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Remove_Front();
-    } // for(k = 0; k < Pi_New_Num_Neighbors; k++) {
 
     /* When we set new neighbors, the Set_Neighbors function will allocate
     new dynamic arrays for the Particle's members (for the W, Grad_W, etc..
