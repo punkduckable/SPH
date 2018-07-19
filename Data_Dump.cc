@@ -13,7 +13,8 @@ void Data_Dump::Print_Data_To_File(const Particle * Particles, const unsigned in
 
   // Let's begin by printing the 'static' particle class paramaters
   fprintf(File,   "Inter Particle Spacing:       %5lf\n",Particle::Inter_Particle_Spacing);
-  fprintf(File,   "Support radius (h):           %5lf\n",Particle::h);
+  fprintf(File,   "Support Radius (mm):          %5lf\n",Particle::h);
+  fprintf(File,   "Support Radius (IPS):         %u\n",Particle::Support_Radius);
   fprintf(File,   "Shape Function Amplitude:     %5lf\n",Particle::Shape_Function_Amp);
   fprintf(File,   "Lame parameter:               %5lf\n",Particle::Lame);
   fprintf(File,   "Shear modulus (mu0):          %5lf\n",Particle::mu0);
@@ -24,7 +25,13 @@ void Data_Dump::Print_Data_To_File(const Particle * Particles, const unsigned in
 
   // Now let's print the number of particles
   fprintf(File,   "\n");
-  fprintf(File,   "Number of particles:          %u\n\n",Num_Particles);
+  fprintf(File,   "Number of particles:          %u\n",Num_Particles);
+
+  // Finally, let's print the cuboid paramaters (should be removed if not using
+  // a cuboid)
+  fprintf(File,   "X Side Length:                %u\n", Simulation::X_SIDE_LENGTH);
+  fprintf(File,   "Y Side Length:                %u\n", Simulation::Y_SIDE_LENGTH);
+  fprintf(File,   "Z Side Length:                %u\n\n", Simulation::Z_SIDE_LENGTH);
 
   // Now let's print all particle data to the file
   for(unsigned int i = 0; i < Num_Particles; i++)
@@ -92,6 +99,7 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
 
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::Inter_Particle_Spacing);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::h);
+  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Particle::Support_Radius);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::Shape_Function_Amp);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::Lame);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::mu0);
@@ -102,6 +110,10 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
 
   // Now read in number of particles
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
+  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::X_SIDE_LENGTH);
+  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::Y_SIDE_LENGTH);
+  fread(Buf, 1, 30, File); fscanf(File, " %u\n\n", &Simulation::Z_SIDE_LENGTH);
+
 
   // Use this to allocate the particle's array
   Particle * Particles = new Particle[Num_Particles];

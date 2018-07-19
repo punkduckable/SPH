@@ -12,6 +12,7 @@ typedef unsigned char uByte;
 
 // Header files
 #include "Classes.h"
+#include "Namespaces.h"
 #include "SPH_Diagnostics.h"
 #include "VTK_File.h"
 #include "Data_Dump.h"
@@ -22,6 +23,7 @@ typedef unsigned char uByte;
 #include "Particle.h"
 #include "List.h"
 #include "Tests.h"
+#include "Simulation.h"
 
 // Prototypes
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
@@ -38,6 +40,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 #include "Particle_Contact.cc"
 #include "Data_Dump.cc"
 #include "Tests.cc"
+#include "Simulation.cc"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function definitions
@@ -78,12 +81,15 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 } // Tensor Dyatic_Product(const Vector & V2,const Vector & V2) {
 
 int main() {
-  // Run Vector, Tensor, List tests.
+  //////////////////////////////////////////////////////////////////////////////
+  // Tests
   //Vector_Tests();
   //Tensor_Tests();
   //List_Tests();
-  Particle_Tests();
+  //Particle_Tests();
   //Timing_Tests();
+
+  Simulation::Run_Simulation();
 
   return 0;
 } // int main() {

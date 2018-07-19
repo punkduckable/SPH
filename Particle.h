@@ -8,7 +8,8 @@ class Particle {
     unsigned int i,j,k;                                    // ijk position of particle in the cuboid
 
     // Kernel parameters
-    static double h;                                       // Support radius             : mm
+    static double h;                                       // Support radius in mm's     : mm
+    static unsigned int Support_Radius;                    // Support radius in Inter Particle Spacints's    : unitless
     static double Shape_Function_Amp;                      // Shape function Amplitude   : 1/mm^3
 
     // Strain energy function parameters
@@ -86,30 +87,33 @@ class Particle {
     void Set_Radius(const double Radius_In) { Radius = Radius_In; }            //        : mm
     void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm Vector
     void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm Vector
-    void Set_V(const Vector & V_In) { V = V_In; }             // Set particle's velocity    : mm/s Vector
+    void Set_V(const Vector & V_In) { V = V_In; }          // Set particle's velocity    : mm/s Vector
     void Set_Neighbors(const unsigned int N,
                        const unsigned int * Neighbor_ID_Array,
                        const Particle * Particles);        // Set Neighbors
 
     // Update P
-    friend void Particle_Helpers::Update_P(Particle & P_In,
+    friend void Particle_Helpers::Update_P(Particle & P_In,                    // Updates P_In's Second Piola-Kirchhoff stress tensor
                                            Particle * Particles,
-                                           const double dt);                   // Updates P_In's Second Piola-Kirchhoff stress tensor
+                                           const double dt);
 
     // Update x
-    friend void Particle_Helpers::Update_x(Particle & P_In,
+    friend void Particle_Helpers::Update_x(Particle & P_In,                    // Updates P_In's spacial position
                                            const Particle * Particles,
-                                           const double dt);                   // Updates P_In's spacial position
+                                           const double dt);
 
     // Neighbor methods
-    friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,
-                                                const Particle & P2);          // Returns true P1 and P2 are neighbors, false otherwise
+    friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,           // Returns true P1 and P2 are neighbors, false otherwise
+                                                const Particle & P2);
 
-    friend void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles,
-                                                 Particle * Particles);        // Generate neighbor list for every particle in 'Partilces' array
+    friend void Particle_Helpers::Find_Neighbors(const unsigned Num_Particles, // Generate neighbor list for every particle in 'Partilces' array
+                                                 Particle * Particles);
 
     friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In,
-                                                     Particle * Particles);
+                                                     Particle * Particles,
+                                                     const unsigned X_SIDE_LENGTH,
+                                                     const unsigned Y_SIDE_LENGTH,
+                                                     const unsigned Z_SIDE_LENGTH);
 
     friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
                                                   const unsigned int Remove_Neighbor_ID,
@@ -128,6 +132,8 @@ class Particle {
 
     // Other friends
     friend void Particle_Tests(void);
+    friend void Simulation::Run_Simulation(void);
+    friend void Simulation::Set_Static_Particle_Members(void);
 
     friend void Particle_Debugger::Export_Pariticle_Forces(const unsigned int Num_Particles,
                                                            const Particle * Particles);
