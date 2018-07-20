@@ -12,7 +12,7 @@ bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
   h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
   neighbor of P2. */
 
-  return ( Particle::h > Magnitude(P1.X - P2.X));
+  return ( Particle::h > Magnitude(P1.Get_X() - P2.Get_X()));
 } // bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
 
 void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
@@ -96,7 +96,7 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles,
   vertical column then Z_SIDE_LENGTH is p. For a 100x50x200 cuboid of particles, X_SIDE_LENGTH
   is 100, Y_SIDE_LENGTH is 50, and Z_SIDE_LENGTH is 200 */
 
-  unsigned int i = P_In.i, j = P_In.j, k = P_In.k;
+  unsigned int i = P_In.Get_i(), j = P_In.Get_j(), k = P_In.Get_k();
   unsigned int p,q,r;                             // Loop index variables
   unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
   List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors

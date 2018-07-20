@@ -56,34 +56,38 @@ void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
 
   unsigned int i;                                // index variable
 
+  const Vector X = P_In.Get_X();
+  const Vector x = P_In.Get_x();
+  const V = P_In.Get_V();
+
   // Print particle ID, dimensions
-  fprintf(File,   "ID:                           %u\n", P_In.ID);
-  fprintf(File,   "ijk:                          %u %u %u\n", P_In.i, P_In.j, P_In.k);
-  fprintf(File,   "Mass:                         %5e\n", P_In.Mass);
-  fprintf(File,   "Volume:                       %5e\n", P_In.Vol);
-  fprintf(File,   "Radius:                       %5lf\n", P_In.Radius);
+  fprintf(File,   "ID:                           %u\n", P_In.Get_ID());
+  fprintf(File,   "ijk:                          %u %u %u\n", P_In.Get_i(), P_In.Get_j(), P_In.Get_j());
+  fprintf(File,   "Mass:                         %5e\n", P_In.Get_Mass());
+  fprintf(File,   "Volume:                       %5e\n", P_In.Get_Vol());
+  fprintf(File,   "Radius:                       %5lf\n", P_In.Get_Radius());
 
   // Print Particle dynamic properties
-  fprintf(File,   "X:                            <%6.3lf, %6.3lf, %6.3lf>\n", P_In.X(0), P_In.X(1), P_In.X(2));
-  fprintf(File,   "x:                            <%6.3lf, %6.3lf, %6.3lf>\n", P_In.x(0), P_In.x(1), P_In.x(2));
-  fprintf(File,   "V:                            <%6.3lf, %6.3lf, %6.3lf>\n", P_In.V(0), P_In.V(1), P_In.V(2));
+  fprintf(File,   "X:                            <%6.3lf, %6.3lf, %6.3lf>\n", X(0), X(1), X(2));
+  fprintf(File,   "x:                            <%6.3lf, %6.3lf, %6.3lf>\n", x(0), x(1), x(2));
+  fprintf(File,   "V:                            <%6.3lf, %6.3lf, %6.3lf>\n", V(0), V(1), V(2));
 
   // Damage paramaters
-  fprintf(File,   "Stretch_H:                    %5lf\n", P_In.Stretch_H);
-  fprintf(File,   "Stretch_M:                    %5lf\n", P_In.Stretch_M);
-  fprintf(File,   "Stretch_Critical:             %5lf\n", P_In.Stretch_Critical);
-  fprintf(File,   "D:                            %5lf\n", P_In.D);
+  fprintf(File,   "Stretch_H:                    %5lf\n", P_In.Get_Stretch_H());
+  fprintf(File,   "Stretch_M:                    %5lf\n", P_In.Get_Stretch_M());
+  fprintf(File,   "Stretch_Critical:             %5lf\n", P_In.Get_Stretch_Critical());
+  fprintf(File,   "D:                            %5lf\n", P_In.Get_D());
 
   // Now, let's figure out how many neighbors this particle has.
-  unsigned int Num_Neighbors = P_In.Num_Neighbors;
+  unsigned int Num_Neighbors = P_In.Get_Num_Neighbors();
 
   // Neighbor paramters
-  fprintf(File,   "Number of neighbors:          %u\n", P_In.Num_Neighbors);
+  fprintf(File,   "Number of neighbors:          %u\n", P_In.Get_Num_Neighbors());
 
   // Print neighbor IDs
   fprintf(File,   "Neighbor IDs                  ");
   for(i = 0; i < Num_Neighbors; i++)
-    fprintf(File,"%d ",P_In.Neighbor_IDs[i]);
+    fprintf(File,"%d ",P_In.Get_Neighbor_IDs(i));
   fprintf(File,"\n\n");
 } // void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
 

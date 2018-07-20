@@ -48,7 +48,6 @@ class Particle {
     Vector Force_Int{0,0,0};                               // Internal Force vector       : N Vector
     Vector Force_Contact{0,0,0};                           // Contact Force Vector        : N Vector
     Vector Force_HG{0,0,0};                                // Hour-glass force            : N Vector
-
     //Vector Force_Visc{0,0,0};                              // For debugging
     //Tensor Visc{0,0,0,                                     // For debugging
     //            0,0,0,
@@ -81,7 +80,7 @@ class Particle {
     // Particle equality
     Particle & operator=(const Particle & P_In);           // Defines P1 = P2 (performs a deep copy)
 
-    // Particle setup methods
+    // Methods to set particle properties
     void Set_ijk(const unsigned int i_in, const unsigned int j_in, const unsigned int k_in) {
       i = i_in;
       j = j_in;
@@ -95,9 +94,33 @@ class Particle {
     void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm Vector
     void Set_V(const Vector & V_In) { V = V_In; }          // Set particle's velocity    : mm/s Vector
     void Set_D(const double D_In) { D = D_In; }
-    void Set_Neighbors(const unsigned int N,
-                       const unsigned int * Neighbor_ID_Array,
-                       const Particle * Particles);        // Set Neighbors
+
+
+    // Methods to get particle properties
+    unsigned int Get_i(void) const { return i; }
+    unsigned int Get_j(void) const { return j; }
+    unsigned int Get_k(void) const { return k; }
+    unsigned int Get_ID(void) const { return ID; }
+    double Get_Mass(void) const { return Mass; }
+    double Get_Vol(void) const { return Vol; }
+    double Get_Radius(void) const { return Radius; }
+    const Vector & Get_X(void) const { return X; }
+    const Vector & Get_x(void) const { return x; }
+    const Vector & Get_V(void) const { return V; }
+    const Tensor & Get_P(void) const { return P; }
+    const Tensor & Get_F(void) const { return F; }
+    double Get_Stretch_M(void) const { return Stretch_M; }
+    double Get_Stretch_H(void) const { return Stretch_H; }
+    double Get_Stretch_Critical(void) const { return Stretch_Critical; }
+    double Get_D(void) const { return D; }
+    unsigned int Get_Num_Neighbors(void) const { return Num_Neighbors; }
+    unsigned int Get_Neighbor_IDs(unsigned int i) const {
+      if(i < Num_Neighbors)
+        return Neighbor_IDs[i];
+
+      printf("Requested neighbor ID is out of bounds! Num_Neighbors = %u, requested index = %u\n",Num_Neighbors, i);
+      return 0;
+    }
 
     // Update P
     friend void Particle_Helpers::Update_P(Particle & P_In,                    // Updates P_In's Second Piola-Kirchhoff stress tensor
@@ -109,12 +132,13 @@ class Particle {
                                            const Particle * Particles,
                                            const double dt);
 
-    // Neighbor methods
-    friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,           // Returns true P1 and P2 are neighbors, false otherwise
-                                                const Particle & P2);
+    // Neighbor friends (other neighbor methods are in Particle_Neighbors.cc)
+    void Set_Neighbors(const unsigned int N,
+                       const unsigned int * Neighbor_ID_Array,
+                       const Particle * Particles);        // Set Neighbors
 
-    friend void Particle_Helpers::Find_Neighbors(const unsigned Num_Particles, // Generate neighbor list for every particle in 'Partilces' array
-                                                 Particle * Particles);
+    friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,
+                                                const Particle & P2);
 
     friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In,
                                                      Particle * Particles,
@@ -126,11 +150,11 @@ class Particle {
                                                   const unsigned int Remove_Neighbor_ID,
                                                   const Particle * Particles);
 
-    // Damage methods
+    // Damage method friends
     friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
                                                           Particle * Particles);
 
-    // Contact methods
+    // Contact method friends
     friend void Particle_Helpers::Contact(Particle * Body_A,
                                           const unsigned int Num_Particles_A,
                                           Particle * Body_B,
@@ -148,16 +172,10 @@ class Particle {
     friend void Data_Dump::Print_Data_To_File(const Particle * Particles,
                                               const unsigned int Num_Particles);
 
-    friend void Data_Dump::Print_Particle_To_File(const Particle & P_In,
-                                                  FILE * File);
-
     friend Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles);
 
     friend void Data_Dump::Load_Particle_From_File(Particle & P_In,
                                                    FILE * File);
-
-    friend void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles,
-                                                     const Particle * Particles);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

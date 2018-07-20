@@ -135,7 +135,7 @@ void Simulation::Run_Simulation(void) {
     j = 0;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-20,0};
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,-20,0});
       }
     }
 
@@ -143,7 +143,7 @@ void Simulation::Run_Simulation(void) {
     j = Y_SIDE_LENGTH-1;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,20,0};
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,20,0});
       }
     }
 

@@ -48,7 +48,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   // Cycle through particles, print spacial positions of each particle
   Vector x;
   for(unsigned int i = 0; i < Num_Particles; i++) {
-    x = Particles[i].x;
+    x = Particles[i].Get_x();
 
     fprintf(File,"%8.3f \t %8.3f \t %8.3f\n",x[0], x[1], x[2]);
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
@@ -108,14 +108,14 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
            0,0,1};
 
   for(unsigned int i = 0; i < Num_Particles; i++) {
-    LamM[i] = Particles[i].Stretch_M;
-    //LamH[i] = Particles[i].Stretch_H;
-    //LamC[i] = Particles[i].Stretch_Critical;
-    D[i] = Particles[i].D;
+    LamM[i] = Particles[i].Get_Stretch_M();
+    //LamH[i] = Particles[i].Get_Stretch_H();
+    //LamC[i] = Particles[i].Get_Stretch_Critical();
+    D[i] = Particles[i].Get_D();
 
     // Get F, P from current particle
-    //F = Particles[i].F;
-    //P = Particles[i].P;
+    //F = Particles[i].Get_F();
+    //P = Particles[i].Get_P();
 
     // Use F to calculate determinant (J)
     //J[i] = Determinant(F);
