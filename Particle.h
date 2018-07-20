@@ -10,7 +10,7 @@ class Particle {
     // Kernel parameters
     static double h;                                       // Support radius in mm's     : mm
     static unsigned int Support_Radius;                    // Support radius in Inter Particle Spacints's    : unitless
-    static double Shape_Function_Amp;                      // Shape function Amplitude   : 1/mm^3
+    static double Shape_Function_Amp;                      // Shape function Amplitude   : 1/(mm^6)
 
     // Strain energy function parameters
     static double Lame;                                    // Lame parameter             : Mpa
@@ -45,9 +45,9 @@ class Particle {
              0,0,1};
 
     // Forces acting on the particle
-    Vector Force_Int{0,0,0};                               // Internal Force vector       : N Vector
-    Vector Force_Contact{0,0,0};                           // Contact Force Vector        : N Vector
-    Vector Force_HG{0,0,0};                                // Hour-glass force            : N Vector
+    Vector Force_Int{0,0,0};                               // Internal Force vector      : N Vector
+    Vector Force_Contact{0,0,0};                           // Contact Force Vector       : N Vector
+    Vector Force_HG{0,0,0};                                // Hour-glass force           : N Vector
     //Vector Force_Visc{0,0,0};                              // For debugging
     //Tensor Visc{0,0,0,                                     // For debugging
     //            0,0,0,
@@ -63,12 +63,12 @@ class Particle {
     // Neighbor variables
     unsigned int Neighbors_Are_Set = false;                // True if the particle has neighbors, false otherwise
     unsigned int Num_Neighbors;                            // Keeps track of number of Neighbors
-    unsigned int *Neighbor_IDs;                            // Dynamic array that stores neighbor ID's (arry index's for Particle array in main file)
-    Vector *R;                                             // Dynamic array that stores neighbor reference displacement
-    double *Mag_R;                                         // Dynamic array that stores the magnitude of each neighbor's reference displacement
-    double *W;                                             // Dynamic array that stores shape function value for each neighbor
-    Vector *Grad_W;                                        // Dynamic array that stores Gradient of the Shape function at each neighbors
-    Tensor A_Inv;                                          // Inverse of shape tensor
+    unsigned int *Neighbor_IDs;                            // Dynamic array. Stores neighbor ID's
+    Vector *R;                                             // Dynamic array. Stores neighbor reference displacement                        : mm
+    double *Mag_R;                                         // Dynamic array. Stores magnitude of reference displacement to each neighbor   : mm
+    double *W;                                             // Dynamic array. Stores shape function value for each neighbor                 : 1/(mm^3)
+    Vector *Grad_W;                                        // Dynamic array. Stores Gradient of the Shape function at each neighbors       : 1/(mm^4)
+    Tensor A_Inv;                                          // Inverse of shape tensor                                                      : unitless
 
   public:
     // Constructors, destructor
@@ -85,7 +85,7 @@ class Particle {
       i = i_in;
       j = j_in;
       k = k_in;
-    }
+    } // void Set_ijk(const unsigned int i_in, const unsigned int j_in, const unsigned int k_in) {
     void Set_ID(const unsigned int ID_In) { ID = ID_In; }
     void Set_Mass(const double Mass_In) { Mass = Mass_In; }                    //        : g
     void Set_Vol(const double Vol_In) { Vol = Vol_In; }                        //        : mm^3
@@ -120,7 +120,7 @@ class Particle {
 
       printf("Requested neighbor ID is out of bounds! Num_Neighbors = %u, requested index = %u\n",Num_Neighbors, i);
       return 0;
-    }
+    } // unsigned int Get_Neighbor_IDs(unsigned int i) const {
 
     // Update P
     friend void Particle_Helpers::Update_P(Particle & P_In,                    // Updates P_In's Second Piola-Kirchhoff stress tensor

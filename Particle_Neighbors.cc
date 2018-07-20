@@ -33,7 +33,7 @@ void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle
       // Test if jth particle is inside support radius of ith particle. If so,
       // add P_j to P_i's neighbor list.
       if(Are_Neighbors(Particles[i], Particles[j]))
-        Particle_Neighbor_List.Add_Back(j);
+        Particle_Neighbor_List.Add_Back(Particles[j].Get_ID());
     } // for(unsigned int j = 0; j < Num_Particles; j++) {
 
     /* Now that we have the neighbor list, we can make it into an array. To do
@@ -157,7 +157,7 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles,
           continue;
 
         if(Are_Neighbors(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j], Particles[p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q]))
-          Particle_Neighbor_List.Add_Back(p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q);
+          Particle_Neighbor_List.Add_Back(Particles[p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q].Get_ID());
       } // for(q = q_min; q <= q_max; q++) {
     } // for(r = r_min; r <= r_max; r++) {
   } // for(p = p_min; p <= p_max; p++) {
@@ -208,8 +208,8 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remov
   unsigned int *New_Neighbor_IDs = new unsigned int[P_In.Num_Neighbors - 1];   //        : unitless
   Vector *New_R = new Vector[P_In.Num_Neighbors - 1];                          //        : mm Vector
   double *New_Mag_R = new double[P_In.Num_Neighbors - 1];                      //        : mm
-  double *New_W = new double[P_In.Num_Neighbors - 1];                          //        : unitless
-  Vector *New_Grad_W = new Vector[P_In.Num_Neighbors - 1];                     //        : 1/mm Vector
+  double *New_W = new double[P_In.Num_Neighbors - 1];                          //        : 1/(mm^3)
+  Vector *New_Grad_W = new Vector[P_In.Num_Neighbors - 1];                     //        : 1/(mm^4) Vector
   Tensor New_A{0,0,0,
                0,0,0,
                0,0,0};
@@ -233,8 +233,8 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remov
     New_Neighbor_IDs[j] = P_In.Neighbor_IDs[i];                                //        : unitless
     New_R[j] = P_In.R[i];                                                      //        : mm Vector
     New_Mag_R[j] = P_In.Mag_R[i];                                              //        : mm
-    New_W[j] = P_In.W[i];                                                      //        : unitless
-    New_Grad_W[j] = P_In.Grad_W[i];                                            //        : 1/mm Vector
+    New_W[j] = P_In.W[i];                                                      //        : 1/(mm^3)
+    New_Grad_W[j] = P_In.Grad_W[i];                                            //        : 1/(mm^4) Vector
 
     // Calculate New shape tensor.
     V_j = Particles[P_In.Neighbor_IDs[j]].Vol;                                 //        : mm^3
@@ -252,8 +252,8 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remov
   P_In.Neighbor_IDs = New_Neighbor_IDs;                                        //        : unitless
   P_In.R = New_R;                                                              //        : mm Vector
   P_In.Mag_R = New_Mag_R;                                                      //        : mm
-  P_In.W = New_W;                                                              //        : unitless
-  P_In.Grad_W = New_Grad_W;                                                    //        : 1/mm Vector
+  P_In.W = New_W;                                                              //        : 1/(mm^3)
+  P_In.Grad_W = New_Grad_W;                                                    //        : 1/(mm^4) Vector
 
   // Decrement number of neighbors by 1.
   P_In.Num_Neighbors--;

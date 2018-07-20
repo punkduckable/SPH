@@ -59,7 +59,7 @@ namespace Simulation {
     Particle::Inter_Particle_Spacing = IPS;                                    //        : mm
     Particle::h = h;                                       // Support Radius in mm       : mm
     Particle::Support_Radius = Support_Radius;             // Support Radius in Inter Particle Spacings      : unitless
-    Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);   // Shape function Amplitude   : 1/mm^3
+    Particle::Shape_Function_Amp = 15./(PI*h*h*h*h*h*h);   // Shape function Amplitude   : 1/mm^6
 
     Particle::Lame = 1.125;                                // Lame parameter             : Mpa
     Particle::mu0 = .275;                                  // Shear modulus              : Mpa

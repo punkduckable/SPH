@@ -245,8 +245,8 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
     free the old dynamic arrays, thereby preventing a memory leak. */
     delete [] Particles[Pi_ID].R;                                              //        : mm Vector
     delete [] Particles[Pi_ID].Mag_R;                                          //        : mm
-    delete [] Particles[Pi_ID].W;                                              //        : unitless Vector
-    delete [] Particles[Pi_ID].Grad_W;                                         //        : 1/mm
+    delete [] Particles[Pi_ID].W;                                              //        : 1/(mm^3)
+    delete [] Particles[Pi_ID].Grad_W;                                         //        : 1/(mm^4) Vector
     delete [] Particles[Pi_ID].Neighbor_IDs;
 
     // We need to set the 'Neighbors_Are_Set' paramater to false. Otherwise, we

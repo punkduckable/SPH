@@ -269,9 +269,9 @@ void Simulation::Set_Up_Body(Particle * Body, const unsigned int Num_Particles_B
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass);     //        : g
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume);    //        : mm^3
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Radius(Particle_Radius); //   : mm
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_X(X);//        : mm
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_x(x);//        : mm
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_V(V);//        : mm/s
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_X(X);                    //        : mm
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_x(x);                    //        : mm
+        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_V(V);                    //        : mm/s
       } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
@@ -328,9 +328,9 @@ void Simulation::Set_Up_Boundary(Particle * Boundary, const unsigned int Num_Par
 
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_ijk(i,1,k);
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_ID(i*Z_SIDE_LENGTH + k);
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Mass(Particle_Mass);                 //         : g
+      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Mass(Particle_Mass);                 //        : g
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_Vol(Particle_Volume);                //        : mm^3
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Radius(Particle_Radius);             //   : mm
+      Boundary[i*2*Z_SIDE_LENGTH + k].Set_Radius(Particle_Radius);             //        : mm
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_X(X);                                //        : mm
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_x(x);                                //        : mm
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_V(V);                                //        : mm/s

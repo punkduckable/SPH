@@ -245,11 +245,11 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     and Vi. However, these four quantities are constants. We can therefore
     pull these multiplications out of the summations (thereby saving
     several thousand floating point operations per particle!)*/
-    P_In.Force_HG += (((V_j*P_In.W[j])/(P_In.Mag_R[j]*P_In.Mag_R[j]*Mag_rj))*  //        : N Vector
+    P_In.Force_HG += (((V_j*P_In.W[j])/(P_In.Mag_R[j]*P_In.Mag_R[j]*Mag_rj))*  //        : (1/mm) Vector
                 (delta_ij + delta_ji))*(rj);
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
-  P_In.Force_HG *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling it out of sum improved runtime
-  P_In.Force_Int *= V_i;               // Each term in F_Int sum is multiplied by Vi, pulling it out of sum improved runtime
+  P_In.Force_HG *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
+  P_In.Force_Int *= V_i;               // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
   //P_In.Force_Visc *= V_i;              // for debugging
 
   /* Compute acceleration of particle at new position a(t_i+1).
