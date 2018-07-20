@@ -232,6 +232,15 @@ double Vector::Magnitude(void) const {
   return sqrt(V[0]*V[0] + V[1]*V[1] + V[2]*V[2]);
 } // double Magnitude(void) const {
 
+double Max_Component(const Vector & V_In) {
+  if(V_In[0] > V_In[1] && V_In[0] > V_In[2])
+    return V_In[0];
+  else if(V_In[1] > V_In[2])
+    return V_In[1];
+  else
+    return V_In[2];
+} // double Max_Component(const Vector V_In) {
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

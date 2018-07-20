@@ -12,7 +12,7 @@ void Particle_Helpers::Contact(Particle * Body_A, const unsigned int Num_Particl
   const double h_squared = h*h;                 // Square of support radius              : mm^2
   unsigned int i,j;
   double V_i, V_j;                                                             //        : mm
-  dobuel K_V_i;                                                                //        : N*mm^2
+  double K_V_i;                                                                //        : N*mm^2
   double Mag_r_ij;                                                             //        : mm
   Vector r_ij, Grad_W;                                                         //        : mm Vector
   Vector * Body_B_x = new Vector[Num_Particles_B];                             //        : mm Vector

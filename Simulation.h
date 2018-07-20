@@ -29,31 +29,34 @@ double Particle::Tau;                                      // Damage rate parame
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
 namespace Simulation {
-  void Set_Up_Body(Particle * Body,
+  void SetUp_Body(Particle * Body,
                    const unsigned int Num_Particles_Body,
                    const double IPS);
-  void Set_Up_Boundary(Particle * Boundary,
+  void SetUp_Boundary(Particle * Boundary,
                        const unsigned int Num_Particles_Boundary,
                        const double IPS);
 
-  // Simulation paramaters
-  unsigned int X_SIDE_LENGTH = 20;
-  unsigned int Y_SIDE_LENGTH = 31;
-  unsigned int Z_SIDE_LENGTH = 10;
-
-  // time step paramters
-  const double dt = .00001;                                // Time step                  : s
-  const unsigned int Num_Steps = 20000;                     // Number of time steps
-
-  // Save/Load paramaters
+  // Simulation flags/properties
   const unsigned char Load_Data_From_File = 0;
   const unsigned char Save_Data_To_File = 1;
+  const unsigned char Print_Forces = 1;
+  const unsigned char TimeSteps_Between_Prints = 100;
+
+  // Simulation dimensions
+  unsigned int X_SIDE_LENGTH = 10;
+  unsigned int Y_SIDE_LENGTH = 10;
+  unsigned int Z_SIDE_LENGTH = 10;
+
+  // TimeStep paramters
+  const double dt = .00001;                                // Time step                  : s
+  const unsigned int Num_Steps = 10000;                    // Number of time steps
+
 
   // Default static particle class values (Note, these will be overwritten if
   // 'Read_From_Particles_File' is true (1))
   void Set_Static_Particle_Members(void) {
     const double IPS = 1;
-    const unsigned int Support_Radius = 4;
+    const unsigned int Support_Radius = 3;
     const double h = IPS*Support_Radius;
 
     Particle::Inter_Particle_Spacing = IPS;                                    //        : mm
@@ -64,7 +67,7 @@ namespace Simulation {
     Particle::Lame = 1.125;                                // Lame parameter             : Mpa
     Particle::mu0 = .275;                                  // Shear modulus              : Mpa
 
-    Particle::mu = 5e-5;                                   // Viscosity                  : Mpa*s
+    Particle::mu = 5e-4;                                   // Viscosity                  : Mpa*s
 
     Particle::E = 0.770982;                                // Youngs modulus/Hourglass stiffness   : Mpa
     Particle::alpha = 7.5;                                 // Hg control parameter       : Unitless

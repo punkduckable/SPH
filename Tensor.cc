@@ -776,9 +776,9 @@ void Tensor::Print(void) const {
 ////////////////////////////////////////////////////////////////////////////////
 // Friend functions
 
-double Max_Eigenvalue(const Tensor & S_In,const char Mode) {
+const Vector Eigenvalues(const Tensor & S_In, const char Mode) {
   double p, p_inv, p1, p2, q, r, phi;
-  double Eig_Values[3];
+  Vector Eig_Values;
   Tensor B;
   Tensor I = {1,0,0,
               0,1,0,
@@ -840,20 +840,15 @@ double Max_Eigenvalue(const Tensor & S_In,const char Mode) {
       } // else if(Mode == 'A') {
       else {
         printf("Invalid mode selection! 'F' = Fast mode, 'A' = Accurate mode\n");
-        return 0;
+        return Vector{0,0,0};
       } // else {
 
       Eig_Values[2] = 3*q - Eig_Values[0] - Eig_Values[1];
     } // else {
   } // else {
 
-  if(Eig_Values[0] > Eig_Values[1] && Eig_Values[0] > Eig_Values[2])
-    return Eig_Values[0];
-  else if(Eig_Values[1] > Eig_Values[2])
-    return Eig_Values[1];
-  else
-    return Eig_Values[2];
-} // double Max_Eigenvalue(const Tensor & S_In) {
+  return Eig_Values;
+} // const Vector Max_Eigenvalue(const Tensor & S_In) {
 
 
 

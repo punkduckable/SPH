@@ -78,7 +78,9 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   J = Determinant(F);                            // J is det of F                        : unitless Tensor
 
   // Calculate current principle stretch
-  Stretch_Max_Principle = sqrt(Max_Eigenvalue(C,'F'));
+  double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
+
+  Stretch_Max_Principle = sqrt(Max_EigenValue);
 
   // If this stretch is greater than max stretch, update particle's Max stretch.
   P_In.Stretch_M = Stretch_Max_Principle;
@@ -86,8 +88,8 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
     P_In.Stretch_H = Stretch_Max_Principle;
 
   // if Max is greater than crticial then start adding damage
-  if(P_In.Stretch_H > P_In.Stretch_Critical)
-    P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
+  //if(P_In.Stretch_H > P_In.Stretch_Critical)
+  //  P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
 
   // If particle is fully damaged, remove it from array.
   if(P_In.D >= 1) {
@@ -118,7 +120,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
   P_In.P = (F*S + Visc)*P_In.A_Inv;                                            //         : Mpa Tensor
   P_In.F = F;                                                                  //         : unitless Tensor
-  //P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
+  P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
 
 } // void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const double dt) {
 
@@ -134,9 +136,9 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
 
   P_In.Force_Int = {0,0,0};                      // Internal Force vector                : N Vector
   P_In.Force_HG = {0,0,0};                       // Hour-glass force                     : N Vector
-  //P_In.Force_Visc = {0,0,0};                     // For debugging
+  P_In.Force_Visc = {0,0,0};                     // For debugging
 
-  const Vector g = {0,0,0};                      // Gravity                              : mm/s^2 Vector
+  const Vector g = {0,-9810,0};                  // Gravity                              : mm/s^2 Vector
   Vector acceleration;                           // acceleration vector                  : mm/s^2 Vector
 
   unsigned int Neighbor_ID;                      // ID of current neighbor particle (in paritlce's array)
@@ -183,7 +185,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
     P_j = Particles[Neighbor_ID].P;                                            //        : Mpa Tensor
     P_In.Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                           //        : N Vector
-    //P_In.Force_Visc += (V_j)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); // For debugging
+    P_In.Force_Visc += (V_j)*((P_In.Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); // For debugging
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Hour Glass force */
@@ -250,7 +252,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
   P_In.Force_HG *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
   P_In.Force_Int *= V_i;               // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
-  //P_In.Force_Visc *= V_i;              // for debugging
+  P_In.Force_Visc *= V_i;              // for debugging
 
   /* Compute acceleration of particle at new position a(t_i+1).
   Note that all the forces we have calculated have been in units of Newtons.

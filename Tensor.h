@@ -70,8 +70,8 @@ class Tensor {
     void Print(void) const;                       // Print tensor components
 
     // Friends
-    friend double Max_Eigenvalue(const Tensor & S_In,
-                                 const char Mode);
+    friend const Vector Eigenvalues(const Tensor & S_In,
+                                    const char Mode);
     friend Tensor operator*(double c,
                             const Tensor & T_In); // Scalar multiplication (defines c*T)
     friend Tensor Inverse(const Tensor & T_In);

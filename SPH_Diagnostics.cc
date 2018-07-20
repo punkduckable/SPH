@@ -24,18 +24,20 @@ void Particle_Debugger::Export_Pariticle_Forces(const unsigned int Num_Particles
   FILE * File = fopen(File_Path.c_str(), "w");
 
   // Print header.
+  fprintf(File,"  ID  |");
   fprintf(File," Particle Pos  |");
   fprintf(File,"        Internal Force        |");
-  //fprintf(File,"        Viscous Force         |");
+  fprintf(File,"        Viscous Force         |");
   fprintf(File,"        Contact Force         |");
   fprintf(File,"        Hourglass Force       |");
   fprintf(File,"\n");
 
   // Cycle through particles, print spacial positions of each particle
   for(unsigned int i = 0; i < Num_Particles; i++) {
+    fprintf(File,"%6u|", Particles[i].Get_ID());
     fprintf(File,"%4.1f,%4.1f,%4.1f | ",Particles[i].X[0], Particles[i].X[1], Particles[i].X[2]);
     fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",Particles[i].Force_Int[0], Particles[i].Force_Int[1], Particles[i].Force_Int[2]);
-    //fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",Particles[i].Force_Visc[0], Particles[i].Force_Visc[1], Particles[i].Force_Visc[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",Particles[i].Force_Visc[0], Particles[i].Force_Visc[1], Particles[i].Force_Visc[2]);
     fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",Particles[i].Force_Contact[0], Particles[i].Force_Contact[1], Particles[i].Force_Contact[2]);
     fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",Particles[i].Force_HG[0], Particles[i].Force_HG[1], Particles[i].Force_HG[2]);
   } // for(unsigned int i = 0; i < Num_Particles; i++) {

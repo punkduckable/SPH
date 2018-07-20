@@ -15,22 +15,22 @@ void Simulation::Run_Simulation(void) {
           timer2,
           update_BC_timer = 0,
           update_P_timer = 0,
-  //        contact_timer = 0,
+          contact_timer = 0,
           update_x_timer = 0,
           Print_timer = 0;
   unsigned long MS_Iter,
                 MS_BC,
                 MS_P,
-  //              MS_Contact,
+                MS_Contact,
                 MS_x,
                 MS_Print;                                            // Timers (store number of MS for each operation)
 
   // Partile bodies
   Particle *Body;
-  //Particle *Boundary;
+  Particle *Boundary;
 
   unsigned int Num_Particles_Body;
-  //const unsigned int Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
+  const unsigned int Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
@@ -39,6 +39,8 @@ void Simulation::Run_Simulation(void) {
   printf(         "\nRunning a simulation...\n");
   printf(         "Load_Data_From_File =         %u\n",Load_Data_From_File);
   printf(         "Save_Data_To_File =           %u\n",Save_Data_To_File);
+  printf(         "TimeSteps_Between_Prints =    %u\n",TimeSteps_Between_Prints);
+  printf(         "Print_Forces =                %u\n",Print_Forces);
 
   // Are we running a new simulation or loading an existing one?
   if(Load_Data_From_File == 1) {
@@ -46,12 +48,13 @@ void Simulation::Run_Simulation(void) {
     timer1 = clock();
 
     // If loading an existing simulation, read in 'Particle_File'
-    printf(       "Loading from file....\n");
+    printf(       "\nLoading from file....");
     Body = Data_Dump::Load_Data_From_File(Num_Particles_Body);
 
     timer1 = clock() - timer1;
     MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
-    printf(       "Done! Took %lu ms\n", MS_Load);
+    printf(       "Done!\n");
+    printf(       "took %lu ms\n", MS_Load);
   } //   if(Load_Data_From_File == 1) {
   else if(Load_Data_From_File == 0) {
     // Set up default static values (for the particle class)
@@ -60,16 +63,16 @@ void Simulation::Run_Simulation(void) {
     /* With the static members set, let's create a particle's array.*/
     Num_Particles_Body = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
     Body = new Particle[Num_Particles_Body];
-    //Boundary = new Particle[Num_Particles_Boundary];
+    Boundary = new Particle[Num_Particles_Boundary];
 
     // Now let's setup the particle's array (this function sets each particle's
     // position, ID, etc... It also finds and sets each particle's neighbors)
-    Set_Up_Body(Body, Num_Particles_Body, Particle::Inter_Particle_Spacing);
-    //Set_Up_Boundary(Boundary, Num_Particles_Boundary, Particle::Inter_Particle_Spacing);
+    SetUp_Body(Body, Num_Particles_Body, Particle::Inter_Particle_Spacing);
+    SetUp_Boundary(Boundary, Num_Particles_Boundary, Particle::Inter_Particle_Spacing);
   } // else if(Load_Data_From_File == 0) {
 
   // Now that the particle array is loaded, print paramaters.
-  printf(         "Ruinning with the following paramaters....\n");
+  printf(         "\nRuinning with the following paramaters....\n");
   printf(         "X side length:                %u\n", X_SIDE_LENGTH);
   printf(         "Y side length:                %u\n", Y_SIDE_LENGTH);
   printf(         "Z side length:                %u\n", Z_SIDE_LENGTH);
@@ -81,16 +84,18 @@ void Simulation::Run_Simulation(void) {
   printf(         "mu0 (Shear modulus):          %lf\n", Particle::mu0);
   printf(         "mu (Viscosity):               %lf\n", Particle::mu);
   printf(         "E (Young's modulus):          %lf\n", Particle::E);
-  printf(         "Tau (Damage rate):            %lf\n\n", Particle::Tau);
+  printf(         "Tau (Damage rate):            %lf\n", Particle::Tau);
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
-  printf(         "Running particle time steps....\n");
+  printf(         "\nRunning particle time steps....\n");
 
   // Print initial data
   timer1 = clock();
   printf(         "0 time steps complete\n");
   VTK_File::Export_Pariticle_Positions(Num_Particles_Body, Body);
+  if(Print_Forces == true)
+    Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
   //Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
 
   // Time step loop
@@ -135,7 +140,7 @@ void Simulation::Run_Simulation(void) {
     j = 0;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,-20,0});
+        //Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,-20,0});
       }
     }
 
@@ -143,7 +148,7 @@ void Simulation::Run_Simulation(void) {
     j = Y_SIDE_LENGTH-1;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,20,0});
+        //Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,20,0});
       }
     }
 
@@ -177,9 +182,9 @@ void Simulation::Run_Simulation(void) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Detect contact
-    //timer2 = clock();
-    //Contact(Body, Num_Particles_Body, Boundary, Num_Particles_Boundary, h);
-    //contact_timer += clock() - timer2;
+    timer2 = clock();
+    Particle_Helpers::Contact(Body, Num_Particles_Body, Boundary, Num_Particles_Boundary, Particle::h);
+    contact_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each particle's position
@@ -195,15 +200,16 @@ void Simulation::Run_Simulation(void) {
 
     // Print to file evert 100th iteration
     timer2 = clock();
-    if((l+1)%100 == 0) {
+    if((l+1)%TimeSteps_Between_Prints == 0) {
       printf(     "%d time steps complete\n",l+1);
       VTK_File::Export_Pariticle_Positions(Num_Particles_Body, Body);
 
-      //Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
+      if(Print_Forces == true)
+        Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
     } // if((k+1)%100 == 0) {
     Print_timer += clock()-timer2;
   } // for(l = 0; l < Num_Steps; l++) {
-  printf(         "Done!\n\n");
+  printf(         "Done!\n");
   timer1 = clock()-timer1;
 
   // If saving is enabled, Dump particle data to file
@@ -214,24 +220,24 @@ void Simulation::Run_Simulation(void) {
   MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
   MS_BC = (unsigned long)((double)update_BC_timer / (double)CLOCKS_PER_MS);
   MS_P = (unsigned long)((double)update_P_timer / (double)CLOCKS_PER_MS);
-  //MS_Contact = (unsigned long)((double)contact_timer / (double)CLOCKS_PER_MS);
+  MS_Contact = (unsigned long)((double)contact_timer / (double)CLOCKS_PER_MS);
   MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
   MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
 
-  printf(         "It took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
+  printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
   printf(         "%lu ms to update BC's\n", MS_BC);
   printf(         "%lu ms to update P\n", MS_P);
-  //printf(         "%lu ms to update Contact\n", MS_Contact);
+  printf(         "%lu ms to update Contact\n", MS_Contact);
   printf(         "%lu ms to update x\n", MS_x);
   printf(         "%lu ms to print data to files\n", MS_Print);
 
   // Free memory
   delete [] Body;
-  //delete [] Boundary;
+  delete [] Boundary;
 
 } // void Simulation(void) {
 
-void Simulation::Set_Up_Body(Particle * Body, const unsigned int Num_Particles_Body, const double IPS) {
+void Simulation::SetUp_Body(Particle * Body, const unsigned int Num_Particles_Body, const double IPS) {
   unsigned long MS_Gen,
                 MS_Neighbor;
   clock_t timer1;
@@ -247,7 +253,7 @@ void Simulation::Set_Up_Body(Particle * Body, const unsigned int Num_Particles_B
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
-  printf(         "Generating particles....\n");
+  printf(         "\nGenerating particles....");
   timer1 = clock();
 
   // Set up Body
@@ -278,12 +284,13 @@ void Simulation::Set_Up_Body(Particle * Body, const unsigned int Num_Particles_B
 
   timer1 = clock()-timer1;
   MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
-  printf(         "Done! took %lums\n\n",MS_Gen);
+  printf(         "Done!\n");
+  printf(         "took %lums\n",MS_Gen);
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up Neighbors
 
-  printf(         "Generating Neighbor lists....\n");
+  printf(         "\nGenerating Body neighbor lists....");
   timer1 = clock();
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
@@ -294,20 +301,22 @@ void Simulation::Set_Up_Body(Particle * Body, const unsigned int Num_Particles_B
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
   // Damage the 'cut'
+  /*
   for(i = 0; i < 1; i++) {                     // Depth of cut
     for(k = 0; k < Z_SIDE_LENGTH; k++) {       // Length of cut
       Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].Set_D(1);
       Particle_Helpers::Remove_Damaged_Particle(Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Body);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
-
+  */
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
-  printf(         "Done! took %lums\n\n",MS_Neighbor);
+  printf(         "Done!\n");
+  printf(         "took %lums\n",MS_Neighbor);
 
-} // void Set_Up_Body(Particle * Body, const unsigned int Num_Particles, Body, const double IPS) {
+} // void Simulation::SetUp_Body(Particle * Body, const unsigned int Num_Particles, Body, const double IPS) {
 
-void Simulation::Set_Up_Boundary(Particle * Boundary, const unsigned int Num_Particles_Boundary, const double IPS) {
+void Simulation::SetUp_Boundary(Particle * Boundary, const unsigned int Num_Particles_Boundary, const double IPS) {
   unsigned int i,k;
 
   // Set particle paramaters
@@ -317,11 +326,17 @@ void Simulation::Set_Up_Boundary(Particle * Boundary, const unsigned int Num_Par
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
 
   Vector X, x, V;
+  double X1, X2, X3;
 
   // Set up Boundary
+  printf(         "\nGenerating boundary....");
   for(i = 0; i < 2*X_SIDE_LENGTH; i++) {
     for(k = 0; k < 2*Z_SIDE_LENGTH; k++) {
-      X = {(double)i - .5*(double)X_SIDE_LENGTH, -15. , (double)k - .5*(double)Z_SIDE_LENGTH};
+      X1 = (double)i + 5.;//- .5*(double)X_SIDE_LENGTH;
+      X3 = (double)k - .5*(double)Z_SIDE_LENGTH;
+      X2 = -10.;
+
+      X = {X1, X2, X3};
       X *= IPS;
       x = X;
       V = {0.,0.,0.};
@@ -336,6 +351,7 @@ void Simulation::Set_Up_Boundary(Particle * Boundary, const unsigned int Num_Par
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_V(V);                                //        : mm/s
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
-} // void Simulation::Set_Up_Boundary(Particle * Boundary, const unsigned int Num_Particles_Boundary, const double IPS) {
+  printf(         "Done!\n");
+} // void Simulation::SetUp_Boundary(Particle * Boundary, const unsigned int Num_Particles_Boundary, const double IPS) {
 
 #endif

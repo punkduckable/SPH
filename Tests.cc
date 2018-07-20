@@ -347,7 +347,7 @@ void Timing_Tests(void) {
 
   for(k = 0; k < Num_Tests; k++) {
     for(i = 0; i < Num_El; i++) {
-      C1[i] = Max_Eigenvalue(S1[i],'F');
+      C1[i] = Max_Component(Eigenvalues(S1[i],'F'));
     }
   }
   timer = clock() - timer;

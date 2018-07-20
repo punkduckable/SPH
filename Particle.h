@@ -48,10 +48,10 @@ class Particle {
     Vector Force_Int{0,0,0};                               // Internal Force vector      : N Vector
     Vector Force_Contact{0,0,0};                           // Contact Force Vector       : N Vector
     Vector Force_HG{0,0,0};                                // Hour-glass force           : N Vector
-    //Vector Force_Visc{0,0,0};                              // For debugging
-    //Tensor Visc{0,0,0,                                     // For debugging
-    //            0,0,0,
-    //            0,0,0};
+    Vector Force_Visc{0,0,0};                              // For debugging
+    Tensor Visc{0,0,0,                                     // For debugging
+                0,0,0,
+                0,0,0};
 
     // Damage parameters
     double Stretch_H = 0;                                  // Historical max stretch     : unitless

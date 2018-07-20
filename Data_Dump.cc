@@ -58,7 +58,7 @@ void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
 
   const Vector X = P_In.Get_X();
   const Vector x = P_In.Get_x();
-  const V = P_In.Get_V();
+  const Vector V = P_In.Get_V();
 
   // Print particle ID, dimensions
   fprintf(File,   "ID:                           %u\n", P_In.Get_ID());

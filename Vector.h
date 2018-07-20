@@ -51,9 +51,14 @@ class Vector {
     double operator()(const uByte index) const;            // Read a component of the vector (runs checks, safer)
 
     // Magnitude method
-    double Magnitude(void) const;
+    double Magnitude(void) const;                          // Returns magnitude of vector
+
+    // Other methods
 
     // Friends
+    friend const Vector Eigenvalues(const Tensor & S_In,
+                                    const char Mode);
+    friend double Max_Component(const Vector & V_In);      // Returns maximum component of vector.
     friend Vector operator*(double c,                      // Scalar multiplication (defines c*V)
                             const Vector & V_In);
     friend double Magnitude(const Vector & V_In);
