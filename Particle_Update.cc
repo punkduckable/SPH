@@ -133,7 +133,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   these assumptions are valid. */
 
   P_In.Force_Int = {0,0,0};                      // Internal Force vector                : N Vector
-  P_In.Force_Hg = {0,0,0};                       // Hour-glass force                     : N Vector
+  P_In.Force_HG = {0,0,0};                       // Hour-glass force                     : N Vector
   //P_In.Force_Visc = {0,0,0};                     // For debugging
 
   const Vector g = {0,0,0};                      // Gravity                              : mm/s^2 Vector
@@ -241,14 +241,14 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
     delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;//: mm
 
     /* Finally, we calculate the hour glass force. However, it should be
-    noted that each term of Force_Hg is multiplied by -(1/2), E, alpha,
+    noted that each term of Force_HG is multiplied by -(1/2), E, alpha,
     and Vi. However, these four quantities are constants. We can therefore
     pull these multiplications out of the summations (thereby saving
     several thousand floating point operations per particle!)*/
-    P_In.Force_Hg += (((V_j*P_In.W[j])/(P_In.Mag_R[j]*P_In.Mag_R[j]*Mag_rj))*  //        : N Vector
+    P_In.Force_HG += (((V_j*P_In.W[j])/(P_In.Mag_R[j]*P_In.Mag_R[j]*Mag_rj))*  //        : N Vector
                 (delta_ij + delta_ji))*(rj);
   } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
-  P_In.Force_Hg *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling it out of sum improved runtime
+  P_In.Force_HG *= -.5*E*V_i*alpha;    // Each term in F_Hg is multiplied by this. Pulling it out of sum improved runtime
   P_In.Force_Int *= V_i;               // Each term in F_Int sum is multiplied by Vi, pulling it out of sum improved runtime
   //P_In.Force_Visc *= V_i;              // for debugging
 
@@ -260,7 +260,7 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   then we get acceleration in mm/s^2. */
   acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int +                     //        : mm/s^2 Vector
                                           P_In.Force_Contact +
-                                          P_In.Force_Hg) +
+                                          P_In.Force_HG) +
                                           g;                         // gravity
 
   /* Now update the velocity, position vectors. This is done using the
@@ -268,11 +268,11 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   scheme, we need to use forward euler to get the initial velocity.*/
   if(P_In.First_Time_Step == true) {
     P_In.First_Time_Step = false;
-    P_In.vel += (dt/2.)*acceleration;            // velocity starts at t_i+1/2           : mm/s Vector
+    P_In.V += (dt/2.)*acceleration;              // velocity starts at t_i+1/2           : mm/s Vector
   } //   if(P_In.First_Time_Step == true) {
 
-  P_In.x += dt*P_In.vel;                         // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
-  P_In.vel += dt*acceleration;                   // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
+  P_In.x += dt*P_In.V;                           // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
+  P_In.V += dt*acceleration;                     // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
 } // void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, const double dt) {
 
 #endif

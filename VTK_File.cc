@@ -22,9 +22,8 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_
   fprintf(File,"LOOKUP_TABLE default\n");
 
   // Now print supplied data to file
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned int i = 0; i < Num_Particles; i++)
     fprintf(File,"\t %8.3f\n",Data[i]);
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
 }
 
 void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles) {
@@ -49,7 +48,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   // Cycle through particles, print spacial positions of each particle
   Vector x;
   for(unsigned int i = 0; i < Num_Particles; i++) {
-    x = Particles[i].x;
+    x = Particles[i].Get_x();
 
     fprintf(File,"%8.3f \t %8.3f \t %8.3f\n",x[0], x[1], x[2]);
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
@@ -84,7 +83,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   double * LamM = new double[Num_Particles];
   //double * LamH = new double[Num_Particles];
-  double * LamC = new double[Num_Particles];
+  //double * LamC = new double[Num_Particles];
   double * D = new double[Num_Particles];
   /*
   double * S11 = new double[Num_Particles];
@@ -109,14 +108,14 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
            0,0,1};
 
   for(unsigned int i = 0; i < Num_Particles; i++) {
-    LamM[i] = Particles[i].Stretch_M;
-    //LamH[i] = Particles[i].Stretch_H;
-    LamC[i] = Particles[i].Stretch_Critical;
-    D[i] = Particles[i].D;
+    LamM[i] = Particles[i].Get_Stretch_M();
+    //LamH[i] = Particles[i].Get_Stretch_H();
+    //LamC[i] = Particles[i].Get_Stretch_Critical();
+    D[i] = Particles[i].Get_D();
 
     // Get F, P from current particle
-    //F = Particles[i].F;
-    //P = Particles[i].P;
+    //F = Particles[i].Get_F();
+    //P = Particles[i].Get_P();
 
     // Use F to calculate determinant (J)
     //J[i] = Determinant(F);
@@ -158,8 +157,8 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   //std::strcpy(Weight_Name, "LamH");
   //Add_Point_Data(File, Weight_Name, Num_Particles, LamH);
 
-  std::strcpy(Weight_Name, "LamC");
-  Add_Point_Data(File, Weight_Name, Num_Particles, LamC);
+  //std::strcpy(Weight_Name, "LamC");
+  //Add_Point_Data(File, Weight_Name, Num_Particles, LamC);
 
   std::strcpy(Weight_Name, "D");
   Add_Point_Data(File, Weight_Name, Num_Particles, D);
@@ -213,7 +212,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   // Deallocate dynamic arrays
   delete [] LamM;
   //delete [] LamH;
-  delete [] LamC;
+  //delete [] LamC;
   delete [] D;
   /*
   delete [] S11;

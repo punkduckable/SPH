@@ -12,13 +12,13 @@ void Particle_Debugger::Get_File_Name(string & Str) {
   Str += "_variables_";
   Str += Buf;
   Str += ".txt";
-} // void Get_File_Name(string & Str) {
+} // void Particle_Debugger::Get_File_Name(string & Str) {
 
-void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles) {
+void Particle_Debugger::Export_Pariticle_Forces(const unsigned int Num_Particles, const Particle * Particles) {
   string File_Name = "Particle";
   Get_File_Name(File_Name);
 
-  string File_Path = "./Particle_Files/";
+  string File_Path = "./Force_Files/";
   File_Path += File_Name;
 
   FILE * File = fopen(File_Path.c_str(), "w");
@@ -37,11 +37,11 @@ void Particle_Debugger::Export_Pariticle_Properties(const unsigned int Num_Parti
     fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",Particles[i].Force_Int[0], Particles[i].Force_Int[1], Particles[i].Force_Int[2]);
     //fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",Particles[i].Force_Visc[0], Particles[i].Force_Visc[1], Particles[i].Force_Visc[2]);
     fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",Particles[i].Force_Contact[0], Particles[i].Force_Contact[1], Particles[i].Force_Contact[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",Particles[i].Force_Hg[0], Particles[i].Force_Hg[1], Particles[i].Force_Hg[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",Particles[i].Force_HG[0], Particles[i].Force_HG[1], Particles[i].Force_HG[2]);
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   fclose(File);
-} // void Export_Pariticle_Properties(const unsigned int Num_Particles, const Particle * Particles) {
+} // void Particle_Debugger::Export_Pariticle_Forces(const unsigned int Num_Particles, const Particle * Particles) {
 
 void OP_Count::Reset_Counts(void) {
   /* This function, as the name would suggest, is designed to reset the

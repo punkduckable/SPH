@@ -10,7 +10,7 @@
 
 Particle::Particle(void) {
   //printf("Particle default constructor \n");
-  Has_Neighbors = false;
+  Neighbors_Are_Set = false;
   Num_Neighbors = 0;
   Vol = 0;                                                                     //        : mm^3
   Mass = 0;                                                                    //        : g
@@ -31,7 +31,7 @@ Particle::~Particle(void) {
   //printf("Removing particle\n");
 
   // Note, we should only free the memory if it has been allocated.
-  if(Has_Neighbors == true) {
+  if(Neighbors_Are_Set == true) {
     delete [] R;                                                               //        : mm Vectro
     delete [] Mag_R;                                                           //        : mm
     delete [] W;                                                               //        : unitless
@@ -62,7 +62,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
   then allocating them again will cause a memory leak.  */
-  if(Has_Neighbors == true) {
+  if(Neighbors_Are_Set == true) {
     printf("Neigbors already set, returning.\n");
     return;
   }
@@ -113,8 +113,8 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   // Now we can calculate A^(-1) from A.
   A_Inv = A^(-1);                                                              //        : unitless Tensor
 
-  // Now that neighbors have been set, we set 'Has_Neighbors' to true
-  Has_Neighbors = true;
+  // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
+  Neighbors_Are_Set = true;
 } // void Particle::Set_Neighbors(const unsigned int N, const unsigned int *Neighbor_Id_List, const Particle *Particles) {
 
 
@@ -142,11 +142,11 @@ void Particle::Print(void) const {
   printf("F_Visc = ");
   //Force_Visc.Print();                          // For debugging
   //printf("F_Hg = ");
-  Force_Hg.Print();
+  Force_HG.Print();
   printf("\n");
 
   // If we have neighbors, print neighbor information
-  if(Has_Neighbors == true) {
+  if(Neighbors_Are_Set == true) {
     //unsigned int i;                              // Loop index variable
 
     /* Print neighbor ID's
@@ -164,7 +164,7 @@ void Particle::Print(void) const {
     } // for(unsigned int i = 0; i < Num_Neighbors-1; i++) {
     printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1])); // */
 
-  } // if(Has_Neighbors == true) {
+  } // if(Neighbors_Are_Set == true) {
 } // void Particle::Print(void) const {
 
 void Print(const Particle & P_In) {
