@@ -31,7 +31,7 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
   string File_Name = "Test";
   Get_File_Name(File_Name);
 
-  string File_Path = "./Position_Files/";
+  string File_Path = "../Files/Position_Files/";
   File_Path += File_Name;
 
   FILE * File = fopen(File_Path.c_str(), "w");

@@ -18,7 +18,7 @@ void Particle_Debugger::Export_Pariticle_Forces(const unsigned int Num_Particles
   string File_Name = "Particle";
   Get_File_Name(File_Name);
 
-  string File_Path = "./Force_Files/";
+  string File_Path = "../Files/Force_Files/";
   File_Path += File_Name;
 
   FILE * File = fopen(File_Path.c_str(), "w");

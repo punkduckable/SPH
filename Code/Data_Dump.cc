@@ -9,7 +9,7 @@ void Data_Dump::Print_Data_To_File(const Particle * Particles, const unsigned in
 
   /* First, let's create the file. Note, if another 'Particle_Data' file already
   exists then this overwrites/deletes that file. */
-  FILE * File = fopen("./Particle_Data.txt", "w");
+  FILE * File = fopen("../Files/Particle_Data.txt", "w");
 
   // Let's begin by printing the 'static' particle class paramaters
   fprintf(File,   "Inter Particle Spacing:       %5lf\n",Particle::Inter_Particle_Spacing);
@@ -96,7 +96,7 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
   particles array. */
 
   // First, open up the file
-  FILE * File = fopen("./Particle_Data.txt","r");
+  FILE * File = fopen("../Files/Particle_Data.txt","r");
 
   // Now read in the static particle members
   char Buf[100];                                 // Buffer to store text from file
