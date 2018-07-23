@@ -1,37 +1,42 @@
 #if !defined(DATA_DUMP_SOURCE)
 #define DATA_DUMP_SOURCE
 
-void Data_Dump::Print_Data_To_File(const Particle * Particles, const unsigned int Num_Particles) {
+#include "Data_Dump.h"
+
+void Data_Dump::Print_Particle_Array_To_File(const Particle_Array & Particles) {
   /* This function prints all data needed to reconstruct the Particle's array
   to a file. The intent of this is to allow the user to essentially 'save' the
   state of the program, allowing the user to - at a future point - pick up where
   they last saved/left off. */
 
+  // Get number of particles from passed Particle array.
+  const unsigned int Num_Particles = Particles.Get_Num_Particles();
+
   /* First, let's create the file. Note, if another 'Particle_Data' file already
   exists then this overwrites/deletes that file. */
-  FILE * File = fopen("./Particle_Data.txt", "w");
+  FILE * File = fopen("../Files/Particle_Data.txt", "w");
 
   // Let's begin by printing the 'static' particle class paramaters
-  fprintf(File,   "Inter Particle Spacing:       %5lf\n",Particle::Inter_Particle_Spacing);
-  fprintf(File,   "Support Radius (mm):          %5lf\n",Particle::h);
-  fprintf(File,   "Support Radius (IPS):         %u\n",Particle::Support_Radius);
-  fprintf(File,   "Shape Function Amplitude:     %5lf\n",Particle::Shape_Function_Amp);
-  fprintf(File,   "Lame parameter:               %5lf\n",Particle::Lame);
-  fprintf(File,   "Shear modulus (mu0):          %5lf\n",Particle::mu0);
-  fprintf(File,   "Viscosity (mu):               %5lf\n",Particle::mu);
-  fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",Particle::E);
-  fprintf(File,   "alpha (HG parameter):         %5lf\n",Particle::alpha);
-  fprintf(File,   "Tau (damage parameter):       %5lf\n",Particle::Tau);
+  fprintf(File,   "Inter Particle Spacing:       %5lf\n",  Particles.Get_Inter_Particle_Spacing());
+  fprintf(File,   "Support Radius (mm):          %5lf\n",  Particles.Get_h());
+  fprintf(File,   "Support Radius (IPS):         %u\n",    Particles.Get_Support_Radius());
+  fprintf(File,   "Shape Function Amplitude:     %5lf\n",  Particles.Get_Shape_Function_Amplitude());
+  fprintf(File,   "Lame parameter:               %5lf\n",  Particles.Get_Lame());
+  fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Particles.Get_mu0());
+  fprintf(File,   "Viscosity (mu):               %5lf\n",  Particles.Get_mu());
+  fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Particles.Get_E());
+  fprintf(File,   "alpha (HG parameter):         %5lf\n",  Particles.Get_alpha());
+  fprintf(File,   "Tau (damage parameter):       %5lf\n",  Particles.Get_Tau());
 
   // Now let's print the number of particles
   fprintf(File,   "\n");
-  fprintf(File,   "Number of particles:          %u\n",Num_Particles);
+  fprintf(File,   "Number of particles:          %u\n",    Particles.Get_Num_Particles());
 
   // Finally, let's print the cuboid paramaters (should be removed if not using
   // a cuboid)
-  fprintf(File,   "X Side Length:                %u\n", Simulation::X_SIDE_LENGTH);
-  fprintf(File,   "Y Side Length:                %u\n", Simulation::Y_SIDE_LENGTH);
-  fprintf(File,   "Z Side Length:                %u\n\n", Simulation::Z_SIDE_LENGTH);
+  fprintf(File,   "X Side Length:                %u\n",    Simulation::X_SIDE_LENGTH);
+  fprintf(File,   "Y Side Length:                %u\n",    Simulation::Y_SIDE_LENGTH);
+  fprintf(File,   "Z Side Length:                %u\n\n",  Simulation::Z_SIDE_LENGTH);
 
   // Now let's print all particle data to the file
   for(unsigned int i = 0; i < Num_Particles; i++)
@@ -39,7 +44,7 @@ void Data_Dump::Print_Data_To_File(const Particle * Particles, const unsigned in
 
   // We've now written the 'Particle_Data' file, we can close it.
   fclose(File);
-} // void Data_Dump::Print_Data_To_File(const Particle * Particles, const unsigned int Num_Particles) {
+} // void Data_Dump::Print_Data_To_File(const Particle_Array & Particles) {
 
 void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
   /* This function prints all the information that is needed to re-create the
@@ -91,26 +96,35 @@ void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
   fprintf(File,"\n\n");
 } // void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
 
-Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
+int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
   /* This function is designed to read in particle and use it to create a
   particles array. */
 
+  unsigned int Num_Particles = 0;
+
   // First, open up the file
-  FILE * File = fopen("./Particle_Data.txt","r");
+  FILE * File = fopen("../Files/Particle_Data.txt","r");
+
+  if(File == NULL) {
+    printf("Could not open Particle data file\n");
+    return 1;
+  } // if(File == NULL) {
 
   // Now read in the static particle members
   char Buf[100];                                 // Buffer to store text from file
 
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::Inter_Particle_Spacing);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::h);
-  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Particle::Support_Radius);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::Shape_Function_Amp);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::Lame);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::mu0);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::mu);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::E);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &Particle::alpha);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n\n",&Particle::Tau);
+  unsigned int uBuf;
+  double lfBuf;
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf); Particles.Set_Inter_Particle_Spacing(lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &uBuf);   Particles.Set_Support_Radius(uBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf); Particles.Set_Lame(lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf); Particles.Set_mu0(lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf); Particles.Set_mu(lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf); Particles.Set_E(lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &lfBuf); Particles.Set_alpha(lfBuf);
+  fread(Buf, 1, 30, File); fscanf(File, " %lf\n\n", &lfBuf);Particles.Set_Tau(lfBuf);
 
   // Now read in number of particles
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
@@ -118,9 +132,8 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::Y_SIDE_LENGTH);
   fread(Buf, 1, 30, File); fscanf(File, " %u\n\n", &Simulation::Z_SIDE_LENGTH);
 
-
-  // Use this to allocate the particle's array
-  Particle * Particles = new Particle[Num_Particles];
+  // Set up Particles Particle_Array.
+  Particles.Set_Num_Particles(Num_Particles);
 
   // Now read in particles.
   for(unsigned int i = 0; i < Num_Particles; i++)
@@ -133,8 +146,8 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
   Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
            0,0,0,
            0,0,0};
-  const double Shape_Function_Amp = Particle::Shape_Function_Amp;
-  const double h = Particle::h;
+  const double Shape_Function_Amp = Particles.Get_Shape_Function_Amplitude();
+  const double h = Particles.Get_h();
 
   for(unsigned int i = 0; i < Num_Particles; i++) {
     // Check that the current particle has Neighbors
@@ -154,11 +167,11 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
 
         // Calculate shape function, shape function gradient for jth neighbor
         Particles[i].W[j] = Shape_Function_Amp*(h - Particles[i].Mag_R[j])*
-                                               (h - Particles[i].Mag_R[j])*
-                                               (h - Particles[i].Mag_R[j]);
+                            (h - Particles[i].Mag_R[j])*
+                            (h - Particles[i].Mag_R[j]);
         Particles[i].Grad_W[j] = -3*Shape_Function_Amp*((h - Particles[i].Mag_R[j])*
-                                                       (h - Particles[i].Mag_R[j]))*
-                                                       (Particles[i].R[j] / Particles[i].Mag_R[j]);
+                                 (h - Particles[i].Mag_R[j]))*
+                                 (Particles[i].R[j] / Particles[i].Mag_R[j]);
 
         // Add in the Current Neighbor's contribution to the Shape tensor
         V_j = Particles[Neighbor_ID].Vol;
@@ -176,8 +189,8 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
   // All done, close the file.
   fclose(File);
 
-  return Particles;
-} // Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
+  return 0;
+} // int Data_Dump::Load_Data_From_File(unsigned int & Num_Particles, Particle_Array Particles) {
 
 void Data_Dump::Load_Particle_From_File(Particle & P_In, FILE * File) {
   /* This function reads in the particle data for a specific particle. This

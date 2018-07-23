@@ -21,6 +21,7 @@ namespace Simulation {
   void Set_Static_Particle_Members(void);
 }
 namespace Data_Dump {}
+namespace FEB_File {}
 namespace Particle_Helpers {}
 namespace Quick_Math {}
 namespace Particle_Debugger {}

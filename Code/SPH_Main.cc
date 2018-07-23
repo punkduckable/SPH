@@ -16,11 +16,13 @@ typedef unsigned char uByte;
 #include "SPH_Diagnostics.h"
 #include "VTK_File.h"
 #include "Data_Dump.h"
+#include "FEB_File.h"
 #include "Quick_Math.h"
 #include "Vector.h"
 #include "Tensor.h"
 #include "Particle_Helpers.h"
 #include "Particle.h"
+#include "Particle_Array.h"
 #include "List.h"
 #include "Tests.h"
 #include "Simulation.h"
@@ -38,7 +40,9 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 #include "Particle_Update.cc"
 #include "Particle_Damage.cc"
 #include "Particle_Contact.cc"
+#include "Particle_Array.cc"
 #include "Data_Dump.cc"
+#include "FEB_File.cc"
 #include "Tests.cc"
 #include "Simulation.cc"
 
@@ -90,6 +94,16 @@ int main() {
   //Timing_Tests();
 
   Simulation::Run_Simulation();
+
+  /*Vector * X = NULL;
+  unsigned int Num_Nodes;
+  FEB_File::Read_FEB_File("Needle.feb", &X, Num_Nodes);
+
+  printf("%p\n",X);
+  printf("%u\n",Num_Nodes);
+  for(unsigned int i = 0; i < Num_Nodes; i++) {
+    X[i].Print();
+  }*/
 
   return 0;
 } // int main() {

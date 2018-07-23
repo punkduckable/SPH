@@ -6,18 +6,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Neighbor methods!
 
-bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
+bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles, const unsigned int i, const unsigned int j) {
   /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
   particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
   h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
   neighbor of P2. */
 
-  return ( Particle::h > Magnitude(P1.Get_X() - P2.Get_X()));
-} // bool Particle_Helpers::Are_Neighbors(const Particle & P1, const Particle & P2) {
+  return ( Particles.Get_h() > Magnitude(Particles[i].Get_X() - Particles[j].Get_X()));
+} // bool Particle_Helpers::Are_Neighbors(const Particle_Array, unsigned int i, unsigned int j) {
 
-void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
+void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
   unsigned int i,j;                              // Loop index variables
   List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
+  const unsigned int Num_Particles = Particles.Get_Num_Particles();
   unsigned int Num_Neighbors;                    // Number of neighbors found
   unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
 
@@ -32,7 +33,7 @@ void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle
 
       // Test if jth particle is inside support radius of ith particle. If so,
       // add P_j to P_i's neighbor list.
-      if(Are_Neighbors(Particles[i], Particles[j]))
+      if(Are_Neighbors(Particles, i, j))
         Particle_Neighbor_List.Add_Back(Particles[j].Get_ID());
     } // for(unsigned int j = 0; j < Num_Particles; j++) {
 
@@ -52,9 +53,9 @@ void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle
     /* Now free Neighbor_IDs array for next particle! */
     delete [] Neighbor_IDs;
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
-} // void Particle_Helpers::Find_Neighbors(const unsigned int Num_Particles, Particle * Particles) {
+} // void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
 
-void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles, const unsigned X_SIDE_LENGTH, const unsigned Y_SIDE_LENGTH, const unsigned Z_SIDE_LENGTH) {
+void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles, const unsigned X_SIDE_LENGTH, const unsigned Y_SIDE_LENGTH, const unsigned Z_SIDE_LENGTH) {
   /* This function is a modified version of the Neighbor List generating
   function that is specialized for Box particle geometries. By box, I mean
   some kind of cuboid.
@@ -102,7 +103,7 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles,
   List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
   unsigned int Num_Neighbors;                    // Number of neighbors found
   unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
-  const unsigned int SUPPORT_RADIUS = Particle::Support_Radius;
+  const unsigned int SUPPORT_RADIUS = Particles.Get_Support_Radius();
 
   /* If we are near the edge of the cube then we need to adjust which
   particles we search through
@@ -156,7 +157,7 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles,
         if(i == p && j == q && k == r)
           continue;
 
-        if(Are_Neighbors(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j], Particles[p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q]))
+        if(Are_Neighbors(Particles, i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q))
           Particle_Neighbor_List.Add_Back(Particles[p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q].Get_ID());
       } // for(q = q_min; q <= q_max; q++) {
     } // for(r = r_min; r <= r_max; r++) {
@@ -178,10 +179,10 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles,
 
   /* Now free Neighbor_IDs array for next particle! */
   delete [] Neighbor_IDs;
-} // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle * Particles) {
+} // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles, const unsigned X_SIDE_LENGTH, const unsigned Y_SIDE_LENGTH, const unsigned Z_SIDE_LENGTH) {
 
 
-void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle * Particles) {
+void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle_Array & Particles) {
   // This function is used to remove 1 neighbor from an existing particle.
 
   // To be able to remove a neighbor, we need to have neighbors!
@@ -261,6 +262,6 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remov
   // Now we can calculate the new A^(-1) from New_A.
   P_In.A_Inv = New_A^(-1);                                                     //        : unitless Tensor
 
-} // void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle * Particles, const unsigned X_SIDE_LENGTH, const unsigned Y_SIDE_LENGTH, const unsigned Z_SIDE_LENGTH) {
+} // void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle_Array & Particles) {
 
 #endif

@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Friend functions (Update P, Update particle position)
 
-void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const double dt) {
+void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, const double dt) {
   // Check if particle is damaged (if so, we skip this particle)
   if(P_In.D >= 1)
     return;
@@ -42,11 +42,11 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
               0,0,1};                            // Identity tensor
 
   double Stretch_Max_Principle;                                                //        : unitless
-  const double Tau = Particle::Tau;                                            //        : unitless
+  const double Tau = Particles.Get_Tau();                                       //        : unitless
 
-  const double Lame = Particle::Lame;            // Lame paramater                       : Mpa
-  const double mu0 = Particle::mu0;              // Shear modulus                        : Mpa
-  const double mu = Particle::mu;                // Viscosity                            : Mpa*s
+  const double Lame = Particles.Get_Lame();      // Lame paramater                       : Mpa
+  const double mu0 = Particles.Get_mu0();        // Shear modulus                        : Mpa
+  const double mu = Particles.Get_mu();          // Viscosity                            : Mpa*s
 
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
@@ -122,9 +122,9 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const dou
   P_In.F = F;                                                                  //         : unitless Tensor
   P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
 
-} // void Particle_Helpers::Update_P(Particle & P_In, Particle * Particles, const double dt) {
+} // void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, const double dt) {
 
-void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, const double dt) {
+void Particle_Helpers::Update_x(Particle & P_In, const Particle_Array & Particles, const double dt) {
   // Check if particle is damaged (if so, we skip this particle)
   if( P_In.D >= 1)
     return;
@@ -152,8 +152,8 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
   /* P_In aliases (ith particle variables).
   notice that P_In/P_i does not chnage throughout this function. Therefore,
   all P_In variables are declared as consts to avoid accidential modification */
-  const double alpha = Particle::alpha;          // alpha static member                  : unitless
-  const double E = Particle::E;                  // Hourglass stiffness                  : Mpa
+  const double alpha = Particles.Get_alpha();    // alpha member of the particles array  : unitless
+  const double E = Particles.Get_E();            // Hourglass stiffness                  : Mpa
 
   const double V_i = P_In.Vol;                   // Volume of P_In                       : mm^3
 
@@ -275,6 +275,6 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, con
 
   P_In.x += dt*P_In.V;                           // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
   P_In.V += dt*acceleration;                     // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
-} // void Particle_Helpers::Update_x(Particle & P_In, const Particle * Particles, const double dt) {
+} // void Particle_Helpers::Update_x(Particle & P_In, const Particle_Array & Particles, const double dt) {
 
 #endif
