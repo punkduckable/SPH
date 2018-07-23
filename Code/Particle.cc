@@ -57,7 +57,7 @@ Particle & Particle::operator=(const Particle & P_In) {
 // Particle setup methods:
 // Set Neighbors
 
-void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor_ID_Array, const Particle * Particles) {
+void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor_ID_Array, const Particle_Array & Particles) {
   /* First check if this particle already has neighbors. This function should
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
@@ -75,6 +75,10 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
 
   // Set Num_Neighbors using input
   Num_Neighbors = N;
+
+  // Get particle array parameters
+  const double Shape_Function_Amp = Particles.Get_Shape_Function_Amplitude();
+  const double h = Particles.Get_h();
 
   // Allocate memory for the Dynamic arrays
   Neighbor_IDs = new unsigned int[Num_Neighbors];

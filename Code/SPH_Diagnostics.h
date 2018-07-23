@@ -7,9 +7,8 @@ namespace Particle_Debugger {
   unsigned int File_Number = 0;
   const unsigned int File_Number_Max_Digits = 5;
 
-  void Export_Pariticle_Forces(const unsigned int Num_Particles,
-                               const Particle * Particles);
-                               
+  void Export_Pariticle_Forces(const Particle_Array & Particles);
+
   void Get_File_Name(string & Str);
 } // namespace VTK_File {
 

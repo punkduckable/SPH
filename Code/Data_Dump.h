@@ -2,14 +2,12 @@
 #define DATA_DUMP_HEADER
 
 namespace Data_Dump {
-  void Print_Data_To_File(const Particle * Particles,
-                          const unsigned int Num_Particles);
+  void Print_Particle_Array_To_File(const Particle_Array & Particles);
 
   void Print_Particle_To_File(const Particle & P_In,
                               FILE * File);
 
-  int Load_Data_From_File(unsigned int & Num_Particles,
-                          Particle ** Particles_Ptr);
+  int Load_Particle_Array_From_File(Particle_Array & Particles);
 
   void Load_Particle_From_File(Particle & P_In,
                                FILE * File);

@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods
 
-void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
+void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array & Particles) {
   printf("Particle %d is damaged. ",P_In.ID);
   P_In.X.Print();
 
@@ -265,6 +265,6 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Parti
   /* Now that we've causally removed the damaged particle from the particles
   array, we need to make that it think that it has no neighbors */
   P_In.Num_Neighbors = 0;
-} // void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle * Particles) {
+} // void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array & Particles) {
 
 #endif

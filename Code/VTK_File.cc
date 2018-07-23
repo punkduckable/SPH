@@ -26,7 +26,9 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_
     fprintf(File,"\t %8.3f\n",Data[i]);
 }
 
-void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles) {
+void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles) {
+  const unsigned int Num_Particles = Particles.Get_Num_Particles();
+  
   // Set up file
   string File_Name = "Test";
   Get_File_Name(File_Name);
@@ -233,6 +235,6 @@ void VTK_File::Export_Pariticle_Positions(const unsigned int Num_Particles, cons
 
   // Free the file
   fclose(File);
-} // void Export_Pariticle_Positions(const unsigned int Num_Particles, const Particle * Particles) {
+} // void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles) {
 
 #endif

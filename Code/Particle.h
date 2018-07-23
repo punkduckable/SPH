@@ -4,24 +4,7 @@
 class Particle {
   private:
     // Cuboid parameters (should be deleted if not working with a rectangle)
-    static double Inter_Particle_Spacing;                  //                            : mm
     unsigned int i,j,k;                                    // ijk position of particle in the cuboid
-
-    // Kernel parameters
-    static double h;                                       // Support radius in mm's     : mm
-    static unsigned int Support_Radius;                    // Support radius in Inter Particle Spacints's    : unitless
-    static double Shape_Function_Amp;                      // Shape function Amplitude   : 1/(mm^6)
-
-    // Strain energy function parameters
-    static double Lame;                                    // Lame parameter             : Mpa
-    static double mu0;                                     // Shear modulus              : Mpa
-
-    // Viscosity parameters
-    static double mu;                                      // Viscosity                  : Mpa*s
-
-    // Hourglass (Hg) correction parameters
-    static double E;                                       // Hourglass stiffness        : Mpa
-    static double alpha;                                   // Hg control parameter       : unitless
 
     // Particle ID
     unsigned int ID;                                       // Particle ID in the Particle's array.
@@ -58,7 +41,6 @@ class Particle {
     double Stretch_M = 0;                                  // Current max stretch        : unitless
     double Stretch_Critical;                               // If Principle stretch excedes Critical then particle incures damage : unitless
     double D = 0;                                          // Damage parameter           : unitless
-    static double Tau;                                     // Damage rate parameter (see eq 26)
 
     // Neighbor variables
     unsigned int Neighbors_Are_Set = false;                // True if the particle has neighbors, false otherwise
@@ -124,56 +106,51 @@ class Particle {
 
     // Update P
     friend void Particle_Helpers::Update_P(Particle & P_In,                    // Updates P_In's Second Piola-Kirchhoff stress tensor
-                                           Particle * Particles,
+                                           Particle_Array & Particles,
                                            const double dt);
 
     // Update x
     friend void Particle_Helpers::Update_x(Particle & P_In,                    // Updates P_In's spacial position
-                                           const Particle * Particles,
+                                           const Particle_Array & Particles,
                                            const double dt);
 
     // Neighbor friends (other neighbor methods are in Particle_Neighbors.cc)
-    void Set_Neighbors(const unsigned int N,
+    void Set_Neighbors(const unsigned int N,                                   // Set Neighbors
                        const unsigned int * Neighbor_ID_Array,
-                       const Particle * Particles);        // Set Neighbors
+                       const Particle_Array & Particles);
 
-    friend bool Particle_Helpers::Are_Neighbors(const Particle & P1,
-                                                const Particle & P2);
+    friend bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles,
+                                                const unsigned int i,
+                                                const unsigned int j);
 
     friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In,
-                                                     Particle * Particles,
+                                                     Particle_Array & Particles,
                                                      const unsigned X_SIDE_LENGTH,
                                                      const unsigned Y_SIDE_LENGTH,
                                                      const unsigned Z_SIDE_LENGTH);
 
     friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
                                                   const unsigned int Remove_Neighbor_ID,
-                                                  const Particle * Particles);
+                                                  const Particle_Array & Particles);
 
     // Damage method friends
     friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
-                                                          Particle * Particles);
+                                                          Particle_Array & Particles);
 
     // Contact method friends
-    friend void Particle_Helpers::Contact(Particle * Body_A,
-                                          const unsigned int Num_Particles_A,
-                                          Particle * Body_B,
-                                          const unsigned int Num_Particles_B,
-                                          const double h_In);
+    friend void Particle_Helpers::Contact(Particle_Array & Body_A,
+                                          Particle_Array & Body_B);
 
     // Other friends
     friend void Particle_Tests(void);
     friend void Simulation::Run_Simulation(void);
     friend void Simulation::Set_Static_Particle_Members(void);
 
-    friend void Particle_Debugger::Export_Pariticle_Forces(const unsigned int Num_Particles,
-                                                           const Particle * Particles);
+    friend void Particle_Debugger::Export_Pariticle_Forces(const Particle_Array & Particles);
 
-    friend void Data_Dump::Print_Data_To_File(const Particle * Particles,
-                                              const unsigned int Num_Particles);
+    friend void Data_Dump::Print_Particle_Array_To_File(const Particle_Array & Particles);
 
-    friend int Data_Dump::Load_Data_From_File(unsigned int & Num_Particles,
-                                              Particle ** Particles_Ptr);
+    friend int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles);
 
     friend void Data_Dump::Load_Particle_From_File(Particle & P_In,
                                                    FILE * File);
