@@ -8,7 +8,8 @@ namespace Data_Dump {
   void Print_Particle_To_File(const Particle & P_In,
                               FILE * File);
 
-  Particle * Load_Data_From_File(unsigned int & Num_Particles);
+  int Load_Data_From_File(unsigned int & Num_Particles,
+                          Particle ** Particles_Ptr);
 
   void Load_Particle_From_File(Particle & P_In,
                                FILE * File);

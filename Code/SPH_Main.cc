@@ -93,5 +93,15 @@ int main() {
 
   Simulation::Run_Simulation();
 
+  Vector * X = NULL;
+  unsigned int Num_Nodes;
+  FEB_File::Read_FEB_File("Needle.feb", &X, Num_Nodes);
+
+  printf("%p\n",X);
+  printf("%u\n",Num_Nodes);
+  for(unsigned int i = 0; i < Num_Nodes; i++) {
+    X[i].Print();
+  }
+
   return 0;
 } // int main() {

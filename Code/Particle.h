@@ -172,7 +172,8 @@ class Particle {
     friend void Data_Dump::Print_Data_To_File(const Particle * Particles,
                                               const unsigned int Num_Particles);
 
-    friend Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles);
+    friend int Data_Dump::Load_Data_From_File(unsigned int & Num_Particles,
+                                              Particle ** Particles_Ptr);
 
     friend void Data_Dump::Load_Particle_From_File(Particle & P_In,
                                                    FILE * File);

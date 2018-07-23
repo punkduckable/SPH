@@ -91,12 +91,17 @@ void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
   fprintf(File,"\n\n");
 } // void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
 
-Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
+int Data_Dump::Load_Data_From_File(unsigned int & Num_Particles, Particle ** Particles_Ptr) {
   /* This function is designed to read in particle and use it to create a
   particles array. */
 
   // First, open up the file
   FILE * File = fopen("../Files/Particle_Data.txt","r");
+
+  if(File == NULL) {
+    printf("Could not open Particle data file\n");
+    return 1;
+  } // if(File == NULL) {
 
   // Now read in the static particle members
   char Buf[100];                                 // Buffer to store text from file
@@ -120,11 +125,11 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
 
 
   // Use this to allocate the particle's array
-  Particle * Particles = new Particle[Num_Particles];
+  *Particles_Ptr = new Particle[Num_Particles];
 
   // Now read in particles.
   for(unsigned int i = 0; i < Num_Particles; i++)
-    Load_Particle_From_File(Particles[i], File);
+    Load_Particle_From_File((*Particles_Ptr)[i], File);
 
   //////////////////////////////////////////////////////////////////////////////
   // Now recreate each Particle's neighbor arrays.
@@ -139,45 +144,45 @@ Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
   for(unsigned int i = 0; i < Num_Particles; i++) {
     // Check that the current particle has Neighbors
 
-    if(Particles[i].Num_Neighbors != 0) {
+    if((*Particles_Ptr)[i].Num_Neighbors != 0) {
       // If so, then set up this particle's neighbor arrays.
       A = Tensor(0,0,0,
                  0,0,0,
                  0,0,0);
 
-      for(unsigned int j = 0; j < Particles[i].Num_Neighbors; j++) {
-        Neighbor_ID = Particles[i].Neighbor_IDs[j];
+      for(unsigned int j = 0; j < (*Particles_Ptr)[i].Num_Neighbors; j++) {
+        Neighbor_ID = (*Particles_Ptr)[i].Neighbor_IDs[j];
 
         // Calculate displacement vectors
-        Particles[i].R[j] = Particles[Neighbor_ID].X - Particles[i].X;
-        Particles[i].Mag_R[j] = Particles[i].R[j].Magnitude();
+        (*Particles_Ptr)[i].R[j] = (*Particles_Ptr)[Neighbor_ID].X - (*Particles_Ptr)[i].X;
+        (*Particles_Ptr)[i].Mag_R[j] = (*Particles_Ptr)[i].R[j].Magnitude();
 
         // Calculate shape function, shape function gradient for jth neighbor
-        Particles[i].W[j] = Shape_Function_Amp*(h - Particles[i].Mag_R[j])*
-                                               (h - Particles[i].Mag_R[j])*
-                                               (h - Particles[i].Mag_R[j]);
-        Particles[i].Grad_W[j] = -3*Shape_Function_Amp*((h - Particles[i].Mag_R[j])*
-                                                       (h - Particles[i].Mag_R[j]))*
-                                                       (Particles[i].R[j] / Particles[i].Mag_R[j]);
+        (*Particles_Ptr)[i].W[j] = Shape_Function_Amp*(h - (*Particles_Ptr)[i].Mag_R[j])*
+                                   (h - (*Particles_Ptr)[i].Mag_R[j])*
+                                   (h - (*Particles_Ptr)[i].Mag_R[j]);
+        (*Particles_Ptr)[i].Grad_W[j] = -3*Shape_Function_Amp*((h - (*Particles_Ptr)[i].Mag_R[j])*
+                                        (h - (*Particles_Ptr)[i].Mag_R[j]))*
+                                        ((*Particles_Ptr)[i].R[j] / (*Particles_Ptr)[i].Mag_R[j]);
 
         // Add in the Current Neighbor's contribution to the Shape tensor
-        V_j = Particles[Neighbor_ID].Vol;
-        A += Dyadic_Product((V_j*Particles[i].Grad_W[j]), Particles[i].R[j]);
-      } // for(unsigned int j = 0; j < Particles[i].Num_Neighbors; i++) {
+        V_j = (*Particles_Ptr)[Neighbor_ID].Vol;
+        A += Dyadic_Product((V_j*(*Particles_Ptr)[i].Grad_W[j]), (*Particles_Ptr)[i].R[j]);
+      } // for(unsigned int j = 0; j < (*Particles_Ptr)[i].Num_Neighbors; i++) {
 
       // Now we can calculate A^(-1) from A.
-      Particles[i].A_Inv = A^(-1);
+      (*Particles_Ptr)[i].A_Inv = A^(-1);
 
       // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
-      Particles[i].Neighbors_Are_Set = true;
-    } // if(Particles[i].Num_Neighbors != 0) {
+      (*Particles_Ptr)[i].Neighbors_Are_Set = true;
+    } // if((*Particles_Ptr)[i].Num_Neighbors != 0) {
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   // All done, close the file.
   fclose(File);
 
-  return Particles;
-} // Particle * Data_Dump::Load_Data_From_File(unsigned int & Num_Particles) {
+  return 0;
+} // int Data_Dump::Load_Data_From_File(unsigned int & Num_Particles, Particle * Particles) {
 
 void Data_Dump::Load_Particle_From_File(Particle & P_In, FILE * File) {
   /* This function reads in the particle data for a specific particle. This

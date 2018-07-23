@@ -26,8 +26,8 @@ void Simulation::Run_Simulation(void) {
                 MS_Print;                                            // Timers (store number of MS for each operation)
 
   // Partile bodies
-  Particle *Body;
-  Particle *Boundary;
+  Particle *Body = NULL;
+  Particle *Boundary = NULL;
 
   unsigned int Num_Particles_Body;
   const unsigned int Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
@@ -49,7 +49,7 @@ void Simulation::Run_Simulation(void) {
 
     // If loading an existing simulation, read in 'Particle_File'
     printf(       "\nLoading from file....");
-    Body = Data_Dump::Load_Data_From_File(Num_Particles_Body);
+    Data_Dump::Load_Data_From_File(Num_Particles_Body, &Body);
 
     timer1 = clock() - timer1;
     MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
@@ -88,7 +88,7 @@ void Simulation::Run_Simulation(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
-  printf(         "\nRunning particle time steps....\n");
+  printf(         "\nRunning %d time steps....\n",Num_Steps);
 
   // Print initial data
   timer1 = clock();
