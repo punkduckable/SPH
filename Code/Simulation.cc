@@ -27,10 +27,12 @@ void Simulation::Run_Simulation(void) {
 
   // Partile bodies
   Particle_Array Body;
-  Particle_Array Boundary;
+  //Particle_Array Boundary;
+  Particle_Array Needle;
 
   unsigned int Num_Particles_Body;
-  unsigned int Num_Particles_Boundary;
+  //unsigned int Num_Particles_Boundary;
+  unsigned int Num_Particles_Needle;
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
@@ -61,20 +63,21 @@ void Simulation::Run_Simulation(void) {
   else if(Load_Data_From_File == 0) {
     // First, let's calculate the number of particles in our two arrays.
     Num_Particles_Body = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
-    Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
+    //Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
 
     // Now set up the particle arrays
     Body.Set_Num_Particles(Num_Particles_Body);
-    Boundary.Set_Num_Particles(Num_Particles_Boundary);
+    //Boundary.Set_Num_Particles(Num_Particles_Boundary);
 
     // Set up Body, Boundary.
     Set_Particle_Array_Members(Body);
-    Set_Particle_Array_Members(Boundary);
+    //Set_Particle_Array_Members(Boundary);
 
     // Now let's setup the particle's array (this function sets each particle's
     // position, ID, etc... It also finds and sets each particle's neighbors)
     SetUp_Body(Body);
-    SetUp_Boundary(Boundary);
+    //SetUp_Boundary(Boundary);
+    SetUp_FEB_Body(Needle, "Needle.feb");
   } // else if(Load_Data_From_File == 0) {
 
   // Now that the particle array is loaded, print paramaters.
@@ -132,6 +135,7 @@ void Simulation::Run_Simulation(void) {
     i = 0;
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
       }
     }
 
@@ -139,6 +143,7 @@ void Simulation::Run_Simulation(void) {
     i = X_SIDE_LENGTH-1;
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
       }
     }
 
@@ -146,7 +151,7 @@ void Simulation::Run_Simulation(void) {
     j = 0;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        //Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,-20,0});
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
       }
     }
 
@@ -154,7 +159,6 @@ void Simulation::Run_Simulation(void) {
     j = Y_SIDE_LENGTH-1;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(k = 0; k < Z_SIDE_LENGTH; k++) {
-        //Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_V({0,20,0});
       }
     }
 
@@ -162,6 +166,7 @@ void Simulation::Run_Simulation(void) {
     k = 0;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
       }
     }
 
@@ -169,6 +174,7 @@ void Simulation::Run_Simulation(void) {
     k = Z_SIDE_LENGTH-1;
     for(i = 0; i < X_SIDE_LENGTH; i++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
+        Body[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
       }
     }
 
@@ -184,12 +190,16 @@ void Simulation::Run_Simulation(void) {
         } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(i = 0; i < X_SIDE_LENGTH; i++) {
+
+    for(i = 0; i < Num_Particles_Needle; i++)
+      Particle_Helpers::Update_P(Needle[i], Needle, dt);
+
     update_P_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
     // Detect contact
     timer2 = clock();
-    Particle_Helpers::Contact(Body, Boundary);
+    Particle_Helpers::Contact(Body, Needle);
     contact_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -202,6 +212,10 @@ void Simulation::Run_Simulation(void) {
         } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
       } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(i = 0; i < X_SIDE_LENGTH; i++) {
+
+    for(i = 0; i < Num_Particles_Needle; i++)
+      Particle_Helpers::Update_x(Needle[i], Needle, dt);
+
     update_x_timer += clock() - timer2;
 
     // Print to file evert 100th iteration
@@ -253,7 +267,7 @@ void Simulation::SetUp_Body(Particle_Array & Body) {
   double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
 
   Vector X, x, V;
-
+  Vector Offset{-((double)X_SIDE_LENGTH)/2., -((double)Y_SIDE_LENGTH)/2., -((double)Z_SIDE_LENGTH)/2.};
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
   printf(         "\nGenerating particles....");
@@ -268,13 +282,13 @@ void Simulation::SetUp_Body(Particle_Array & Body) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
         X = {(double)i,(double)j,(double)k};
+        X += Offset;
 
         X *= IPS;                                                            //        : mm
         x = X;                                                               //        : mm
         V = {0.,0.,0.};                                                      //        : mm/s
 
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_ijk(i,j,k);      // Remove if not using cuboid
-        Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_ID(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j);
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass);     //        : g
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume);    //        : mm^3
         Body[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Radius(Particle_Radius); //   : mm
@@ -346,7 +360,6 @@ void Simulation::SetUp_Boundary(Particle_Array & Boundary) {
       V = {0.,0.,0.};
 
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_ijk(i,1,k);
-      Boundary[i*2*Z_SIDE_LENGTH + k].Set_ID(i*Z_SIDE_LENGTH + k);
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_Mass(Particle_Mass);                 //        : g
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_Vol(Particle_Volume);                //        : mm^3
       Boundary[i*2*Z_SIDE_LENGTH + k].Set_Radius(Particle_Radius);             //        : mm
@@ -357,5 +370,48 @@ void Simulation::SetUp_Boundary(Particle_Array & Boundary) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
   printf(         "Done!\n");
 } // void Simulation::SetUp_Boundary(Particle_Array & Boundary) {
+
+void Simulation::SetUp_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name) {
+  // First, we need to know how many particles we have, and the reference
+  // position of each of the particles.
+  Vector * X = NULL;
+  unsigned int Num_Particles;
+
+  FEB_File::Read_FEB_File(File_Name, &X, Num_Particles);
+
+  // Now we can set up the particle array,
+  FEB_Body.Set_Num_Particles(Num_Particles);
+  FEB_Body.Set_Inter_Particle_Spacing(.5);
+  FEB_Body.Set_Support_Radius(4);
+  FEB_Body.Set_Lame(1.125);                               // Lame parameter             : Mpa
+  FEB_Body.Set_mu0(.275);                                 // Shear modulus              : Mpa
+  FEB_Body.Set_mu(5e-4);                                  // Viscosity                  : Mpa*s
+  FEB_Body.Set_E(0.770982);                               // Youngs modulus/Hourglass stiffness   : Mpa
+  FEB_Body.Set_alpha(7.5);                                // Hg control parameter       : Unitless
+  FEB_Body.Set_Tau(.15);                                  // Damage rate parameter      : unitless
+
+  // Now we can cycle through the particles, setting up each particle.
+  const double IPS = 5./8.;                                                    //        : mm
+  double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
+  double Particle_Radius = IPS*.578;                                           //        : mm
+  double Particle_Density = 1;                                                 //        : g/mm^3
+  double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
+
+  Vector x, V{0,0,0};
+
+  for(unsigned int i = 0; i < Num_Particles; i++) {
+    x = X[i];
+
+    FEB_Body[i].Set_Mass(Particle_Mass);
+    FEB_Body[i].Set_Vol(Particle_Volume);
+    FEB_Body[i].Set_Radius(Particle_Radius);
+    FEB_Body[i].Set_X(X[i]);
+    FEB_Body[i].Set_x(x);
+    FEB_Body[i].Set_V(V);
+  } //   for(unsigned int i = 0; i < Num_Particles; i++) {
+
+  // Now set up neighbors.
+  Particle_Helpers::Find_Neighbors(FEB_Body);
+} // void Simulation::SetUp_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name) {
 
 #endif

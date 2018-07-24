@@ -8,6 +8,8 @@
 namespace Simulation {
   void SetUp_Body(Particle_Array & Body);
   void SetUp_Boundary(Particle_Array & Boundary);
+  void SetUp_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name);
+
   // Simulation flags/properties
   const unsigned char Load_Data_From_File = 0;
   const unsigned char Save_Data_To_File = 1;
@@ -15,9 +17,9 @@ namespace Simulation {
   const unsigned char TimeSteps_Between_Prints = 100;
 
   // Simulation dimensions
-  unsigned int X_SIDE_LENGTH = 10;
-  unsigned int Y_SIDE_LENGTH = 5;
-  unsigned int Z_SIDE_LENGTH = 10;
+  unsigned int X_SIDE_LENGTH = 20;
+  unsigned int Y_SIDE_LENGTH = 20;
+  unsigned int Z_SIDE_LENGTH = 20;
 
   // Support radius
   unsigned int Support_Radius = 4;                         // Support radius in units of Inter Particle spacings

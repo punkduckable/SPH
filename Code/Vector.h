@@ -70,6 +70,7 @@ class Vector {
 
     // Temporary friends (should remove)
     friend void Particle_Tests(void);
+    friend void Simulation::Run_Simulation(void);
     friend void Particle_Debugger::Export_Pariticle_Forces(const Particle_Array & Particles);
     friend void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles);
 

@@ -108,8 +108,7 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
   for(i = 0; i < Num_Nodes; i++)
     fscanf(File, " <node id=\"%u\">%le, %le, %le</node>\n", &ID_Buf, &(*X_Ptr)[i](0), &(*X_Ptr)[i](1), &(*X_Ptr)[i](2));
 
-  printf("Max ID = %u\n",ID_Buf);
-  printf("%p\n",*X_Ptr);
+  printf("Read in %u particles \n",ID_Buf);
   fclose(File);
 
   return 0;

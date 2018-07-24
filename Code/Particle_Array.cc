@@ -17,6 +17,10 @@ Particle_Array::Particle_Array(const unsigned int Num_Particles_In) {
 
   Num_Particles = Num_Particles_In;
   Array = new Particle[Num_Particles];
+
+  // Now assign each particle's Id
+  for(unsigned int i = 0; i < Num_Particles; i++)
+    Array[i].Set_ID(i);
 } // Particle_Array::Particle_Array(const unsigned int Num_Particles_In) {
 
 Particle_Array::~Particle_Array(void) {
@@ -42,6 +46,10 @@ void Particle_Array::Set_Num_Particles(const unsigned int Num_Particles_In) {
 
   Num_Particles = Num_Particles_In;
   Array = new Particle[Num_Particles];
+
+  // Now assign each particle's Id
+  for(unsigned int i = 0; i < Num_Particles; i++)
+    Array[i].Set_ID(i);
 } // void Particle_Array::Set_Num_Particles(const unsigned int Num_Particles_In) {
 
 void Particle_Array::Set_Inter_Particle_Spacing(const double IPS) {
