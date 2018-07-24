@@ -78,6 +78,7 @@ class Vector {
 }; // class Vector {
 
 // Vector functions that don't belong in the vector class
+Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
 double Magnitue(const Vector & V_In);
 double Vector_Dot_Product(const Vector & V1,
                           const Vector & V2);
