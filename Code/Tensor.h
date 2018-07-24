@@ -84,7 +84,7 @@ class Tensor {
                                  const Vector & V2);
 
     // Temporary friends! Should remove asap
-    friend void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles);
+    friend void VTK_File::Export_Particle_Positions(const Particle_Array & Particles);
 }; // class Tensor {
 
 // Tensor functions that don't belong in the tensor class

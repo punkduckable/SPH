@@ -13,6 +13,7 @@ typedef unsigned char uByte;
 // Header files
 #include "Classes.h"
 #include "Namespaces.h"
+#include "List.h"
 #include "SPH_Diagnostics.h"
 #include "VTK_File.h"
 #include "Data_Dump.h"
@@ -23,7 +24,6 @@ typedef unsigned char uByte;
 #include "Particle_Helpers.h"
 #include "Particle.h"
 #include "Particle_Array.h"
-#include "List.h"
 #include "Tests.h"
 #include "Simulation.h"
 

@@ -4,14 +4,37 @@
 #include "VTK_File.h"
 #include "Particle.h"
 
-void VTK_File::Get_File_Name(string & Str) {
-  char Buf[6];
-  sprintf(Buf,"%05d",File_Number);
-  File_Number++;
+std::string VTK_File::Get_File_Name(const std::string & Str) {
+  // First, figure out if we've seen this string before. if so, then it'll be
+  // in the name list
+  unsigned int i;
 
-  Str += "_variables_";
-  Str += Buf;
-  Str += ".vtk";
+  unsigned int Num_Names = Name_List.Node_Count();
+  for(i = 0; i < Num_Names; i++) {
+    // Compare the ith name in the Name List to the supplied string.
+    if(Name_List[i].compare(Str) == 0)
+      break;
+  } // for(unsigned int i = 0; i <= Num_Names; i++) {
+
+  // If the supplied string is NOT in the list, then add Str to the end of the
+  // name list and add a zero node to the File_Number list.
+  if(i >= Num_Names) {
+    Name_List.Add_Back(Str);
+    File_Number_List.Add_Back(0);
+  } // if(i > Num_Names) {
+
+  // Now print the appropiate file number to the buffer, increment the file number.
+  char Buf[6];
+  sprintf(Buf,"%05u",File_Number_List[i]);
+  File_Number_List[i]++;
+  string File_Name = Str;
+
+  // Now append file name syntax to file name, return.
+  File_Name += "_positions_";
+  File_Name += Buf;
+  File_Name += ".vtk";
+  
+  return File_Name;
 } // void Get_File_Name(string & Str) {
 
 void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_Particles, double * Data) {
@@ -26,12 +49,11 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_
     fprintf(File,"\t %8.3f\n",Data[i]);
 }
 
-void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles) {
+void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
   const unsigned int Num_Particles = Particles.Get_Num_Particles();
-  
+
   // Set up file
-  string File_Name = "Test";
-  Get_File_Name(File_Name);
+  string File_Name = Get_File_Name(Particles.Get_Name());
 
   string File_Path = "../Files/Position_Files/";
   File_Path += File_Name;
@@ -235,6 +257,6 @@ void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles) {
 
   // Free the file
   fclose(File);
-} // void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles) {
+} // void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
 
 #endif

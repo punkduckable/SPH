@@ -22,7 +22,7 @@ namespace Simulation {
   unsigned int Z_SIDE_LENGTH = 20;
 
   // Support radius
-  unsigned int Support_Radius = 4;                         // Support radius in units of Inter Particle spacings
+  unsigned int Support_Radius = 3;                         // Support radius in units of Inter Particle spacings
 
   // TimeStep paramters
   const double dt = .00001;                                // Time step                  : s

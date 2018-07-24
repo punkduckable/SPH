@@ -18,7 +18,7 @@ class Vector {
     double & operator[](const uByte index) {               // Write to a component of vector (no checks, faster)
       return V[index];
     };                                                     // Read a componnet of the vector (no checks, faster)
-    double operator[](const uByte index) const {
+    const double operator[](const uByte index) const {
       return V[index];
     };
 
@@ -72,7 +72,7 @@ class Vector {
     friend void Particle_Tests(void);
     friend void Simulation::Run_Simulation(void);
     friend void Particle_Debugger::Export_Pariticle_Forces(const Particle_Array & Particles);
-    friend void VTK_File::Export_Pariticle_Positions(const Particle_Array & Particles);
+    friend void VTK_File::Export_Particle_Positions(const Particle_Array & Particles);
 
     // Printing functions
     void Print(void) const;                                // Print vector components

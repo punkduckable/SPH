@@ -5,33 +5,36 @@ template <typename Type>
 class List {
   private:
     struct Node {
-      Type Particle_ID;
+      Type Value;
       Node *Next_Node;
       Node *Previous_Node;
     };
 
-    Node* Beginning;                     // Start of the list
-    Node* End;                           // End of the list
-    int Num_Nodes;                       // Number of nodes in the list
+    Node* Beginning;                             // Start of the list
+    Node* End;                                   // End of the list
+    unsigned int Num_Nodes;                      // Number of nodes in the list
 
   public:
     // Constructors, destructor
-    List();                              // Default constructor
-    List(const List & L_In);             // Copy constructor (to prevent inadvertent shallow copying)
-    ~List();                             // Destructor
+    List();                                      // Default constructor
+    List(const List & L_In);                     // Copy constructor (to prevent inadvertent shallow copying)
+    ~List();                                     // Destructor
 
-    // List equality
-    List & operator=(const List & L_In); // Explicit = operator overload (to prevent inadvertent shallow copying)
+    // Operator overloading
+    List & operator=(const List & L_In);         // Explicit = operator overload (to prevent inadvertent shallow copying)
+    Type & operator[](const unsigned int i);     // Acces a particular element of the list.
+    const Type operator[](const unsigned int i) const;
+
 
     // Method to add or remove items from the list
-    void Add_Back(const Type ID_In);      // Add an item to the start of the list
-    void Add_Front(const Type ID_In);     // Add an item to the end of the list
-    Type Remove_Back(void);               // Remove an item from the end of the list
-    Type Remove_Front(void);              // Add an item to the start of the list
+    void Add_Back(const Type ID_In);             // Add an item to the start of the list
+    void Add_Front(const Type ID_In);            // Add an item to the end of the list
+    Type Remove_Back(void);                      // Remove an item from the end of the list
+    Type Remove_Front(void);                     // Add an item to the start of the list
 
     // Methods to get list info
-    int Node_Count(void) const;          // Returns number of nodes
-    void Print_Node_Info(void) const;    // For testing
+    unsigned int Node_Count(void) const;         // Returns number of nodes
+    void Print_Node_Info(void) const;            // For testing
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +60,7 @@ List<Type>::List(const List & L_In) {
   Num_Nodes = 0;
 
   while(Node_Ptr != NULL) {
-    value = Node_Ptr->Particle_ID;                         // Get latest node's value
+    value = Node_Ptr->Value;                         // Get latest node's value
     Add_Back(value);                                        // Append a new node onto our list
     Num_Nodes++;                                           // Increment number of nodes
     Node_Ptr = Node_Ptr->Next_Node;                        // Point to next node in the list
@@ -81,8 +84,9 @@ List<Type>::~List(void) {
 } // List<Type>::~List(void) {
 
 ////////////////////////////////////////////////////////////////////////////////
-// List equality: Deep copy
+// Operator overloading
 
+// List equality: Deep copy
 template <typename Type>
 List<Type> & List<Type>::operator=(const List<Type> & L_In) {
   /* Since list type objects dynamically allocate memory, we need to perform a
@@ -96,7 +100,7 @@ List<Type> & List<Type>::operator=(const List<Type> & L_In) {
   Num_Nodes = 0;
 
   while(Node_Ptr != NULL) {
-    value = Node_Ptr->Particle_ID;                         // Get latest node's value
+    value = Node_Ptr->Value;                         // Get latest node's value
     Add_Back(value);                                        // Append a new node onto our list
     Num_Nodes++;                                           // Increment number of nodes
     Node_Ptr = Node_Ptr->Next_Node;                        // Point to next node in the list
@@ -104,6 +108,42 @@ List<Type> & List<Type>::operator=(const List<Type> & L_In) {
 
   return *this;
 } // List & List<Type>::operator=(const List & L_In) {
+
+template <typename Type>
+Type & List<Type>::operator[](const unsigned int i) {
+  // Check that the requested index is in the bounds of our list
+  if(i >= Num_Nodes) {
+    printf("Error! requested list index is out of bounds! Returning value of last node.\n");
+    return End->Value;
+  } // if(i >= Num_Nodes) {
+
+  // Traverse the list until we get to the requested node.
+  Node * Current_Node = Beginning;
+
+  for(unsigned int j = 0; j < i; j++)
+    Current_Node = Current_Node->Next_Node;
+
+  // Now return the value of the requested node.
+  return Current_Node->Value;
+} // Type & List<Type>::operator[](const unsigned int i) {
+
+template <typename Type>
+const Type List<Type>::operator[](const unsigned int i) const {
+  // Check that the requested index is in the bounds of our list
+  if(i >= Num_Nodes) {
+    printf("Error! requested list index is out of bounds! Returning value of last node.\n");
+    return End->Value;
+  } // if(i >= Num_Nodes) {
+
+  // Traverse the list until we get to the requested node.
+  Node * Current_Node = Beginning;
+
+  for(unsigned int j = 0; j < i; j++)
+    Current_Node = Current_Node->Next_Node;
+
+  // Now return the value of the requested node.
+  return Current_Node->Value;
+} // const Type List<Type>::operator[](const unsigned int i) const
 
 ////////////////////////////////////////////////////////////////////////////////
 // Method to add or remove items from the list
@@ -114,7 +154,7 @@ void List<Type>::Add_Back(const Type ID_In) {
   dynamically allocating a node, adding it into our list (old End, if there is
   one, points to the new node, make End point to new node). */
   Node * add = new Node;                       // Dynamically allocate the new node
-  add->Particle_ID = ID_In;                    // New Node's ID is the input ID
+  add->Value = ID_In;                    // New Node's ID is the input ID
   add->Next_Node = NULL;                       // New node is End, so there is no next node
 
   /* Check if there are any nodes in our list.
@@ -144,7 +184,7 @@ void List<Type>::Add_Front(const Type ID_In) {
   new node will become the new Beginning/will point to the old Beginning) */
 
   Node *add = new Node;                        // Dynamically allocate new node
-  add->Particle_ID = ID_In;                    // The new node's value is the input ID
+  add->Value = ID_In;                    // The new node's value is the input ID
   add->Previous_Node = NULL;                   // add will be new Beginning, so there is no node before add.
 
   /* Check if there are any nodes in our list:
@@ -177,7 +217,7 @@ Type List<Type>::Remove_Back(void) {
   if(End == NULL)
     return -1;
 
-  Type ID_Out = End->Particle_ID;
+  Type ID_Out = End->Value;
 
   Node * temp = End;                  // temp node points to old End
   End = temp->Previous_Node;          // Move End backward (to old End's previous node)
@@ -204,7 +244,7 @@ Type List<Type>::Remove_Front(void) {
   if(Beginning == NULL)
     return -1;
 
-  Type ID_Out = Beginning->Particle_ID;
+  Type ID_Out = Beginning->Value;
 
   Node * temp = Beginning;                       // temp points to old Beginning.
   Beginning = temp->Next_Node;                   // Move Beginning forward
@@ -225,7 +265,7 @@ Type List<Type>::Remove_Front(void) {
 // Methods to get list info
 
 template <typename Type>
-int List<Type>::Node_Count(void) const {
+unsigned int List<Type>::Node_Count(void) const {
   return Num_Nodes;
 } // void List<Type>::Node_Count(void) const {
 
@@ -242,7 +282,7 @@ void List<Type>::Print_Node_Info(void) const {
   while(Current_Node != NULL) {
     // Print info on current node
     printf("Node #%d\n",Node_Num);
-    printf("Value:     %d\n",Current_Node->Particle_ID);
+    printf("Value:     %d\n",Current_Node->Value);
     printf("Current    %p\n",Current_Node);
     printf("Previous:  %p\n",Current_Node->Previous_Node);
     printf("Next:      %p\n\n",Current_Node->Next_Node);

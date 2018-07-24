@@ -61,23 +61,28 @@ void Simulation::Run_Simulation(void) {
     printf(       "took %lu ms\n", MS_Load);
   } //   if(Load_Data_From_File == 1) {
   else if(Load_Data_From_File == 0) {
-    // First, let's calculate the number of particles in our two arrays.
+    // First, let's read in and set up the needle.
+    SetUp_FEB_Body(Needle, "Needle");
+
+    // Now let's calculate the number of particles in our particle arrays
     Num_Particles_Body = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
+    Num_Particles_Needle = Needle.Get_Num_Particles();
     //Num_Particles_Boundary = 4*X_SIDE_LENGTH*Z_SIDE_LENGTH;
 
     // Now set up the particle arrays
     Body.Set_Num_Particles(Num_Particles_Body);
     //Boundary.Set_Num_Particles(Num_Particles_Boundary);
 
-    // Set up Body, Boundary.
+    Body.Set_Name("Body");
+    //Boundary.Set_Name("Boundary");
+
     Set_Particle_Array_Members(Body);
     //Set_Particle_Array_Members(Boundary);
 
-    // Now let's setup the particle's array (this function sets each particle's
-    // position, ID, etc... It also finds and sets each particle's neighbors)
+    // Now let's setup the particle's in the Body array (this function sets the
+    // position, ID, etc... for each particle in a given particle_array object.)
     SetUp_Body(Body);
     //SetUp_Boundary(Boundary);
-    SetUp_FEB_Body(Needle, "Needle.feb");
   } // else if(Load_Data_From_File == 0) {
 
   // Now that the particle array is loaded, print paramaters.
@@ -100,9 +105,12 @@ void Simulation::Run_Simulation(void) {
   printf(         "\nRunning %d time steps....\n",Num_Steps);
 
   // Print initial data
+  VTK_File::Export_Particle_Positions(Body);
+  VTK_File::Export_Particle_Positions(Needle);
+
+  // Cycle through time steps.
   timer1 = clock();
   printf(         "0 time steps complete\n");
-  VTK_File::Export_Pariticle_Positions(Body);
   if(Print_Forces == true)
     Particle_Debugger::Export_Pariticle_Forces(Body);
   //Particle_Debugger::Export_Pariticle_Forces(Num_Particles_Body, Body);
@@ -222,7 +230,8 @@ void Simulation::Run_Simulation(void) {
     timer2 = clock();
     if((l+1)%TimeSteps_Between_Prints == 0) {
       printf(     "%d time steps complete\n",l+1);
-      VTK_File::Export_Pariticle_Positions(Body);
+      VTK_File::Export_Particle_Positions(Body);
+      VTK_File::Export_Particle_Positions(Needle);
 
       if(Print_Forces == true)
         Particle_Debugger::Export_Pariticle_Forces(Body);
@@ -234,7 +243,7 @@ void Simulation::Run_Simulation(void) {
 
   // If saving is enabled, Dump particle data to file
   if(Save_Data_To_File == 1)
-    Data_Dump::Print_Particle_Array_To_File(Body);
+    Data_Dump::Print_Particle_Array_To_File(Needle);
 
   // Print timing data
   MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
@@ -377,10 +386,12 @@ void Simulation::SetUp_FEB_Body(Particle_Array & FEB_Body, const std::string & F
   Vector * X = NULL;
   unsigned int Num_Particles;
 
-  FEB_File::Read_FEB_File(File_Name, &X, Num_Particles);
+  std::string Full_File_Name = File_Name + ".feb";
+  FEB_File::Read_FEB_File(Full_File_Name, &X, Num_Particles);
 
   // Now we can set up the particle array,
   FEB_Body.Set_Num_Particles(Num_Particles);
+  FEB_Body.Set_Name(File_Name);
   FEB_Body.Set_Inter_Particle_Spacing(.5);
   FEB_Body.Set_Support_Radius(4);
   FEB_Body.Set_Lame(1.125);                               // Lame parameter             : Mpa

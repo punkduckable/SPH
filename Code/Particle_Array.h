@@ -7,6 +7,9 @@
 
 class Particle_Array {
   private:
+    // Particle array name
+    std::string Name;
+
     // The array of particles
     unsigned int Num_Particles = 0;
     Particle * Array;
@@ -59,6 +62,7 @@ class Particle_Array {
 
     // Set methods
     void Set_Num_Particles(const unsigned int Num_Particles_In);
+    void Set_Name(const std::string & S_In) { Name = S_In; }
     void Set_Inter_Particle_Spacing(const double IPS);
     void Set_Support_Radius(const unsigned int SR_In);
     void Set_Lame(const double Lame_In) { Lame = Lame_In; }
@@ -70,6 +74,7 @@ class Particle_Array {
 
     // Getters
     unsigned int Get_Num_Particles(void) const { return Num_Particles; }
+    std::string Get_Name(void) const { return Name; }
     double Get_Inter_Particle_Spacing(void) const { return Inter_Particle_Spacing; }
     unsigned int Get_Support_Radius(void) const { return Support_Radius; }
     double Get_h(void) const { return h; }

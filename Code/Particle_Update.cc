@@ -1,3 +1,4 @@
+
 #if !defined(PARTICLE_UPDATE)
 #define PARTICLE_UPDATE
 
