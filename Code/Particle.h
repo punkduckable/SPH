@@ -145,10 +145,11 @@ class Particle {
 
     friend void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles);
 
-    friend int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles);
+    friend int Data_Dump::Load_Particle_Array(Particle_Array & Particles);
 
-    friend void Data_Dump::Load_Particle_From_File(Particle & P_In,
-                                                   FILE * File);
+    friend void Data_Dump::Load_Particle(Particle & P_In,
+                                         FILE * File,
+                                         const bool Is_Cuboid);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

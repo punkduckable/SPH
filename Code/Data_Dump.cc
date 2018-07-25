@@ -21,10 +21,17 @@ void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned in
 
   // Now print each Particle_Array's name and essential information to the file
   for(unsigned int i = 0; i < Num_Arrays; i++) {
-    fprintf(File, "Particle_Array %u name:       \"%s\"\n", i, Arrays[i].Get_Name().c_str());
-    fprintf(File, "     Number of particles:     %u\n",    Arrays[i].Get_Num_Particles());
+    fprintf(File, "Particle_Array %3u name:      %s\n", i, Arrays[i].Get_Name().c_str());
     fprintf(File, "     Is a Cuboid:             %u\n",    Arrays[i].Get_Cuboid());
-    fprintf(File, "     Is a Boundary:           %u\n\n",  Arrays[i].Get_Boundary());
+
+    if(Arrays[i].Get_Cuboid() == true) {
+      fprintf(File, "          X_SIDE_LENGTH:      %u\n",    Arrays[i].Get_X_SIDE_LENGTH());
+      fprintf(File, "          Y_SIDE_LENGTH:      %u\n",    Arrays[i].Get_Y_SIDE_LENGTH());
+      fprintf(File, "          Z_SIDE_LENGTH:      %u\n",    Arrays[i].Get_Z_SIDE_LENGTH());
+    } // if(Arrays[i].Get_Cuboid() == true) {
+
+    fprintf(File, "     Is a Boundary:           %u\n",    Arrays[i].Get_Boundary());
+    fprintf(File, "     Number of particles:     %u\n\n",    Arrays[i].Get_Num_Particles());
   } //   for(unsigned int i = 0; i < Num_Arrays; i++) {
 
   // Now print each Particle array to its own file
@@ -58,7 +65,7 @@ void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
   FILE * File = fopen(File_Path.c_str(), "w");
 
   // Let's begin by printing the Particle_Array paramaters
-  fprintf(File,   "Name:                         \"%s\"\n\n",  Name.c_str());
+  fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
   fprintf(File,   "Is a cuboid:                  %u\n",    Particles.Get_Cuboid());
   if(Particles.Get_Cuboid() == true) {
     fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Particles.Get_X_SIDE_LENGTH());
@@ -155,10 +162,11 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
 
 int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_Arrays) {
   // First, open up the Particle_data file
-  FILE * File = fopen("../Files/Particle_Data.txt","r");
+  FILE * File = fopen("../Files/Saves/Particle_Array_Data.txt","r");
+  fseek(File, 0, SEEK_SET);
 
   if(File == NULL) {
-    printf("Couldn't find saved data...\n");
+    printf("Couldn't find Particle_Array_Data.txt   :(\n");
     return 1;
   } // if(File == NULL) {
 
@@ -172,7 +180,10 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
   // Now use this information to genrate our arrays
   *Array_Ptr = new Particle_Array[Num_Arrays];
 
-  // Now read in each array's name/number of particles
+  Vector Dimensions;
+  unsigned int Is_Cuboid;
+
+  // Now read in each array's name + Fundamental properties
   for(unsigned int i = 0; i < Num_Arrays; i++) {
     /* We want to get each particle's name. The issue here is that there's no
     way to directly scan to a string. Instead, we can scan to a char array, Buf
@@ -184,22 +195,38 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
     the final element of Buf to \0 before doing this (Otherwise, we'd get a segmenetation
     fault if the name was longer than 100 characters). We then allocate a new
     particle array and assign its name to the string. */
-    fread(Buf, 1, 30, File); fscanf(File, " \"%s\"\n", Buf);
+
+    fread(Buf, 1, 30, File); fscanf(File, " %s\n", Buf);
     Buf[Buf_Length-1] = '\0';
     strBuf = Buf;
 
-    // Allocate particle array
+    // Set Particle_Arrays name.
     (*Array_Ptr)[i].Set_Name(strBuf);
 
-    // Now read in number of particles, use it to set the number of particles in
-    // the ith particle array.
-    fread(Buf, 1, 30, File); fscanf(File," %u\n\n", &uBuf);
-    (*Array_Ptr)[i].Set_Num_Particles(uBuf);
+    // Now determine if this Particle_Array is a Cuboid
+    fread(Buf, 1, 25, File); fscanf(File," %u\n", &Is_Cuboid);
+
+    if(Is_Cuboid == true) {
+      fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(0) = uBuf;
+      fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(1) = uBuf;
+      fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(2) = uBuf;
+      (*Array_Ptr)[i].Set_Cuboid_Dimensions(Dimensions);
+    } // if(uBuf == true) {
+
+    // Now read in the 'Is a boundary' flag
+    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    (*Array_Ptr)[i].Set_Boundary(uBuf);
+
+    // Finally, read in number of particles and use if this Particle_Array is not a cuboid
+    fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
+    if(Is_Cuboid == false) {
+      (*Array_Ptr)[i].Set_Num_Particles(uBuf);
+    } // if(Is_Cuboid == false) {
   } // for(unsigned int i = 0; i < Num_Arrays; i++) {
 
   // pass the newly created particle arrays to the 'load particle array' function
   for(unsigned int i = 0; i < Num_Arrays; i++)
-    Load_Particle_Array_From_File((*Array_Ptr)[i]);
+    Load_Particle_Array((*Array_Ptr)[i]);
 
   fclose(File);
   return 0;
@@ -207,14 +234,18 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
 
 
 
-int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
+int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   /* This function is designed to read in particle and use it to create a
   particles array. */
 
   unsigned int Num_Particles = 0;
 
-  // First, open up the file
-  FILE * File = fopen("../Files/Particle_Data.txt","r");
+  // First, get a path to the file
+  std::string File_Path = "../Files/Saves/";
+  File_Path += Particles.Get_Name();
+  File_Path += ".txt";
+
+  FILE * File = fopen(File_Path.c_str(), "r");
 
   if(File == NULL) {
     printf("Could not open Particle data file\n");
@@ -224,12 +255,41 @@ int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
   // Now read in the static particle members
   char Buf[100];                                 // Buffer to store text from file
 
+  // Now let's print the number of particles
+    fprintf(File,   "       -- Particles --\n");
+  fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
+
+  // Buffers to hold variables that we read in (we need to do this b/c the
+  // Particle_Array's varialbes are hidden/seed to be set with setters)
   unsigned int uBuf;
   double lfBuf;
+  std::string strBuf;
+
+  // We already have the Particle_Array's name, cuboid/boundary flags, and
+  // dimensions (if cuboid). We can therefore skip over these lines.
+  fgets(Buf, 99, File);                          // Skip 'name' line.
+  fgets(Buf, 99, File);                          // Skip blank line
+  fgets(Buf, 99, File);                          // Skip 'Is a cuboid' line
+
+  if(Particles.Get_Cuboid() == true) {           // if a cuboid, skip the 3 dimension lines.
+    fgets(Buf, 99, File);
+    fgets(Buf, 99, File);
+    fgets(Buf, 99, File);
+  } // if(Particles.Get_Cuboid() == true) {
+
+  fgets(Buf, 99, File);                          // Skip 'is a boundary' line
+  fgets(Buf, 99, File);                          // Skip blank line
+  fgets(Buf, 99, File);                          // Skip 'Kerenel-Parameters' line
+
+  // Read in Kernel parameters.
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_Inter_Particle_Spacing(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_Support_Radius(uBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);
+
+  fgets(Buf, 99, File);                          // Skip 'Material-Parameters' line.
+
+  // Read in Material parameters.
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_Lame(lfBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu0(lfBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu(lfBuf);
@@ -238,14 +298,12 @@ int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);  Particles.Set_Tau(lfBuf);
 
   // Now read in number of particles
+  fgets(Buf, 99, File);                          // Skip 'Particles' line.
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
-  //fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::X_SIDE_LENGTH);
-  //fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::Y_SIDE_LENGTH);
-  //fread(Buf, 1, 30, File); fscanf(File, " %u\n\n", &Simulation::Z_SIDE_LENGTH);
 
   // Now read in particles.
   for(unsigned int i = 0; i < Num_Particles; i++)
-    Load_Particle_From_File(Particles[i], File);
+    Load_Particle(Particles[i], File, Particles.Get_Cuboid());
 
   //////////////////////////////////////////////////////////////////////////////
   // Now recreate each Particle's neighbor arrays.
@@ -302,7 +360,7 @@ int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
 
 
 
-void Data_Dump::Load_Particle_From_File(Particle & P_In, FILE * File) {
+void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid) {
   /* This function reads in the particle data for a specific particle. This
   data is transfered from the File to P_In. */
 
@@ -310,7 +368,11 @@ void Data_Dump::Load_Particle_From_File(Particle & P_In, FILE * File) {
 
   // First, read in the particle's ID and dimensions
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &P_In.ID);
-  fread(Buf, 1, 30, File); fscanf(File, " %u %u %u\n", &P_In.i, &P_In.j, &P_In.k);
+
+  if(Is_Cuboid == true) {
+    fread(Buf, 1, 30, File); fscanf(File, " %u %u %u\n", &P_In.i, &P_In.j, &P_In.k);
+  }
+
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Mass);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Vol);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Radius);
@@ -343,6 +405,6 @@ void Data_Dump::Load_Particle_From_File(Particle & P_In, FILE * File) {
   fread(Buf, 1, 30, File);
   for(unsigned int i = 0; i < P_In.Num_Neighbors; i++)
     fscanf(File, " %u", &P_In.Neighbor_IDs[i]);
-} // void Data_Dump::Load_Particle_From_File(Particle & P_In, FILE * File) {
+} // void Data_Dump::Load_Particle(Particle & P_In, const FILE * File, const bool Is_Cuboid) {
 
 #endif

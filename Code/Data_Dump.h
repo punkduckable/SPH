@@ -14,10 +14,11 @@ namespace Data_Dump {
   int Load_Simulation(Particle_Array ** Array_Ptr,
                       unsigned int & Num_Bodies);
 
-  int Load_Particle_Array_From_File(Particle_Array & Particles);
+  int Load_Particle_Array(Particle_Array & Particles);
 
-  void Load_Particle_From_File(Particle & P_In,
-                               FILE * File);
+  void Load_Particle(Particle & P_In,
+                     FILE * File,
+                     const bool Is_Cuboid);
 } // namespace Data_Dump {
 
 #endif

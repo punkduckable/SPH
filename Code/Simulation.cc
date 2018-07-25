@@ -191,11 +191,12 @@ void Simulation::Run_Simulation(void) {
     update_BC_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
-    // Update each particle's Stress tensor
+    // Update each Particle_Array's Stress tensors
+
     timer2 = clock();
     for(m = 0; m < Num_Arrays; m++) {
       // Note: We don't update P for Particle_Arrays that are boundaries
-      if(Is_Boundary[m] == true)
+      if(Arrays[m].Get_Boundary() == true)
         continue;
       else
         for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
@@ -205,16 +206,18 @@ void Simulation::Run_Simulation(void) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Contact
+
     timer2 = clock();
     Particle_Helpers::Contact(Arrays[0], Arrays[1]);
     contact_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
-    // Update each particle's position
+    // Update each Particle_Array's positions
+
     timer2 = clock();
     for(m = 0; m < Num_Arrays; m++) {
       // Note: we don't update P for Particle_Arrays that are boundaries
-      if(Is_Boundary[m] == true)
+      if(Arrays[m].Get_Boundary() == true)
         continue;
       else
         for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
