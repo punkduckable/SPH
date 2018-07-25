@@ -45,7 +45,7 @@ void Simulation::Run_Simulation(void) {
 
     // If loading an existing simulation, read in Particle arrays from file
     printf(       "\nLoading from file....");
-    //Data_Dump::Load_Particle_Array_From_File(&Arrays, Num_Arrays);
+    Data_Dump::Load_Simulation(&Arrays, Num_Arrays);
 
     timer1 = clock() - timer1;
     MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
@@ -85,8 +85,10 @@ void Simulation::Run_Simulation(void) {
         Arrays[m].Set_Num_Particles( (Dimensions[m])(0) );
 
       // Now set up the bodies/boundaries
-      if(Is_Boundary[m] == true)
+      if(Is_Boundary[m] == true) {
         Setup_Boundary(Arrays[m]);
+        Arrays[m].Set_Boundary(true);
+      }
       else
         Setup_Body(Arrays[m]);
     } // for(m = 0; m < Num_Arrays; m++) {
@@ -145,9 +147,9 @@ void Simulation::Run_Simulation(void) {
         respectivly. */
 
         // Establish side lengths (we assume Array[m] is a cuboid)
-        X_SIDE_LENGTH = Arrays[m].Get_X_Side_Length();
-        Y_SIDE_LENGTH = Arrays[m].Get_Y_Side_Length();
-        Z_SIDE_LENGTH = Arrays[m].Get_Z_Side_Length();
+        X_SIDE_LENGTH = Arrays[m].Get_X_SIDE_LENGTH();
+        Y_SIDE_LENGTH = Arrays[m].Get_Y_SIDE_LENGTH();
+        Z_SIDE_LENGTH = Arrays[m].Get_Z_SIDE_LENGTH();
 
         // Front face (i = 0)
         i = 0;
@@ -238,7 +240,7 @@ void Simulation::Run_Simulation(void) {
 
   // If saving is enabled, Dump particle data to file
   if(Save_Data_To_File == 1)
-    Data_Dump::Print_Particle_Array_To_File(Arrays[1]);
+    Data_Dump::Save_Simulation(Arrays, Num_Arrays);
 
   // Print timing data
   MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
@@ -266,9 +268,9 @@ void Simulation::Setup_Body(Particle_Array & Body) {
   clock_t timer1;
 
   // Particle array dimensions
-  const unsigned int X_SIDE_LENGTH = Body.Get_X_Side_Length();
-  const unsigned int Y_SIDE_LENGTH = Body.Get_Y_Side_Length();
-  const unsigned int Z_SIDE_LENGTH = Body.Get_Z_Side_Length();
+  const unsigned int X_SIDE_LENGTH = Body.Get_X_SIDE_LENGTH();
+  const unsigned int Y_SIDE_LENGTH = Body.Get_Y_SIDE_LENGTH();
+  const unsigned int Z_SIDE_LENGTH = Body.Get_Z_SIDE_LENGTH();
 
   // Particle paramaters
   const double IPS = Body.Get_Inter_Particle_Spacing();                        //        : mm
@@ -343,9 +345,9 @@ void Simulation::Setup_Boundary(Particle_Array & Boundary) {
   unsigned int i,j,k;
 
   // Particle_Array dimensions
-  const unsigned int X_SIDE_LENGTH = Boundary.Get_X_Side_Length();
-  const unsigned int Y_SIDE_LENGTH = Boundary.Get_Y_Side_Length();
-  const unsigned int Z_SIDE_LENGTH = Boundary.Get_Z_Side_Length();
+  const unsigned int X_SIDE_LENGTH = Boundary.Get_X_SIDE_LENGTH();
+  const unsigned int Y_SIDE_LENGTH = Boundary.Get_Y_SIDE_LENGTH();
+  const unsigned int Z_SIDE_LENGTH = Boundary.Get_Z_SIDE_LENGTH();
 
   // Particle paramaters
   const double IPS = Boundary.Get_Inter_Particle_Spacing();                    //        : mm

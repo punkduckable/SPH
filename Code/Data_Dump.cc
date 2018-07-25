@@ -3,34 +3,85 @@
 
 #include "Data_Dump.h"
 
-void Data_Dump::Print_Particle_Array_To_File(const Particle_Array & Particles) {
-  /* This function prints all data needed to reconstruct the Particle's array
-  to a file. The intent of this is to allow the user to essentially 'save' the
-  state of the program, allowing the user to - at a future point - pick up where
-  they last saved/left off. */
+void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned int Num_Arrays) {
+  /* This Function is used to save a simulation. This function prints all the
+  information that is needed to re-create the state of a simulation. This is
+  done by first printing information on the number of particle arrays, as well
+  as their names. Once this is done, each particle array gets a new file that
+  contains all the information needed to re-create that particle_array object.
+  The intent of this is to allow the user 'save' a simulation, allowing the user
+  to - at a future point - pick up where they left off.*/
 
-  // Get number of particles from passed Particle array.
+  // First, open a file. This file will store the number of Particle_Arrays as
+  // well as their names.
+  FILE * File = fopen("../Files/Saves/Particle_Array_Data.txt","w");
+
+  // Print number of Arrays to this file
+  fprintf(File,   "Number of Particle Arrays:    %u\n\n", Num_Arrays);
+
+  // Now print each Particle_Array's name and essential information to the file
+  for(unsigned int i = 0; i < Num_Arrays; i++) {
+    fprintf(File, "Particle_Array %u name:       \"%s\"\n", i, Arrays[i].Get_Name().c_str());
+    fprintf(File, "     Number of particles:     %u\n",    Arrays[i].Get_Num_Particles());
+    fprintf(File, "     Is a Cuboid:             %u\n",    Arrays[i].Get_Cuboid());
+    fprintf(File, "     Is a Boundary:           %u\n\n",  Arrays[i].Get_Boundary());
+  } //   for(unsigned int i = 0; i < Num_Arrays; i++) {
+
+  // Now print each Particle array to its own file
+  for(unsigned int i = 0; i < Num_Arrays; i++)
+    Save_Particle_Array(Arrays[i]);
+
+  fclose(File);
+} // void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned int Num_Arrays) {
+
+
+
+void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
+  /* This function prints all data needed to reconstruct a particular
+  Particle_Array. This information is printed to a file named after the
+  Particle_Array that it's printing from. This prints the basic material
+  properties of the particles array, as well as all the information that is
+  needed to recreate all the particles in that Particle_Array. The intent of
+  this is to allow the user 'save' a Particle_Array object. */
+
+  // Get name + number of particles of passed Particle_Array object.
+  const std::string Name = Particles.Get_Name();
   const unsigned int Num_Particles = Particles.Get_Num_Particles();
 
-  /* First, let's create the file. Note, if another 'Particle_Data' file already
-  exists then this overwrites/deletes that file. */
-  FILE * File = fopen("../Files/Particle_Data.txt", "w");
+  // Now make a file path for this Particle's file
+  std::string File_Path = "../Files/Saves/";
+  File_Path += Name;
+  File_Path += ".txt";
 
-  // Let's begin by printing the 'static' particle class paramaters
+  /* Now let's make a file for this Particle_Array. Note, if there is already
+  a save file for this Particle_Array it will be overwritten by this new file */
+  FILE * File = fopen(File_Path.c_str(), "w");
+
+  // Let's begin by printing the Particle_Array paramaters
+  fprintf(File,   "Name:                         \"%s\"\n\n",  Name.c_str());
+  fprintf(File,   "Is a cuboid:                  %u\n",    Particles.Get_Cuboid());
+  if(Particles.Get_Cuboid() == true) {
+    fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Particles.Get_X_SIDE_LENGTH());
+    fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Particles.Get_Y_SIDE_LENGTH());
+    fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Particles.Get_Z_SIDE_LENGTH());
+  } //   if(Particles.Get_Cuboid() == true) {
+  fprintf(File,   "Is a boundary:                %u\n\n",  Particles.Get_Boundary());
+  fprintf(File,   "       -- Kernel Parameters --\n");
   fprintf(File,   "Inter Particle Spacing:       %5lf\n",  Particles.Get_Inter_Particle_Spacing());
-  fprintf(File,   "Support Radius (mm):          %5lf\n",  Particles.Get_h());
   fprintf(File,   "Support Radius (IPS):         %u\n",    Particles.Get_Support_Radius());
-  fprintf(File,   "Shape Function Amplitude:     %5lf\n",  Particles.Get_Shape_Function_Amplitude());
+  fprintf(File,   "Support Radius (mm) aka h:    %5lf\n",  Particles.Get_h());
+  fprintf(File,   "Shape Function Amplitude:     %5lf\n\n",  Particles.Get_Shape_Function_Amplitude());
+  fprintf(File,   "       -- Material Parameters --\n");
   fprintf(File,   "Lame parameter:               %5lf\n",  Particles.Get_Lame());
   fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Particles.Get_mu0());
   fprintf(File,   "Viscosity (mu):               %5lf\n",  Particles.Get_mu());
   fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Particles.Get_E());
   fprintf(File,   "alpha (HG parameter):         %5lf\n",  Particles.Get_alpha());
-  fprintf(File,   "Tau (damage parameter):       %5lf\n",  Particles.Get_Tau());
+  fprintf(File,   "Tau (damage parameter):       %5lf\n\n",Particles.Get_Tau());
 
   // Now let's print the number of particles
-  fprintf(File,   "\n");
-  fprintf(File,   "Number of particles:          %u\n",    Particles.Get_Num_Particles());
+    fprintf(File,   "       -- Particles --\n");
+  fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
 
   // Finally, let's print the cuboid paramaters (should be removed if not using
   // a cuboid)
@@ -40,13 +91,15 @@ void Data_Dump::Print_Particle_Array_To_File(const Particle_Array & Particles) {
 
   // Now let's print all particle data to the file
   for(unsigned int i = 0; i < Num_Particles; i++)
-    Print_Particle_To_File(Particles[i], File);
+    Save_Particle(Particles[i], File, Particles.Get_Cuboid());
 
   // We've now written the 'Particle_Data' file, we can close it.
   fclose(File);
-} // void Data_Dump::Print_Data_To_File(const Particle_Array & Particles) {
+} // void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
 
-void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
+
+
+void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_Cuboid) {
   /* This function prints all the information that is needed to re-create the
   input particle. Notably, this means that we do NOT need to print the first
   Piola Kirchoff stress tensor (P), the deformation gradient (F), any of the
@@ -67,7 +120,8 @@ void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
 
   // Print particle ID, dimensions
   fprintf(File,   "ID:                           %u\n",    P_In.Get_ID());
-  fprintf(File,   "ijk:                          %u %u %u\n", P_In.Get_i(), P_In.Get_j(), P_In.Get_j());
+  if(Is_Cuboid == true)
+    fprintf(File,   "ijk:                          %u %u %u\n", P_In.Get_i(), P_In.Get_j(), P_In.Get_k());
   fprintf(File,   "Mass:                         %5e\n",   P_In.Get_Mass());
   fprintf(File,   "Volume:                       %5e\n",   P_In.Get_Vol());
   fprintf(File,   "Radius:                       %5lf\n",  P_In.Get_Radius());
@@ -93,10 +147,13 @@ void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
   fprintf(File,   "Neighbor IDs                  ");
   for(i = 0; i < Num_Neighbors; i++)
     fprintf(File,"%d ",P_In.Get_Neighbor_IDs(i));
-  fprintf(File,"\n\n");
-} // void Data_Dump::Print_Particle_To_File(const Particle & P_In, FILE * File) {
 
-int Data_Dump::Load_Saved_Data(Particle_Array ** Array_Ptr, unsigned int & Num_Arrays) {
+  fprintf(File,"\n\n");
+} // void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_Cuboid) {
+
+
+
+int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_Arrays) {
   // First, open up the Particle_data file
   FILE * File = fopen("../Files/Particle_Data.txt","r");
 
@@ -146,7 +203,9 @@ int Data_Dump::Load_Saved_Data(Particle_Array ** Array_Ptr, unsigned int & Num_A
 
   fclose(File);
   return 0;
-} // int Data_Dump::Load_Saved_Data(Particle_Array ** Array_Ptr, unsigned int & Num_Bodies) {
+} // int Data_Dump::Load_Saved_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_Arrays) {
+
+
 
 int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
   /* This function is designed to read in particle and use it to create a
@@ -240,6 +299,8 @@ int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
 
   return 0;
 } // int Data_Dump::Load_Data_From_File(unsigned int & Num_Particles, Particle_Array Particles) {
+
+
 
 void Data_Dump::Load_Particle_From_File(Particle & P_In, FILE * File) {
   /* This function reads in the particle data for a specific particle. This

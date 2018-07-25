@@ -103,9 +103,9 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
   Z_SIDE_LENGTH is 200 */
 
   // Get side lengths from body
-  const unsigned X_SIDE_LENGTH = Particles.Get_X_Side_Length();
-  const unsigned Y_SIDE_LENGTH = Particles.Get_Y_Side_Length();
-  const unsigned Z_SIDE_LENGTH = Particles.Get_Z_Side_Length();
+  const unsigned X_SIDE_LENGTH = Particles.Get_X_SIDE_LENGTH();
+  const unsigned Y_SIDE_LENGTH = Particles.Get_Y_SIDE_LENGTH();
+  const unsigned Z_SIDE_LENGTH = Particles.Get_Z_SIDE_LENGTH();
 
   // Set up local varialbes.
   unsigned int i = P_In.Get_i(), j = P_In.Get_j(), k = P_In.Get_k();

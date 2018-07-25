@@ -16,6 +16,9 @@ class Particle_Array {
     unsigned int Y_SIDE_LENGTH = 0;
     unsigned int Z_SIDE_LENGTH = 0;
 
+    // Boundary parameters
+    bool Is_Boundary = false;
+
     // The array of particles
     unsigned int Num_Particles = 0;
     Particle * Array = NULL;
@@ -82,6 +85,8 @@ class Particle_Array {
 
     void Set_Cuboid_Dimensions(const Vector & Dimensions);
 
+    void Set_Boundary(const bool Boundary_In) { Is_Boundary = Boundary_In; }
+
     // Getters
     unsigned int Get_Num_Particles(void) const { return Num_Particles; }
     std::string Get_Name(void) const { return Name; }
@@ -99,9 +104,11 @@ class Particle_Array {
     double Get_Tau(void) const { return Tau; }
 
     bool Get_Cuboid(void) const { return Is_Cuboid; }
-    unsigned int Get_X_Side_Length(void) const { return X_SIDE_LENGTH; }
-    unsigned int Get_Y_Side_Length(void) const { return Y_SIDE_LENGTH; }
-    unsigned int Get_Z_Side_Length(void) const { return Z_SIDE_LENGTH; }
+    unsigned int Get_X_SIDE_LENGTH(void) const { return X_SIDE_LENGTH; }
+    unsigned int Get_Y_SIDE_LENGTH(void) const { return Y_SIDE_LENGTH; }
+    unsigned int Get_Z_SIDE_LENGTH(void) const { return Z_SIDE_LENGTH; }
+
+    bool Get_Boundary(void) const { return Is_Boundary; }
 
     // Other Methods
     void Print_Parameters(void) const;

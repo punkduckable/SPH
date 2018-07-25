@@ -13,12 +13,12 @@ namespace Simulation {
   // Simulation flags/properties
   const unsigned char Load_Data_From_File = 0;
   const unsigned char Save_Data_To_File = 1;
-  const unsigned char Print_Forces = 1;
+  const unsigned char Print_Forces = 0;
   const unsigned char TimeSteps_Between_Prints = 100;
 
   // TimeStep paramters
   const double dt = .00001;                                // Time step                  : s
-  const unsigned int Num_Steps = 10000;                    // Number of time steps
+  const unsigned int Num_Steps = 0;                    // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;
@@ -26,7 +26,7 @@ namespace Simulation {
   bool * Is_Cuboid;
   bool * Is_Boundary;
   bool * From_FEB_File;
-  unsigned int * Dimensions;
+  Vector * Dimensions;
 
   void Use_Arrays_From_Code(void) {
     Num_Arrays                                   = 2;

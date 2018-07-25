@@ -13,6 +13,7 @@ Particle_Array::Particle_Array(void) {
   Y_SIDE_LENGTH = 0;
   Z_SIDE_LENGTH = 0;
   Is_Cuboid = false;
+  Is_Boundary = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -150,7 +151,7 @@ void Particle_Array::Set_Cuboid_Dimensions(const Vector & Dimensions) {
     } // for(unsigned int j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned int i = 0; i < X_SIDE_LENGTH; i++) {
 } // void Particle_Array::Set_Cuboid_Dimensions(const Vector & Dimensions); {
-
+  
 
 
 ////////////////////////////////////////////////////////////////////////////////
