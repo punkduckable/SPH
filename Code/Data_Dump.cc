@@ -34,9 +34,9 @@ void Data_Dump::Print_Particle_Array_To_File(const Particle_Array & Particles) {
 
   // Finally, let's print the cuboid paramaters (should be removed if not using
   // a cuboid)
-  fprintf(File,   "X Side Length:                %u\n",    Simulation::X_SIDE_LENGTH);
-  fprintf(File,   "Y Side Length:                %u\n",    Simulation::Y_SIDE_LENGTH);
-  fprintf(File,   "Z Side Length:                %u\n\n",  Simulation::Z_SIDE_LENGTH);
+  //fprintf(File,   "X Side Length:                %u\n",    Simulation::X_SIDE_LENGTH);
+  //fprintf(File,   "Y Side Length:                %u\n",    Simulation::Y_SIDE_LENGTH);
+  //fprintf(File,   "Z Side Length:                %u\n\n",  Simulation::Z_SIDE_LENGTH);
 
   // Now let's print all particle data to the file
   for(unsigned int i = 0; i < Num_Particles; i++)
@@ -138,10 +138,11 @@ int Data_Dump::Load_Saved_Data(Particle_Array ** Array_Ptr, unsigned int & Num_A
     // the ith particle array.
     fread(Buf, 1, 30, File); fscanf(File," %u\n\n", &uBuf);
     (*Array_Ptr)[i].Set_Num_Particles(uBuf);
-  } //   for(unsigned int i = 0; i < Num_Arrays; i++) {
+  } // for(unsigned int i = 0; i < Num_Arrays; i++) {
 
-  // CONTINUE WORKING HERE
-  // pass particle arrays to read in program, have it read files using names. 
+  // pass the newly created particle arrays to the 'load particle array' function
+  for(unsigned int i = 0; i < Num_Arrays; i++)
+    Load_Particle_Array_From_File((*Array_Ptr)[i]);
 
   fclose(File);
   return 0;
@@ -179,12 +180,9 @@ int Data_Dump::Load_Particle_Array_From_File(Particle_Array & Particles) {
 
   // Now read in number of particles
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
-  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::X_SIDE_LENGTH);
-  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::Y_SIDE_LENGTH);
-  fread(Buf, 1, 30, File); fscanf(File, " %u\n\n", &Simulation::Z_SIDE_LENGTH);
-
-  // Set up Particles Particle_Array.
-  Particles.Set_Num_Particles(Num_Particles);
+  //fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::X_SIDE_LENGTH);
+  //fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Simulation::Y_SIDE_LENGTH);
+  //fread(Buf, 1, 30, File); fscanf(File, " %u\n\n", &Simulation::Z_SIDE_LENGTH);
 
   // Now read in particles.
   for(unsigned int i = 0; i < Num_Particles; i++)

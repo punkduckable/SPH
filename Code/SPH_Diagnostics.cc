@@ -14,7 +14,7 @@ void Particle_Debugger::Get_File_Name(string & Str) {
   Str += ".txt";
 } // void Particle_Debugger::Get_File_Name(string & Str) {
 
-void Particle_Debugger::Export_Pariticle_Forces(const Particle_Array & Particles) {
+void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles) {
   string File_Name = "Particle";
   Get_File_Name(File_Name);
 
@@ -45,7 +45,7 @@ void Particle_Debugger::Export_Pariticle_Forces(const Particle_Array & Particles
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   fclose(File);
-} // void Particle_Debugger::Export_Pariticle_Forces(const Particle_Array & Particles) {
+} // void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles) {
 
 void OP_Count::Reset_Counts(void) {
   /* This function, as the name would suggest, is designed to reset the

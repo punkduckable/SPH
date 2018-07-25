@@ -10,15 +10,21 @@ class Particle_Array {
     // Particle array name
     std::string Name;
 
+    // Cuboid parameters.
+    bool Is_Cuboid = false;
+    unsigned int X_SIDE_LENGTH = 0;
+    unsigned int Y_SIDE_LENGTH = 0;
+    unsigned int Z_SIDE_LENGTH = 0;
+
     // The array of particles
     unsigned int Num_Particles = 0;
-    Particle * Array;
+    Particle * Array = NULL;
 
     // Kernel parameters
     double Inter_Particle_Spacing = 0;                     //                            : mm
     unsigned int Support_Radius = 0;                       // Support radius in Inter Particle Spacints's    : unitless
     double h = 0;                                          // Support radius in mm's     : mm
-    double Shape_Function_Amp = 0;                         // Shape function Amplitude   : 1/(mm^6)
+    double Shape_Function_Amplitude = 0;                   // Shape function Amplitude   : 1/(mm^6)
 
     // Strain energy function parameters
     double Lame;                                           // Lame parameter             : Mpa
@@ -36,7 +42,7 @@ class Particle_Array {
 
     void Set_h(const double h_in) {
       h = h_in;
-      Shape_Function_Amp =  15./(PI*h*h*h*h*h*h);
+      Shape_Function_Amplitude =  15./(PI*h*h*h*h*h*h);
     } // void Set_h(const double h_in) {
 
   public:
@@ -63,8 +69,10 @@ class Particle_Array {
     // Set methods
     void Set_Num_Particles(const unsigned int Num_Particles_In);
     void Set_Name(const std::string & S_In) { Name = S_In; }
+
     void Set_Inter_Particle_Spacing(const double IPS);
     void Set_Support_Radius(const unsigned int SR_In);
+
     void Set_Lame(const double Lame_In) { Lame = Lame_In; }
     void Set_mu0(const double mu0_In) { mu0 = mu0_In; }
     void Set_mu(const double mu_In) { mu = mu_In; }
@@ -72,19 +80,31 @@ class Particle_Array {
     void Set_alpha(const double alpha_In) { alpha = alpha_In; }
     void Set_Tau(const double Tau_In) { Tau = Tau_In; }
 
+    void Set_Cuboid_Dimensions(const Vector & Dimensions);
+
     // Getters
     unsigned int Get_Num_Particles(void) const { return Num_Particles; }
     std::string Get_Name(void) const { return Name; }
+
     double Get_Inter_Particle_Spacing(void) const { return Inter_Particle_Spacing; }
     unsigned int Get_Support_Radius(void) const { return Support_Radius; }
+
     double Get_h(void) const { return h; }
-    double Get_Shape_Function_Amplitude(void) const { return Shape_Function_Amp; }
+    double Get_Shape_Function_Amplitude(void) const { return Shape_Function_Amplitude; }
     double Get_Lame(void) const { return Lame; }
     double Get_mu0(void) const { return mu0; }
     double Get_mu(void) const { return mu; }
     double Get_E(void) const { return E; }
     double Get_alpha(void) const { return alpha; }
     double Get_Tau(void) const { return Tau; }
+
+    bool Get_Cuboid(void) const { return Is_Cuboid; }
+    unsigned int Get_X_Side_Length(void) const { return X_SIDE_LENGTH; }
+    unsigned int Get_Y_Side_Length(void) const { return Y_SIDE_LENGTH; }
+    unsigned int Get_Z_Side_Length(void) const { return Z_SIDE_LENGTH; }
+
+    // Other Methods
+    void Print_Parameters(void) const;
 }; // class Particle_Array {
 
 #endif

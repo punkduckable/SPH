@@ -6,7 +6,8 @@
 int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned int & Num_Nodes) {
   // First, we need to get the path to the Febio file. Now we can open the file
   string File_Path = "../Files/";
-  File_Path += File_Name;
+  File_Path += File_Name;                        // Add file name
+  File_Path += ".feb";                           // add FEBio file extension
 
   // Now open up the file.
   FILE * File = fopen(File_Path.c_str(), "r");

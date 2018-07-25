@@ -124,10 +124,7 @@ class Particle {
                                                 const unsigned int j);
 
     friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In,
-                                                     Particle_Array & Particles,
-                                                     const unsigned X_SIDE_LENGTH,
-                                                     const unsigned Y_SIDE_LENGTH,
-                                                     const unsigned Z_SIDE_LENGTH);
+                                                     Particle_Array & Particles);
 
     friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
                                                   const unsigned int Remove_Neighbor_ID,
@@ -146,7 +143,7 @@ class Particle {
     friend void Simulation::Run_Simulation(void);
     friend void Simulation::Set_Static_Particle_Members(void);
 
-    friend void Particle_Debugger::Export_Pariticle_Forces(const Particle_Array & Particles);
+    friend void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles);
 
     friend void Data_Dump::Print_Particle_Array_To_File(const Particle_Array & Particles);
 

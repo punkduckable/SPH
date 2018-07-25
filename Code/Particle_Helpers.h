@@ -7,10 +7,7 @@ namespace Particle_Helpers {
   void Find_Neighbors(Particle_Array & Particles);         // Generate neighbor list for every particle in 'Partilces' array
 
   void Find_Neighbors_Box(Particle & P_In,                 // Generate neighbor list for a 'box' or 'cuboid' geometry
-                          Particle_Array & Particles,
-                          const unsigned X_SIDE_LENGTH,
-                          const unsigned Y_SIDE_LENGTH,
-                          const unsigned Z_SIDE_LENGTH);
+                          Particle_Array & Particles);
 
   bool Are_Neighbors(const Particle_Array & Particles,     // Returns true P1 and P2 are neighbors, false otherwise
                      const unsigned int i,

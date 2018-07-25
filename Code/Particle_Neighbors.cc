@@ -15,6 +15,8 @@ bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles, const uns
   return ( Particles.Get_h() > Magnitude(Particles[i].Get_X() - Particles[j].Get_X()));
 } // bool Particle_Helpers::Are_Neighbors(const Particle_Array, unsigned int i, unsigned int j) {
 
+
+
 void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
   unsigned int i,j;                              // Loop index variables
   List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
@@ -55,7 +57,9 @@ void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 } // void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
 
-void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles, const unsigned X_SIDE_LENGTH, const unsigned Y_SIDE_LENGTH, const unsigned Z_SIDE_LENGTH) {
+
+
+void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles) {
   /* This function is a modified version of the Neighbor List generating
   function that is specialized for Box particle geometries. By box, I mean
   some kind of cuboid.
@@ -90,13 +94,20 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
   units of inter particle spacings.
 
   So how do you use this function?
-  This function is used just like the Generage_Neighbor_List function but with a
-  few extra arguments. the X_SIDE_LENGTH, Y_SIDE_LENGTH, and Z_SIDE_LENGTH arguments specify the
-  dimensions of the cuboid in the x, y, and z directions respectivly. Thus, if
-  the cuboid has n layers, then X_SIDE_LENGTH is n. If the cuboid has p particles in a
-  vertical column then Z_SIDE_LENGTH is p. For a 100x50x200 cuboid of particles, X_SIDE_LENGTH
-  is 100, Y_SIDE_LENGTH is 50, and Z_SIDE_LENGTH is 200 */
+  This function is used just like the Generage_Neighbor_List function but it
+  works on an indiviudal particle rather than an entire particle array. We can
+  determine the cuboid dimensions from the Particle_Array. These dimensions are
+  stored in X_SIDE_LENGTH, Y_SIDE_LENGTH, and Z_SIDE_LENGTH. If the cuboid has p
+  particles in a vertical column then Z_SIDE_LENGTH is p. For a 100x50x200
+  cuboid of particles, X_SIDE_LENGTH is 100, Y_SIDE_LENGTH is 50, and
+  Z_SIDE_LENGTH is 200 */
 
+  // Get side lengths from body
+  const unsigned X_SIDE_LENGTH = Particles.Get_X_Side_Length();
+  const unsigned Y_SIDE_LENGTH = Particles.Get_Y_Side_Length();
+  const unsigned Z_SIDE_LENGTH = Particles.Get_Z_Side_Length();
+
+  // Set up local varialbes.
   unsigned int i = P_In.Get_i(), j = P_In.Get_j(), k = P_In.Get_k();
   unsigned int p,q,r;                             // Loop index variables
   unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
@@ -179,7 +190,8 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
 
   /* Now free Neighbor_IDs array for next particle! */
   delete [] Neighbor_IDs;
-} // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles, const unsigned X_SIDE_LENGTH, const unsigned Y_SIDE_LENGTH, const unsigned Z_SIDE_LENGTH) {
+} // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles) {
+
 
 
 void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle_Array & Particles) {

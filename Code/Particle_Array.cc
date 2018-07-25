@@ -3,11 +3,23 @@
 
 #include "Particle_Array.h"
 
+////////////////////////////////////////////////////////////////////////////////
 // Constructors, destructor
+
 Particle_Array::Particle_Array(void) {
-  Num_Particles = 0;
   Array = NULL;
+  Num_Particles = 0;
+  X_SIDE_LENGTH = 0;
+  Y_SIDE_LENGTH = 0;
+  Z_SIDE_LENGTH = 0;
+  Is_Cuboid = false;
+  Inter_Particle_Spacing = 0;
+  Support_Radius = 0;
+  h = 0;
+  Shape_Function_Amplitude = 0;
 } // Particle_Array::Particle_Array(void) {
+
+
 
 Particle_Array::Particle_Array(const unsigned int Num_Particles_In) {
   if(Num_Particles == 0) {
@@ -21,7 +33,19 @@ Particle_Array::Particle_Array(const unsigned int Num_Particles_In) {
   // Now assign each particle's Id
   for(unsigned int i = 0; i < Num_Particles; i++)
     Array[i].Set_ID(i);
+
+  // Set other members
+  X_SIDE_LENGTH = 0;
+  Y_SIDE_LENGTH = 0;
+  Z_SIDE_LENGTH = 0;
+  Is_Cuboid = false;
+  Inter_Particle_Spacing = 0;
+  Support_Radius = 0;
+  h = 0;
+  Shape_Function_Amplitude = 0;
 } // Particle_Array::Particle_Array(const unsigned int Num_Particles_In) {
+
+
 
 Particle_Array::~Particle_Array(void) {
   // Only attempt to delete the Array if it has been setup.
@@ -31,8 +55,15 @@ Particle_Array::~Particle_Array(void) {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
 // Set methods
+
 void Particle_Array::Set_Num_Particles(const unsigned int Num_Particles_In) {
+  if(Is_Cuboid == true) {
+    printf("This is a cuboid... set the x, y, and z side lengths\n");
+    return;
+  } // if(Is_Cuboid == true) {
+
   if(Num_Particles_In == 0) {
     printf("An array of particles must have AT LEAST 1 particle\n");
     return;
@@ -52,6 +83,8 @@ void Particle_Array::Set_Num_Particles(const unsigned int Num_Particles_In) {
     Array[i].Set_ID(i);
 } // void Particle_Array::Set_Num_Particles(const unsigned int Num_Particles_In) {
 
+
+
 void Particle_Array::Set_Inter_Particle_Spacing(const double IPS) {
   if(IPS <= 0) {
     printf("The inter particle spacing must be positive!\n");
@@ -66,6 +99,8 @@ void Particle_Array::Set_Inter_Particle_Spacing(const double IPS) {
   Inter_Particle_Spacing = IPS;
 } // void Particle_Array::Set_Inter_Particle_Spacing(const double IPS) {
 
+
+
 void Particle_Array::Set_Support_Radius(const unsigned int SR_In) {
   if(SR_In == 0){
     printf("The support radius must be non-zero!\n");
@@ -79,5 +114,68 @@ void Particle_Array::Set_Support_Radius(const unsigned int SR_In) {
 
   Support_Radius = SR_In;
 } // void Particle_Array::Set_Support_Radius(const unsigned int SR_In) {
+
+
+void Particle_Array::Set_Cuboid_Dimensions(const Vector & Dimensions) {
+  // Check if cuboid has already been set up
+  if(Num_Particles != 0) {
+    printf("%s has already been set up! You can't change its dimensions\n", Name.c_str());
+    return;
+  } //   if(Num_Particles != 0) {
+
+  // Check for non-sensical input
+  if(Dimensions(0) == 0 || Dimensions(1) == 0 || Dimensions(2) == 0) {
+      printf("%s can't have a side length of zero...\n", Name.c_str());
+      return;
+  } // if(Dimensions(0) == 0 || Dimensions(1) == 0 || Dimensions(2) == 0) {
+
+  // Now designate this Particle_Array as a Cuboid
+  Is_Cuboid = true;
+
+  X_SIDE_LENGTH = Dimensions(0);
+  Y_SIDE_LENGTH = Dimensions(1);
+  Z_SIDE_LENGTH = Dimensions(2);
+
+  // Set up particle array.
+  Num_Particles = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
+  Array = new Particle[Num_Particles];
+
+  // Set ID, ijk coordinates of each particle in the newly allocated array.
+  for(unsigned int i = 0; i < X_SIDE_LENGTH; i++) {
+    for(unsigned int k = 0; k < Z_SIDE_LENGTH; k++) {
+      for(unsigned int j = 0; j < Y_SIDE_LENGTH; j++) {
+        Array[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_ID(i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j);
+        Array[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].Set_ijk(i,j,k);
+      } // for(unsigned int k = 0; k < Z_SIDE_LENGTH; k++) {
+    } // for(unsigned int j = 0; j < Y_SIDE_LENGTH; j++) {
+  } // for(unsigned int i = 0; i < X_SIDE_LENGTH; i++) {
+} // void Particle_Array::Set_Cuboid_Dimensions(const Vector & Dimensions); {
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Other methods
+
+void Particle_Array::Print_Parameters(void) const {
+  printf(         "Name:                         %s\n",    Name.c_str());
+  printf(         "Is a cuboid:                  %u\n",    (unsigned int)Is_Cuboid);
+  if(Is_Cuboid == true) {
+    printf(       "X side length:                %u\n",    X_SIDE_LENGTH);
+    printf(       "Y side length:                %u\n",    Y_SIDE_LENGTH);
+    printf(       "Z side length:                %u\n",    Z_SIDE_LENGTH);
+  } //   if(Is_Cuboid) {
+
+  printf(         "Number of particles:          %u\n",    Num_Particles);
+  printf(         "Array address:                %p\n",    Array);
+  printf(         "Inter particle spacing:       %lf\n",   Inter_Particle_Spacing);
+  printf(         "h:                            %lf\n",   h);
+  printf(         "Support Radius:               %u\n",    Support_Radius);
+  printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
+  printf(         "Lame:                         %lf\n",   Lame);
+  printf(         "mu0 (Shear modulus):          %lf\n",   mu0);
+  printf(         "mu (Viscosity):               %lf\n",   mu);
+  printf(         "E (Young's modulus):          %lf\n",   E);
+  printf(         "Tau (Damage rate):            %lf\n\n", Tau);
+} // void Particle_Array::Print_Parameters(void) const {
 
 #endif
