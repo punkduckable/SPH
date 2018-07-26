@@ -13,7 +13,7 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   the contact force is applied whenever two particles are within a 2h radius of
   one another (when the two particles's support radii overlap). The applied
   force is in the direction of the line between the two particles centers. */
-  const double h = Body_A.Get_h() + Body_B.Get_h();        // Contact force support radius         : mm
+  const double h = (Body_A.Get_h() + Body_B.Get_h())/2;    // Contact force support radius         : mm
   const double h_squared = h*h;                            // Square of support radius   : mm^2
   unsigned int i,j;
   double V_i, V_j;                                                             //        : mm
@@ -21,6 +21,7 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   double Mag_r_ij;                                                             //        : mm
   Vector r_ij, Grad_W;                                                         //        : mm Vector
   Vector * Body_B_x = new Vector[Num_Particles_B];                             //        : mm Vector
+  Vector F_Contact;                                                            //        : N Vector
 
   // First, set every particle's Contact force to zero. Also, store all of
   // Body B's position vectors in an array (reduces the number of cache misses)
@@ -45,10 +46,15 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
       // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
       // If so, add contact force
       if(Vector_Dot_Product(r_ij, r_ij) < h_squared) {
+        // Calculate the contact force
         Mag_r_ij = Magnitude(r_ij);                                            //        : mm
-        Grad_W = (-3*(Shape_Function_Amp/64.)*((h - Mag_r_ij)*(h - Mag_r_ij))/Mag_r_ij)*(r_ij);    // 1/(mm^4) Vector
-        Body_A[i].Force_Contact -= (K_V_i*V_j)*Grad_W;                         //        : N Vector
-        Body_B[j].Force_Contact += Body_A[i].Force_Contact;                    //        : N Vector
+        Grad_W = (-3*(Shape_Function_Amp)*((h - Mag_r_ij)*(h - Mag_r_ij))/Mag_r_ij)*(r_ij);    // 1/(mm^4) Vector
+        F_Contact = (K_V_i*V_j)*Grad_W;                                        //        : N Vector
+
+        // Now apply the force to the two interacting bodies (Note the forces
+        // are equal and opposite)
+        Body_A[i].Force_Contact -= F_Contact;                                  //        : N Vector
+        Body_B[j].Force_Contact += F_Contact;                                  //        : N Vector
       } // if(Magnitude(r_ij) < h) {
     } // for(j = 0; j < Num_Particle_B, j++) {
   } // for(i = 0; i < Num_Particles_A; i++) {

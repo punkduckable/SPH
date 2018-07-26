@@ -17,7 +17,7 @@ namespace Simulation {
 
   // TimeStep paramters
   const double dt                                = .00001; // Time step                  : s
-  const unsigned int Num_Steps                   = 1000;   // Number of time steps
+  const unsigned int Num_Steps                   = 10000;  // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;

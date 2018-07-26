@@ -332,7 +332,7 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles) {
   //////////////////////////////////////////////////////////////////////////////
   // Set up Neighbors
 
-  printf(         "\nGenerating %s's neighbor lists...", Particles.Get_Name().c_str());
+  printf(         "Generating %s's neighbor lists...", Particles.Get_Name().c_str());
   timer1 = clock();
   for(i = 0; i < X_SIDE_LENGTH; i++)
     for(j = 0; j < Y_SIDE_LENGTH; j++)
@@ -369,7 +369,7 @@ void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & F
   FEB_Body.Set_Num_Particles(Num_Particles);
 
   // Now we can cycle through the particles, setting up each particle.
-  const double IPS = 5./8.;                                                    //        : mm
+  const double IPS = FEB_Body.Get_Inter_Particle_Spacing();                    //        : mm
   double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
   double Particle_Radius = IPS*.578;                                           //        : mm
   double Particle_Density = 1;                                                 //        : g/mm^3
