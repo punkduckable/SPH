@@ -11,14 +11,14 @@ namespace Simulation {
   void Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name);
 
   // Simulation flags/properties
-  const unsigned char Load_Data_From_File        = 1;
-  const unsigned char Save_Data_To_File          = 0;
-  const unsigned char Print_Forces               = 0;
+  const unsigned char Load_Data_From_File        = 0;
+  const unsigned char Save_Data_To_File          = 1;
+  const unsigned char Print_Forces               = 1;
   const unsigned char TimeSteps_Between_Prints   = 100;
 
   // TimeStep paramters
   const double dt                                = .00001; // Time step                  : s
-  const unsigned int Num_Steps                   = 500;    // Number of time steps
+  const unsigned int Num_Steps                   = 1000;   // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;

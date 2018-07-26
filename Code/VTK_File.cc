@@ -27,15 +27,17 @@ std::string VTK_File::Get_File_Name(const std::string & Str) {
   char Buf[6];
   sprintf(Buf,"%05u",File_Number_List[i]);
   File_Number_List[i]++;
-  string File_Name = Str;
+  std::string File_Name = Str;
 
   // Now append file name syntax to file name, return.
   File_Name += "_positions_";
   File_Name += Buf;
   File_Name += ".vtk";
-  
+
   return File_Name;
-} // void Get_File_Name(string & Str) {
+} // std::string Get_File_Name(cosnt std::string & Str) {
+
+
 
 void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_Particles, double * Data) {
   // Print header.
@@ -53,9 +55,9 @@ void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
   const unsigned int Num_Particles = Particles.Get_Num_Particles();
 
   // Set up file
-  string File_Name = Get_File_Name(Particles.Get_Name());
+  std::string File_Name = Get_File_Name(Particles.Get_Name());
 
-  string File_Path = "../Files/Position_Files/";
+  std::string File_Path = "../Files/Position_Files/";
   File_Path += File_Name;
 
   FILE * File = fopen(File_Path.c_str(), "w");

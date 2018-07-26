@@ -4,25 +4,49 @@
 #include "SPH_Diagnostics.h"
 #include "Particle.h"
 
-void Particle_Debugger::Get_File_Name(string & Str) {
-  char Buf[6];
-  sprintf(Buf,"%05d",File_Number);
-  File_Number++;
+std::string Particle_Debugger::Get_File_Name(const std::string & Str) {
+  // First, figure out if we've seen this string before. if so, then it'll be
+  // in the name list
+  unsigned int i;
 
-  Str += "_variables_";
-  Str += Buf;
-  Str += ".txt";
-} // void Particle_Debugger::Get_File_Name(string & Str) {
+  unsigned int Num_Names = Name_List.Node_Count();
+  for(i = 0; i < Num_Names; i++) {
+    // Compare the ith name in the Name List to the supplied string.
+    if(Name_List[i].compare(Str) == 0)
+      break;
+  } // for(unsigned int i = 0; i <= Num_Names; i++) {
+
+  // If the supplied string is NOT in the list, then add Str to the end of the
+  // name list and add a zero node to the File_Number list.
+  if(i >= Num_Names) {
+    Name_List.Add_Back(Str);
+    File_Number_List.Add_Back(0);
+  } // if(i > Num_Names) {
+
+  // Now print the appropiate file number to the buffer, increment the file number.
+  char Buf[6];
+  sprintf(Buf,"%05u",File_Number_List[i]);
+  File_Number_List[i]++;
+  std::string File_Name = Str;
+
+  // Now append file name syntax to file name, return.
+  File_Name += "_Forces_";
+  File_Name += Buf;
+  File_Name += ".txt";
+
+  return File_Name;
+} // std::string Get_File_Name(cosnt std::string & Str) {
+
+
 
 void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles) {
-  string File_Name = "Particle";
-  Get_File_Name(File_Name);
-
+  // First, figure out the number of particles
   const unsigned int Num_Particles = Particles.Get_Num_Particles();
 
-  string File_Path = "../Files/Force_Files/";
-  File_Path += File_Name;
-
+  // Now create a file path for the new file (based on the Particle_Array's name
+  // and how many times we've printed this Particle_Array)
+  std::string File_Path = "../Files/Force_Files/";
+  File_Path += Get_File_Name(Particles.Get_Name());
   FILE * File = fopen(File_Path.c_str(), "w");
 
   // Print header.
@@ -46,6 +70,8 @@ void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles)
 
   fclose(File);
 } // void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles) {
+
+
 
 void OP_Count::Reset_Counts(void) {
   /* This function, as the name would suggest, is designed to reset the
@@ -89,6 +115,8 @@ void OP_Count::Reset_Counts(void) {
   // Other
   Dyadic_Product = 0;
 } // void OP_Count::Reset_Counts(void) {
+
+
 
 void OP_Count::Print_Counts(void) {
   printf("\nOperation count:\n\n");
