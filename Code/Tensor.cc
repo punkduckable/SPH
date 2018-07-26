@@ -32,6 +32,8 @@ Tensor::Tensor(double t11, double t12, double t13,
     //printf("Tensor component constrctor\n");
 } // Tensor:Tensor(double t11,.... double t33) {
 
+
+
 Tensor::Tensor(const Tensor & Tensor_In) {
   /* Here we create one tensor using another. This is done element-by-element.
   Normally, such an operation would require a double nested loop (one for the
@@ -65,6 +67,8 @@ Tensor::Tensor(const Tensor & Tensor_In) {
   //OP_Count::T_Copy_Constructor++;                // Increment operator count (See SPH Diagnostics)
   //printf("Tensor Copy contructor\n");
 } // Tensor::Tensor(const Tensor & Tensor_In) {
+
+
 
 Tensor::~Tensor(void) {
   //printf("Tensor destroyed\n");
@@ -152,6 +156,8 @@ Tensor Tensor::operator+(const Tensor & Tensor_In) const {
   return Sum;
 } // Tensor Tensor::operator+(const Tensor & Tensor_In) const {
 
+
+
 Tensor Tensor::operator-(const Tensor & Tensor_In) const {
   // Declare some Tensor to store the difference
   Tensor Diff;
@@ -188,6 +194,8 @@ Tensor Tensor::operator-(const Tensor & Tensor_In) const {
 
   return Diff;
 } // Tensor Tensor::operator-(const Tensor & Tensor_In) const {
+
+
 
 Tensor Tensor::operator*(const Tensor & Tensor_In) const{
   // Declare product tensor
@@ -282,6 +290,8 @@ Tensor Tensor::operator*(const Tensor & Tensor_In) const{
   return Prod;
 } // Tensor Tensor::operator*(const Tensor & Tensor_In) const{
 
+
+
 Vector Tensor::operator*(const Vector & V_In) const {
   // Declare product vector (matrix vector product is a vector)
   Vector Prod;
@@ -315,6 +325,8 @@ Vector Tensor::operator*(const Vector & V_In) const {
 
   return Prod;
 } // Vector Tensor::operator*(const Vector & V_In) const {
+
+
 
 Tensor Tensor::operator*(const double c) const {
   // We will store results in Prod
@@ -352,6 +364,8 @@ Tensor Tensor::operator*(const double c) const {
 
   return Prod;
 } // Tensor Tensor::operator*(const double c) const {
+
+
 
 Tensor Tensor::operator/(const double c) const {
   Tensor Quotient;
@@ -434,6 +448,8 @@ Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
   return *this;
 } // Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
 
+
+
 Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
   /* Here we calculate the difference (*this) - Tensor_In. This is done by computing the
   element-by-element difference of the two tensors. Normally, doing this would require
@@ -469,6 +485,8 @@ Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
   // Return this tensor (element wise subtraction is done)
   return *this;
 } // Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
+
+
 
 Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
   // Declare product tensor
@@ -607,6 +625,8 @@ double & Tensor::operator()(const uByte row, const uByte col) {
   return S[3*row + col];
 } // double & Tensor::operator()(const uByte row, const uByte col) {
 
+
+
 double Tensor::operator()( const uByte row, const uByte col) const {
   if(row >= 3 || col >=3)
       printf("Index out of bounds\n");
@@ -685,6 +705,7 @@ Tensor Tensor::Inverse(void) const{
 } // Tensor Inverse(void) const{
 
 
+
 Tensor Tensor::operator^(const int exp) {
   /* This method is defined to find the Inverse and/or tranpose of this
   tensor. We have defined a global variable, T, which is equal to 2. If
@@ -728,6 +749,8 @@ double Tensor::Determinant(void) const {
                      -S[2*3 + 0]*S[1*3 + 1]));
 } // double Tensor::Determinant(void) const {
 
+
+
 Tensor Tensor::Transpose(void) const {
   Tensor T_Transpose;                         // Will store Transpose
 
@@ -765,6 +788,8 @@ Tensor Tensor::Transpose(void) const {
 
   return T_Transpose;
 } // Tensor Tensor::Transpose(void) const {
+
+
 
 void Tensor::Print(void) const {
   for(int i = 0; i < 3; i++)
@@ -856,17 +881,25 @@ Tensor operator*(const double c, const Tensor & Tensor_In) {
   return Tensor_In*c;
 } // Tensor operator*(const double c, const Tensor & Tensor_In) {
 
+
+
 Tensor Inverse(const Tensor & Tensor_In) {
   return Tensor_In.Inverse();
 } // Tensor Inverse(const Tensor & Tensor_In) {
+
+
 
 double Determinant(const Tensor & Tensor_In) {
   return Tensor_In.Determinant();
 } // double Determinant(const Tensor & Tensor_In) {
 
+
+
 Tensor Transpose(const Tensor & Tensor_In) {
   return Tensor_In.Transpose();
 } // Tensor Transpose(const Tensor & Tensor_In) {
+
+
 
 double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
   /* This returns T1:T2, the tensor dot product of T1 and T2. This is given by
@@ -878,6 +911,8 @@ double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
          T1[3*1 + 0]*T2[3*1 + 0] + T1[3*1 + 1]*T2[3*1 + 1] + T1[3*1 + 2]*T2[3*1 + 2] +
          T1[3*2 + 0]*T2[3*2 + 0] + T1[3*2 + 1]*T2[3*2 + 1] + T1[3*2 + 2]*T2[3*2 + 2];
 } // double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
+
+
 
 void Print(const Tensor & Tensor_In) {
   Tensor_In.Print();

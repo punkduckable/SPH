@@ -46,6 +46,8 @@ List<Type>::List(void) {
   End = NULL;
 } // List<Type>::List() {
 
+
+
 template <typename Type>
 List<Type>::List(const List & L_In) {
   /* Since list type objects dynamically allocate memory, we need to perform a
@@ -66,6 +68,8 @@ List<Type>::List(const List & L_In) {
     Node_Ptr = Node_Ptr->Next_Node;                        // Point to next node in the list
   } //   while(Node_Ptr != NULL) {
 } // List<Type>::List(const List & L_In) {
+
+
 
 template <typename Type>
 List<Type>::~List(void) {
@@ -109,6 +113,8 @@ List<Type> & List<Type>::operator=(const List<Type> & L_In) {
   return *this;
 } // List & List<Type>::operator=(const List & L_In) {
 
+
+
 template <typename Type>
 Type & List<Type>::operator[](const unsigned int i) {
   // Check that the requested index is in the bounds of our list
@@ -126,6 +132,8 @@ Type & List<Type>::operator[](const unsigned int i) {
   // Now return the value of the requested node.
   return Current_Node->Value;
 } // Type & List<Type>::operator[](const unsigned int i) {
+
+
 
 template <typename Type>
 const Type List<Type>::operator[](const unsigned int i) const {
@@ -177,6 +185,8 @@ void List<Type>::Add_Back(const Type ID_In) {
   Num_Nodes++;                                 // We added a new node, incremenet number of nodes
 } // void List<Type>::Add_Back(const Type ID_In) {
 
+
+
 template <typename Type>
 void List<Type>::Add_Front(const Type ID_In) {
   /* this method adds a node onto the Beginning of our list. We do this by
@@ -207,6 +217,8 @@ void List<Type>::Add_Front(const Type ID_In) {
   Num_Nodes++;                                   // Increment number of nodes
 } // void List<Type>::Add_Front(const Type ID_In) {
 
+
+
 template <typename Type>
 Type List<Type>::Remove_Back(void) {
   /* This method removes the last node on our list (if there is one). This is
@@ -233,6 +245,8 @@ Type List<Type>::Remove_Back(void) {
 
   return ID_Out;
 } // Type List<Type>::Remove_Back(void) {
+
+
 
 template <typename Type>
 Type List<Type>::Remove_Front(void) {

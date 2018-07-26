@@ -17,6 +17,8 @@ Vector::Vector(void) {
   //printf("Vector default constructor\n");
 } // Vector::Vector(void) {
 
+
+
 Vector::Vector(const double v0, const double v1, const double v2) {
   // Initialize components of vector using supplied components
   V[0] = v0;
@@ -27,6 +29,8 @@ Vector::Vector(const double v0, const double v1, const double v2) {
   //printf("Vector component constructor\n");
 } // Vector::Vector(const double v0, const double v1, const double v2) {
 
+
+
 Vector::Vector(const Vector & V_In) {
   // Initialize components of vector using supplied components
   V[0] = V_In[0];
@@ -36,6 +40,8 @@ Vector::Vector(const Vector & V_In) {
   //OP_Count::V_Copy_Constructor++;                // Increment operator count (See SPH Diagnostics)
   //printf("Vector copy constructor\n");
 } // Vector::Vector(const Vector & V_In) {
+
+
 
 Vector::~Vector(void) {
   //printf("Vector destroyed\n");
@@ -57,6 +63,8 @@ Vector & Vector::operator=(const double V_In[3]) {
   // Return this Vector
   return *this;
 } // Vector & Vector::operator=(const double V_In[3]) {
+
+
 
 Vector & Vector::operator=(const Vector & V_In) {
   // Assign components of V using V_In.
@@ -100,6 +108,8 @@ Vector Vector::operator+(const Vector & V_In) const {
   return Sum;
 } // Vector Vector::operator+(const Vector V) const {
 
+
+
 Vector Vector::operator-(const Vector & V_In) const{
   // Declare a Diff vector. This will be used to store the difference.
   Vector Diff;
@@ -112,6 +122,8 @@ Vector Vector::operator-(const Vector & V_In) const{
 
   return Diff;
 } // Vector Vector::operator-(const Vector V) const {
+
+
 
 Vector Vector::operator*(const double c) const {
   // Declare product vector
@@ -126,6 +138,8 @@ Vector Vector::operator*(const double c) const {
 
   return Prod;
 } // Vector Vector::operator*(const double c) const {
+
+
 
 Vector Vector::operator/(const double c) const {
   // Declare product vector
@@ -163,6 +177,8 @@ Vector & Vector::operator+=(const Vector & V_In) {
   return *this;
 } // Vector & Vector:operator+=(const Vector & V_In) {
 
+
+
 Vector & Vector::operator+=(const double V_In[3]) {
   V[0] = V[0] + V_In[0];
   V[1] = V[1] + V_In[1];
@@ -174,6 +190,8 @@ Vector & Vector::operator+=(const double V_In[3]) {
   return *this;
 } // Vector & Vector::operator+=(const double V_In[3]) {
 
+
+
 Vector & Vector::operator-=(const Vector & V_In) {
   V[0] = V[0] - V_In[0];
   V[1] = V[1] - V_In[1];
@@ -184,6 +202,8 @@ Vector & Vector::operator-=(const Vector & V_In) {
   // Return this vector
   return *this;
 } // Vector & Vector::operator-=(const double V_In[3]) {
+
+
 
 Vector & Vector::operator*=(const double c) {
   // Scale the components of V by c.
@@ -212,6 +232,8 @@ double & Vector::operator()(const uByte index) {
   return V[index];
 } // double & Vector::operator()(const uByte index) {
 
+
+
 double Vector::operator()(const uByte index) const {
   if(index >= 3)
     printf("Index out of bounds");
@@ -228,9 +250,13 @@ void Vector::Print(void) const {
   printf("< %9.2e, %9.2e, %9.2e>\n",V[0], V[1], V[2]);
 } // void Print(void) const {
 
+
+
 double Vector::Magnitude(void) const {
   return sqrt(V[0]*V[0] + V[1]*V[1] + V[2]*V[2]);
 } // double Magnitude(void) const {
+
+
 
 double Max_Component(const Vector & V_In) {
   if(V_In[0] > V_In[1] && V_In[0] > V_In[2])
@@ -250,19 +276,27 @@ Vector operator*(double c, const Vector & V_In) {
   return V_In*c;
 } //Vector operator*(double c, const Vector & V_In) {
 
+
+
 double Magnitude(const Vector & V_In)  {
   //OP_Count::V_Magnitude++;                       // Increment operator count (See SPH Diagnostics)
   return V_In.Magnitude();
 } // double Magnitude(const Vector V_In)  {
+
+
 
 double Vector_Dot_Product(const Vector & V1, const Vector & V2) {
   //OP_Count::V_Dot_Product++;                     // Increment operator count (See SPH Diagnostics)
   return (V1[0]*V2[0] + V1[1]*V2[1] + V1[2]*V2[2]);
 }
 
+
+
 void Print(const Vector & V_In) {
   V_In.Print();
 } // void Print(const Vector & V_In) {
+
+
 
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
   Tensor S;

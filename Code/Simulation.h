@@ -6,8 +6,7 @@
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
 namespace Simulation {
-  void Setup_Body(Particle_Array & Body);
-  void Setup_Boundary(Particle_Array & Boundary);
+  void Setup_Cuboid(Particle_Array & Body);
   void Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name);
 
   // Simulation flags/properties
