@@ -29,15 +29,13 @@ class Particle_Array {
     double h = 0;                                          // Support radius in mm's     : mm
     double Shape_Function_Amplitude = 0;                   // Shape function Amplitude   : 1/(mm^6)
 
-    // Strain energy function parameters
-    double Lame;                                           // Lame parameter             : Mpa
-    double mu0;                                            // Shear modulus              : Mpa
+    // Material Parameters
+    Materials::Material Array_Material;
 
     // Viscosity parameters
     double mu;                                             // Viscosity                  : Mpa*s
 
     // Hourglass (Hg) correction parameters
-    double E;                                              // Hourglass stiffness        : Mpa
     double alpha;                                          // Hg control parameter       : unitless
 
     // Damage paramaters
@@ -76,10 +74,8 @@ class Particle_Array {
     void Set_Inter_Particle_Spacing(const double IPS);
     void Set_Support_Radius(const unsigned int SR_In);
 
-    void Set_Lame(const double Lame_In) { Lame = Lame_In; }
-    void Set_mu0(const double mu0_In) { mu0 = mu0_In; }
+    void Set_Material(const Materials::Material & Mat_In) { Array_Material = Mat_In; }
     void Set_mu(const double mu_In) { mu = mu_In; }
-    void Set_E(const double E_In) { E = E_In; }
     void Set_alpha(const double alpha_In) { alpha = alpha_In; }
     void Set_Tau(const double Tau_In) { Tau = Tau_In; }
 
@@ -96,10 +92,11 @@ class Particle_Array {
 
     double Get_h(void) const { return h; }
     double Get_Shape_Function_Amplitude(void) const { return Shape_Function_Amplitude; }
-    double Get_Lame(void) const { return Lame; }
-    double Get_mu0(void) const { return mu0; }
+    Materials::Material Get_Material(void) const { return Array_Material; }
+    double Get_Lame(void) const { return Array_Material.Lame; }
+    double Get_mu0(void) const { return Array_Material.mu0; }
     double Get_mu(void) const { return mu; }
-    double Get_E(void) const { return E; }
+    double Get_E(void) const { return Array_Material.E; }
     double Get_alpha(void) const { return alpha; }
     double Get_Tau(void) const { return Tau; }
 

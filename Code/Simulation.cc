@@ -64,8 +64,11 @@ void Simulation::Run_Simulation(void) {
       // Set Partilce Array's name
       Arrays[m].Set_Name(Names[m]);
 
-      // Now set the Particle_Array members.
+      // Now set the ith Particle_Array's members.
       Set_Particle_Array_Members(Arrays[m]);
+
+      // Now set the ith Particle_Array's material
+      Arrays[m].Set_Material(Materials[m]);
 
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!

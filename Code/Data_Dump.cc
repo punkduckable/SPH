@@ -119,6 +119,7 @@ void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
   fprintf(File,   "Support Radius (mm) aka h:    %5lf\n",  Particles.Get_h());
   fprintf(File,   "Shape Function Amplitude:     %5lf\n\n",  Particles.Get_Shape_Function_Amplitude());
   fprintf(File,   "       -- Material Parameters --\n");
+  fprintf(File,   "Material:                     %s\n",    Particles.Get_Material().Name.c_str());
   fprintf(File,   "Lame parameter:               %5lf\n",  Particles.Get_Lame());
   fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Particles.Get_mu0());
   fprintf(File,   "Viscosity (mu):               %5lf\n",  Particles.Get_mu());
@@ -287,6 +288,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   /* This function is designed to read in particle and use it to create a
   particles array. */
 
+  // First, open up the desired file.
   unsigned int Num_Particles = 0;
 
   // First, get a path to the file
@@ -301,18 +303,17 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
     return 1;
   } // if(File == NULL) {
 
-  // Now read in the static particle members
-  char Buf[100];                                 // Buffer to store text from file
+  // Buffers to hold variables that we read in (we need to do this b/c the
+  // Particle_Array's varialbes are hidden/seed to be set with setters)
+  unsigned int Buf_Length = 100;
+  char Buf[Buf_Length];                          // Buffer to store text from file
+  unsigned int uBuf;
+  double lfBuf;
+  Materials::Material Mat;
 
   // Now let's print the number of particles
   fprintf(File,   "       -- Particles --\n");
   fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
-
-  // Buffers to hold variables that we read in (we need to do this b/c the
-  // Particle_Array's varialbes are hidden/seed to be set with setters)
-  unsigned int uBuf;
-  double lfBuf;
-  std::string strBuf;
 
   // We already have the Particle_Array's name, cuboid/boundary flags, and
   // dimensions (if cuboid). We can therefore skip over these lines.
@@ -330,6 +331,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   fgets(Buf, 99, File);                          // Skip blank line
   fgets(Buf, 99, File);                          // Skip 'Kerenel-Parameters' line
 
+  //////////////////////////////////////////////////////////////////////////////
   // Read in Kernel parameters.
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_Inter_Particle_Spacing(lfBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_Support_Radius(uBuf);
@@ -338,13 +340,29 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
 
   fgets(Buf, 99, File);                          // Skip 'Material-Parameters' line.
 
+  //////////////////////////////////////////////////////////////////////////////
   // Read in Material parameters.
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_Lame(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu0(lfBuf);
+
+  // Read in material name
+  fread(Buf, 1, 30, File); fscanf(File, " %s\n", Buf);
+  Buf[Buf_Length-1] = '\0';
+  Mat.Name = Buf;
+
+  // Read in other material properties
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.Lame = lfBuf;
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.mu0 = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_E(lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.E = lfBuf;
+
+  // Our material is now fully characterized, we can set Particle's material
+  Particles.Set_Material(Mat);
+
+  // Read other material properties.
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_alpha(lfBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);  Particles.Set_Tau(lfBuf);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Read in Particle properties.
 
   // Now read in number of particles
   fgets(Buf, 99, File);                          // Skip 'Particles' line.

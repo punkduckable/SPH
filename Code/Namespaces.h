@@ -27,5 +27,6 @@ namespace Quick_Math {}
 namespace Particle_Debugger {}
 namespace OP_Count {}
 namespace VTK_File {}
+namespace Materials {}
 
 #endif

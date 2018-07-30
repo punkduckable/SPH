@@ -13,6 +13,7 @@ typedef unsigned char uByte;
 // Header files
 #include "Classes.h"
 #include "Namespaces.h"
+#include "Materials.h"
 #include "List.h"
 #include "SPH_Diagnostics.h"
 #include "VTK_File.h"

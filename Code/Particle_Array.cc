@@ -117,6 +117,7 @@ void Particle_Array::Set_Support_Radius(const unsigned int SR_In) {
 } // void Particle_Array::Set_Support_Radius(const unsigned int SR_In) {
 
 
+
 void Particle_Array::Set_Cuboid_Dimensions(const Vector & Dimensions) {
   // Check if cuboid has already been set up
   if(Num_Particles != 0) {
@@ -151,7 +152,7 @@ void Particle_Array::Set_Cuboid_Dimensions(const Vector & Dimensions) {
     } // for(unsigned int j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned int i = 0; i < X_SIDE_LENGTH; i++) {
 } // void Particle_Array::Set_Cuboid_Dimensions(const Vector & Dimensions); {
-  
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -172,10 +173,11 @@ void Particle_Array::Print_Parameters(void) const {
   printf(         "h:                            %lf\n",   h);
   printf(         "Support Radius:               %u\n",    Support_Radius);
   printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
-  printf(         "Lame:                         %lf\n",   Lame);
-  printf(         "mu0 (Shear modulus):          %lf\n",   mu0);
+  printf(         "Material:                     %s\n",    Array_Material.Name.c_str());
+  printf(         "Lame:                         %lf\n",   Array_Material.Lame);
+  printf(         "mu0 (Shear modulus):          %lf\n",   Array_Material.mu0);
   printf(         "mu (Viscosity):               %lf\n",   mu);
-  printf(         "E (Young's modulus):          %lf\n",   E);
+  printf(         "E (Young's modulus):          %lf\n",   Array_Material.E);
   printf(         "Tau (Damage rate):            %lf\n\n", Tau);
 } // void Particle_Array::Print_Parameters(void) const {
 
