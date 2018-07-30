@@ -12,12 +12,12 @@ namespace Simulation {
   // Simulation flags/properties
   const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 1;
-  const unsigned char Print_Forces               = 1;
+  const unsigned char Print_Forces               = 0;
   const unsigned char TimeSteps_Between_Prints   = 100;
 
   // TimeStep paramters
   const double dt                                = .000001; // Time step                  : s
-  const unsigned int Num_Steps                   = 20000;   // Number of time steps
+  const unsigned int Num_Steps                   = 200;   // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;
@@ -65,7 +65,7 @@ namespace Simulation {
 
     Particles.Set_mu(5e-4);                                // Viscosity                  : Mpa*s
 
-    Particles.Set_alpha(50);                               // Hg control parameter       : Unitless
+    Particles.Set_alpha(.75);                              // Hg control parameter       : Unitless
 
     Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
   } // void Set_Particle_Array_Members(Particle_Array & Particles) {

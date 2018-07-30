@@ -172,36 +172,44 @@ void Simulation::Run_Simulation(void) {
         i = 0;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0; }}
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+          }}
 
         // Back face (i = X_SIDE_LENGTH-1)
         i = X_SIDE_LENGTH-1;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0; }}
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+          }}
 
         // Bottom face (j = 0)
         j = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0; }}
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
+          }}
 
         // Top face (j = y_Side_len-1)
         j = Y_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
-          for(k = 0; k < Z_SIDE_LENGTH; k++) { }}
+          for(k = 0; k < Z_SIDE_LENGTH; k++) {
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
+          }}
 
         // Left face (k = 0)
         k = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0; }}
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+          }}
 
         // Right face (k = Z_SIDE_LENGTH-1)
         k = Z_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0; }}
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+          }}
 
       } // if(m == 0)
     } // for(m = 0; m < Num_Arrays; m++)
@@ -223,9 +231,17 @@ void Simulation::Run_Simulation(void) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Contact
+    /* Here we enable particle-particle contact. To do this, we cycle through
+    each Particle_Array. For the mth array, we check if any of its particles are
+    in contact with any of the partilces in the ith array for i > m. We only
+    use i > m so that we only run the contact algorythm on each part of
+    Particle_Arrays once. */
 
     timer2 = clock();
-    Particle_Helpers::Contact(Arrays[0], Arrays[1]);
+    for(m = 0; m < Num_Arrays; m++)
+      for(i = m + 1; i < Num_Arrays; i++)
+        Particle_Helpers::Contact(Arrays[m], Arrays[i]);
+
     contact_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -376,8 +392,7 @@ void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & F
   const double IPS = FEB_Body.Get_Inter_Particle_Spacing();                    //        : mm
   double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
   double Particle_Radius = IPS*.578;                                           //        : mm
-  double Particle_Density = 1;                                                 //        : g/mm^3
-  double Particle_Mass = Particle_Volume*Particle_Density;                     //        : g
+  double Particle_Mass = Particle_Volume*FEB_Body.Get_density();               //        : g
 
   Vector V{0,0,0};
 

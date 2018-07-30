@@ -16,13 +16,13 @@ namespace Materials {
                                            1.125,          // Lame parameter             : Mpa
                                            .275,           // Shear modulus              : Mpa
                                            0.770982,       // Young's modulus (E)        : Mpa
-                                           1.0};           // Material density           : g/(mm^3)
+                                           1};             // Material density           : g/(mm^3)
 
   const Material Stainless_Steel       = { "Stainless Steel",
                                            104.374,        // Lame parameter             : Mpa
                                            75.5814,        // Shear modulus              : Mpa
                                            195,            // Young's modulus (E)        : Mpa
-                                           8.0};           // Material density           : g/(mm^3)
+                                           2.0};           // Material density           : g/(mm^3)
 
 } // namespace Materials {
 
