@@ -97,6 +97,7 @@ class Particle_Array {
     double Get_mu0(void) const { return Array_Material.mu0; }
     double Get_mu(void) const { return mu; }
     double Get_E(void) const { return Array_Material.E; }
+    double Get_density(void) const { return Array_Material.density; }
     double Get_alpha(void) const { return alpha; }
     double Get_Tau(void) const { return Tau; }
 

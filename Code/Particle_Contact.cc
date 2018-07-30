@@ -30,18 +30,22 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
 
   for(i = 0; i < Num_Particles_B; i++) {
     Body_B[i].Force_Contact = {0,0,0};                                         //        : N Vector
-    Body_B_x[i] = Body_B[i].x;                                                 //        : mm Vector
+    Body_B_x[i] = Body_B[i].Get_x();                                           //        : mm Vector
   }
 
   // For each particle in A, check if there is a particle in B that is within
   // the combined support radius
   for(i = 0; i < Num_Particles_A; i++) {
-    V_i = Body_A[i].Vol;                                                       //        : mm^3
+    // Skip broken particles
+    if(Body_A[i].Get_D() >= 1)
+      continue;
+
+    V_i = Body_A[i].Get_Vol();                                                 //        : mm^3
     K_V_i = K*V_i;                                                             //        : N*mm
 
     for(j = 0; j < Num_Particles_B; j++) {
-      V_j = Body_B[j].Vol;                                                     //        : mm^3
-      r_ij = Body_A[i].x - Body_B_x[j];                                        //        : mm Vector
+      V_j = Body_B[j].Get_Vol();                                               //        : mm^3
+      r_ij = Body_A[i].Get_x() - Body_B_x[j];                                  //        : mm Vector
 
       // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
       // If so, add contact force

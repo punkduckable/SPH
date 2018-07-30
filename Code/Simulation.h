@@ -16,8 +16,8 @@ namespace Simulation {
   const unsigned char TimeSteps_Between_Prints   = 100;
 
   // TimeStep paramters
-  const double dt                                = .00001; // Time step                  : s
-  const unsigned int Num_Steps                   = 500;  // Number of time steps
+  const double dt                                = .000001; // Time step                  : s
+  const unsigned int Num_Steps                   = 20000;   // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;
@@ -57,7 +57,7 @@ namespace Simulation {
 
   // Default Particle_Array members
   void Set_Particle_Array_Members(Particle_Array & Particles) {
-    unsigned int Support_Radius = 4;                         // Support radius in units of Inter Particle spacings
+    unsigned int Support_Radius = 3;                         // Support radius in units of Inter Particle spacings
     double IPS = 1;                                          // Inter particle spacing     : mm
 
     Particles.Set_Inter_Particle_Spacing(IPS);                                 //        : mm

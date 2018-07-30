@@ -293,8 +293,7 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles) {
   const double IPS = Particles.Get_Inter_Particle_Spacing();                   //        : mm
   const double Particle_Volume = IPS*IPS*IPS;                                  //        : mm^3
   const double Particle_Radius = IPS*.578;                                     //        : mm
-  const double Particle_Density = 1;                                           //        : g/mm^3
-  const double Particle_Mass = Particle_Volume*Particle_Density;               //        : g
+  const double Particle_Mass = Particle_Volume*Particles.Get_density();        //        : g
 
   // Furst, let's get number of partilces in the Particle_Arrays
   const unsigned int X_SIDE_LENGTH = Particles.Get_X_SIDE_LENGTH();

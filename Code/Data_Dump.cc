@@ -124,6 +124,7 @@ void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
   fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Particles.Get_mu0());
   fprintf(File,   "Viscosity (mu):               %5lf\n",  Particles.Get_mu());
   fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Particles.Get_E());
+  fprintf(File,   "Material density:             %5lf\n",  Particles.Get_density());
   fprintf(File,   "alpha (HG parameter):         %5lf\n",  Particles.Get_alpha());
   fprintf(File,   "Tau (damage parameter):       %5lf\n\n",Particles.Get_Tau());
 
@@ -353,6 +354,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.mu0 = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu(lfBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.E = lfBuf;
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.density = lfBuf;
 
   // Our material is now fully characterized, we can set Particle's material
   Particles.Set_Material(Mat);
