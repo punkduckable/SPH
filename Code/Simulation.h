@@ -17,7 +17,7 @@ namespace Simulation {
 
   // TimeStep paramters
   const double dt                                = .00001; // Time step                  : s
-  const unsigned int Num_Steps                   = 10000;  // Number of time steps
+  const unsigned int Num_Steps                   = 20000;  // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;
@@ -26,6 +26,7 @@ namespace Simulation {
   bool * Is_Boundary;
   bool * From_FEB_File;
   Vector * Dimensions;
+  double * Num_Particles;
 
   void Use_Arrays_From_Code(void) {
     Num_Arrays                                   = 2;
@@ -34,6 +35,7 @@ namespace Simulation {
     Is_Boundary = new bool[Num_Arrays];
     From_FEB_File = new bool[Num_Arrays];
     Dimensions = new Vector[Num_Arrays];
+    Num_Particles = new double[Num_Arrays];
 
     Names[0]                                     = "Body";
     Is_Cuboid[0]                                 = true;
@@ -51,7 +53,7 @@ namespace Simulation {
 
   // Default Particle_Array members
   void Set_Particle_Array_Members(Particle_Array & Particles) {
-    unsigned int Support_Radius = 3;                         // Support radius in units of Inter Particle spacings
+    unsigned int Support_Radius = 4;                         // Support radius in units of Inter Particle spacings
     double IPS = 1;                                          // Inter particle spacing     : mm
 
     Particles.Set_Inter_Particle_Spacing(IPS);                                 //        : mm
@@ -63,7 +65,7 @@ namespace Simulation {
     Particles.Set_mu(5e-4);                                // Viscosity                  : Mpa*s
 
     Particles.Set_E(0.770982);                             // Youngs modulus/Hourglass stiffness   : Mpa
-    Particles.Set_alpha(7.5);                              // Hg control parameter       : Unitless
+    Particles.Set_alpha(50);                               // Hg control parameter       : Unitless
 
     Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
   } // void Set_Particle_Array_Members(Particle_Array & Particles) {

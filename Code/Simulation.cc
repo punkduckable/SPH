@@ -70,13 +70,16 @@ void Simulation::Run_Simulation(void) {
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
 
+      // A body can't both be a cuboid and be from an FEB file.
       if(Is_Cuboid[m] == true && From_FEB_File[m] == true) {
         printf("A body can't be read from a FEB file and designated as a cuboid... aborting\n");
         return;
       } // if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
 
-      if(Is_Cuboid[m] == false && From_FEB_File[m] == false && Is_Boundary[m] == false) {
-        printf("Error! Bodies that are not from file or cuboids must be boundaries. Aborting\n");
+      // A body must either be a cuboid or be from file. If it's neither, then
+      // we have no way of setting it up.
+      if(Is_Cuboid[m] == false && From_FEB_File[m] == false) {
+        printf("Error! All bodies must be from a FEB file or a cuboid.  Aborting\n");
         return;
       } // if(Is_Cuboid[m] == false && Is_Boundary == false) {
 
@@ -93,12 +96,8 @@ void Simulation::Run_Simulation(void) {
       else if(From_FEB_File[m] == true)
         Setup_FEB_Body(Arrays[m], Names[m]);
 
-      // If the body is neither a cuboid nor a FEB body then it's a boundary
-      else if(Is_Boundary[m] == true)
-        Arrays[m].Set_Num_Particles( (Dimensions[m])(0) );
-
-      /* If the body is a boundary, we need to designate it as such. note: this
-      applies if the body is a cuboid, from FEB file, or neither... anything
+      /* If the body is a boundary, we need to designate it as such.
+      note: this applies if the body is a cuboid, or from FEB file... anything
       can be a boundary! Thus, we apply this check after the setup proess */
       if(Is_Boundary[m] == true)
         Arrays[m].Set_Boundary(true);
@@ -113,25 +112,28 @@ void Simulation::Run_Simulation(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
+
+  unsigned int X_SIDE_LENGTH;
+  unsigned int Y_SIDE_LENGTH;
+  unsigned int Z_SIDE_LENGTH;
   printf(         "\nRunning %d time steps....\n",Num_Steps);
-
-  // Print initial data
-  for(m = 0; m < Num_Arrays; m++)
-    VTK_File::Export_Particle_Positions(Arrays[m]);
-
 
   // Cycle through time steps.
   timer1 = clock();
   printf(         "0 time steps complete\n");
-  if(Print_Forces == true)
+
+  // If we are starting a new simulation (not reading one from file) then print
+  // initial configuration
+  if(Load_Data_From_File == false) {
     for(m = 0; m < Num_Arrays; m++)
-      Particle_Debugger::Export_Particle_Forces(Arrays[m]);
+      VTK_File::Export_Particle_Positions(Arrays[m]);
 
-  // Time step loop
-  unsigned int X_SIDE_LENGTH;
-  unsigned int Y_SIDE_LENGTH;
-  unsigned int Z_SIDE_LENGTH;
+    if(Print_Forces == true)
+      for(m = 0; m < Num_Arrays; m++)
+        Particle_Debugger::Export_Particle_Forces(Arrays[m]);
+  } // if(Load_Data_From_File == false) {
 
+  // time step loop.
   for(l = 0; l < Num_Steps; l++) {
     // Cycle through the particle arrays, apply BC's to 0th array.
     timer2 = clock();

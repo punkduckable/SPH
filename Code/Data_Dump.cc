@@ -12,30 +12,70 @@ void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned in
   The intent of this is to allow the user 'save' a simulation, allowing the user
   to - at a future point - pick up where they left off.*/
 
-  // First, open a file. This file will store the number of Particle_Arrays as
+  unsigned int i,j;
+
+  // First, we need to know how many times each Particle_Array has been printed
+  unsigned int * VTK_File_Numbers = new unsigned int[Num_Arrays];
+  unsigned int * Force_File_Numbers = new unsigned int[Num_Arrays];
+
+  for(i = 0;  i < Num_Arrays; i++) {
+    // First, get the ith particle's array VTK file number
+    for(j = 0; j < VTK_File::Name_List.Node_Count(); j++)
+      if(VTK_File::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
+        VTK_File_Numbers[i] = VTK_File::File_Number_List[j];
+        break;
+      } // if(VTK_File::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
+
+    /* Now we need to check if the ith particle array is not in the list. This
+    would happen if j == VTK_File::Name_List.Node_Count (if the for loop
+    never broke). If this is the case, then we should set VTK_File_Number[i]
+    to zero. */
+    if(j == VTK_File::Name_List.Node_Count())
+        VTK_File_Numbers[i] = 0;
+
+
+    // Now, get the ith particle's array Force file number
+    for(j = 0; j < Particle_Debugger::Name_List.Node_Count(); j++)
+      if(Particle_Debugger::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
+        Force_File_Numbers[i] = Particle_Debugger::File_Number_List[j];
+        break;
+      } // if(Particle_Debugger::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
+
+    /* Now we need to check if the ith particle array is not in the list. This
+    would happen if j == Particle_Debugger::Name_List.Node_Count (if the for loop
+    never broke). If this is the case, then we should set Force_File_Number[i]
+    to zero. */
+    if(j == Particle_Debugger::Name_List.Node_Count())
+        Force_File_Numbers[i] = 0;
+  } // for(i = 0;  i < Num_Arrays; i++) {
+
+  // Open a new file. This file will store the number of Particle_Arrays as
   // well as their names.
   FILE * File = fopen("../Files/Saves/Particle_Array_Data.txt","w");
 
   // Print number of Arrays to this file
   fprintf(File,   "Number of Particle Arrays:    %u\n\n", Num_Arrays);
 
-  // Now print each Particle_Array's name and essential information to the file
-  for(unsigned int i = 0; i < Num_Arrays; i++) {
+  // Now print each Particle_Array's name and other essential information
+  for(i = 0; i < Num_Arrays; i++) {
     fprintf(File, "Particle_Array %3u name:      %s\n", i, Arrays[i].Get_Name().c_str());
     fprintf(File, "     Is a Cuboid:             %u\n",    Arrays[i].Get_Cuboid());
 
     if(Arrays[i].Get_Cuboid() == true) {
-      fprintf(File, "          X_SIDE_LENGTH:      %u\n",    Arrays[i].Get_X_SIDE_LENGTH());
-      fprintf(File, "          Y_SIDE_LENGTH:      %u\n",    Arrays[i].Get_Y_SIDE_LENGTH());
-      fprintf(File, "          Z_SIDE_LENGTH:      %u\n",    Arrays[i].Get_Z_SIDE_LENGTH());
+      fprintf(File, "          X_SIDE_LENGTH:      %u\n",  Arrays[i].Get_X_SIDE_LENGTH());
+      fprintf(File, "          Y_SIDE_LENGTH:      %u\n",  Arrays[i].Get_Y_SIDE_LENGTH());
+      fprintf(File, "          Z_SIDE_LENGTH:      %u\n",  Arrays[i].Get_Z_SIDE_LENGTH());
     } // if(Arrays[i].Get_Cuboid() == true) {
 
     fprintf(File, "     Is a Boundary:           %u\n",    Arrays[i].Get_Boundary());
-    fprintf(File, "     Number of particles:     %u\n\n",    Arrays[i].Get_Num_Particles());
-  } //   for(unsigned int i = 0; i < Num_Arrays; i++) {
+    fprintf(File, "     Number of particles:     %u\n",    Arrays[i].Get_Num_Particles());
+
+    fprintf(File, "     VTK_File number:         %u\n",    VTK_File_Numbers[i]);
+    fprintf(File, "     Force_File number:       %u\n\n",  Force_File_Numbers[i]);
+  } //   for(i = 0; i < Num_Arrays; i++) {
 
   // Now print each Particle array to its own file
-  for(unsigned int i = 0; i < Num_Arrays; i++)
+  for(i = 0; i < Num_Arrays; i++)
     Save_Particle_Array(Arrays[i]);
 
   fclose(File);
@@ -217,11 +257,20 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     (*Array_Ptr)[i].Set_Boundary(uBuf);
 
-    // Finally, read in number of particles and use if this Particle_Array is not a cuboid
-    fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
+    // Now read in number of particles and use if this Particle_Array is not a cuboid
+    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     if(Is_Cuboid == false) {
       (*Array_Ptr)[i].Set_Num_Particles(uBuf);
     } // if(Is_Cuboid == false) {
+
+    // Finally read in File number information
+    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    VTK_File::Name_List.Add_Back((*Array_Ptr)[i].Get_Name());
+    VTK_File::File_Number_List.Add_Back(uBuf);
+
+    fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
+    Particle_Debugger::Name_List.Add_Back((*Array_Ptr)[i].Get_Name());
+    Particle_Debugger::File_Number_List.Add_Back(uBuf);
   } // for(unsigned int i = 0; i < Num_Arrays; i++) {
 
   // pass the newly created particle arrays to the 'load particle array' function
@@ -256,7 +305,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   char Buf[100];                                 // Buffer to store text from file
 
   // Now let's print the number of particles
-    fprintf(File,   "       -- Particles --\n");
+  fprintf(File,   "       -- Particles --\n");
   fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
 
   // Buffers to hold variables that we read in (we need to do this b/c the
