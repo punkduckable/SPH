@@ -111,7 +111,7 @@ class Particle {
 
     // Update x
     friend void Particle_Helpers::Update_x(Particle & P_In,                    // Updates P_In's spacial position
-                                           const Particle_Array & Particles,
+                                           Particle_Array & Particles,
                                            const double dt);
 
     // Neighbor friends (other neighbor methods are in Particle_Neighbors.cc)

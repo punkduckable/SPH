@@ -10,14 +10,14 @@ namespace Simulation {
   void Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name);
 
   // Simulation flags/properties
-  const unsigned char Load_Data_From_File        = 1;
+  const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 1;
   const unsigned char Print_Forces               = 0;
   const unsigned char TimeSteps_Between_Prints   = 100;
 
   // TimeStep paramters
   const double dt                                = .000001; // Time step                  : s
-  const unsigned int Num_Steps                   = 10000;   // Number of time steps
+  const unsigned int Num_Steps                   = 100000;   // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;
@@ -50,7 +50,7 @@ namespace Simulation {
     Dimensions[0]                                = {20, 10, 20};
     Materials[0]                                 = Materials::Default;
 
-    Names[1]                                     = "Needle";
+    Names[1]                                     = "Short_Needle";
     Is_Cuboid[1]                                 = false;
     Is_Boundary[1]                               = false;
     Is_Damagable[1]                              = false;

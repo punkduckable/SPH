@@ -22,7 +22,7 @@ namespace Materials {
                                            104.374,        // Lame parameter             : Mpa
                                            75.5814,        // Shear modulus              : Mpa
                                            195,            // Young's modulus (E)        : Mpa
-                                           2.0};           // Material density           : g/(mm^3)
+                                           8.0};           // Material density           : g/(mm^3)
 
 } // namespace Materials {
 

@@ -22,7 +22,11 @@ namespace Simulation {
 }
 namespace Data_Dump {}
 namespace FEB_File {}
-namespace Particle_Helpers {}
+namespace Particle_Helpers {
+  void Update_x(Particle & P_In,
+                Particle_Array & Particles,
+                const double dt);
+}
 namespace Quick_Math {}
 namespace Particle_Debugger {}
 namespace OP_Count {}

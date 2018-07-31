@@ -82,8 +82,6 @@ class Tensor {
     friend void Print(const Tensor & T_In);
     friend Tensor Dyadic_Product(const Vector & V1,
                                  const Vector & V2);
-
-    // Temporary friends! Should remove asap
     friend void VTK_File::Export_Particle_Positions(const Particle_Array & Particles);
 }; // class Tensor {
 

@@ -104,6 +104,18 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
   the first Piola-Kirchhoff stess tensor. To do this, however, we need to
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
 
+  /* Calculate Second Piola-Kirchoff stress tensor:
+  It should be noted that calculating this tensor requires taking the log of J.
+  In theory, J will always be positive.... However, it is theoretically possible
+  for this to not be the case. Thus, before calculating S, we check if J is
+  non-positive. If it is, then we treat this particle as damaged and remove it */
+  if(J < 0) {
+    P_In.D = 1;
+    printf("Particle %d has a negative Jacobian, %lf.\n",P_In.ID, J);
+    Remove_Damaged_Particle(P_In, Particles);
+    return;
+  } //   if(J < 0) {
+
   S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                   //        : Mpa Tensor
 
   /* Calculate viscosity tensor:
@@ -127,7 +139,7 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
 
 
 
-void Particle_Helpers::Update_x(Particle & P_In, const Particle_Array & Particles, const double dt) {
+void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, const double dt) {
   // Check if particle is damaged (if so, we skip this particle)
   if( P_In.D >= 1)
     return;
@@ -275,6 +287,17 @@ void Particle_Helpers::Update_x(Particle & P_In, const Particle_Array & Particle
     P_In.First_Time_Step = false;
     P_In.V += (dt/2.)*acceleration;              // velocity starts at t_i+1/2           : mm/s Vector
   } //   if(P_In.First_Time_Step == true) {
+
+  /* Before updating the velocity/position, let's check if the particle has
+  diverged. This happens whenever any of the components of the acceleration
+  vector are 'nan'. If they are, then we damage and remove this Particle.
+  It should be noted that this is sort of a last resort mechanism. */
+  if(std::isnan(acceleration[0]) || std::isnan(acceleration[1]) || std::isnan(acceleration[2])) {
+    printf("Particle %d's acceleration is nan :(\n",P_In.ID);
+    P_In.D = 1;
+    Remove_Damaged_Particle(P_In, Particles);
+    return;
+  } //  if(std::isnan(acceleration[0]) || std::isnan(acceleration[1]) || std::isnan(acceleration[2])) {
 
   P_In.x += dt*P_In.V;                           // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
   P_In.V += dt*acceleration;                     // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector

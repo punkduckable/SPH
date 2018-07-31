@@ -219,7 +219,7 @@ void Simulation::Run_Simulation(void) {
       // Needle BC's
       else if(m == 1)
         for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-          if((Arrays[m])[i].Get_X()[1] > 50.)
+          if((Arrays[m])[i].Get_X()[1] > 32.)
             (Arrays[m])[i].V[1] = -50;
 
     } // for(m = 0; m < Num_Arrays; m++)

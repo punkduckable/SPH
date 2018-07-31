@@ -23,7 +23,7 @@ namespace Particle_Helpers {
                 const double dt);
 
   void Update_x(Particle & P_In,                           // Updates P_In's spacial position
-                const Particle_Array & Particles,
+                Particle_Array & Particles,
                 const double dt);
 
   //////////////////////////////////////////////////////////////////////////////
