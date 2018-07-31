@@ -68,6 +68,7 @@ void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned in
     } // if(Arrays[i].Get_Cuboid() == true) {
 
     fprintf(File, "     Is a Boundary:           %u\n",    Arrays[i].Get_Boundary());
+    fprintf(File, "     Is Damageable:           %u\n",    Arrays[i].Get_Damagable());
     fprintf(File, "     Number of particles:     %u\n",    Arrays[i].Get_Num_Particles());
 
     fprintf(File, "     VTK_File number:         %u\n",    VTK_File_Numbers[i]);
@@ -106,18 +107,22 @@ void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
 
   // Let's begin by printing the Particle_Array paramaters
   fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
+
   fprintf(File,   "Is a cuboid:                  %u\n",    Particles.Get_Cuboid());
   if(Particles.Get_Cuboid() == true) {
     fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Particles.Get_X_SIDE_LENGTH());
     fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Particles.Get_Y_SIDE_LENGTH());
     fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Particles.Get_Z_SIDE_LENGTH());
   } //   if(Particles.Get_Cuboid() == true) {
-  fprintf(File,   "Is a boundary:                %u\n\n",  Particles.Get_Boundary());
+  fprintf(File,   "Is a Boundary:                %u\n",    Particles.Get_Boundary());
+  fprintf(File,   "Is Damageable:                %u\n\n",  Particles.Get_Damagable());
+
   fprintf(File,   "       -- Kernel Parameters --\n");
   fprintf(File,   "Inter Particle Spacing:       %5lf\n",  Particles.Get_Inter_Particle_Spacing());
   fprintf(File,   "Support Radius (IPS):         %u\n",    Particles.Get_Support_Radius());
   fprintf(File,   "Support Radius (mm) aka h:    %5lf\n",  Particles.Get_h());
-  fprintf(File,   "Shape Function Amplitude:     %5lf\n\n",  Particles.Get_Shape_Function_Amplitude());
+  fprintf(File,   "Shape Function Amplitude:     %5lf\n\n",Particles.Get_Shape_Function_Amplitude());
+
   fprintf(File,   "       -- Material Parameters --\n");
   fprintf(File,   "Material:                     %s\n",    Particles.Get_Material().Name.c_str());
   fprintf(File,   "Lame parameter:               %5lf\n",  Particles.Get_Lame());
@@ -166,6 +171,7 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
   const Vector X = P_In.Get_X();
   const Vector x = P_In.Get_x();
   const Vector V = P_In.Get_V();
+  const Tensor F = P_In.Get_F();
 
   // Print particle ID, dimensions
   fprintf(File,   "ID:                           %u\n",    P_In.Get_ID());
@@ -176,9 +182,12 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
   fprintf(File,   "Radius:                       %5lf\n",  P_In.Get_Radius());
 
   // Print Particle dynamic properties
-  fprintf(File,   "X:                            <%6.3lf, %6.3lf, %6.3lf>\n", X(0), X(1), X(2));
-  fprintf(File,   "x:                            <%6.3lf, %6.3lf, %6.3lf>\n", x(0), x(1), x(2));
-  fprintf(File,   "V:                            <%6.3lf, %6.3lf, %6.3lf>\n", V(0), V(1), V(2));
+  fprintf(File,   "X:                            <%6.3lf %6.3lf %6.3lf>\n", X(0), X(1), X(2));
+  fprintf(File,   "x:                            <%6.3lf %6.3lf %6.3lf>\n", x(0), x(1), x(2));
+  fprintf(File,   "V:                            <%6.3lf %6.3lf %6.3lf>\n", V(0), V(1), V(2));
+  fprintf(File,   "F:                            |%6.3lf %6.3lf %6.3lf|\n", F(0,0), F(0,1), F(0,2));
+  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F(1,0), F(1,1), F(1,2));
+  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F(2,0), F(2,1), F(2,2));
 
   // Damage paramaters
   fprintf(File,   "Stretch_H:                    %5lf\n",  P_In.Get_Stretch_H());
@@ -259,6 +268,10 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     (*Array_Ptr)[i].Set_Boundary(uBuf);
 
+    // Now read in the 'Is damageabl' flag
+    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    (*Array_Ptr)[i].Set_Damageable(uBuf);
+
     // Now read in number of particles and use if this Particle_Array is not a cuboid
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     if(Is_Cuboid == false) {
@@ -329,6 +342,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   } // if(Particles.Get_Cuboid() == true) {
 
   fgets(Buf, 99, File);                          // Skip 'is a boundary' line
+  fgets(Buf, 99, File);                          // Skip 'Is Damageable' line
   fgets(Buf, 99, File);                          // Skip blank line
   fgets(Buf, 99, File);                          // Skip 'Kerenel-Parameters' line
 
@@ -336,8 +350,8 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   // Read in Kernel parameters.
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_Inter_Particle_Spacing(lfBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_Support_Radius(uBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);         // Skip 'Support radius (mm)' line
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);       // Skip 'Shape Function Amplitude' line
 
   fgets(Buf, 99, File);                          // Skip 'Material-Parameters' line.
 
@@ -401,12 +415,13 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
         Particles[i].Mag_R[j] = Particles[i].R[j].Magnitude();
 
         // Calculate shape function, shape function gradient for jth neighbor
-        Particles[i].W[j] = Shape_Function_Amp*(h - Particles[i].Mag_R[j])*
-                            (h - Particles[i].Mag_R[j])*
-                            (h - Particles[i].Mag_R[j]);
-        Particles[i].Grad_W[j] = -3*Shape_Function_Amp*((h - Particles[i].Mag_R[j])*
-                                 (h - Particles[i].Mag_R[j]))*
-                                 (Particles[i].R[j] / Particles[i].Mag_R[j]);
+        Particles[i].W[j] = Shape_Function_Amp*(h - Particles[i].Mag_R[j])
+                            *(h - Particles[i].Mag_R[j])
+                            *(h - Particles[i].Mag_R[j]);
+
+        Particles[i].Grad_W[j] = (-3*Shape_Function_Amp
+                                 *((h - Particles[i].Mag_R[j])*(h - Particles[i].Mag_R[j]))/ Particles[i].Mag_R[j])
+                                 *Particles[i].R[j];
 
         // Add in the Current Neighbor's contribution to the Shape tensor
         V_j = Particles[Neighbor_ID].Vol;
@@ -447,9 +462,14 @@ void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Radius);
 
   // Now read in particle dynamic properties
-  fread(Buf, 1, 30, File); fscanf(File, " <%lf, %lf, %lf>\n", &P_In.X(0), &P_In.X(1), &P_In.X(2));
-  fread(Buf, 1, 30, File); fscanf(File, " <%lf, %lf, %lf>\n", &P_In.x(0), &P_In.x(1), &P_In.x(2));
-  fread(Buf, 1, 30, File); fscanf(File, " <%lf, %lf, %lf>\n", &P_In.V(0), &P_In.V(1), &P_In.V(2));
+  fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.X(0), &P_In.X(1), &P_In.X(2));
+  fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.x(0), &P_In.x(1), &P_In.x(2));
+  fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.V(0), &P_In.V(1), &P_In.V(2));
+  fread(Buf, 1, 30, File); fscanf(File, " |%lf %lf %lf|\n", &P_In.F(0,0), &P_In.F(0,1), &P_In.F(0,2));
+                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F(1,0), &P_In.F(1,1), &P_In.F(1,2));
+                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F(2,0), &P_In.F(2,1), &P_In.F(2,2));
+
+
   P_In.First_Time_Step = false;
 
   // Damage parameters

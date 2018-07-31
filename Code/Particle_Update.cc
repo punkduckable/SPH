@@ -73,36 +73,36 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
 
   To do this, we first need to find the principle stretch. To do this, we
   need to find the square root of the biggest eigenvalue of the (right)
-  Cauchy Green strain tensor. Luckily, this tensor will be used for later
-  calculations. */
+  Cauchy Green strain tensor C. Note, C will be used for later calculations */
   C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless Tensor
   J = Determinant(F);                            // J is det of F                        : unitless Tensor
 
-  // Calculate current principle stretch
-  double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
+  // Calculate current principle stretch (if this particle array can take damage)
+  if(Particles.Get_Damagable() == true) {
+    double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
 
-  Stretch_Max_Principle = sqrt(Max_EigenValue);
+    Stretch_Max_Principle = sqrt(Max_EigenValue);
 
-  // If this stretch is greater than max stretch, update particle's Max stretch.
-  P_In.Stretch_M = Stretch_Max_Principle;
-  if(Stretch_Max_Principle > P_In.Stretch_H)
-    P_In.Stretch_H = Stretch_Max_Principle;
+    // If this stretch is greater than max stretch, update particle's Max stretch.
+    P_In.Stretch_M = Stretch_Max_Principle;
+    if(Stretch_Max_Principle > P_In.Stretch_H)
+      P_In.Stretch_H = Stretch_Max_Principle;
 
-  // if Max is greater than crticial then start adding damage
-  if(P_In.Stretch_H > P_In.Stretch_Critical)
-    P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
+    // if Max is greater than crticial then start adding damage
+    if(P_In.Stretch_H > P_In.Stretch_Critical)
+      P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
 
-  // If particle is fully damaged, remove it from array.
-  if(P_In.D >= 1) {
-    Remove_Damaged_Particle(P_In, Particles);
-    return;
-  } // if(P_In.D >= 1) {
+    // If particle is fully damaged, remove it from array.
+    if(P_In.D >= 1) {
+      Remove_Damaged_Particle(P_In, Particles);
+      return;
+    } // if(P_In.D >= 1) {
+  } //   if(Particles.Get_Damagable() == true) {
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now that we have calculated the deformation gradient, we need to calculate
   the first Piola-Kirchhoff stess tensor. To do this, however, we need to
   find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
-
 
   S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                   //        : Mpa Tensor
 

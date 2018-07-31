@@ -70,6 +70,9 @@ void Simulation::Run_Simulation(void) {
       // Now set the ith Particle_Array's material
       Arrays[m].Set_Material(Materials[m]);
 
+      // Now set wheather or not the ith Particle_Array is damagable
+      Arrays[m].Set_Damageable(Is_Damagable[m]);
+
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
 
@@ -248,7 +251,6 @@ void Simulation::Run_Simulation(void) {
     for(m = 0; m < Num_Arrays; m++)
       for(i = m + 1; i < Num_Arrays; i++)
         Particle_Helpers::Contact(Arrays[m], Arrays[i]);
-
     contact_timer += clock() - timer2;
 
     ////////////////////////////////////////////////////////////////////////////

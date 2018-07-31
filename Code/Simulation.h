@@ -17,13 +17,14 @@ namespace Simulation {
 
   // TimeStep paramters
   const double dt                                = .000001; // Time step                  : s
-  const unsigned int Num_Steps                   = 40000;   // Number of time steps
+  const unsigned int Num_Steps                   = 10000;   // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;
   std::string * Names;
   bool * Is_Cuboid;
   bool * Is_Boundary;
+  bool * Is_Damagable;
   bool * From_FEB_File;
   Vector * Dimensions;
   double * Num_Particles;
@@ -31,9 +32,11 @@ namespace Simulation {
 
   void Use_Arrays_From_Code(void) {
     Num_Arrays                                   = 2;
+
     Names = new std::string[Num_Arrays];
     Is_Cuboid = new bool[Num_Arrays];
     Is_Boundary = new bool[Num_Arrays];
+    Is_Damagable = new bool[Num_Arrays];
     From_FEB_File = new bool[Num_Arrays];
     Dimensions = new Vector[Num_Arrays];
     Num_Particles = new double[Num_Arrays];
@@ -42,6 +45,7 @@ namespace Simulation {
     Names[0]                                     = "Body";
     Is_Cuboid[0]                                 = true;
     Is_Boundary[0]                               = false;
+    Is_Damagable[0]                              = true;
     From_FEB_File[0]                             = false;
     Dimensions[0]                                = {20, 10, 20};
     Materials[0]                                 = Materials::Default;
@@ -49,6 +53,7 @@ namespace Simulation {
     Names[1]                                     = "Needle";
     Is_Cuboid[1]                                 = false;
     Is_Boundary[1]                               = false;
+    Is_Damagable[1]                              = false;
     From_FEB_File[1]                             = true;
     Dimensions[1]                                = {0,0,0};
     Materials[1]                                 = Materials::Stainless_Steel;

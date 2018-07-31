@@ -40,6 +40,7 @@ class Particle_Array {
 
     // Damage paramaters
     double Tau;                                            // Damage rate parameter (see eq 26)
+    bool Damageable = 1;                                   // If true, allows this Particle_Array to take damage.
 
     void Set_h(const double h_in) {
       h = h_in;
@@ -67,6 +68,7 @@ class Particle_Array {
       return Array[i];
     }
 
+
     // Set methods
     void Set_Num_Particles(const unsigned int Num_Particles_In);
     void Set_Name(const std::string & S_In) { Name = S_In; }
@@ -77,11 +79,14 @@ class Particle_Array {
     void Set_Material(const Materials::Material & Mat_In) { Array_Material = Mat_In; }
     void Set_mu(const double mu_In) { mu = mu_In; }
     void Set_alpha(const double alpha_In) { alpha = alpha_In; }
+
     void Set_Tau(const double Tau_In) { Tau = Tau_In; }
+    void Set_Damageable(const bool D_In) { Damageable = D_In; }
 
     void Set_Cuboid_Dimensions(const Vector & Dimensions);
 
     void Set_Boundary(const bool Boundary_In) { Is_Boundary = Boundary_In; }
+
 
     // Getters
     unsigned int Get_Num_Particles(void) const { return Num_Particles; }
@@ -99,7 +104,9 @@ class Particle_Array {
     double Get_E(void) const { return Array_Material.E; }
     double Get_density(void) const { return Array_Material.density; }
     double Get_alpha(void) const { return alpha; }
+
     double Get_Tau(void) const { return Tau; }
+    bool Get_Damagable(void) const { return Damageable; }
 
     bool Get_Cuboid(void) const { return Is_Cuboid; }
     unsigned int Get_X_SIDE_LENGTH(void) const { return X_SIDE_LENGTH; }
