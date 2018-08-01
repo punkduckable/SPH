@@ -665,10 +665,12 @@ Tensor Tensor::Inverse(void) const{
   Inverse. Thus, we should hault computation if the determinant is zero. */
 
   if(Det_S == 0) {
-    printf("This tensor is singular. No Inverse exists! Returning origional tensor\n");
+    printf("This tensor is singular. No Inverse exists! Returning 0 tensor\n");
     (*this).Print();
-    return *this;
-  }
+    return Tensor{0,0,0,
+                  0,0,0,
+                  0,0,0};
+  } // if(Det_S == 0) {
 
   Tensor_Inv[3*0 + 0] = -S[2*3 + 1]*S[1*3 + 2]
                    +S[1*3 + 1]*S[2*3 + 2];      // -hf + ei

@@ -67,14 +67,15 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
     return;
   }
 
-  /* Next, check that N > 0. if N = 0, then there are no neighbors to add. */
-  if(N == 0) {
-    printf("You didn't supply any neighbors!\n");
-    return;
-  }
-
   // Set Num_Neighbors using input
   Num_Neighbors = N;
+
+  /* Next, check that N > 0. if N = 0, then there are no neighbors. */
+  if(N == 0) {
+    printf("You didn't supply any neighbors for %u! Damaging it.\n", ID);
+    D = 1;
+    return;
+  }
 
   // Get particle array parameters
   const double Shape_Function_Amp = Particles.Get_Shape_Function_Amplitude();

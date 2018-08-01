@@ -109,9 +109,9 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
   In theory, J will always be positive.... However, it is theoretically possible
   for this to not be the case. Thus, before calculating S, we check if J is
   non-positive. If it is, then we treat this particle as damaged and remove it */
-  if(J < 0) {
+  if(J <= 0) {
     P_In.D = 1;
-    printf("Particle %d has a negative Jacobian, %lf.\n",P_In.ID, J);
+    printf("Particle %d has a non-positive Jacobian, %lf.\n",P_In.ID, J);
     Remove_Damaged_Particle(P_In, Particles);
     return;
   } //   if(J < 0) {
