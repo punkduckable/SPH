@@ -1,7 +1,7 @@
 #if !defined(SUMULATION_HEADER)
 #define SUMULATION_HEADER
 
-#define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)                       // Conversion from cpu cycles to msec
+#define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)               // Conversion from cpu cycles to msec
 
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
@@ -16,8 +16,8 @@ namespace Simulation {
   const unsigned char TimeSteps_Between_Prints   = 100;
 
   // TimeStep paramters
-  const double dt                                = .000001; // Time step                  : s
-  const unsigned int Num_Steps                   = 300000;   // Number of time steps
+  const double dt                                = .000001;// Time step                  : s
+  const unsigned int Num_Steps                   = 200000; // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;
@@ -62,8 +62,8 @@ namespace Simulation {
 
   // Default Particle_Array members
   void Set_Particle_Array_Members(Particle_Array & Particles) {
-    unsigned int Support_Radius = 3;                         // Support radius in units of Inter Particle spacings
-    double IPS = 1;                                          // Inter particle spacing     : mm
+    unsigned int Support_Radius = 3;                       // Support radius in units of Inter Particle spacings
+    double IPS = 1;                                        // Inter particle spacing     : mm
 
     Particles.Set_Inter_Particle_Spacing(IPS);                                 //        : mm
     Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless

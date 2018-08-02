@@ -63,7 +63,7 @@ void Particle::Set_Neighbors(const unsigned int N, const unsigned int * Neighbor
   that this method allocates pointers. If the pointers have already been set,
   then allocating them again will cause a memory leak.  */
   if(Neighbors_Are_Set == true) {
-    printf("Neigbors already set, returning.\n");
+    printf("Neigbors already set for %u, returning.\n", ID);
     return;
   }
 
