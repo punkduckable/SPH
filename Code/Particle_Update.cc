@@ -77,18 +77,18 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
   C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless Tensor
   J = Determinant(F);                            // J is det of F                        : unitless Tensor
 
-  // Calculate current principle stretch (if this particle array can take damage)
+  // Calculate current principle stretch
+  double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
+
+  Stretch_Max_Principle = sqrt(Max_EigenValue);
+
+  // If this stretch is greater than max stretch, update particle's Max stretch.
+  P_In.Stretch_M = Stretch_Max_Principle;
+  if(Stretch_Max_Principle > P_In.Stretch_H)
+    P_In.Stretch_H = Stretch_Max_Principle;
+
+    // if damage is enabled and Max is greater than crticial then start adding damage
   if(Particles.Get_Damagable() == true) {
-    double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
-
-    Stretch_Max_Principle = sqrt(Max_EigenValue);
-
-    // If this stretch is greater than max stretch, update particle's Max stretch.
-    P_In.Stretch_M = Stretch_Max_Principle;
-    if(Stretch_Max_Principle > P_In.Stretch_H)
-      P_In.Stretch_H = Stretch_Max_Principle;
-
-    // if Max is greater than crticial then start adding damage
     if(P_In.Stretch_H > P_In.Stretch_Critical)
       P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
 

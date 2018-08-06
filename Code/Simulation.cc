@@ -92,21 +92,21 @@ void Simulation::Run_Simulation(void) {
       //////////////////////////////////////////////////////////////////////////
       // Now set up the Particle_Array's particles
 
+      /* If the body is a boundary, we need to designate it as such.
+      note: this applies if the body is a cuboid, or from FEB file... anything
+      can be a boundary! */
+      if(Is_Boundary[m] == true)
+        Arrays[m].Set_Boundary(true);
+
       // Set up body as a cuboid if it is a cuboid
       if(Is_Cuboid[m] == true) {
         Arrays[m].Set_Cuboid_Dimensions(Dimensions[m]);
-        Setup_Cuboid(Arrays[m]);
+        Setup_Cuboid(Arrays[m], Offset[m]);
       } // if(Is_Cuboid[m] == true) {
 
       // if the body is from file, read it in
       else if(From_FEB_File[m] == true)
         Setup_FEB_Body(Arrays[m], Names[m]);
-
-      /* If the body is a boundary, we need to designate it as such.
-      note: this applies if the body is a cuboid, or from FEB file... anything
-      can be a boundary! Thus, we apply this check after the setup proess */
-      if(Is_Boundary[m] == true)
-        Arrays[m].Set_Boundary(true);
 
     } // for(m = 0; m < Num_Arrays; m++) {
   } // else if(Load_Data_From_File == 0) {
@@ -307,7 +307,7 @@ void Simulation::Run_Simulation(void) {
 
 
 
-void Simulation::Setup_Cuboid(Particle_Array & Particles) {
+void Simulation::Setup_Cuboid(Particle_Array & Particles, const Vector & Offset) {
   unsigned int i,j,k;
 
   unsigned long MS_Gen,
@@ -341,6 +341,7 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
         X = {i*IPS, j*IPS, k*IPS};
+        X += Offset;
         x = X;                                                               //        : mm
         V = {0.,0.,0.};                                                      //        : mm/s
 
@@ -359,14 +360,16 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles) {
   printf(         "Done!\ntook %lums\n",MS_Gen);
 
   //////////////////////////////////////////////////////////////////////////////
-  // Set up Neighbors
+  // Set up Neighbors (if the body is not a boundary)
 
-  printf(         "Generating %s's neighbor lists...", Particles.Get_Name().c_str());
-  timer1 = clock();
-  for(i = 0; i < X_SIDE_LENGTH; i++)
-    for(j = 0; j < Y_SIDE_LENGTH; j++)
-      for(k = 0; k < Z_SIDE_LENGTH; k++)
-        Particle_Helpers::Find_Neighbors_Box(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
+  if(Particles.Get_Boundary() == false) {
+    printf(         "Generating %s's neighbor lists...", Particles.Get_Name().c_str());
+    timer1 = clock();
+    for(i = 0; i < X_SIDE_LENGTH; i++)
+      for(j = 0; j < Y_SIDE_LENGTH; j++)
+        for(k = 0; k < Z_SIDE_LENGTH; k++)
+          Particle_Helpers::Find_Neighbors_Box(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
+  } //   if(Particles.Get_Boundary() == false) {
 
   // Damage the 'cut'
   /*
@@ -381,7 +384,7 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles) {
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf(         "Done!\ntook %lums\n",MS_Neighbor);
-} // void Simulation::Setup_Cuboid(Particle_Array & Particles) {
+} // void Simulation::Setup_Cuboid(Particle_Array & Particles, const Vector & Offset) {
 
 
 
@@ -414,10 +417,12 @@ void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & F
     FEB_Body[i].Set_V(V);
   } //   for(unsigned int i = 0; i < Num_Particles; i++) {
 
-  // Now set up neighbors.
-  printf("Setting up neighbors for %s...\n",FEB_Body.Get_Name().c_str());
-  Particle_Helpers::Find_Neighbors(FEB_Body);
-  printf("Done!\n");
+  // Now set up neighbors. (if the body is not a boundary)
+  if(FEB_Body.Get_Boundary() == false) {
+    printf("Setting up neighbors for %s...\n",FEB_Body.Get_Name().c_str());
+    Particle_Helpers::Find_Neighbors(FEB_Body);
+    printf("Done!\n");
+  } // if(FEB_Body.Get_Boundary() == false) {
 } // void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name) {
 
 #endif
