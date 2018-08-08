@@ -6,8 +6,8 @@
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
 namespace Simulation {
-  void Setup_Cuboid(Particle_Array & Body, const Vector & Offset);
-  void Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name);
+  void Setup_Cuboid(Particle_Array & Body, const unsigned int m);
+  void Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m);
 
   // Simulation flags/properties
   const unsigned char Load_Data_From_File        = 0;
@@ -17,7 +17,7 @@ namespace Simulation {
 
   // TimeStep paramters
   const double dt                                = .000001;// Time step                  : s
-  const unsigned int Num_Steps                   = 200000; // Number of time steps
+  const unsigned int Num_Steps                   = 300000; // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -28,6 +28,7 @@ namespace Simulation {
   bool * From_FEB_File;                          // Which bodies will be read from file
   Vector * Dimensions;                           // Dimensions of cuboids (only applicable for cuboids)
   Vector * Offset;                               // Poisition offset (only applicable for cuboids)
+  Vector * Initial_Velocity;                     // Initial velocity condition
   double * Num_Particles;                        // The number of particles in each body
   Materials::Material * Materials;               // Each bodies material
 
@@ -41,16 +42,18 @@ namespace Simulation {
     From_FEB_File = new bool[Num_Arrays];
     Dimensions = new Vector[Num_Arrays];
     Offset = new Vector[Num_Arrays];
+    Initial_Velocity = new Vector[Num_Arrays];
     Num_Particles = new double[Num_Arrays];
     Materials = new Materials::Material[Num_Arrays];
 
     Names[0]                                     = "Body";
     Is_Cuboid[0]                                 = true;
     Is_Boundary[0]                               = false;
-    Is_Damagable[0]                              = false;
+    Is_Damagable[0]                              = true;
     From_FEB_File[0]                             = false;
-    Dimensions[0]                                = {20, 20, 20};
+    Dimensions[0]                                = {20, 10, 20};
     Offset[0]                                    = {0, 0, 0};
+    Initial_Velocity[0]                          = {0, 0, 0};
     Materials[0]                                 = Materials::Default;
 
     Names[1]                                     = "Short_Needle";
@@ -60,6 +63,7 @@ namespace Simulation {
     From_FEB_File[1]                             = true;
     Dimensions[1]                                = {0, 0, 0};
     Offset[1]                                    = {0, 0, 0};
+    Initial_Velocity[1]                          = {0, -50, 0};
     Materials[1]                                 = Materials::Stainless_Steel;
   } // void Use_Arrays_From_Code(void) {
 

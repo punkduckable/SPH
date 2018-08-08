@@ -101,12 +101,12 @@ void Simulation::Run_Simulation(void) {
       // Set up body as a cuboid if it is a cuboid
       if(Is_Cuboid[m] == true) {
         Arrays[m].Set_Cuboid_Dimensions(Dimensions[m]);
-        Setup_Cuboid(Arrays[m], Offset[m]);
+        Setup_Cuboid(Arrays[m], m);
       } // if(Is_Cuboid[m] == true) {
 
       // if the body is from file, read it in
       else if(From_FEB_File[m] == true)
-        Setup_FEB_Body(Arrays[m], Names[m]);
+        Setup_FEB_Body(Arrays[m], m);
 
     } // for(m = 0; m < Num_Arrays; m++) {
   } // else if(Load_Data_From_File == 0) {
@@ -307,7 +307,7 @@ void Simulation::Run_Simulation(void) {
 
 
 
-void Simulation::Setup_Cuboid(Particle_Array & Particles, const Vector & Offset) {
+void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) {
   unsigned int i,j,k;
 
   unsigned long MS_Gen,
@@ -326,7 +326,9 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const Vector & Offset)
   const unsigned int Z_SIDE_LENGTH = Particles.Get_Z_SIDE_LENGTH();
 
   // Vectors to hold onto Parameters
-  Vector X, x, V;
+  Vector X, x;
+  Vector V = Initial_Velocity[m];                          // Initial_Velocity set in Simulation.h           : mm/s
+
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
   printf(         "\nGenerating particles for %s...",Particles.Get_Name().c_str());
@@ -341,9 +343,8 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const Vector & Offset)
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {
         X = {i*IPS, j*IPS, k*IPS};
-        X += Offset;
-        x = X;                                                               //        : mm
-        V = {0.,0.,0.};                                                      //        : mm/s
+        X += Offset[m];
+        x = X;                                                                 //        : mm
 
         Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Mass(Particle_Mass);  //        : g
         Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j].Set_Vol(Particle_Volume); //        : mm^3
@@ -384,16 +385,16 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const Vector & Offset)
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
   printf(         "Done!\ntook %lums\n",MS_Neighbor);
-} // void Simulation::Setup_Cuboid(Particle_Array & Particles, const Vector & Offset) {
+} // void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) {
 
 
 
-void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name) {
+void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m) {
   // First, we need to know how many particles we have, and the reference
   // position of each of the particles.
   Vector * X = NULL;
   unsigned int Num_Particles;
-  FEB_File::Read_FEB_File(File_Name, &X, Num_Particles);
+  FEB_File::Read_FEB_File(Names[m], &X, Num_Particles);    // Names in Simulation.h
 
   printf("\nReading in Particles for %s from FEB file...\n", FEB_Body.Get_Name().c_str());
 
@@ -406,7 +407,8 @@ void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & F
   double Particle_Radius = IPS*.578;                                           //        : mm
   double Particle_Mass = Particle_Volume*FEB_Body.Get_density();               //        : g
 
-  Vector V{0,0,0};
+  Vector V = Initial_Velocity[m];                          // Initial_Velocity set in Simulation.h
+
 
   for(unsigned int i = 0; i < Num_Particles; i++) {
     FEB_Body[i].Set_Mass(Particle_Mass);
@@ -423,6 +425,6 @@ void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & F
     Particle_Helpers::Find_Neighbors(FEB_Body);
     printf("Done!\n");
   } // if(FEB_Body.Get_Boundary() == false) {
-} // void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const std::string & File_Name) {
+} // void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m) {
 
 #endif
