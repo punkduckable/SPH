@@ -175,14 +175,14 @@ void Simulation::Run_Simulation(void) {
         i = 0;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
           }}
 
         // Back face (i = X_SIDE_LENGTH-1)
         i = X_SIDE_LENGTH-1;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
           }}
 
         // Bottom face (j = 0)
@@ -204,14 +204,14 @@ void Simulation::Run_Simulation(void) {
         k = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
           }}
 
         // Right face (k = Z_SIDE_LENGTH-1)
         k = Z_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
           }}
 
       } // if(m == 0)
