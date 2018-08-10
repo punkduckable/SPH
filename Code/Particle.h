@@ -23,9 +23,13 @@ class Particle {
     Tensor P{0,0,0,                                        // First Piola-Kirchhoff stress tensor  : Mpa Tensor
              0,0,0,
              0,0,0};
-    Tensor F{1,0,0,                                        // deformation gradient       : unitless Tensor
-             0,1,0,
-             0,0,1};
+    Tensor F[2] = {{1,0,0,                                 // deformation gradients      : unitless Tensor
+                    0,1,0,
+                    0,0,1},
+
+                   {1,0,0,
+                    0,1,0,
+                    0,0,1}};
 
     // Forces acting on the particle
     Vector Force_Int{0,0,0};                               // Internal Force vector      : N Vector
@@ -90,7 +94,7 @@ class Particle {
     const Vector & Get_x(void) const { return x; }
     const Vector & Get_V(void) const { return V; }
     const Tensor & Get_P(void) const { return P; }
-    const Tensor & Get_F(void) const { return F; }
+    const Tensor & Get_F(const unsigned int i) const { return F[i]; }
     double Get_Stretch_M(void) const { return Stretch_M; }
     double Get_Stretch_H(void) const { return Stretch_H; }
     double Get_Stretch_Critical(void) const { return Stretch_Critical; }

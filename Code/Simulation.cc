@@ -141,7 +141,10 @@ void Simulation::Run_Simulation(void) {
 
   // time step loop.
   for(l = 0; l < Num_Steps; l++) {
-    // Cycle through the particle arrays, apply BC's to 0th array.
+    ////////////////////////////////////////////////////////////////////////////
+    // Apply Boundary conditions
+    // Note: we only apply BC's to 0th array.
+
     timer2 = clock();
     for(m = 0; m < Num_Arrays; m++) {
       if(m == 0) {
@@ -189,7 +192,7 @@ void Simulation::Run_Simulation(void) {
         j = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
             //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
           }}
 
@@ -217,13 +220,15 @@ void Simulation::Run_Simulation(void) {
       } // if(m == 0)
 
       // Needle BC's
-      else if(m == 1)
+      /*else if(m == 1)
         for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
           if((Arrays[m])[i].Get_X()[1] > 32.)
-            (Arrays[m])[i].V = {0, -50, 0};
+            (Arrays[m])[i].V = {0, -50, 0}; */
 
     } // for(m = 0; m < Num_Arrays; m++)
     update_BC_timer += clock() - timer2;
+
+
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each Particle_Array's Stress tensors
@@ -234,10 +239,13 @@ void Simulation::Run_Simulation(void) {
       if(Arrays[m].Get_Boundary() == true)
         continue;
       else
+        // Update each particle's P tensor.
         for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
           Particle_Helpers::Update_P((Arrays[m])[i], Arrays[m], dt);
     } // for(m = 0; m < Num_Arrays; m++) {
     update_P_timer += clock() - timer2;
+
+
 
     ////////////////////////////////////////////////////////////////////////////
     // Contact
@@ -253,21 +261,32 @@ void Simulation::Run_Simulation(void) {
         Particle_Helpers::Contact(Arrays[m], Arrays[i]);
     contact_timer += clock() - timer2;
 
+
+
     ////////////////////////////////////////////////////////////////////////////
-    // Update each Particle_Array's positions
+    // Update Position (x)
 
     timer2 = clock();
     for(m = 0; m < Num_Arrays; m++) {
       // Note: we don't update P for Particle_Arrays that are boundaries
       if(Arrays[m].Get_Boundary() == true)
         continue;
-      else
+      else {
+        /* First, update the 'F_Counter' for the current Particle_Array. This
+        controls which member of each particle's 'F' array is the 'newest'. */
+        Arrays[m].Increment_F_Counter();
+
+        // Now update each particle's position
         for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
           Particle_Helpers::Update_x((Arrays[m])[i], Arrays[m], dt);
+      } // else {
     } // for(m = 0; m < Num_Arrays; m++) {
     update_x_timer += clock() - timer2;
 
+
+    ////////////////////////////////////////////////////////////////////////////
     // Print to file
+
     timer2 = clock();
     if((l+1)%TimeSteps_Between_Prints == 0) {
       printf(     "%d time steps complete\n",l+1);

@@ -10,7 +10,7 @@ namespace Simulation {
   void Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m);
 
   // Simulation flags/properties
-  const unsigned char Load_Data_From_File        = 0;
+  const unsigned char Load_Data_From_File        = 1;
   const unsigned char Save_Data_To_File          = 1;
   const unsigned char Print_Forces               = 1;
   const unsigned char TimeSteps_Between_Prints   = 100;
@@ -33,7 +33,7 @@ namespace Simulation {
   Materials::Material * Materials;               // Each bodies material
 
   void Use_Arrays_From_Code(void) {
-    Num_Arrays                                   = 1;
+    Num_Arrays                                   = 2;
 
     Names = new std::string[Num_Arrays];
     Is_Cuboid = new bool[Num_Arrays];
@@ -49,20 +49,20 @@ namespace Simulation {
     Names[0]                                     = "Body";
     Is_Cuboid[0]                                 = true;
     Is_Boundary[0]                               = false;
-    Is_Damagable[0]                              = true;
+    Is_Damagable[0]                              = false;
     From_FEB_File[0]                             = false;
     Dimensions[0]                                = {10, 10, 10};
-    Offset[0]                                    = {0, 0, 0};
+    Offset[0]                                    = {0, 10, 0};
     Initial_Velocity[0]                          = {0, 0, 0};
     Materials[0]                                 = Materials::Default;
 
     Names[1]                                     = "Boundary";
-    Is_Cuboid[1]                                 = false;
+    Is_Cuboid[1]                                 = true;
     Is_Boundary[1]                               = true;
     Is_Damagable[1]                              = false;
     From_FEB_File[1]                             = false;
-    Dimensions[1]                                = {15, 1, 15};
-    Offset[1]                                    = {5, 0, 0};
+    Dimensions[1]                                = {15, 1, 20};
+    Offset[1]                                    = {0, 0, -5};
     Initial_Velocity[1]                          = {0, 0, 0};
     Materials[1]                                 = Materials::Default;
   } // void Use_Arrays_From_Code(void) {
@@ -76,9 +76,9 @@ namespace Simulation {
     Particles.Set_Inter_Particle_Spacing(IPS);                                 //        : mm
     Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
 
-    Particles.Set_mu(5e-4);                                // Viscosity                  : Mpa*s
+    Particles.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
 
-    Particles.Set_alpha(.75);                              // Hg control parameter       : Unitless
+    Particles.Set_alpha(.75);                               // Hg control parameter       : Unitless
 
     Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
   } // void Set_Particle_Array_Members(Particle_Array & Particles) {

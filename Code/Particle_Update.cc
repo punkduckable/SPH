@@ -127,20 +127,44 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
   S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                   //        : Mpa Tensor
 
   /* Calculate viscosity tensor:
-  To do this, we need to calculate the deformation gradient. Luckily, at this
-  point, the F member of P_In (the deformation gradient that P_In contains) has
-  not been updated. Thus, P_In's F member is the old strain tensor. Therefore,
-  we can use the F that we calculated above as the 'new' deformation tensor,
-  F(t), and P_In.F as the 'old' deformation tensor, F(t-dt). We can then use
-  the forward difference approximation of the derivative to get an approximation
-  for F_Prine. */
-  F_Prime = (1./dt)*(F - P_In.F);                                              //        : 1/s Tensor
+  To do this, we need to calculate the time derivative of the deformation
+  gradient. To get O(h^2) accuracy, we use a three point approximation for
+  calculating this derivative. To use this three point derivative, we need
+  to know the last two deformation gradients. These are stored in each particle
+  in the 'F' array. The 'F_Counter' in the current particle array keeps track
+  of which member of this array was last updated (therefore telling us which
+  element of the array is F from the last time step, F(t-dt), and which is from two
+  time steps ago, F(t-2*dt)). The current deformation gradient, F(t), is stored
+  in the local F variable (We just calculated it). We then use the following
+  three point apporixmation to calculate (dF/dt),
+        dF/dt  = (1/(2*dt))*(3*F(t) - 4*F(t-dt) + F(t - 2dt)) + O(h^2)
+  Using this, we can then calculate the spatial velocity gradient l with
+        l = F'*F^-1.
+  Which can then be used to calculate d (the rate of strain tensor),
+        d = (1/2)*(l + L^T)
+  Which can then be used to calculate the Viscosity tensor,
+         Viscosity = 2*J*Mu*d*F^(-T)
+  */
+  unsigned char i_dt, i_2dt;
+  i_dt = Particles.Get_F_Counter();
+  if(i_dt == 0)
+    i_2dt = 1;
+  else
+    i_2dt = 0;
+
+  F_Prime = (1./(2.*dt))*(3*F - 4*P_In.F[i_dt] + P_In.F[i_2dt]);               //        : 1/s Tensor
   L = F_Prime*(F^(-1));                                                        //        : 1/s Tensor
   Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                        //        : Mpa Tensor
 
-  /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In */
+  /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In.
+  Note, however, that we need to be careful about which F we update (since P_In
+  has a two element array that stores the last two F's). We know that the most
+  recent F is stored in P_In.F[i_dt]. We really want to overwrite the 'old'
+  element of P_In's F array. therefore, we make P_In.F[i_2dt] equal to F (the
+  local F that we just calculated). This way, P_In stores F(t) (in P_In.F[i_2dt])
+  and F(t-dt) (in P_In.F[i_dt]).*/
   P_In.P = (F*S + Visc)*P_In.A_Inv;                                            //         : Mpa Tensor
-  P_In.F = F;                                                                  //         : unitless Tensor
+  P_In.F[i_2dt] = F;                                                           //         : unitless Tensor
   P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
 
 } // void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, const double dt) {
@@ -181,7 +205,8 @@ void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, con
   const double V_i = P_In.Vol;                   // Volume of P_In                       : mm^3
 
   const Tensor P_i = P_In.P;                     // First Piola-Kirchhoff stress tensor  : Mpa Tensor
-  const Tensor F_i = P_In.F;                     // Deformation gradient                 : unitless Tensor
+  const unsigned char Current_F = Particles.Get_F_Counter();         // Keeps track of which F was most recently updated
+  const Tensor F_i = P_In.F[Current_F];          // Deformation gradient                 : unitless Tensor
 
   const Vector * R = P_In.R;                     // Reference displacement array         : mm Vector
   const Vector * Grad_W = P_In.Grad_W;           // Grad_W array                         : 1/mm Vector
@@ -262,7 +287,7 @@ void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, con
     therefore improve performnace.
     */
 
-    F_j = Particles[Neighbor_ID].F;                                            //        : unitless Tensor
+    F_j = Particles[Neighbor_ID].F[Current_F];                                            //        : unitless Tensor
     delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;//: mm
 
     /* Finally, we calculate the hour glass force. However, it should be
@@ -285,7 +310,7 @@ void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, con
   then we get acceleration in mm/s^2. */
   acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int                       //        : mm/s^2 Vector
                                         + P_In.Force_Contact
-                                        + P_In.Force_HG);
+                                        + P_In.Force_HG)
                                         + g;                         // gravity
 
   /* Now update the velocity, position vectors. This is done using the

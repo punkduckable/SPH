@@ -128,13 +128,14 @@ void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
   fprintf(File,   "Lame parameter:               %5lf\n",  Particles.Get_Lame());
   fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Particles.Get_mu0());
   fprintf(File,   "Viscosity (mu):               %5lf\n",  Particles.Get_mu());
+  fprintf(File,   "F_Counter:                    %u\n",    Particles.Get_F_Counter());
   fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Particles.Get_E());
   fprintf(File,   "Material density:             %5lf\n",  Particles.Get_density());
   fprintf(File,   "alpha (HG parameter):         %5lf\n",  Particles.Get_alpha());
   fprintf(File,   "Tau (damage parameter):       %5lf\n\n",Particles.Get_Tau());
 
   // Now let's print the number of particles
-    fprintf(File,   "       -- Particles --\n");
+  fprintf(File,   "       -- Particles --\n");
   fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
 
   // Finally, let's print the cuboid paramaters (should be removed if not using
@@ -171,7 +172,8 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
   const Vector X = P_In.Get_X();
   const Vector x = P_In.Get_x();
   const Vector V = P_In.Get_V();
-  const Tensor F = P_In.Get_F();
+  const Tensor F_0 = P_In.Get_F(0);
+  const Tensor F_1 = P_In.Get_F(1);
 
   // Print particle ID, dimensions
   fprintf(File,   "ID:                           %u\n",    P_In.Get_ID());
@@ -185,9 +187,13 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
   fprintf(File,   "X:                            <%6.3lf %6.3lf %6.3lf>\n", X(0), X(1), X(2));
   fprintf(File,   "x:                            <%6.3lf %6.3lf %6.3lf>\n", x(0), x(1), x(2));
   fprintf(File,   "V:                            <%6.3lf %6.3lf %6.3lf>\n", V(0), V(1), V(2));
-  fprintf(File,   "F:                            |%6.3lf %6.3lf %6.3lf|\n", F(0,0), F(0,1), F(0,2));
-  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F(1,0), F(1,1), F(1,2));
-  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F(2,0), F(2,1), F(2,2));
+  fprintf(File,   "F[0]:                         |%6.3lf %6.3lf %6.3lf|\n", F_0(0,0), F_0(0,1), F_0(0,2));
+  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_0(1,0), F_0(1,1), F_0(1,2));
+  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_0(2,0), F_0(2,1), F_0(2,2));
+  fprintf(File,   "F[1]:                         |%6.3lf %6.3lf %6.3lf|\n", F_1(0,0), F_1(0,1), F_1(0,2));
+  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_1(1,0), F_1(1,1), F_1(1,2));
+  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_1(2,0), F_1(2,1), F_1(2,2));
+
 
   // Damage paramaters
   fprintf(File,   "Stretch_H:                    %5lf\n",  P_In.Get_Stretch_H());
@@ -367,6 +373,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.Lame = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.mu0 = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu(lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_F_Counter(uBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.E = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.density = lfBuf;
 
@@ -465,9 +472,12 @@ void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid
   fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.X(0), &P_In.X(1), &P_In.X(2));
   fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.x(0), &P_In.x(1), &P_In.x(2));
   fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.V(0), &P_In.V(1), &P_In.V(2));
-  fread(Buf, 1, 30, File); fscanf(File, " |%lf %lf %lf|\n", &P_In.F(0,0), &P_In.F(0,1), &P_In.F(0,2));
-                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F(1,0), &P_In.F(1,1), &P_In.F(1,2));
-                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F(2,0), &P_In.F(2,1), &P_In.F(2,2));
+  fread(Buf, 1, 30, File); fscanf(File, " |%lf %lf %lf|\n", &P_In.F[0](0,0), &P_In.F[0](0,1), &P_In.F[0](0,2));
+                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[0](1,0), &P_In.F[0](1,1), &P_In.F[0](1,2));
+                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[0](2,0), &P_In.F[0](2,1), &P_In.F[0](2,2));
+  fread(Buf, 1, 30, File); fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](0,0), &P_In.F[1](0,1), &P_In.F[1](0,2));
+                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](1,0), &P_In.F[1](1,1), &P_In.F[1](1,2));
+                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](2,0), &P_In.F[1](2,1), &P_In.F[1](2,2));
 
 
   P_In.First_Time_Step = false;
