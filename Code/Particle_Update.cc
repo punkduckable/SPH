@@ -186,7 +186,6 @@ void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, con
   P_In.Force_Visc = {0,0,0};                     // For debugging
 
   const Vector g = {0,-9810,0};                  // Gravity                              : mm/s^2 Vector
-  Vector acceleration;                           // acceleration vector                  : mm/s^2 Vector
 
   unsigned int Neighbor_ID;                      // ID of current neighbor particle (in paritlce's array)
 
@@ -287,7 +286,7 @@ void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, con
     therefore improve performnace.
     */
 
-    F_j = Particles[Neighbor_ID].F[Current_F];                                            //        : unitless Tensor
+    F_j = Particles[Neighbor_ID].F[Current_F];                                 //        : unitless Tensor
     delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;//: mm
 
     /* Finally, we calculate the hour glass force. However, it should be
@@ -308,24 +307,24 @@ void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, con
   mm/s^2. To get that, we note that 1N = 10^6(g*mm/s^2). Therefore, if we
   multiply our force, in Newtons, by 10^6 and then divide by the mass, in grams,
   then we get acceleration in mm/s^2. */
-  acceleration = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int                       //        : mm/s^2 Vector
-                                        + P_In.Force_Contact
-                                        + P_In.Force_HG)
-                                        + g;                         // gravity
+  P_In.a = ((1e+6)*(1./P_In.Mass))*(P_In.Force_Int                             //        : mm/s^2 Vector
+                                  + P_In.Force_Contact
+                                  + P_In.Force_HG)
+                                  + g;                               // gravity
 
   /* Now update the velocity, position vectors. This is done using the
   'leap-frog' integration scheme. However, during the first step of this
   scheme, we need to use forward euler to get the initial velocity.*/
   if(P_In.First_Time_Step == true) {
     P_In.First_Time_Step = false;
-    P_In.V += (dt/2.)*acceleration;              // velocity starts at t_i+1/2           : mm/s Vector
+    P_In.V += (dt/2.)*P_In.a;              // velocity starts at t_i+1/2           : mm/s Vector
   } //   if(P_In.First_Time_Step == true) {
 
   /* Before updating the velocity/position, let's check if the particle has
   diverged. This happens whenever any of the components of the acceleration
   vector are 'nan'. If they are, then we damage and remove this Particle.
   It should be noted that this is sort of a last resort mechanism. */
-  if(std::isnan(acceleration[0]) || std::isnan(acceleration[1]) || std::isnan(acceleration[2])) {
+  if(std::isnan(P_In.a[0]) || std::isnan(P_In.a[1]) || std::isnan(P_In.a[2])) {
     printf("Particle %d's acceleration is nan :(\n",P_In.ID);
     P_In.D = 1;
     Remove_Damaged_Particle(P_In, Particles);
@@ -333,7 +332,7 @@ void Particle_Helpers::Update_x(Particle & P_In, Particle_Array & Particles, con
   } //  if(std::isnan(acceleration[0]) || std::isnan(acceleration[1]) || std::isnan(acceleration[2])) {
 
   P_In.x += dt*P_In.V;                           // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
-  P_In.V += dt*acceleration;                     // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
+  P_In.V += dt*P_In.a;                           // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
 } // void Particle_Helpers::Update_x(Particle & P_In, const Particle_Array & Particles, const double dt) {
 
 #endif

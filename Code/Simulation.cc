@@ -26,7 +26,8 @@ void Simulation::Run_Simulation(void) {
                 MS_Print;                                            // Timers (store number of MS for each operation)
 
   // Set up Particle_Arrays.
-  Particle_Array * Arrays;
+  Particle_Array * Arrays;                                           // Will point to the Particle Array's for this simulation
+  unsigned int * Time_Step_Counter;                                  // Time step counters for each particle array
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
@@ -47,6 +48,11 @@ void Simulation::Run_Simulation(void) {
     printf(       "\nLoading from file....");
     Data_Dump::Load_Simulation(&Arrays, Num_Arrays);
 
+    // Now set up the time step counters
+    Time_Step_Counter = new unsigned int[Num_Arrays];
+    for(i = 0; i < Num_Arrays; i++)
+      Time_Step_Counter[i] = 0;
+
     timer1 = clock() - timer1;
     MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
     printf(       "Done!\ntook %lu ms\n", MS_Load);
@@ -56,8 +62,11 @@ void Simulation::Run_Simulation(void) {
     // Use arrays defined in Simulation.h
     Use_Arrays_From_Code();
 
-    // First, allocate the array of Particle_Arrays
+    // First, allocate the array of Particle_Arrays, time step counters
     Arrays = new Particle_Array[Num_Arrays];
+    Time_Step_Counter = new unsigned int[Num_Arrays];
+    for(i = 0; i < Num_Arrays; i++)
+      Time_Step_Counter[i] = 0;
 
     // Now set up each array using the paramaters in Simulation.h
     for(m = 0; m < Num_Arrays; m++) {
@@ -147,8 +156,8 @@ void Simulation::Run_Simulation(void) {
 
     timer2 = clock();
     for(m = 0; m < Num_Arrays; m++) {
-      if(m == 0) {
-        ////////////////////////////////////////////////////////////////////////////
+      if(m == 0 && Time_Step_Counter[0] == 0) {
+        ////////////////////////////////////////////////////////////////////////
         /* Boundary conditions
         Here we set the Bc's for the six sides of the cube. The faces are named
         'Front', 'Back', 'Top', 'Bottom', 'Left' and 'Right'. We give the faces
@@ -240,8 +249,10 @@ void Simulation::Run_Simulation(void) {
         continue;
       else
         // Update each particle's P tensor.
-        for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-          Particle_Helpers::Update_P((Arrays[m])[i], Arrays[m], dt);
+        // We only update P when the mth Particle_Array's counter is zero.
+        if(Time_Step_Counter[m] == 0)
+          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
+            Particle_Helpers::Update_P((Arrays[m])[i], Arrays[m], Steps_Between_Update[m]*dt);
     } // for(m = 0; m < Num_Arrays; m++) {
     update_P_timer += clock() - timer2;
 
@@ -253,12 +264,14 @@ void Simulation::Run_Simulation(void) {
     each Particle_Array. For the mth array, we check if any of its particles are
     in contact with any of the partilces in the ith array for i > m. We only
     use i > m so that we only run the contact algorythm on each part of
-    Particle_Arrays once. */
+    Particle_Arrays once. Further, we only calculate the contact forces for the
+    mth particle_Array if that partilce_array is being updated this time step. */
 
     timer2 = clock();
     for(m = 0; m < Num_Arrays; m++)
-      for(i = m + 1; i < Num_Arrays; i++)
-        Particle_Helpers::Contact(Arrays[m], Arrays[i]);
+      if(Time_Step_Counter[m] == 0)
+        for(i = m + 1; i < Num_Arrays; i++)
+          Particle_Helpers::Contact(Arrays[m], Arrays[i]);
     contact_timer += clock() - timer2;
 
 
@@ -272,13 +285,32 @@ void Simulation::Run_Simulation(void) {
       if(Arrays[m].Get_Boundary() == true)
         continue;
       else {
-        /* First, update the 'F_Counter' for the current Particle_Array. This
-        controls which member of each particle's 'F' array is the 'newest'. */
-        Arrays[m].Increment_F_Counter();
+        /* We only want to update x (the traditional way) if we're on a timestep
+        where the mth Particle_Array gets updated. Suppose that the mth particle
+        array only updates once every k steps (meaning that Stpes_Between_Update[m] = k)
+        on the 0th step, the mth particle arrays's counter is zero. After
+        each step it increments. On the kth step, its counter reaches k and the
+        counter gets truncaed back to zero. Therefore, every k steps the mth
+        particle_array's counter will be zero. Thus, we use a 0 counter
+        as an indicator that we should update this particle_array. */
+        if(Time_Step_Counter[m] == 0) {
+          /* First, update the 'F_Counter' for the current Particle_Array. This
+          controls which member of each particle's 'F' array is the 'newest'. */
+          Arrays[m].Increment_F_Counter();
 
-        // Now update each particle's position
-        for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-          Particle_Helpers::Update_x((Arrays[m])[i], Arrays[m], dt);
+          // Now update each particle's position
+          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
+            Particle_Helpers::Update_x((Arrays[m])[i], Arrays[m], dt);
+        } //         if(Time_Step_Counter[m] == 0) {
+        else {
+          /* If we're not on an update step, then we'll let this body continue
+          accelerating at whatever acceleration it attained after the last
+          time step. */
+          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
+            (Arrays[m])[i].x += dt*(Arrays[m])[i].V;       // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
+            (Arrays[m])[i].V += dt*(Arrays[m])[i].a;      // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
+          } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
+        }
       } // else {
     } // for(m = 0; m < Num_Arrays; m++) {
     update_x_timer += clock() - timer2;
@@ -298,6 +330,22 @@ void Simulation::Run_Simulation(void) {
           Particle_Debugger::Export_Particle_Forces(Arrays[m]);
     } // if((k+1)%100 == 0) {
     Print_timer += clock()-timer2;
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Update each time step counter
+    /* Here we increment each Particle_Array's counter. If a particular counter
+    reaches its limit (the value of Steps_Between_Update[m]) then we set that
+    counter to zero (reset the counter). */
+
+    for(m = 0; m < Num_Arrays; m++) {
+      Time_Step_Counter[m]++;
+
+      if(Time_Step_Counter[m] == Steps_Between_Update[m])
+        Time_Step_Counter[m] = 0;
+    } // for(m = 0; m < Num_Arrays; m++) {
+
   } // for(l = 0; l < Num_Steps; l++) {
   printf(         "Done!\n");
   timer1 = clock()-timer1;

@@ -16,8 +16,9 @@ class Particle {
 
     // Particle dynamics variables
     Vector X{0,0,0};                                       // reference position         : mm Vector
-    Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        :  mm Vector
-    Vector V{0,0,0};                                       // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog):  mm/s Vector
+    Vector x{0,0,0};                                       // Particle's current position. x_i at start of iteration (x_i+1 at end)        : mm Vector
+    Vector V{0,0,0};                                       // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog): mm/s Vector
+    Vector a{0,0,0};                                       // Particle's acceleration. a_i at start of iteration (a_i+1 at end)            : mm/s^2 Vector
 
     unsigned int First_Time_Step = true;                   // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
     Tensor P{0,0,0,                                        // First Piola-Kirchhoff stress tensor  : Mpa Tensor
@@ -79,6 +80,7 @@ class Particle {
     void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm Vector
     void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm Vector
     void Set_V(const Vector & V_In) { V = V_In; }          // Set particle's velocity    : mm/s Vector
+    void Set_a(const Vector & a_In) { a = a_In; }
     void Set_D(const double D_In) { D = D_In; }
 
 
@@ -93,6 +95,7 @@ class Particle {
     const Vector & Get_X(void) const { return X; }
     const Vector & Get_x(void) const { return x; }
     const Vector & Get_V(void) const { return V; }
+    const Vector & Get_a(void) const { return a; }
     const Tensor & Get_P(void) const { return P; }
     const Tensor & Get_F(const unsigned int i) const { return F[i]; }
     double Get_Stretch_M(void) const { return Stretch_M; }
