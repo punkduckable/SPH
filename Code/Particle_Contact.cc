@@ -25,16 +25,18 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
 
   // First, set every particle's Contact force to zero. Also, store all of
   // Body B's position vectors in an array (reduces the number of cache misses)
+  #pragma omp for
   for(i = 0; i < Num_Particles_A; i++)
     Body_A[i].Force_Contact = {0,0,0};                                         //        : N Vector
 
   for(i = 0; i < Num_Particles_B; i++) {
-    Body_B[i].Force_Contact = {0,0,0};                                         //        : N Vector
     Body_B_x[i] = Body_B[i].Get_x();                                           //        : mm Vector
+    Body_B[i].Force_Contact = {0,0,0};
   }
 
   // For each particle in A, check if there is a particle in B that is within
   // the combined support radius
+  #pragma omp for
   for(i = 0; i < Num_Particles_A; i++) {
     // Skip broken particles
     if(Body_A[i].Get_D() >= 1)
@@ -58,7 +60,9 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
         // Now apply the force to the two interacting bodies (Note the forces
         // are equal and opposite)
         Body_A[i].Force_Contact -= F_Contact;                                  //        : N Vector
-        Body_B[j].Force_Contact += F_Contact;                                  //        : N Vector
+
+        #pragma omp critical
+          Body_B[j].Force_Contact += F_Contact;                                //        : N Vector
       } // if(Magnitude(r_ij) < h) {
     } // for(j = 0; j < Num_Particle_B, j++) {
   } // for(i = 0; i < Num_Particles_A; i++) {

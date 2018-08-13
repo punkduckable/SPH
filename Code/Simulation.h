@@ -1,8 +1,6 @@
 #if !defined(SUMULATION_HEADER)
 #define SUMULATION_HEADER
 
-#define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)               // Conversion from cpu cycles to msec
-
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
 namespace Simulation {
@@ -13,11 +11,11 @@ namespace Simulation {
   const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 1;
   const unsigned char Print_Forces               = 0;
-  const unsigned int TimeSteps_Between_Prints    = 1000;
+  const unsigned int TimeSteps_Between_Prints    = 100;
 
   // TimeStep paramters
-  const double dt                                = .000001;// Time step                  : s
-  const unsigned int Num_Steps                   = 100000; // Number of time steps
+  const double dt                                = .00001;// Time step                  : s
+  const unsigned int Num_Steps                   = 10000; // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -53,7 +51,7 @@ namespace Simulation {
     Is_Boundary[0]                               = false;
     Is_Damagable[0]                              = false;
     From_FEB_File[0]                             = false;
-    Steps_Between_Update[0]                      = 10;
+    Steps_Between_Update[0]                      = 1;
     Dimensions[0]                                = {10, 10, 10};
     Offset[0]                                    = {0, 10, 0};
     Initial_Velocity[0]                          = {0, 0, 0};
