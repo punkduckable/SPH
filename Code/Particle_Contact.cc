@@ -23,20 +23,18 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   Vector * Body_B_x = new Vector[Num_Particles_B];                             //        : mm Vector
   Vector F_Contact;                                                            //        : N Vector
 
-  // First, set every particle's Contact force to zero. Also, store all of
-  // Body B's position vectors in an array (reduces the number of cache misses)
-  #pragma omp for
-  for(i = 0; i < Num_Particles_A; i++)
-    Body_A[i].Force_Contact = {0,0,0};                                         //        : N Vector
+  // Thread-local (private) force contributions to Body_B (see description below)
+  Vector * Body_B_F_Contact_Local = new Vector[Num_Particles_B];               //        : N Vector
 
+  // First, store all of Body B's position vectors in an array (this improves performance... I think?)
   for(i = 0; i < Num_Particles_B; i++) {
     Body_B_x[i] = Body_B[i].Get_x();                                           //        : mm Vector
-    Body_B[i].Force_Contact = {0,0,0};
+    Body_B_F_Contact_Local[i] = {0,0,0};
   }
 
   // For each particle in A, check if there is a particle in B that is within
   // the combined support radius
-  #pragma omp for
+  #pragma omp for schedule(dynamic)
   for(i = 0; i < Num_Particles_A; i++) {
     // Skip broken particles
     if(Body_A[i].Get_D() >= 1)
@@ -57,15 +55,32 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
         Grad_W = (-3*(Shape_Function_Amp)*((h - Mag_r_ij)*(h - Mag_r_ij))/Mag_r_ij)*(r_ij);    // 1/(mm^4) Vector
         F_Contact = (K_V_i*V_j)*Grad_W;                                        //        : N Vector
 
-        // Now apply the force to the two interacting bodies (Note the forces
-        // are equal and opposite)
+        /* Now apply the force to the two interacting bodies (Note the forces
+        are equal and opposite). It should be noted that we don't actually
+        apply the force to body B's jth particle. The reason for this is
+        race conditions. It is possible for two threads to attempt to write
+        the contact force to the same particle in body B at the same time.
+        This causes a race condition (when run in parallel). This can be
+        fixed using a critical region, but that's slow. To fix this, each
+        thread gets its own 'Local contact force array'. each thread stores
+        the force that it would apply to the particles in body B in this array.
+        Once we have cycled through all of body A's particles, we then 'reduce'
+        these force arrays. One by one, the threads add their contribuitions to
+        body_b's contact forces. This runs about 2x as quick as if we had
+        inserted the critical region into this loop. */
         Body_A[i].Force_Contact -= F_Contact;                                  //        : N Vector
-
-        #pragma omp critical
-          Body_B[j].Force_Contact += F_Contact;                                //        : N Vector
+        Body_B_F_Contact_Local[j] += F_Contact;                                //        : N Vector
       } // if(Magnitude(r_ij) < h) {
     } // for(j = 0; j < Num_Particle_B, j++) {
   } // for(i = 0; i < Num_Particles_A; i++) {
+
+  /* Now that we have finished the loop above, each thread has its
+  contribution to the contact force for each of Body_B's particles. We therefore
+  add these contributions to Body_B's particles one by one (using a critical
+  region) */
+  #pragma omp critical
+  for(j = 0; j < Num_Particles_B; j++)
+    Body_B[j].Force_Contact += Body_B_F_Contact_Local[j];                      //        : N Vector
 
   delete [] Body_B_x;                                                          //        : mm Vector
 } // void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B) {

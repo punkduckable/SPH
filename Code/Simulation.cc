@@ -281,6 +281,13 @@ void Simulation::Run_Simulation(void) {
     #pragma omp single nowait
       timer2 = clock();
 
+    // First, we need to set each particle's contact force to zero
+    for(m = 0; m < Num_Arrays; m++)
+      #pragma omp for
+      for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
+        (Arrays[m])[i].Force_Contact = {0,0,0};
+
+    // Now we can apply the contact algorythm.
     for(m = 0; m < Num_Arrays; m++)
       if(Time_Step_Counter[m] == 0)
         for(i = m + 1; i < Num_Arrays; i++)
