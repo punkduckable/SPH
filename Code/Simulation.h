@@ -11,11 +11,11 @@ namespace Simulation {
   const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 1;
   const unsigned char Print_Forces               = 0;
-  const unsigned int TimeSteps_Between_Prints    = 100;
+  const unsigned int TimeSteps_Between_Prints    = 1000;
 
   // TimeStep paramters
-  const double dt                                = .00001;// Time step                  : s
-  const unsigned int Num_Steps                   = 10000; // Number of time steps
+  const double dt                                = .000001;// Time step                  : s
+  const unsigned int Num_Steps                   = 100000; // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -55,7 +55,7 @@ namespace Simulation {
     Dimensions[0]                                = {10, 10, 10};
     Offset[0]                                    = {0, 10, 0};
     Initial_Velocity[0]                          = {0, 0, 0};
-    Materials[0]                                 = Materials::Default;
+    Materials[0]                                 = Materials::Stainless_Steel;
 
     Names[1]                                     = "Boundary";
     Is_Cuboid[1]                                 = true;
@@ -64,7 +64,7 @@ namespace Simulation {
     From_FEB_File[1]                             = false;
     Steps_Between_Update[1]                      = 1;
     Dimensions[1]                                = {15, 1, 20};
-    Offset[1]                                    = {0, 0, -5};
+    Offset[1]                                    = {7, 0, -5};
     Initial_Velocity[1]                          = {0, 0, 0};
     Materials[1]                                 = Materials::Default;
   } // void Use_Arrays_From_Code(void) {

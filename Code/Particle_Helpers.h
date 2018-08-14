@@ -18,9 +18,8 @@ namespace Particle_Helpers {
                       const Particle_Array & Particles);
   //////////////////////////////////////////////////////////////////////////////
   // Update methods. Function definitions are in Particle_Update.c
-  void Update_P(Particle & P_In,                           // Updates P_In's Second Piola-Kirchhoff stress tensor
-                Particle_Array & Particles,
-                const double dt);
+  void Update_P(Particle_Array & Particles,               // Updates P_In's Second Piola-Kirchhoff stress tensor
+               const double dt);
 
   void Update_x(Particle & P_In,                           // Updates P_In's spacial position
                 Particle_Array & Particles,
@@ -34,7 +33,7 @@ namespace Particle_Helpers {
   //////////////////////////////////////////////////////////////////////////////
   // Contact methods. Function definitions are in Particle_Contact.c
 
-  const double K = 50;                                                               //        : N/(mm^2)
+  const double K = 400;                                                               //        : N/(mm^2)
 
   void Contact(Particle_Array & Body_A,
                Particle_Array & Body_B);

@@ -74,7 +74,7 @@ class Vector {
     friend void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles);
     friend void VTK_File::Export_Particle_Positions(const Particle_Array & Particles);
     friend void Particle_Helpers::Update_x(Particle & P_In,
-                                          Particle_Array & Particles,
+                                           Particle_Array & Particles,
                                            const double dt);
 
     // Printing functions

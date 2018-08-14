@@ -32,6 +32,13 @@ void Simulation::Run_Simulation(void) {
   printf(         "Save_Data_To_File =           %u\n",    Save_Data_To_File);
   printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
   printf(         "Print_Forces =                %u\n",    Print_Forces);
+  printf(         "Parallel execution =          ");
+  #if defined(_OPENMP)
+    printf(       "1\n");
+    printf(       "Number of procs =             %u\n",omp_get_num_procs());
+  #else
+    printf(       "0\n");
+  #endif
 
   // Are we running a new simulation or loading an existing one?
   if(Load_Data_From_File == 1) {
@@ -246,7 +253,7 @@ void Simulation::Run_Simulation(void) {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // Update p: Update each Particle's Stress tensors
+    // Update Stress tensor (P)
 
     #pragma omp single nowait
       timer2 = clock();
@@ -256,12 +263,14 @@ void Simulation::Run_Simulation(void) {
       if(Arrays[m].Get_Boundary() == true)
         continue;
       else
-        // Update each particle's P tensor.
-        // We only update P when the mth Particle_Array's counter is zero.
+        /* Update each Particles's P tensor.
+        We only update P when the mth Particle_Array's counter is zero. Note
+        That the Update_P method has an orphaned for loop (and takes care of
+        removing damaged particles in parallel, damaged particles are not
+        removed until every particle's P tensor has been updated. This makes
+        the code parallelizable and determinstic) */
         if(Time_Step_Counter[m] == 0)
-          #pragma omp for
-          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-            Particle_Helpers::Update_P((Arrays[m])[i], Arrays[m], Steps_Between_Update[m]*dt);
+          Particle_Helpers::Update_P(Arrays[m], Steps_Between_Update[m]*dt);
     } // for(m = 0; m < Num_Arrays; m++) {
 
     #pragma omp single

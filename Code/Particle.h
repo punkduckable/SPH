@@ -112,8 +112,7 @@ class Particle {
     } // unsigned int Get_Neighbor_IDs(unsigned int i) const {
 
     // Update P
-    friend void Particle_Helpers::Update_P(Particle & P_In,                    // Updates P_In's Second Piola-Kirchhoff stress tensor
-                                           Particle_Array & Particles,
+    friend void Particle_Helpers::Update_P(Particle_Array & Particles,         // Updates P_In's Second Piola-Kirchhoff stress tensor
                                            const double dt);
 
     // Update x

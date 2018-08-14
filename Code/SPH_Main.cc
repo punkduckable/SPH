@@ -1,6 +1,5 @@
 #include <iostream>
 #include <math.h>
-#include <time.h>
 #include <string>
 #include <cstring>
 #include <random>
@@ -15,6 +14,7 @@ typedef unsigned char uByte;
   #define clock_t double
   #define clock() omp_get_wtime()
 #else
+  #include <time.h>
 
 #endif
 

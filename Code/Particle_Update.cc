@@ -7,27 +7,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Friend functions (Update P, Update particle position)
 
-void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, const double dt) {
-  // Check if particle is damaged (if so, we skip this particle)
-  if(P_In.D >= 1)
-    return;
-
+void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
   /* The purpose of this function is to calculate the First Piola-Kirchhoff
-  stress tensor for the particle P_In.
+  stress tensor for each particle in the Particles Particle_Array.
 
-  This function assumes that the position of each of P_In's neighbors has
-  been updated to the previous time step. It also assumes that each particle has
+  This function assumes that the position each partilce in Particle's has been
+  updated to the previous time step. It also assumes that each particle has
   a neighbor list, has calculate A^(-1), and has populated its dynamic array
-  members. Finally, it assumes that the static member variables k1, k2,
-  and mu0 have been set.This function should not be called until these
-  assumptions are valid.
+  members. This function should not be called until these assumptions are valid.
 
   what are the arguments? This function accepts a Particle (P_In), a list of all
   particles in the current body, and the desired time step. This function uses
-  these arguments to calculate P (the first Piola-Kirchhoff stress tensor) */
+  these arguments to calculate P (the first Piola-Kirchhoff stress tensor). dt
+  is used in calculating the viscosity. */
 
-  /* First, let's set up the local variables that will be used to update the
-  particle's position */
+  // First, let's declare some local variables.
   double V_j;                                    // Volume of jth neighbor               : mm^3
   unsigned int Neighbor_ID;                      // Index of jth neighbor.
 
@@ -38,12 +32,14 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
   Tensor C;                                      // Richt-Cauchy stress tensor           : unitless Tensor
   double J;                                      // Deformation gradient determinant     : unitless
   Tensor S;                                      // Second Poila-Kirchhoff stress tensor : Mpa Tensor
-  Tensor I = {1,0,0,
+  Tensor I = {1,0,0,                             // Identity tensor
               0,1,0,
-              0,0,1};                            // Identity tensor
+              0,0,1};
 
   double Stretch_Max_Principle;                                                //        : unitless
-  const double Tau = Particles.Get_Tau();                                       //        : unitless
+  const double Tau = Particles.Get_Tau();                                      //        : unitless
+  List<unsigned int> Damaged_Particle_List;      // Keeps track of which particles are newly damaged
+
 
   const double Lame = Particles.Get_Lame();      // Lame paramater                       : Mpa
   const double mu0 = Particles.Get_mu0();        // Shear modulus                        : Mpa
@@ -52,121 +48,147 @@ void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, con
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
   Tensor Visc;                                   // Viscosity correction term for P      : Mpa*s Tensor
-  Vector *Grad_W = P_In.Grad_W;                  // Pointer to P_In's Grad_W array.      : 1/mm Vector
   Vector rj;                                     // Displacemtn vector of jth neighbor   : mm Vector
 
-  //////////////////////////////////////////////////////////////////////////////
-  /* Now, we can calculate F by cycling through the neighbors. The contribution
-  to F by the jth neighbor is dj (Dyadic Product) V_j Grad_W(Rj, h) */
-  for(unsigned int j = 0; j < P_In.Num_Neighbors; j++) {
-    Neighbor_ID = P_In.Neighbor_IDs[j];
-    V_j = Particles[Neighbor_ID].Vol;                                          //        : mm^3
-    rj = Particles[Neighbor_ID].x - P_In.x;                                    //        : mm Vector
-    F += Dyadic_Product(rj, V_j*Grad_W[j]);                                    //        : unitless Tensor
-  } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
+  // Let's update each particle's stress tensors, keeping track of which
+  // particles are damaged (in the Damaged_Particle_List)
+  #pragma omp for
+  for(unsigned int i = 0; i < Particles.Get_Num_Particles(); i++) {
+    // First, Check if the current particle is damaged (if so, we skip this particle)
+    if(Particles[i].D >= 1)
+      continue;
 
-  // Deformation gradient with correction
-  F *= P_In.A_Inv;                                                             //        : unitless Tensor
+    ////////////////////////////////////////////////////////////////////////////
+    /* Now, we can calculate F for the current particle by cycling through
+    that particle's neighbors. First, however, we need to reset F (from the
+    previous iteration) */
+    F = {0,0,0,
+         0,0,0,
+         0,0,0};
 
-  //////////////////////////////////////////////////////////////////////////////
-  /* Calculate Damage:
+    for(unsigned int j = 0; j < Particles[i].Num_Neighbors; j++) {
+      // Get neighbor ID and volume of jth particle
+      Neighbor_ID = Particles[i].Neighbor_IDs[j];
+      V_j = Particles[Neighbor_ID].Vol;                                        //        : mm^3
 
-  To do this, we first need to find the principle stretch. To do this, we
-  need to find the square root of the biggest eigenvalue of the (right)
-  Cauchy Green strain tensor C. Note, C will be used for later calculations */
-  C = (F^(T))*F;                                 // Right Cauchy-Green strain tensor     : unitless Tensor
-  J = Determinant(F);                            // J is det of F                        : unitless Tensor
+      // Now find spatial distnace to jth particle
+      rj = Particles[Neighbor_ID].x - Particles[i].x;                          //        : mm Vector
 
-  // Calculate current principle stretch
-  double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
+      // Calculate deformation gradient from jth particle.
+      F += Dyadic_Product(rj, V_j*Particles[i].Grad_W[j]);                     //        : unitless Tensor
+    } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
 
-  Stretch_Max_Principle = sqrt(Max_EigenValue);
+    // Deformation gradient with correction
+    F *= Particles[i].A_Inv;                                                   //        : unitless Tensor
 
-  // If this stretch is greater than max stretch, update particle's Max stretch.
-  P_In.Stretch_M = Stretch_Max_Principle;
-  if(Stretch_Max_Principle > P_In.Stretch_H)
-    P_In.Stretch_H = Stretch_Max_Principle;
+    ////////////////////////////////////////////////////////////////////////////
+    /* Calculate Damage:
+    To do this, we first need to find the principle stretch. To do this, we
+    need to find the square root of the biggest eigenvalue of the (right)
+    Cauchy Green strain tensor C. Note, C will be used for later calculations */
+
+    C = (F^(T))*F;                               // Right Cauchy-Green strain tensor     : unitless Tensor
+    J = Determinant(F);                          // J is det of F                        : unitless Tensor
+
+    // Calculate current principle stretch
+    double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
+    Stretch_Max_Principle = sqrt(Max_EigenValue);
+
+    // If this stretch is greater than max stretch, update particle's Max stretch.
+    Particles[i].Stretch_M = Stretch_Max_Principle;
+    if(Stretch_Max_Principle > Particles[i].Stretch_H)
+      Particles[i].Stretch_H = Stretch_Max_Principle;
 
     // if damage is enabled and Max is greater than crticial then start adding damage
-  if(Particles.Get_Damagable() == true) {
-    if(P_In.Stretch_H > P_In.Stretch_Critical)
-      P_In.D = exp(((P_In.Stretch_H - P_In.Stretch_Critical)*(P_In.Stretch_H - P_In.Stretch_Critical))/(Tau*Tau)) - 1;
+    if(Particles.Get_Damagable() == true) {
+      if(Particles[i].Stretch_H > Particles[i].Stretch_Critical)
+        Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1;
 
-    // If particle is fully damaged, remove it from array.
-    if(P_In.D >= 1) {
-      Remove_Damaged_Particle(P_In, Particles);
-      return;
-    } // if(P_In.D >= 1) {
-  } //   if(Particles.Get_Damagable() == true) {
+      // If particle is fully damaged, add this particle to the damaged list
+      // and move on (we'll remove it later)
+      if(Particles[i].D >= 1) {
+        Damaged_Particle_List.Add_Back(Particles[i].ID);
+        continue;
+      } // if(Particles[i].D >= 1) {
+    } //   if(Particles.Get_Damagable() == true) {
 
-  //////////////////////////////////////////////////////////////////////////////
-  /* Now that we have calculated the deformation gradient, we need to calculate
-  the first Piola-Kirchhoff stess tensor. To do this, however, we need to
-  find the Second Piola-Kirchhoff stress tensor and the Viscosity term. */
+    ////////////////////////////////////////////////////////////////////////////
+    /* Now that we have calculated the deformation gradient, we need to calculate
+    the first Piola-Kirchhoff stess tensor. To do this, however, we need to
+    find the Second Piola-Kirchhoff stress tensor and the Viscosity tensor. */
 
-  /* Calculate Second Piola-Kirchoff stress tensor:
-  It should be noted that calculating this tensor requires taking the log of J.
-  In theory, J will always be positive.... However, it is theoretically possible
-  for this to not be the case. Thus, before calculating S, we check if J is
-  non-positive. If it is, then we treat this particle as damaged and remove it */
-  if(J <= 0) {
-    P_In.D = 1;
-    printf("Particle %d has a non-positive Jacobian, J =  %lf.\n",P_In.ID, J);
+    /* Calculate Second Piola-Kirchoff stress tensor:
+    It should be noted that calculating this tensor requires taking the log of J.
+    In theory, J will always be positive.... However, it is theoretically possible
+    for this to not be the case. Thus, before calculating S, we check if J is
+    non-positive. If it is, then we treat this particle as damaged. */
+    if(J <= 0) {
+      Particles[i].D = 1;
+      printf("Particle %d has a non-positive Jacobian, J =  %lf.\n",Particles[i].ID, J);
 
-    // Let's also print this Particle's neighbor ID's (this helps debug issues)
-    printf("Neighbor ID's: ");
-    for(unsigned int i = 0; i < P_In.Num_Neighbors; i++)
-      printf("%u ",P_In.Neighbor_IDs[i]);
-    printf("\n");
+      // Let's also print this Particle's neighbor ID's (this helps debug issues)
+      printf("Neighbor ID's: ");
+      for(unsigned int j = 0; j < Particles[i].Num_Neighbors; j++)
+        printf("%u ",Particles[i].Neighbor_IDs[j]);
+      printf("\n");
 
-    // Now let's remove this bad particle
-    Remove_Damaged_Particle(P_In, Particles);
-    return;
-  } //   if(J < 0) {
+      // Now we add the bad particles to the Damaged_Particle list (we'll remove
+      // it once we have cycled through all partilces)
+      Damaged_Particle_List.Add_Back(Particles[i].ID);
+      continue;
+    } //   if(J < 0) {
 
-  S = (1-P_In.D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));                   //        : Mpa Tensor
+    S = (1- Particles[i].D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));        //        : Mpa Tensor
 
-  /* Calculate viscosity tensor:
-  To do this, we need to calculate the time derivative of the deformation
-  gradient. To get O(h^2) accuracy, we use a three point approximation for
-  calculating this derivative. To use this three point derivative, we need
-  to know the last two deformation gradients. These are stored in each particle
-  in the 'F' array. The 'F_Counter' in the current particle array keeps track
-  of which member of this array was last updated (therefore telling us which
-  element of the array is F from the last time step, F(t-dt), and which is from two
-  time steps ago, F(t-2*dt)). The current deformation gradient, F(t), is stored
-  in the local F variable (We just calculated it). We then use the following
-  three point apporixmation to calculate (dF/dt),
-        dF/dt  = (1/(2*dt))*(3*F(t) - 4*F(t-dt) + F(t - 2dt)) + O(h^2)
-  Using this, we can then calculate the spatial velocity gradient l with
-        l = F'*F^-1.
-  Which can then be used to calculate d (the rate of strain tensor),
-        d = (1/2)*(l + L^T)
-  Which can then be used to calculate the Viscosity tensor,
-         Viscosity = 2*J*Mu*d*F^(-T)
-  */
-  unsigned char i_dt, i_2dt;
-  i_dt = Particles.Get_F_Counter();
-  if(i_dt == 0)
-    i_2dt = 1;
-  else
-    i_2dt = 0;
+    ////////////////////////////////////////////////////////////////////////////
+    /* Calculate viscosity tensor:
+    To do this, we need to calculate the time derivative of the deformation
+    gradient. To get O(h^2) accuracy, we use a three point approximation for
+    calculating this derivative. To use this three point derivative, we need
+    to know the last two deformation gradients. These are stored in each particle
+    in the 'F' array. The 'F_Counter' in the current particle array keeps track
+    of which member of this array was last updated (therefore telling us which
+    element of the array is F from the last time step, F(t-dt), and which is from two
+    time steps ago, F(t-2*dt)). The current deformation gradient, F(t), is stored
+    in the local F variable (We just calculated it). We then use the following
+    three point apporixmation to calculate (dF/dt),
+          dF/dt  = (1/(2*dt))*(3*F(t) - 4*F(t-dt) + F(t - 2dt)) + O(h^2)
+    Using this, we can then calculate the spatial velocity gradient l with
+          l = F'*F^-1.
+    Which can then be used to calculate d (the rate of strain tensor),
+          d = (1/2)*(l + L^T)
+    Which can then be used to calculate the Viscosity tensor,
+           Viscosity = 2*J*Mu*d*F^(-T)
+    */
+    unsigned char i_dt, i_2dt;
+    i_dt = Particles.Get_F_Counter();
+    if(i_dt == 0)
+      i_2dt = 1;
+    else
+      i_2dt = 0;
 
-  F_Prime = (1./(2.*dt))*(3*F - 4*P_In.F[i_dt] + P_In.F[i_2dt]);               //        : 1/s Tensor
-  L = F_Prime*(F^(-1));                                                        //        : 1/s Tensor
-  Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                        //        : Mpa Tensor
+    F_Prime = (1./(2.*dt))*(3*F - 4*Particles[i].F[i_dt] + Particles[i].F[i_2dt]);      // 1/s Tensor
+    L = F_Prime*(F^(-1));                                                      //        : 1/s Tensor
+    Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                      //        : Mpa Tensor
 
-  /* Calculate P (First Piola-Kirchhoff stress tensor), send it and F to P_In.
-  Note, however, that we need to be careful about which F we update (since P_In
-  has a two element array that stores the last two F's). We know that the most
-  recent F is stored in P_In.F[i_dt]. We really want to overwrite the 'old'
-  element of P_In's F array. therefore, we make P_In.F[i_2dt] equal to F (the
-  local F that we just calculated). This way, P_In stores F(t) (in P_In.F[i_2dt])
-  and F(t-dt) (in P_In.F[i_dt]).*/
-  P_In.P = (F*S + Visc)*P_In.A_Inv;                                            //         : Mpa Tensor
-  P_In.F[i_2dt] = F;                                                           //         : unitless Tensor
-  P_In.Visc = Visc*P_In.A_Inv;                                                 // For debugging
+    ////////////////////////////////////////////////////////////////////////////
+    /* Calculate P (First Piola-Kirchhoff stress tensor). Here we also update
+    the current particle's P and F members. Note, however, that we need to be
+    careful about which F we update (since each particle stores the last two
+    F's). We really want to overwrite the older of the two elements in P_In's
+    F array. Therefore, we overwrite the current particle's F tensor for two
+    time steps ago with the new F. This way, the current particle stores F(t)
+    (in Particles[i].F[i_2dt]) and F(t-dt) (in Particles[i].F[i_dt]).*/
+    Particles[i].P = (F*S + Visc)*Particles[i].A_Inv;                          //         : Mpa Tensor
+    Particles[i].F[i_2dt] = F;                                                 //         : unitless Tensor
+    Particles[i].Visc = Visc*Particles[i].A_Inv;                               // For debugging
+  } // for(unsigned int i = 0; i < Particles.Num_Particles(); i++) {
 
+  // Now we need to remove the damaged particles. To do this, we can one by one
+  // have each thread remove its damaged particles
+  #pragma omp critical
+  while(Damaged_Particle_List.Node_Count() != 0)
+    Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
 } // void Particle_Helpers::Update_P(Particle & P_In, Particle_Array & Particles, const double dt) {
 
 
