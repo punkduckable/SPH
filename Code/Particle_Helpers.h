@@ -21,8 +21,7 @@ namespace Particle_Helpers {
   void Update_P(Particle_Array & Particles,               // Updates P_In's Second Piola-Kirchhoff stress tensor
                const double dt);
 
-  void Update_x(Particle & P_In,                           // Updates P_In's spacial position
-                Particle_Array & Particles,
+  void Update_x(Particle_Array & Particles,               // Updates P_In's spacial position
                 const double dt);
 
   //////////////////////////////////////////////////////////////////////////////

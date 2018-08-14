@@ -128,7 +128,7 @@ void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
   fprintf(File,   "Lame parameter:               %5lf\n",  Particles.Get_Lame());
   fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Particles.Get_mu0());
   fprintf(File,   "Viscosity (mu):               %5lf\n",  Particles.Get_mu());
-  fprintf(File,   "F_Counter:                    %u\n",    Particles.Get_F_Counter());
+  fprintf(File,   "F_Index:                      %u\n",    Particles.Get_F_Index());
   fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Particles.Get_E());
   fprintf(File,   "Material density:             %5lf\n",  Particles.Get_density());
   fprintf(File,   "alpha (HG parameter):         %5lf\n",  Particles.Get_alpha());
@@ -373,7 +373,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.Lame = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.mu0 = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_F_Counter(uBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_F_Index(uBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.E = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.density = lfBuf;
 
@@ -386,6 +386,9 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Particle properties.
+
+  // Set first time step flag to false
+  Particles.Set_First_Time_Step(false);
 
   // Now read in number of particles
   fgets(Buf, 99, File);                          // Skip 'Particles' line.
@@ -478,9 +481,6 @@ void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid
   fread(Buf, 1, 30, File); fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](0,0), &P_In.F[1](0,1), &P_In.F[1](0,2));
                            fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](1,0), &P_In.F[1](1,1), &P_In.F[1](1,2));
                            fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](2,0), &P_In.F[1](2,1), &P_In.F[1](2,2));
-
-
-  P_In.First_Time_Step = false;
 
   // Damage parameters
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Stretch_H);

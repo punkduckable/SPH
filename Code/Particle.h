@@ -20,7 +20,6 @@ class Particle {
     Vector V{0,0,0};                                       // Particle's velocity. v_i+1/2 at start of iteration v_i+3/2 at end (Leap Frog): mm/s Vector
     Vector a{0,0,0};                                       // Particle's acceleration. a_i at start of iteration (a_i+1 at end)            : mm/s^2 Vector
 
-    unsigned int First_Time_Step = true;                   // True if we're on first time step. Tells us to use Forward Euler to get initial velocity (leap frog)
     Tensor P{0,0,0,                                        // First Piola-Kirchhoff stress tensor  : Mpa Tensor
              0,0,0,
              0,0,0};
@@ -116,8 +115,7 @@ class Particle {
                                            const double dt);
 
     // Update x
-    friend void Particle_Helpers::Update_x(Particle & P_In,                    // Updates P_In's spacial position
-                                           Particle_Array & Particles,
+    friend void Particle_Helpers::Update_x(Particle_Array & Particles,         // Updates P_In's spacial position
                                            const double dt);
 
     // Neighbor friends (other neighbor methods are in Particle_Neighbors.cc)

@@ -34,7 +34,7 @@ class Particle_Array {
 
     // Viscosity parameters
     double mu;                                             // Viscosity                  : Mpa*s
-    unsigned char F_Counter = 0;                           // Keeps track of which F (in each partilce) is the 'new' one
+    unsigned char F_Index = 0;                             // Keeps track of which F (in each partilce) is the 'new' one
 
     // Hourglass (Hg) correction parameters
     double alpha;                                          // Hg control parameter       : unitless
@@ -42,6 +42,9 @@ class Particle_Array {
     // Damage paramaters
     double Tau;                                            // Damage rate parameter (see eq 26)
     bool Damageable = 1;                                   // If true, allows this Particle_Array to take damage.
+
+    // First time step?
+    bool First_Time_Step = true;
 
     // Private methods
     void Set_h(const double h_in) {
@@ -89,19 +92,21 @@ class Particle_Array {
 
     void Set_Boundary(const bool Boundary_In) { Is_Boundary = Boundary_In; }
 
-    void Set_F_Counter(const unsigned char i) {
+    void Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
+
+    void Set_F_Index(const unsigned char i) {
       if(i > 1) {
         printf("Error! F_Counter must be 0 or 1!!! You supplied %u\n", i);
         return;
       } // if(i > 1) {
-      F_Counter = i;
+      F_Index = i;
     } // void Set_F_Counter(const unsigned char i) {
 
-    void Increment_F_Counter(void) {
-      if(F_Counter == 0)
-        F_Counter++;
+    void Increment_F_Index(void) {
+      if(F_Index == 0)
+        F_Index++;
       else
-        F_Counter = 0;
+        F_Index = 0;
     } // void Increment_F_Counter(void) {
 
     // Getters
@@ -120,7 +125,7 @@ class Particle_Array {
     double Get_E(void) const { return Array_Material.E; }
     double Get_density(void) const { return Array_Material.density; }
     double Get_alpha(void) const { return alpha; }
-    unsigned char Get_F_Counter(void) const { return F_Counter; }
+    unsigned char Get_F_Index(void) const { return F_Index; }
 
     double Get_Tau(void) const { return Tau; }
     bool Get_Damagable(void) const { return Damageable; }
@@ -131,6 +136,8 @@ class Particle_Array {
     unsigned int Get_Z_SIDE_LENGTH(void) const { return Z_SIDE_LENGTH; }
 
     bool Get_Boundary(void) const { return Is_Boundary; }
+
+    bool Get_First_Time_Step(void) const { return First_Time_Step; }
 
     // Other Methods
     void Print_Parameters(void) const;

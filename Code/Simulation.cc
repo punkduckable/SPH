@@ -21,7 +21,7 @@ void Simulation::Run_Simulation(void) {
 
   // Set up Particle_Arrays.
   Particle_Array * Arrays;                                           // Will point to the Particle Array's for this simulation
-  unsigned int * Time_Step_Counter;                                  // Time step counters for each particle array
+  unsigned int * Time_Step_Index;                                  // Time step counters for each particle array
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
@@ -49,9 +49,9 @@ void Simulation::Run_Simulation(void) {
     Data_Dump::Load_Simulation(&Arrays, Num_Arrays);
 
     // Now set up the time step counters
-    Time_Step_Counter = new unsigned int[Num_Arrays];
+    Time_Step_Index = new unsigned int[Num_Arrays];
     for(i = 0; i < Num_Arrays; i++)
-      Time_Step_Counter[i] = 0;
+      Time_Step_Index[i] = 0;
 
     timer1 = clock() - timer1;
 
@@ -70,9 +70,9 @@ void Simulation::Run_Simulation(void) {
 
     // First, allocate the array of Particle_Arrays, time step counters
     Arrays = new Particle_Array[Num_Arrays];
-    Time_Step_Counter = new unsigned int[Num_Arrays];
+    Time_Step_Index = new unsigned int[Num_Arrays];
     for(i = 0; i < Num_Arrays; i++)
-      Time_Step_Counter[i] = 0;
+      Time_Step_Index[i] = 0;
 
     // Now set up each array using the paramaters in Simulation.h
     for(m = 0; m < Num_Arrays; m++) {
@@ -167,7 +167,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single
     for(m = 0; m < Num_Arrays; m++) {
-      if(m == 0 && Time_Step_Counter[0] == 0) {
+      if(m == 0 && Time_Step_Index[0] == 0) {
         ////////////////////////////////////////////////////////////////////////
         /* Boundary conditions
         Here we set the Bc's for the six sides of the cube. The faces are named
@@ -269,7 +269,7 @@ void Simulation::Run_Simulation(void) {
         removing damaged particles in parallel, damaged particles are not
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
-        if(Time_Step_Counter[m] == 0)
+        if(Time_Step_Index[m] == 0)
           Particle_Helpers::Update_P(Arrays[m], Steps_Between_Update[m]*dt);
     } // for(m = 0; m < Num_Arrays; m++) {
 
@@ -298,7 +298,7 @@ void Simulation::Run_Simulation(void) {
 
     // Now we can apply the contact algorythm.
     for(m = 0; m < Num_Arrays; m++)
-      if(Time_Step_Counter[m] == 0)
+      if(Time_Step_Index[m] == 0)
         for(i = m + 1; i < Num_Arrays; i++)
           Particle_Helpers::Contact(Arrays[m], Arrays[i]);
 
@@ -326,17 +326,15 @@ void Simulation::Run_Simulation(void) {
         counter gets truncaed back to zero. Therefore, every k steps the mth
         particle_array's counter will be zero. Thus, we use a 0 counter
         as an indicator that we should update this particle_array. */
-        if(Time_Step_Counter[m] == 0) {
-          /* First, update the 'F_Counter' for the current Particle_Array. This
+        if(Time_Step_Index[m] == 0) {
+          /* First, update the 'F_Index' for the current Particle_Array. This
           controls which member of each particle's 'F' array is the 'newest'. */
           #pragma omp single
-            Arrays[m].Increment_F_Counter();
+            Arrays[m].Increment_F_Index();
 
-          // Now update each particle's position
-          #pragma omp for
-          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-            Particle_Helpers::Update_x((Arrays[m])[i], Arrays[m], dt);
-        } //         if(Time_Step_Counter[m] == 0) {
+          // Now update the position of each particle in this body. 
+          Particle_Helpers::Update_x(Arrays[m], dt);
+        } //         if(Time_Step_Index[m] == 0) {
         else {
           /* If we're not on an update step, then we'll let this body continue
           accelerating at whatever acceleration it attained after the last
@@ -386,10 +384,10 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single
     for(m = 0; m < Num_Arrays; m++) {
-      Time_Step_Counter[m]++;
+      Time_Step_Index[m]++;
 
-      if(Time_Step_Counter[m] == Steps_Between_Update[m])
-        Time_Step_Counter[m] = 0;
+      if(Time_Step_Index[m] == Steps_Between_Update[m])
+        Time_Step_Index[m] = 0;
     } // for(m = 0; m < Num_Arrays; m++) {
 
   } // for(l = 0; l < Num_Steps; l++) {
