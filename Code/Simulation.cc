@@ -213,14 +213,14 @@ void Simulation::Run_Simulation(void) {
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
             //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
           }}
 
         // Top face (j = y_Side_len-1)
         j = Y_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
           }}
 
         // Left face (k = 0)
@@ -332,7 +332,7 @@ void Simulation::Run_Simulation(void) {
           #pragma omp single
             Arrays[m].Increment_F_Index();
 
-          // Now update the position of each particle in this body. 
+          // Now update the position of each particle in this body.
           Particle_Helpers::Update_x(Arrays[m], dt);
         } //         if(Time_Step_Index[m] == 0) {
         else {
@@ -502,14 +502,12 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
   } //   if(Particles.Get_Boundary() == false) {
 
   // Damage the 'cut'
-  /*
   for(i = 0; i < 1; i++) {                     // Depth of cut
     for(k = 0; k < Z_SIDE_LENGTH; k++) {       // Length of cut
       Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].Set_D(1);
       Particle_Helpers::Remove_Damaged_Particle(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Particles);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
-  */
 
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));

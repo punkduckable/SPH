@@ -121,7 +121,7 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
     non-positive. If it is, then we treat this particle as damaged. */
     if(J <= 0) {
       Particles[i].D = 1;
-      printf("Particle %d has a non-positive Jacobian, J =  %lf.\n",Particles[i].ID, J);
+      printf("Particle %d in %s has a non-positive Jacobian, J =  %lf.\n",Particles[i].ID, Particles.Get_Name().c_str(), J);
 
       // Let's also print this Particle's neighbor ID's (this helps debug issues)
       printf("Neighbor ID's: ");
@@ -205,10 +205,10 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   is valid. */
 
   // First, define some local variables.
-  const Vector g = {0,-9810,0};                  // Gravity                              : mm/s^2 Vector
+  const Vector g = {0,0,0};                  // Gravity                              : mm/s^2 Vector
 
   // Current (ith) particle properties
-  double V_i;                              // Volume                               : mm^3
+  double V_i;                                    // Volume                               : mm^3
   Vector Force_Int;                              // Internal Force vector                : N Vector
   Vector Force_HG;                               // Hour-glass force                     : N Vector
   Vector Force_Visc;                             // For debugging
@@ -372,7 +372,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     vector are 'nan'. If they are, then we damage and remove this Particle.
     It should be noted that this is sort of a last resort mechanism. */
     if(std::isnan(a[0]) || std::isnan(a[1]) || std::isnan(a[2])) {
-      printf("Particle %d's acceleration is nan :(\n",Particles[i].ID);
+      printf("Particle %d in %s has a nan acceleration :(\n",Particles[i].ID, Particles.Get_Name().c_str());
       Particles[i].D = 1;
       Damaged_Particle_List.Add_Back(Particles[i].ID);
       continue;
