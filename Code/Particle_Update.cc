@@ -41,6 +41,7 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
   const double Lame = Particles.Get_Lame();      // Lame paramater                       : Mpa
   const double mu0 = Particles.Get_mu0();        // Shear modulus                        : Mpa
   const double mu = Particles.Get_mu();          // Viscosity                            : Mpa*s
+  const unsigned int Num_Particles = Particles.Get_Num_Particles();
 
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
@@ -50,7 +51,7 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
   // Let's update each particle's stress tensors, keeping track of which
   // particles are damaged (in the Damaged_Particle_List)
   #pragma omp for
-  for(unsigned int i = 0; i < Particles.Get_Num_Particles(); i++) {
+  for(unsigned int i = 0; i < Num_Particles; i++) {
     // First, Check if the current particle is damaged (if so, we skip this particle)
     if(Particles[i].D >= 1)
       continue;
@@ -63,7 +64,8 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
          0,0,0,
          0,0,0};
 
-    for(unsigned int j = 0; j < Particles[i].Num_Neighbors; j++) {
+    const unsigned int Num_Neighbors = Particles[i].Num_Neighbors;
+    for(unsigned int j = 0; j < Num_Neighbors; j++) {
       // Get neighbor ID and volume of jth particle
       Neighbor_ID = Particles[i].Neighbor_IDs[j];
       V_j = Particles[Neighbor_ID].Vol;                                        //        : mm^3
@@ -178,8 +180,8 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
     and F(t-dt) (in Particles[i].F[i_dt]).*/
     Particles[i].P = (F*S + Visc)*Particles[i].A_Inv;                          //         : Mpa Tensor
     Particles[i].F[i_2dt] = F;                                                 //         : unitless Tensor
-    Particles[i].Visc = Visc*Particles[i].A_Inv;                               // For debugging
-  } // for(unsigned int i = 0; i < Particles.Num_Particles(); i++) {
+    //Particles[i].Visc = Visc*Particles[i].A_Inv;                               // For debugging
+  } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
@@ -205,13 +207,13 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   is valid. */
 
   // First, define some local variables.
-  const Vector g = {0,0,0};                  // Gravity                              : mm/s^2 Vector
+  const Vector g = {0,-9810,0};                  // Gravity                              : mm/s^2 Vector
 
   // Current (ith) particle properties
   double V_i;                                    // Volume                               : mm^3
   Vector Force_Int;                              // Internal Force vector                : N Vector
   Vector Force_HG;                               // Hour-glass force                     : N Vector
-  Vector Force_Visc;                             // For debugging
+  //Vector Force_Visc;                             // For debugging
   Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
   Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Vector * R;                                    // Reference displacement array         : mm Vector
@@ -232,6 +234,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   const double alpha = Particles.Get_alpha();    // alpha member of the particles array  : unitless
   const double E = Particles.Get_E();            // Hourglass stiffness                  : Mpa
   const unsigned char F_Index = Particles.Get_F_Index();   // Keeps track of which F was most recently updated
+  const unsigned int Num_Particles = Particles.Get_Num_Particles();
 
   // Hour glass variables
   double Mag_rj;                                                               //        : mm
@@ -243,7 +246,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
 
   // Now loop through each partilce in the Partilces' array
   #pragma omp for
-  for(unsigned int i = 0; i < Particles.Get_Num_Particles(); i++) {
+  for(unsigned int i = 0; i < Num_Particles; i++) {
     // First, check if particle is damaged (if so, we skip this particle)
     if( Particles[i].Get_D() >= 1)
       continue;
@@ -251,7 +254,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     // Now reset the force vectors
     Force_Int = {0,0,0};
     Force_HG = {0,0,0};
-    Force_Visc = {0,0,0};
+    //Force_Visc = {0,0,0};
 
     // Set up current particle properties
     V_i = Particles[i].Get_Vol();
@@ -262,7 +265,9 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     W = Particles[i].W;
     Grad_W = Particles[i].Grad_W;
 
-    for(unsigned int j = 0; j < Particles[i].Num_Neighbors; j++) {
+    const unsigned int Num_Neighbors = Particles[i].Num_Neighbors;
+
+    for(unsigned int j = 0; j < Num_Neighbors; j++) {
       // Update Neighbor
       Neighbor_ID = Particles[i].Neighbor_IDs[j];
 
@@ -279,7 +284,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       V_j = Particles[Neighbor_ID].Vol;                                        //        : mm^3
       P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
       Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                              //        : N Vector
-      Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);// For debugging
+      //Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);// For debugging
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -346,7 +351,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Force_HG *= -.5*E*V_i*alpha;       // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
     Force_Int *= V_i;                  // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
-    Force_Visc *= V_i;                 // for debugging
+    //Force_Visc *= V_i;                 // for debugging
 
     /* Compute acceleration of particle at new position a(t_i+1).
     Note that all the forces we have calculated have been in units of Newtons.
@@ -356,6 +361,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     then we get acceleration in mm/s^2. */
     a = ((1e+6)*(1./Particles[i].Mass))*(Force_Int                             //        : mm/s^2 Vector
                                         + Particles[i].Force_Contact
+                                        + Particles[i].Force_Friction
                                         + Force_HG)
                                         + g;                                   // gravity
 
@@ -383,8 +389,8 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
     Particles[i].Force_Int = Force_Int;          // update Internal force                : N Vector
     Particles[i].Force_HG = Force_HG;            // update Hourglassing force            : N Vector
-    Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
-  } // for(int i = 0; i < Particles.Get_Num_Particles(); i++) {
+    //Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
+  } // for(int i = 0; i < Num_Particles; i++) {
 
     // Now we need to remove the damaged particles. To do this, we can one by one
     // have each thread remove its damaged particles

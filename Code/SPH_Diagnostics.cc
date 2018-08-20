@@ -55,6 +55,7 @@ void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles)
   fprintf(File,"        Internal Force        |");
   fprintf(File,"        Viscous Force         |");
   fprintf(File,"        Contact Force         |");
+  fprintf(File,"        Friction Force        |");
   fprintf(File,"        Hourglass Force       |");
   fprintf(File,"\n");
 
@@ -65,6 +66,7 @@ void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles)
     fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Int[0],    Particles[i].Force_Int[1],    Particles[i].Force_Int[2]);
     fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Visc[0],   Particles[i].Force_Visc[1],   Particles[i].Force_Visc[2]);
     fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Contact[0],Particles[i].Force_Contact[1],Particles[i].Force_Contact[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Friction[0],Particles[i].Force_Friction[1],Particles[i].Force_Friction[2]);
     fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",   Particles[i].Force_HG[0],     Particles[i].Force_HG[1],     Particles[i].Force_HG[2]);
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 

@@ -34,6 +34,7 @@ class Particle {
     // Forces acting on the particle
     Vector Force_Int{0,0,0};                               // Internal Force vector      : N Vector
     Vector Force_Contact{0,0,0};                           // Contact Force Vector       : N Vector
+    Vector Force_Friction{0,0,0};                          // Frictional force Vector (from contact)    : N Vector
     Vector Force_HG{0,0,0};                                // Hour-glass force           : N Vector
     Vector Force_Visc{0,0,0};                              // For debugging
     Tensor Visc{0,0,0,                                     // For debugging

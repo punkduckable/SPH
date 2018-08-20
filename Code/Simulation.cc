@@ -213,14 +213,14 @@ void Simulation::Run_Simulation(void) {
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
             //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
           }}
 
         // Top face (j = y_Side_len-1)
         j = Y_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
+            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
           }}
 
         // Left face (k = 0)
@@ -291,10 +291,15 @@ void Simulation::Run_Simulation(void) {
       timer2 = clock();
 
     // First, we need to set each particle's contact force to zero
-    for(m = 0; m < Num_Arrays; m++)
+    for(m = 0; m < Num_Arrays; m++) {
+      unsigned int Num_Particles = (Arrays[m]).Get_Num_Particles();
+
       #pragma omp for
-      for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
+      for(i = 0; i < Num_Particles; i++) {
         (Arrays[m])[i].Force_Contact = {0,0,0};
+        (Arrays[m])[i].Force_Friction = {0,0,0};
+      } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
+    } // for(m = 0; m < Num_Arrays; m++) {
 
     // Now we can apply the contact algorythm.
     for(m = 0; m < Num_Arrays; m++)
@@ -339,8 +344,10 @@ void Simulation::Run_Simulation(void) {
           /* If we're not on an update step, then we'll let this body continue
           accelerating at whatever acceleration it attained after the last
           time step. */
+          unsigned int Num_Particles = (Arrays[m]).Get_Num_Particles();
+
           #pragma omp for
-          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
+          for(i = 0; i < Num_Particles; i++) {
             (Arrays[m])[i].x += dt*(Arrays[m])[i].V;       // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
             (Arrays[m])[i].V += dt*(Arrays[m])[i].a;      // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
           } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
@@ -501,6 +508,7 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
           Particle_Helpers::Find_Neighbors_Box(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
   } //   if(Particles.Get_Boundary() == false) {
 
+  /*
   // Damage the 'cut'
   for(i = 0; i < 1; i++) {                     // Depth of cut
     for(k = 0; k < Z_SIDE_LENGTH; k++) {       // Length of cut
@@ -508,6 +516,7 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
       Particle_Helpers::Remove_Damaged_Particle(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Particles);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
+  */
 
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
