@@ -18,16 +18,10 @@ void Simulation::Run_Simulation(void) {
           contact_timer = 0,
           update_x_timer = 0,
           Print_timer = 0;
-  unsigned long MS_Iter,
-                MS_BC,
-                MS_P,
-                MS_Contact,
-                MS_x,
-                MS_Print;                                            // Timers (store number of MS for each operation)
 
   // Set up Particle_Arrays.
   Particle_Array * Arrays;                                           // Will point to the Particle Array's for this simulation
-  unsigned int * Time_Step_Counter;                                  // Time step counters for each particle array
+  unsigned int * Time_Step_Index;                                  // Time step counters for each particle array
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
@@ -38,10 +32,16 @@ void Simulation::Run_Simulation(void) {
   printf(         "Save_Data_To_File =           %u\n",    Save_Data_To_File);
   printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
   printf(         "Print_Forces =                %u\n",    Print_Forces);
+  printf(         "Parallel execution =          ");
+  #if defined(_OPENMP)
+    printf(       "1\n");
+    printf(       "Number of procs =             %u\n",omp_get_num_procs());
+  #else
+    printf(       "0\n");
+  #endif
 
   // Are we running a new simulation or loading an existing one?
   if(Load_Data_From_File == 1) {
-    unsigned long MS_Load;
     timer1 = clock();
 
     // If loading an existing simulation, read in Particle arrays from file
@@ -49,13 +49,19 @@ void Simulation::Run_Simulation(void) {
     Data_Dump::Load_Simulation(&Arrays, Num_Arrays);
 
     // Now set up the time step counters
-    Time_Step_Counter = new unsigned int[Num_Arrays];
+    Time_Step_Index = new unsigned int[Num_Arrays];
     for(i = 0; i < Num_Arrays; i++)
-      Time_Step_Counter[i] = 0;
+      Time_Step_Index[i] = 0;
 
     timer1 = clock() - timer1;
-    MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
-    printf(       "Done!\ntook %lu ms\n", MS_Load);
+
+    #if defined(_OPENMP)
+      printf(     "Done!\ntook %lf s\n", timer1);
+    #else
+      unsigned long MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
+
+      printf(       "Done!\ntook %lu ms\n", MS_Load);
+    #endif
   } //   if(Load_Data_From_File == 1) {
 
   else if(Load_Data_From_File == 0) {
@@ -64,9 +70,9 @@ void Simulation::Run_Simulation(void) {
 
     // First, allocate the array of Particle_Arrays, time step counters
     Arrays = new Particle_Array[Num_Arrays];
-    Time_Step_Counter = new unsigned int[Num_Arrays];
+    Time_Step_Index = new unsigned int[Num_Arrays];
     for(i = 0; i < Num_Arrays; i++)
-      Time_Step_Counter[i] = 0;
+      Time_Step_Index[i] = 0;
 
     // Now set up each array using the paramaters in Simulation.h
     for(m = 0; m < Num_Arrays; m++) {
@@ -149,14 +155,19 @@ void Simulation::Run_Simulation(void) {
   } // if(Load_Data_From_File == false) {
 
   // time step loop.
+  #pragma omp parallel default(shared) private(i, j, k, l, m, X_SIDE_LENGTH, Y_SIDE_LENGTH, Z_SIDE_LENGTH) firstprivate(Num_Arrays, Num_Steps, dt, TimeSteps_Between_Prints)
+  {
   for(l = 0; l < Num_Steps; l++) {
     ////////////////////////////////////////////////////////////////////////////
     // Apply Boundary conditions
     // Note: we only apply BC's to 0th array.
 
-    timer2 = clock();
+    #pragma omp single nowait
+      timer2 = clock();
+
+    #pragma omp single
     for(m = 0; m < Num_Arrays; m++) {
-      if(m == 0 && Time_Step_Counter[0] == 0) {
+      if(m == 0 && Time_Step_Index[0] == 0) {
         ////////////////////////////////////////////////////////////////////////
         /* Boundary conditions
         Here we set the Bc's for the six sides of the cube. The faces are named
@@ -202,14 +213,14 @@ void Simulation::Run_Simulation(void) {
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
             //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
           }}
 
         // Top face (j = y_Side_len-1)
         j = Y_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
           }}
 
         // Left face (k = 0)
@@ -235,26 +246,35 @@ void Simulation::Run_Simulation(void) {
             (Arrays[m])[i].V = {0, -50, 0}; */
 
     } // for(m = 0; m < Num_Arrays; m++)
-    update_BC_timer += clock() - timer2;
+
+    #pragma omp single nowait
+      update_BC_timer += clock() - timer2;
 
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // Update each Particle_Array's Stress tensors
+    // Update Stress tensor (P)
 
-    timer2 = clock();
+    #pragma omp single nowait
+      timer2 = clock();
+
     for(m = 0; m < Num_Arrays; m++) {
       // Note: We don't update P for Particle_Arrays that are boundaries
       if(Arrays[m].Get_Boundary() == true)
         continue;
       else
-        // Update each particle's P tensor.
-        // We only update P when the mth Particle_Array's counter is zero.
-        if(Time_Step_Counter[m] == 0)
-          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-            Particle_Helpers::Update_P((Arrays[m])[i], Arrays[m], Steps_Between_Update[m]*dt);
+        /* Update each Particles's P tensor.
+        We only update P when the mth Particle_Array's counter is zero. Note
+        That the Update_P method has an orphaned for loop (and takes care of
+        removing damaged particles in parallel, damaged particles are not
+        removed until every particle's P tensor has been updated. This makes
+        the code parallelizable and determinstic) */
+        if(Time_Step_Index[m] == 0)
+          Particle_Helpers::Update_P(Arrays[m], Steps_Between_Update[m]*dt);
     } // for(m = 0; m < Num_Arrays; m++) {
-    update_P_timer += clock() - timer2;
+
+    #pragma omp single
+      update_P_timer += clock() - timer2;
 
 
 
@@ -267,19 +287,32 @@ void Simulation::Run_Simulation(void) {
     Particle_Arrays once. Further, we only calculate the contact forces for the
     mth particle_Array if that partilce_array is being updated this time step. */
 
-    timer2 = clock();
+    #pragma omp single nowait
+      timer2 = clock();
+
+    // First, we need to set each particle's contact force to zero
     for(m = 0; m < Num_Arrays; m++)
-      if(Time_Step_Counter[m] == 0)
+      #pragma omp for
+      for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
+        (Arrays[m])[i].Force_Contact = {0,0,0};
+
+    // Now we can apply the contact algorythm.
+    for(m = 0; m < Num_Arrays; m++)
+      if(Time_Step_Index[m] == 0)
         for(i = m + 1; i < Num_Arrays; i++)
           Particle_Helpers::Contact(Arrays[m], Arrays[i]);
-    contact_timer += clock() - timer2;
+
+    #pragma omp single nowait
+      contact_timer += clock() - timer2;
 
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Update Position (x)
 
-    timer2 = clock();
+    #pragma omp single nowait
+      timer2 = clock();
+
     for(m = 0; m < Num_Arrays; m++) {
       // Note: we don't update P for Particle_Arrays that are boundaries
       if(Arrays[m].Get_Boundary() == true)
@@ -293,43 +326,53 @@ void Simulation::Run_Simulation(void) {
         counter gets truncaed back to zero. Therefore, every k steps the mth
         particle_array's counter will be zero. Thus, we use a 0 counter
         as an indicator that we should update this particle_array. */
-        if(Time_Step_Counter[m] == 0) {
-          /* First, update the 'F_Counter' for the current Particle_Array. This
+        if(Time_Step_Index[m] == 0) {
+          /* First, update the 'F_Index' for the current Particle_Array. This
           controls which member of each particle's 'F' array is the 'newest'. */
-          Arrays[m].Increment_F_Counter();
+          #pragma omp single
+            Arrays[m].Increment_F_Index();
 
-          // Now update each particle's position
-          for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-            Particle_Helpers::Update_x((Arrays[m])[i], Arrays[m], dt);
-        } //         if(Time_Step_Counter[m] == 0) {
+          // Now update the position of each particle in this body.
+          Particle_Helpers::Update_x(Arrays[m], dt);
+        } //         if(Time_Step_Index[m] == 0) {
         else {
           /* If we're not on an update step, then we'll let this body continue
           accelerating at whatever acceleration it attained after the last
           time step. */
+          #pragma omp for
           for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
             (Arrays[m])[i].x += dt*(Arrays[m])[i].V;       // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
             (Arrays[m])[i].V += dt*(Arrays[m])[i].a;      // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
           } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
-        }
+        } // else {
       } // else {
     } // for(m = 0; m < Num_Arrays; m++) {
-    update_x_timer += clock() - timer2;
+
+    #pragma omp single nowait
+      update_x_timer += clock() - timer2;
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Print to file
+    #pragma omp single nowait
+      timer2 = clock();
 
-    timer2 = clock();
     if((l+1)%TimeSteps_Between_Prints == 0) {
-      printf(     "%d time steps complete\n",l+1);
+      #pragma omp single nowait
+        printf(     "%d time steps complete\n",l+1);
+
+      #pragma omp for nowait
       for(m = 0; m < Num_Arrays; m++ )
         VTK_File::Export_Particle_Positions(Arrays[m]);
 
       if(Print_Forces == true)
+        #pragma omp for
         for(m = 0; m < Num_Arrays; m++ )
           Particle_Debugger::Export_Particle_Forces(Arrays[m]);
     } // if((k+1)%100 == 0) {
-    Print_timer += clock()-timer2;
+
+    #pragma omp single nowait
+      Print_timer += clock()-timer2;
 
 
 
@@ -339,14 +382,16 @@ void Simulation::Run_Simulation(void) {
     reaches its limit (the value of Steps_Between_Update[m]) then we set that
     counter to zero (reset the counter). */
 
+    #pragma omp single
     for(m = 0; m < Num_Arrays; m++) {
-      Time_Step_Counter[m]++;
+      Time_Step_Index[m]++;
 
-      if(Time_Step_Counter[m] == Steps_Between_Update[m])
-        Time_Step_Counter[m] = 0;
+      if(Time_Step_Index[m] == Steps_Between_Update[m])
+        Time_Step_Index[m] = 0;
     } // for(m = 0; m < Num_Arrays; m++) {
 
   } // for(l = 0; l < Num_Steps; l++) {
+  } // #pragma omp parallel
   printf(         "Done!\n");
   timer1 = clock()-timer1;
 
@@ -355,19 +400,36 @@ void Simulation::Run_Simulation(void) {
     Data_Dump::Save_Simulation(Arrays, Num_Arrays);
 
   // Print timing data
-  MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
-  MS_BC = (unsigned long)((double)update_BC_timer / (double)CLOCKS_PER_MS);
-  MS_P = (unsigned long)((double)update_P_timer / (double)CLOCKS_PER_MS);
-  MS_Contact = (unsigned long)((double)contact_timer / (double)CLOCKS_PER_MS);
-  MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
-  MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
+  #if defined(_OPENMP)
+    printf(       "\nIt took %lf s to perform %u Particle time steps \n",timer1, Num_Steps);
+    printf(       "%lf s to update BC's\n", update_BC_timer);
+    printf(       "%lf s to update P\n", update_P_timer);
+    printf(       "%lf s to update Contact\n", contact_timer);
+    printf(       "%lf s to update x\n", update_x_timer);
+    printf(       "%lf s to print data to files\n", Print_timer);
 
-  printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
-  printf(         "%lu ms to update BC's\n", MS_BC);
-  printf(         "%lu ms to update P\n", MS_P);
-  printf(         "%lu ms to update Contact\n", MS_Contact);
-  printf(         "%lu ms to update x\n", MS_x);
-  printf(         "%lu ms to print data to files\n", MS_Print);
+  #else
+    unsigned long MS_Iter,                                           // These are used to store the number of miliseconds that
+                  MS_BC,                                             // it took to execute each of the major operations in
+                  MS_P,                                              // the code. These are only used the the code is executed
+                  MS_Contact,                                        // sequentially
+                  MS_x,
+                  MS_Print;
+
+    MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
+    MS_BC = (unsigned long)((double)update_BC_timer / (double)CLOCKS_PER_MS);
+    MS_P = (unsigned long)((double)update_P_timer / (double)CLOCKS_PER_MS);
+    MS_Contact = (unsigned long)((double)contact_timer / (double)CLOCKS_PER_MS);
+    MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
+    MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
+
+    printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
+    printf(         "%lu ms to update BC's\n", MS_BC);
+    printf(         "%lu ms to update P\n", MS_P);
+    printf(         "%lu ms to update Contact\n", MS_Contact);
+    printf(         "%lu ms to update x\n", MS_x);
+    printf(         "%lu ms to print data to files\n", MS_Print);
+  #endif
 
   delete [] Arrays;
 } // void Simulation(void) {
@@ -440,14 +502,12 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
   } //   if(Particles.Get_Boundary() == false) {
 
   // Damage the 'cut'
-  /*
   for(i = 0; i < 1; i++) {                     // Depth of cut
     for(k = 0; k < Z_SIDE_LENGTH; k++) {       // Length of cut
       Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].Set_D(1);
       Particle_Helpers::Remove_Damaged_Particle(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Particles);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
-  */
 
   timer1 = clock() - timer1;
   MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));

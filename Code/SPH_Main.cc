@@ -1,14 +1,22 @@
 #include <iostream>
 #include <math.h>
-#include <time.h>
 #include <string>
 #include <cstring>
 #include <random>
 #include <unistd.h>
+#include <omp.h>
 
-// Type definitions
+// Type definitions, definitions
+#define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000.)               // Conversion from cpu cycles to msec
 typedef signed char Byte;
 typedef unsigned char uByte;
+#if defined(_OPENMP)
+  #define clock_t double
+  #define clock() omp_get_wtime()
+#else
+  #include <time.h>
+
+#endif
 
 // Header files
 #include "Classes.h"
