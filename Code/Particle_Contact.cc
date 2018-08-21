@@ -13,22 +13,25 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   the contact force is applied whenever two particles are within a 2h radius of
   one another (when the two particles's support radii overlap). The applied
   force is in the direction of the line between the two particles centers. */
-  const double h = .5*(Body_A.Get_Inter_Particle_Spacing() + Body_B.Get_Inter_Particle_Spacing()); // Contact force support radius         : mm
+  const double h = (Body_A.Get_Inter_Particle_Spacing() + Body_B.Get_Inter_Particle_Spacing()); // Contact force support radius  : mm
   const double h_squared = h*h;                            // Square of support radius   : mm^2
-  unsigned int i,j;
-  double V_i;                                                                  //        : mm
+  unsigned int i;
   Vector r_ij;                                                                 //        : mm Vector
   Vector * Body_B_x = new Vector[Num_Particles_B];                             //        : mm Vector
+  Vector Grad_W;                                                               //        : 1/mm^4 Vector
+  Vector x_i;                                                                  //        : mm Vector
+  Vector F_Contact, F_Friction;                                                //        : N Vector
+  Vector Relative_Velocity;                                                    //        : mm/s Vector
 
   // Thread-local (private) force contributions to Body_B (see description below)
   Vector * Body_B_F_Contact_Local = new Vector[Num_Particles_B];               //        : N Vector
-  Vector * Body_B_F_Friction_Local = new Vector[Num_Particles_B];               //        : N Vector
+  Vector * Body_B_F_Friction_Local = new Vector[Num_Particles_B];              //        : N Vector
 
   // First, store all of Body B's position vectors in an array (this improves performance... I think?)
   for(i = 0; i < Num_Particles_B; i++) {
     Body_B_x[i] = Body_B[i].Get_x();                                           //        : mm Vector
-    Body_B_F_Contact_Local[i] = {0,0,0};
-    Body_B_F_Friction_Local[i] = {0,0,0};
+    Body_B_F_Contact_Local[i] = {0,0,0};                                       //        : N Vector
+    Body_B_F_Friction_Local[i] = {0,0,0};                                      //        : N Vector
   } //   for(i = 0; i < Num_Particles_B; i++) {
 
   // For each particle in A, check if there is a particle in B that is within
@@ -39,11 +42,11 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
     if(Body_A[i].Get_D() >= 1)
       continue;
 
-    V_i = Body_A[i].Get_Vol();                                                 //        : mm^3
+    double V_i = Body_A[i].Get_Vol();                                          //        : mm^3
     const double KV_i = K*V_i;                                                 //        : N*mm
-    Vector x_i = Body_A[i].Get_x();                                            //        : mm Vector
+    x_i = Body_A[i].Get_x();                                                   //        : mm Vector
 
-    for(j = 0; j < Num_Particles_B; j++) {
+    for(unsigned int j = 0; j < Num_Particles_B; j++) {
       r_ij = x_i - Body_B_x[j];                                                //        : mm Vector
 
       // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
@@ -53,7 +56,7 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
         double V_j = Body_B[j].Get_Vol();                                      //        : mm^3
         double Mag_r_ij = Magnitude(r_ij);                                     //        : mm
         double h_minus_Mag_r_ij = h - Mag_r_ij;                                //        : mm
-        Vector Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);      // 1/(mm^4) Vector
+        Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
 
         /* Now apply the force to the two interacting bodies (Note the forces
         are equal and opposite). It should be noted that we don't actually
@@ -68,21 +71,20 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
         these force arrays. One by one, the threads add their contribuitions to
         body_b's contact forces. This runs about 2x faster than if we had
         inserted the critical region into this loop. */
-        Vector F_Contact = (KV_i*V_j)*Grad_W;                                  //        : N Vector
+        F_Contact = (KV_i*V_j)*Grad_W;                                         //        : N Vector
         Body_A[i].Force_Contact -= F_Contact;                                  //        : N Vector
         Body_B_F_Contact_Local[j] += F_Contact;                                //        : N Vector
 
         /* Now let's calculate the frictional force. To do this, we first need
         to get the unit vector of the relative velocity between bodies A and B
         as well as the magnitude of the contact force */
-        double Mag_F_Contact = F_Contact.Magnitude();
-        Vector relative_velocity = Body_A[i].V - Body_B[j].V;
-        Vector Unit_relative_velocity = ((relative_velocity) / relative_velocity.Magnitude());
+        double Mag_F_Contact = F_Contact.Magnitude();                          //        : N
+        Relative_Velocity = Body_A[i].V - Body_B[j].V;                         //        : mm/s Vector
 
         // Now we can calculate the frictional force and apply it to the two bodies
-        Vector F_Friction = (-1*FRICTION_COEFFICIENT*Mag_F_Contact)*Unit_relative_velocity;
-        Body_A[i].Force_Friction = F_Friction;
-        Body_B_F_Friction_Local[j] += F_Friction;
+        F_Friction = ((-1*FRICTION_COEFFICIENT*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
+        Body_A[i].Force_Friction += F_Friction;                                //        : N Vector
+        Body_B_F_Friction_Local[j] -= F_Friction;                              //        : N Vector
       } // if(Magnitude(r_ij) < h) {
     } // for(j = 0; j < Num_Particle_B, j++) {
   } // for(i = 0; i < Num_Particles_A; i++) {
@@ -92,10 +94,10 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   add these contributions to Body_B's particles one by one (using a critical
   region) */
   #pragma omp critical
-  for(j = 0; j < Num_Particles_B; j++) {
-    Body_B[j].Force_Contact += Body_B_F_Contact_Local[j];                      //        : N Vector
-    Body_B[j].Force_Friction += Body_B_F_Friction_Local[j];                    //        : N Vector
-  }
+  for(i = 0; i < Num_Particles_B; i++) {
+    Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                      //        : N Vector
+    Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                    //        : N Vector
+  } // for(i = 0; i < Num_Particles_B; i++) {
 
   delete [] Body_B_x;                                                          //        : mm Vector
 } // void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B) {

@@ -445,9 +445,6 @@ void Simulation::Run_Simulation(void) {
 
 void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) {
   unsigned int i,j,k;
-
-  unsigned long MS_Gen,
-                MS_Neighbor;
   clock_t timer1;
 
   // Particle paramaters
@@ -493,8 +490,12 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
   timer1 = clock()-timer1;
-  MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
-  printf(         "Done!\ntook %lums\n",MS_Gen);
+  #if defined(_OPENMP)
+    printf(        "Done!\ntook %lf s\n",timer1);
+  #else
+    unsigned long MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+    printf(        "Done!\ntook %lums\n",MS_Gen);
+  #endif
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up Neighbors (if the body is not a boundary)
@@ -506,6 +507,14 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
       for(j = 0; j < Y_SIDE_LENGTH; j++)
         for(k = 0; k < Z_SIDE_LENGTH; k++)
           Particle_Helpers::Find_Neighbors_Box(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
+
+    timer1 = clock() - timer1;
+    #if defined(_OPENMP)
+      printf(        "Done!\ntook %lf s\n",timer1);
+    #else
+      unsigned long MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+      printf(       "Done!\ntook %lums\n",MS_Neighbor);
+    #endif
   } //   if(Particles.Get_Boundary() == false) {
 
   /*
@@ -517,10 +526,6 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
   */
-
-  timer1 = clock() - timer1;
-  MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
-  printf(         "Done!\ntook %lums\n",MS_Neighbor);
 } // void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) {
 
 
