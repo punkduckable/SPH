@@ -375,9 +375,12 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     Particles[i].x += dt*Particles[i].V;         // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
     Particles[i].V += dt*a;                      // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
-    Particles[i].Force_Int = Force_Int;          // update Internal force                : N Vector
-    Particles[i].Force_HG = Force_HG;            // update Hourglassing force            : N Vector
-    //Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
+
+    if(Simulation::Print_Forces == true) {
+      Particles[i].Force_Int = Force_Int;          // update Internal force                : N Vector
+      Particles[i].Force_HG = Force_HG;            // update Hourglassing force            : N Vector
+      //Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
+    } // if(Simulation::Print_Forces == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
     // Now we need to remove the damaged particles. To do this, we can one by one

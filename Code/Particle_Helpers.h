@@ -37,6 +37,11 @@ namespace Particle_Helpers {
   void Contact(Particle_Array & Body_A,
                Particle_Array & Body_B);
 
+  unsigned int Times_Printed_Net_External_Force = 0;
+
+  void Print_Net_External_Force(const Particle_Array & Particles,
+                                const unsigned int l);
+
 } // namespace Particle_Helpers {
 
 #endif

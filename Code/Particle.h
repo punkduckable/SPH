@@ -98,6 +98,8 @@ class Particle {
     const Vector & Get_a(void) const { return a; }
     const Tensor & Get_P(void) const { return P; }
     const Tensor & Get_F(const unsigned int i) const { return F[i]; }
+    const Vector & Get_Force_Friction(void) const { return Force_Friction; }
+    const Vector & Get_Force_Contact(void) const { return Force_Contact; }
     double Get_Stretch_M(void) const { return Stretch_M; }
     double Get_Stretch_H(void) const { return Stretch_H; }
     double Get_Stretch_Critical(void) const { return Stretch_Critical; }

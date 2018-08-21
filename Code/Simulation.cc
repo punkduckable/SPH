@@ -389,10 +389,16 @@ void Simulation::Run_Simulation(void) {
       for(m = 0; m < Num_Arrays; m++ )
         VTK_File::Export_Particle_Positions(Arrays[m]);
 
-      if(Print_Forces == true)
+      if(Print_Forces == true) {
         #pragma omp for nowait
         for(m = 0; m < Num_Arrays; m++ )
           Particle_Debugger::Export_Particle_Forces(Arrays[m]);
+      } // if(Print_Forces == true) {
+
+      if(Print_Net_Force == true) {
+        #pragma omp single nowait
+        Particle_Helpers::Print_Net_External_Force(Arrays[1], l+1);
+      } // if(Print_Net_Force == true) {
     } // if((k+1)%100 == 0) {
 
     #pragma omp single nowait
