@@ -206,7 +206,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   is valid. */
 
   // First, define some local variables.
-  const Vector g = {0,-9810,0};                  // Gravity                              : mm/s^2 Vector
+  const Vector g = {0,0,0};                  // Gravity                              : mm/s^2 Vector
 
   // Current (ith) particle properties
   Vector Force_Int;                              // Internal Force vector                : N Vector

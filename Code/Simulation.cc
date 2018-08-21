@@ -198,21 +198,21 @@ void Simulation::Run_Simulation(void) {
         i = 0;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
           }}
 
         // Back face (i = X_SIDE_LENGTH-1)
         i = X_SIDE_LENGTH-1;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
           }}
 
         // Bottom face (j = 0)
         j = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
             //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
           }}
 
@@ -227,23 +227,23 @@ void Simulation::Run_Simulation(void) {
         k = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
           }}
 
         // Right face (k = Z_SIDE_LENGTH-1)
         k = Z_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
           }}
 
       } // if(m == 0)
 
       // Needle BC's
-      /*else if(m == 1)
+      else if(m == 1)
         for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
           if((Arrays[m])[i].Get_X()[1] > 32.)
-            (Arrays[m])[i].V = {0, -50, 0}; */
+            (Arrays[m])[i].V = {0, -50, 0};
 
     } // for(m = 0; m < Num_Arrays; m++)
 
@@ -270,7 +270,7 @@ void Simulation::Run_Simulation(void) {
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
         if(Time_Step_Index[m] == 0)
-          Particle_Helpers::Update_P(Arrays[m], Steps_Between_Update[m]*dt);
+          Particle_Helpers::Update_P(Arrays[m], Steps_Per_Update[m]*dt);
     } // for(m = 0; m < Num_Arrays; m++) {
 
     #pragma omp single nowait
@@ -290,22 +290,28 @@ void Simulation::Run_Simulation(void) {
     #pragma omp single nowait
       timer2 = clock();
 
-    // First, we need to set each particle's contact force to zero
+    /* First, we need to set each particle's contact force to zero. It should be
+    noted that we only do this for a particular Particle_Array if that array
+    is updating it's position this turn. Otherwise, since the force won't be
+    used for anything, there's no reason to waste CPU cycles setting that
+    array's particle's contact forces to zero. */
     for(m = 0; m < Num_Arrays; m++) {
       unsigned int Num_Particles = (Arrays[m]).Get_Num_Particles();
 
-      #pragma omp for
-      for(i = 0; i < Num_Particles; i++) {
-        (Arrays[m])[i].Force_Contact = {0,0,0};
-        (Arrays[m])[i].Force_Friction = {0,0,0};
-      } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
+      if(Time_Step_Index[m] == 0)
+        #pragma omp for
+        for(i = 0; i < Num_Particles; i++) {
+          (Arrays[m])[i].Force_Contact = {0,0,0};
+          (Arrays[m])[i].Force_Friction = {0,0,0};
+        } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
     } // for(m = 0; m < Num_Arrays; m++) {
 
-    // Now we can apply the contact algorythm.
+    /* Now we can apply the contact algorythm. Note that this must be applied 
+    every time step no matter what (so that bodies that update each step can
+    are proprly updated/have the right forces applied each timestpe) */
     for(m = 0; m < Num_Arrays; m++)
-      if(Time_Step_Index[m] == 0)
-        for(i = m + 1; i < Num_Arrays; i++)
-          Particle_Helpers::Contact(Arrays[m], Arrays[i]);
+      for(i = m + 1; i < Num_Arrays; i++)
+        Particle_Helpers::Contact(Arrays[m], Arrays[i]);
 
     #pragma omp single nowait
       contact_timer += clock() - timer2;
@@ -348,6 +354,9 @@ void Simulation::Run_Simulation(void) {
 
           #pragma omp for
           for(i = 0; i < Num_Particles; i++) {
+            if((Arrays[m])[i].Get_D() >= 1)
+              continue;
+
             (Arrays[m])[i].x += dt*(Arrays[m])[i].V;       // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
             (Arrays[m])[i].V += dt*(Arrays[m])[i].a;      // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
           } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
@@ -363,14 +372,14 @@ void Simulation::Run_Simulation(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Update each time step counter
     /* Here we increment each Particle_Array's counter. If a particular counter
-    reaches its limit (the value of Steps_Between_Update[m]) then we set that
+    reaches its limit (the value of Steps_Per_Update[m]) then we set that
     counter to zero (reset the counter). */
 
     #pragma omp single
     for(m = 0; m < Num_Arrays; m++) {
       Time_Step_Index[m]++;
 
-      if(Time_Step_Index[m] == Steps_Between_Update[m])
+      if(Time_Step_Index[m] == Steps_Per_Update[m])
         Time_Step_Index[m] = 0;
     } // for(m = 0; m < Num_Arrays; m++) {
 

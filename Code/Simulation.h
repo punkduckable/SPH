@@ -12,9 +12,9 @@ namespace Simulation {
   // Simulation flags/properties
   const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 1;
-  const unsigned char Print_Forces               = 0;
+  const unsigned char Print_Forces               = 1;
   const unsigned char Print_Net_Force            = 1;
-  const unsigned int TimeSteps_Between_Prints    = 1000;
+  const unsigned int TimeSteps_Between_Prints    = 500;
 
   // TimeStep paramters
   const double dt                                = .000001;// Time step                  : s
@@ -27,7 +27,7 @@ namespace Simulation {
   bool * Is_Boundary;                            // Which bodies are boundaries (can be from FEB file or cuboid)
   bool * Is_Damagable;                           // Which bodies can be damaged
   bool * From_FEB_File;                          // Which bodies will be read from file
-  unsigned int * Steps_Between_Update;           // How many time steps pass between updating this Body's P-K tensor
+  unsigned int * Steps_Per_Update;               // How many time steps pass between updating this Body's P-K tensor
   Vector * Dimensions;                           // Dimensions of cuboids (only applicable for cuboids)
   Vector * Offset;                               // Poisition offset (only applicable for cuboids)
   Vector * Initial_Velocity;                     // Initial velocity condition
@@ -42,7 +42,7 @@ namespace Simulation {
     Is_Boundary = new bool[Num_Arrays];
     Is_Damagable = new bool[Num_Arrays];
     From_FEB_File = new bool[Num_Arrays];
-    Steps_Between_Update = new unsigned int[Num_Arrays];
+    Steps_Per_Update = new unsigned int[Num_Arrays];
     Dimensions = new Vector[Num_Arrays];
     Offset = new Vector[Num_Arrays];
     Initial_Velocity = new Vector[Num_Arrays];
@@ -52,24 +52,24 @@ namespace Simulation {
     Names[0]                                     = "Body";
     Is_Cuboid[0]                                 = true;
     Is_Boundary[0]                               = false;
-    Is_Damagable[0]                              = false;
+    Is_Damagable[0]                              = true;
     From_FEB_File[0]                             = false;
-    Steps_Between_Update[0]                      = 1;
-    Dimensions[0]                                = {10, 10, 10};
-    Offset[0]                                    = {0, 10, 0};
+    Steps_Per_Update[0]                          = 5;
+    Dimensions[0]                                = {20, 10, 20};
+    Offset[0]                                    = {0, 0, 0};
     Initial_Velocity[0]                          = {0, 0, 0};
-    Materials[0]                                 = Materials::Stainless_Steel;
+    Materials[0]                                 = Materials::Default;
 
-    Names[1]                                     = "Boundary";
-    Is_Cuboid[1]                                 = true;
-    Is_Boundary[1]                               = true;
+    Names[1]                                     = "Short_needle";
+    Is_Cuboid[1]                                 = false;
+    Is_Boundary[1]                               = false;
     Is_Damagable[1]                              = false;
-    From_FEB_File[1]                             = false;
-    Steps_Between_Update[1]                      = 1;
-    Dimensions[1]                                = {15, 1, 20};
-    Offset[1]                                    = {7, 0, -5};
-    Initial_Velocity[1]                          = {0, 0, 0};
-    Materials[1]                                 = Materials::Default;
+    From_FEB_File[1]                             = true;
+    Steps_Per_Update[1]                          = 1;
+    Dimensions[1]                                = {0, 0, 0};
+    Offset[1]                                    = {0, 0, 0};
+    Initial_Velocity[1]                          = {0, -50, 0};
+    Materials[1]                                 = Materials::Stainless_Steel;
   } // void Use_Arrays_From_Code(void) {
 
 
