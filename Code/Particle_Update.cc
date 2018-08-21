@@ -22,18 +22,13 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
   is used in calculating the viscosity. */
 
   // First, let's declare some local variables.
-  double V_j;                                    // Volume of jth neighbor               : mm^3
-  unsigned int Neighbor_ID;                      // Index of jth neighbor.
-
   Tensor F;                                      // Deformation gradient                 : unitless Tensor
   Tensor C;                                      // Richt-Cauchy stress tensor           : unitless Tensor
-  double J;                                      // Deformation gradient determinant     : unitless
   Tensor S;                                      // Second Poila-Kirchhoff stress tensor : Mpa Tensor
   Tensor I = {1,0,0,                             // Identity tensor
               0,1,0,
               0,0,1};
 
-  double Stretch_Max_Principle;                                                //        : unitless
   const double Tau = Particles.Get_Tau();                                      //        : unitless
   List<unsigned int> Damaged_Particle_List;      // Keeps track of which particles are newly damaged
 
@@ -67,8 +62,8 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
     const unsigned int Num_Neighbors = Particles[i].Num_Neighbors;
     for(unsigned int j = 0; j < Num_Neighbors; j++) {
       // Get neighbor ID and volume of jth particle
-      Neighbor_ID = Particles[i].Neighbor_IDs[j];
-      V_j = Particles[Neighbor_ID].Vol;                                        //        : mm^3
+      unsigned Neighbor_ID = Particles[i].Neighbor_IDs[j]; // Index of jth neighbor.
+      double V_j = Particles[Neighbor_ID].Vol;             // Volume of jth neighbor     : mm^3
 
       // Now find spatial distnace to jth particle
       rj = Particles[Neighbor_ID].x - Particles[i].x;                          //        : mm Vector
@@ -87,11 +82,11 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
     Cauchy Green strain tensor C. Note, C will be used for later calculations */
 
     C = (F^(T))*F;                               // Right Cauchy-Green strain tensor     : unitless Tensor
-    J = Determinant(F);                          // J is det of F                        : unitless Tensor
+    double J = Determinant(F);                   // J is det of F                        : unitless
 
     // Calculate current principle stretch
-    double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));
-    Stretch_Max_Principle = sqrt(Max_EigenValue);
+    double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));                //        : unitless
+    double Stretch_Max_Principle = sqrt(Max_EigenValue);                       //        : unitless
 
     // If this stretch is greater than max stretch, update particle's Max stretch.
     Particles[i].Stretch_M = Stretch_Max_Principle;
@@ -210,21 +205,14 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   const Vector g = {0,-9810,0};                  // Gravity                              : mm/s^2 Vector
 
   // Current (ith) particle properties
-  double V_i;                                    // Volume                               : mm^3
   Vector Force_Int;                              // Internal Force vector                : N Vector
   Vector Force_HG;                               // Hour-glass force                     : N Vector
   //Vector Force_Visc;                             // For debugging
   Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
   Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
-  Vector * R;                                    // Reference displacement array         : mm Vector
-  double * Mag_R;                                // Mag of reference displacment array   : mm
-  double * W;                                    // Kernel function array                : 1/mm^3
-  Vector * Grad_W;                               // Grad_W array                         : 1/mm^4 Vector
   Vector a;                                      // acceleration                         : mm/s^2 Vector
 
   // Neighboring (jth) particle properties
-  unsigned int Neighbor_ID;                      // ID of current neighbor particle
-  double V_j;                                    // Volume of jth particle               : mm^3
   Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Tensor F_j;                                    // Deformation gradient                 : unitless Tensor
   Vector rj;                                     // Displacement vector                  : mm Vector
@@ -235,11 +223,6 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   const double E = Particles.Get_E();            // Hourglass stiffness                  : Mpa
   const unsigned char F_Index = Particles.Get_F_Index();   // Keeps track of which F was most recently updated
   const unsigned int Num_Particles = Particles.Get_Num_Particles();
-
-  // Hour glass variables
-  double Mag_rj;                                                               //        : mm
-  double delta_ij;                                                             //        : mm
-  double delta_ji;                                                             //        : mm
 
   // Damage variables
   List<unsigned int> Damaged_Particle_List;      // Keeps track of which particles have broken
@@ -257,19 +240,19 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     //Force_Visc = {0,0,0};
 
     // Set up current particle properties
-    V_i = Particles[i].Get_Vol();
+    double V_i = Particles[i].Get_Vol();         // volume of current particle           : mm^3
     F_i = Particles[i].Get_F(F_Index);
     P_i = Particles[i].Get_P();
-    R = Particles[i].R;
-    Mag_R = Particles[i].Mag_R;
-    W = Particles[i].W;
-    Grad_W = Particles[i].Grad_W;
+    Vector * R = Particles[i].R;                 // Reference displacement array         : mm Vector
+    double * Mag_R = Particles[i].Mag_R;         // Mag of reference displacment array   : mm
+    double * W = Particles[i].W;                 // Kernel function array                : 1/mm^3
+    Vector * Grad_W = Particles[i].Grad_W;       // Grad_W array                         : 1/mm^4 Vector
 
     const unsigned int Num_Neighbors = Particles[i].Num_Neighbors;
 
     for(unsigned int j = 0; j < Num_Neighbors; j++) {
       // Update Neighbor
-      Neighbor_ID = Particles[i].Neighbor_IDs[j];
+      unsigned int Neighbor_ID = Particles[i].Neighbor_IDs[j];       // ID of current neighbor particle
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Internal force */
@@ -281,7 +264,8 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       reducing the number of FLOPs required to calculate the internal force and
       speeding up the program. */
 
-      V_j = Particles[Neighbor_ID].Vol;                                        //        : mm^3
+
+      double V_j = Particles[Neighbor_ID].Vol;   // Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
       Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                              //        : N Vector
       //Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);// For debugging
@@ -308,8 +292,8 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       Calcualating delta this way actually uses fewer floating point operations
       and should therefore perform better. */
       rj = Particles[Neighbor_ID].x - Particles[i].x;                          //        : mm Vector
-      Mag_rj = Magnitude(rj);                                                  //        : mm
-      delta_ij = Vector_Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
+      double Mag_rj = Magnitude(rj);                                           //        : mm
+      double delta_ij = Vector_Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;    //        : mm
 
       /* Here we calculate delta_ji.
             delta_ji = ( Error_ji dot r_ji )/|r_ji|
@@ -339,7 +323,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       */
 
       F_j = Particles[Neighbor_ID].F[F_Index];                                 //        : unitless Tensor
-      delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
+      double delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;    //        : mm
 
       /* Finally, we calculate the hour glass force. However, it should be
       noted that each term of Force_HG is multiplied by -(1/2), E, alpha,

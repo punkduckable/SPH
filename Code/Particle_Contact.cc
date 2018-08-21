@@ -22,6 +22,7 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   Vector x_i;                                                                  //        : mm Vector
   Vector F_Contact, F_Friction;                                                //        : N Vector
   Vector Relative_Velocity;                                                    //        : mm/s Vector
+  bool Contact_Flag = 0;
 
   // Thread-local (private) force contributions to Body_B (see description below)
   Vector * Body_B_F_Contact_Local = new Vector[Num_Particles_B];               //        : N Vector
@@ -52,6 +53,16 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
       // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
       // If so, add contact force
       if(Vector_Dot_Product(r_ij, r_ij) < h_squared) {
+        /* First, set the 'contact flag' to true. This flag is designed to
+        improve perfomance. The idea here is that there will be no contact
+        for most of the time steps. Because of this, it doesn't make sense
+        to run throug the critical for loop (to add each thread's contact and
+        friction forces to the particles). Thus, we only run that critical loop
+        if this flag is false. The idea here is that the cost of updating this
+        flag for each contacting particle is cheaper than running through the
+        critical for loop on every time step. */
+        Contact_Flag = true;
+
         // Calculate the contact force
         double V_j = Body_B[j].Get_Vol();                                      //        : mm^3
         double Mag_r_ij = Magnitude(r_ij);                                     //        : mm
@@ -94,10 +105,11 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   add these contributions to Body_B's particles one by one (using a critical
   region) */
   #pragma omp critical
-  for(i = 0; i < Num_Particles_B; i++) {
-    Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                      //        : N Vector
-    Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                    //        : N Vector
-  } // for(i = 0; i < Num_Particles_B; i++) {
+  if(Contact_Flag)
+    for(i = 0; i < Num_Particles_B; i++) {
+      Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                      //        : N Vector
+      Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                    //        : N Vector
+    } // for(i = 0; i < Num_Particles_B; i++) {
 
   delete [] Body_B_x;                                                          //        : mm Vector
 } // void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B) {
