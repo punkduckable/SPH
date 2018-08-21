@@ -273,7 +273,7 @@ void Simulation::Run_Simulation(void) {
           Particle_Helpers::Update_P(Arrays[m], Steps_Between_Update[m]*dt);
     } // for(m = 0; m < Num_Arrays; m++) {
 
-    #pragma omp single
+    #pragma omp single nowait
       update_P_timer += clock() - timer2;
 
 
@@ -359,29 +359,6 @@ void Simulation::Run_Simulation(void) {
       update_x_timer += clock() - timer2;
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Print to file
-    #pragma omp single nowait
-      timer2 = clock();
-
-    if((l+1)%TimeSteps_Between_Prints == 0) {
-      #pragma omp single nowait
-        printf(     "%d time steps complete\n",l+1);
-
-      #pragma omp for nowait
-      for(m = 0; m < Num_Arrays; m++ )
-        VTK_File::Export_Particle_Positions(Arrays[m]);
-
-      if(Print_Forces == true)
-        #pragma omp for
-        for(m = 0; m < Num_Arrays; m++ )
-          Particle_Debugger::Export_Particle_Forces(Arrays[m]);
-    } // if((k+1)%100 == 0) {
-
-    #pragma omp single nowait
-      Print_timer += clock()-timer2;
-
-
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each time step counter
@@ -397,6 +374,29 @@ void Simulation::Run_Simulation(void) {
         Time_Step_Index[m] = 0;
     } // for(m = 0; m < Num_Arrays; m++) {
 
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Print to file
+    #pragma omp single nowait
+      timer2 = clock();
+
+    if((l+1)%TimeSteps_Between_Prints == 0) {
+      #pragma omp single nowait
+        printf(     "%d time steps complete\n",l+1);
+
+      #pragma omp for nowait
+      for(m = 0; m < Num_Arrays; m++ )
+        VTK_File::Export_Particle_Positions(Arrays[m]);
+
+      if(Print_Forces == true)
+        #pragma omp for nowait
+        for(m = 0; m < Num_Arrays; m++ )
+          Particle_Debugger::Export_Particle_Forces(Arrays[m]);
+    } // if((k+1)%100 == 0) {
+
+    #pragma omp single nowait
+      Print_timer += clock()-timer2;
   } // for(l = 0; l < Num_Steps; l++) {
   } // #pragma omp parallel
   printf(         "Done!\n");

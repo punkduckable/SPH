@@ -112,6 +112,11 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
     } // for(i = 0; i < Num_Particles_B; i++) {
 
   delete [] Body_B_x;                                                          //        : mm Vector
+
+  /* Note, there is no explicit barrier here. This is because the next kernel
+  , update_x , has a for loop before it uses the forces modified above. This
+  means that the update_x method will force synchronize each thread before any
+  data from here is used. Therefore, we don't need a barrier. */
 } // void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B) {
 
 #endif

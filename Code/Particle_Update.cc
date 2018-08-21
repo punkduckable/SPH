@@ -183,6 +183,10 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
   #pragma omp critical
   while(Damaged_Particle_List.Node_Count() != 0)
     Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
+
+  // Explicit barrier to ensure that all broken particles have been removed
+  // before any thread is allowed to move on.
+  #pragma omp barrier
 } // void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
 
 
@@ -381,6 +385,13 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     #pragma omp critical
     while(Damaged_Particle_List.Node_Count() != 0)
       Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
+
+    /* Note, there is no explicit barrier here because the next kernel, which
+    updates each particle's timestep counter, does not use any data being
+    written in the critial second above and because that kernel contains
+    its own implied barrier. Therefore, once the data above is called upon, we
+    can be sure that all particles have been damaged. Therefore, we don't
+    need a barrier. */
 } // void Particle_Helpers::Update_x(const Particle_Array & Particles, const double dt) {
 
 #endif
