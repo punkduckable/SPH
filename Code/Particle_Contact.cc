@@ -111,7 +111,10 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
       Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                    //        : N Vector
     } // for(i = 0; i < Num_Particles_B; i++) {
 
-  delete [] Body_B_x;                                                          //        : mm Vector
+  // Now free any dynamically allocated memory.
+  delete [] Body_B_x;
+  delete [] Body_B_F_Contact_Local;
+  delete [] Body_B_F_Friction_Local;
 
   /* Note, there is no explicit barrier here. This is because the next kernel
   , update_x , has a for loop before it uses the forces modified above. This
@@ -147,6 +150,9 @@ void Particle_Helpers::Print_Net_External_Force(const Particle_Array & Particles
   } //   for(unsigned int i = 0; i < Num_Particles; i++) {
 
   fprintf(File,"%6u:  <%10.4f, %10.4f, %10.4f>\n", l, Net_Contact_Force(0), Net_Contact_Force(1), Net_Contact_Force(2));
+
+  // Now close the file.
+  fclose(File);
 } // void Particle_Helpers::Print_Net_External_Force(const Partilce_Array & Particles, const unsigned int l) {
 
 #endif

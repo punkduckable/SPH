@@ -12,13 +12,13 @@ namespace Simulation {
   // Simulation flags/properties
   const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 1;
-  const unsigned char Print_Forces               = 1;
+  const unsigned char Print_Forces               = 0;
   const unsigned char Print_Net_Force            = 1;
-  const unsigned int TimeSteps_Between_Prints    = 500;
+  const unsigned int TimeSteps_Between_Prints    = 5000;
 
   // TimeStep paramters
-  const double dt                                = .000001;// Time step                  : s
-  const unsigned int Num_Steps                   = 100000; // Number of time steps
+  const double dt                                = .0000001; // Time step                  : s
+  const unsigned int Num_Steps                   = 1000000; // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -54,7 +54,7 @@ namespace Simulation {
     Is_Boundary[0]                               = false;
     Is_Damagable[0]                              = true;
     From_FEB_File[0]                             = false;
-    Steps_Per_Update[0]                          = 5;
+    Steps_Per_Update[0]                          = 10;
     Dimensions[0]                                = {20, 10, 20};
     Offset[0]                                    = {0, 0, 0};
     Initial_Velocity[0]                          = {0, 0, 0};
