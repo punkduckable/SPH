@@ -21,7 +21,7 @@ void Simulation::Run_Simulation(void) {
 
   // Set up Particle_Arrays.
   Particle_Array * Arrays;                                           // Will point to the Particle Array's for this simulation
-  unsigned int * Time_Step_Index;                                  // Time step counters for each particle array
+  unsigned int * Time_Step_Index;                                    // Time step counters for each particle array
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
@@ -79,14 +79,17 @@ void Simulation::Run_Simulation(void) {
       // Set Partilce Array's name
       Arrays[m].Set_Name(Names[m]);
 
-      // Now set the ith Particle_Array's members.
-      Set_Particle_Array_Members(Arrays[m]);
+      // Set inter particle spacing
+      Arrays[m].Set_Inter_Particle_Spacing(IPS[m]);
 
       // Now set the ith Particle_Array's material
       Arrays[m].Set_Material(Materials[m]);
 
       // Now set wheather or not the ith Particle_Array is damagable
       Arrays[m].Set_Damageable(Is_Damagable[m]);
+
+      // Now set other Particle_Array members.
+      Set_Particle_Array_Members(Arrays[m]);
 
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
@@ -134,9 +137,6 @@ void Simulation::Run_Simulation(void) {
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
 
-  unsigned int X_SIDE_LENGTH;
-  unsigned int Y_SIDE_LENGTH;
-  unsigned int Z_SIDE_LENGTH;
   printf(         "\nRunning %d time steps....\n",Num_Steps);
 
   // Cycle through time steps.
@@ -155,7 +155,7 @@ void Simulation::Run_Simulation(void) {
   } // if(Load_Data_From_File == false) {
 
   // time step loop.
-  #pragma omp parallel default(shared) private(i, j, k, l, m, X_SIDE_LENGTH, Y_SIDE_LENGTH, Z_SIDE_LENGTH) firstprivate(Num_Arrays, Num_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) private(i, j, k, l, m) firstprivate(Num_Arrays, Num_Steps, dt, TimeSteps_Between_Prints)
   {
   for(l = 0; l < Num_Steps; l++) {
     ////////////////////////////////////////////////////////////////////////////
@@ -190,9 +190,9 @@ void Simulation::Run_Simulation(void) {
         respectivly. */
 
         // Establish side lengths (we assume Array[m] is a cuboid)
-        X_SIDE_LENGTH = Arrays[m].Get_X_SIDE_LENGTH();
-        Y_SIDE_LENGTH = Arrays[m].Get_Y_SIDE_LENGTH();
-        Z_SIDE_LENGTH = Arrays[m].Get_Z_SIDE_LENGTH();
+        unsigned int X_SIDE_LENGTH = Arrays[m].Get_X_SIDE_LENGTH();
+        unsigned int Y_SIDE_LENGTH = Arrays[m].Get_Y_SIDE_LENGTH();
+        unsigned int Z_SIDE_LENGTH = Arrays[m].Get_Z_SIDE_LENGTH();
 
         // Front face (i = 0)
         i = 0;
@@ -306,7 +306,7 @@ void Simulation::Run_Simulation(void) {
         } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
     } // for(m = 0; m < Num_Arrays; m++) {
 
-    /* Now we can apply the contact algorythm. Note that this must be applied 
+    /* Now we can apply the contact algorythm. Note that this must be applied
     every time step no matter what (so that bodies that update each step can
     are proprly updated/have the right forces applied each timestpe) */
     for(m = 0; m < Num_Arrays; m++)

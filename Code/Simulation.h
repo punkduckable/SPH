@@ -14,11 +14,11 @@ namespace Simulation {
   const unsigned char Save_Data_To_File          = 1;
   const unsigned char Print_Forces               = 0;
   const unsigned char Print_Net_Force            = 1;
-  const unsigned int TimeSteps_Between_Prints    = 5000;
+  const unsigned int TimeSteps_Between_Prints    = 10000;
 
   // TimeStep paramters
-  const double dt                                = .0000001; // Time step                  : s
-  const unsigned int Num_Steps                   = 1000000; // Number of time steps
+  const double dt                                = .00000005;         // Time step        : s
+  const unsigned int Num_Steps                   = 2000000;         // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -28,6 +28,7 @@ namespace Simulation {
   bool * Is_Damagable;                           // Which bodies can be damaged
   bool * From_FEB_File;                          // Which bodies will be read from file
   unsigned int * Steps_Per_Update;               // How many time steps pass between updating this Body's P-K tensor
+  double * IPS;                                  // Inter particle spacing in mm.
   Vector * Dimensions;                           // Dimensions of cuboids (only applicable for cuboids)
   Vector * Offset;                               // Poisition offset (only applicable for cuboids)
   Vector * Initial_Velocity;                     // Initial velocity condition
@@ -43,6 +44,7 @@ namespace Simulation {
     Is_Damagable = new bool[Num_Arrays];
     From_FEB_File = new bool[Num_Arrays];
     Steps_Per_Update = new unsigned int[Num_Arrays];
+    IPS = new double[Num_Arrays];
     Dimensions = new Vector[Num_Arrays];
     Offset = new Vector[Num_Arrays];
     Initial_Velocity = new Vector[Num_Arrays];
@@ -55,7 +57,8 @@ namespace Simulation {
     Is_Damagable[0]                              = true;
     From_FEB_File[0]                             = false;
     Steps_Per_Update[0]                          = 10;
-    Dimensions[0]                                = {20, 10, 20};
+    IPS[0]                                       = .5;
+    Dimensions[0]                                = {40, 20, 40};
     Offset[0]                                    = {0, 0, 0};
     Initial_Velocity[0]                          = {0, 0, 0};
     Materials[0]                                 = Materials::Default;
@@ -65,6 +68,7 @@ namespace Simulation {
     Is_Boundary[1]                               = false;
     Is_Damagable[1]                              = false;
     From_FEB_File[1]                             = true;
+    IPS[1]                                       = 1;
     Steps_Per_Update[1]                          = 1;
     Dimensions[1]                                = {0, 0, 0};
     Offset[1]                                    = {0, 0, 0};
@@ -76,15 +80,10 @@ namespace Simulation {
   // Default Particle_Array members
   void Set_Particle_Array_Members(Particle_Array & Particles) {
     unsigned int Support_Radius = 3;                       // Support radius in units of Inter Particle spacings
-    double IPS = 1;                                        // Inter particle spacing     : mm
 
-    Particles.Set_Inter_Particle_Spacing(IPS);                                 //        : mm
     Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
-
     Particles.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
-
     Particles.Set_alpha(.75);                               // Hg control parameter       : Unitless
-
     Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
   } // void Set_Particle_Array_Members(Particle_Array & Particles) {
 } // namespace Simulation {
