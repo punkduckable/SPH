@@ -13,7 +13,7 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   the contact force is applied whenever two particles are within a 2h radius of
   one another (when the two particles's support radii overlap). The applied
   force is in the direction of the line between the two particles centers. */
-  const double h = (Body_A.Get_Inter_Particle_Spacing() + Body_B.Get_Inter_Particle_Spacing()); // Contact force support radius  : mm
+  const double h = Simulation::Contact_Distance;           // Contact force support radius         : mm
   const double h_squared = h*h;                            // Square of support radius   : mm^2
   unsigned int i;
   Vector r_ij;                                                                 //        : mm Vector

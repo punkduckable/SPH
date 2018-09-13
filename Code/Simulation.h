@@ -14,11 +14,11 @@ namespace Simulation {
   const unsigned char Save_Data_To_File          = 1;
   const unsigned char Print_Forces               = 0;
   const unsigned char Print_Net_Force            = 1;
-  const unsigned int TimeSteps_Between_Prints    = 10000;
+  const unsigned int TimeSteps_Between_Prints    = 5000;
 
   // TimeStep paramters
-  const double dt                                = .00000005;         // Time step        : s
-  const unsigned int Num_Steps                   = 2000000;         // Number of time steps
+  const double dt                                = .0000001;         // Time step        : s
+  const unsigned int Num_Steps                   = 1000000;         // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -34,6 +34,9 @@ namespace Simulation {
   Vector * Initial_Velocity;                     // Initial velocity condition
   double * Num_Particles;                        // The number of particles in each body
   Materials::Material * Materials;               // Each bodies material
+
+  // Contact parameter
+  const double Contact_Distance = 1;             // Distance at which bodies begin contacting one another.   : mm
 
   void Use_Arrays_From_Code(void) {
     Num_Arrays                                   = 2;
@@ -57,21 +60,21 @@ namespace Simulation {
     Is_Damagable[0]                              = true;
     From_FEB_File[0]                             = false;
     Steps_Per_Update[0]                          = 10;
-    IPS[0]                                       = .5;
-    Dimensions[0]                                = {40, 20, 40};
+    IPS[0]                                       = 1;
+    Dimensions[0]                                = {20, 10, 20};
     Offset[0]                                    = {0, 0, 0};
     Initial_Velocity[0]                          = {0, 0, 0};
     Materials[0]                                 = Materials::Default;
 
-    Names[1]                                     = "Short_needle";
-    Is_Cuboid[1]                                 = false;
+    Names[1]                                     = "Needle";
+    Is_Cuboid[1]                                 = true;
     Is_Boundary[1]                               = false;
-    Is_Damagable[1]                              = false;
-    From_FEB_File[1]                             = true;
+    Is_Damagable[1]                              = true;
+    From_FEB_File[1]                             = false;
     IPS[1]                                       = 1;
     Steps_Per_Update[1]                          = 1;
-    Dimensions[1]                                = {0, 0, 0};
-    Offset[1]                                    = {0, 0, 0};
+    Dimensions[1]                                = {6, 10, 6};
+    Offset[1]                                    = {10-3, 12, 10-3};
     Initial_Velocity[1]                          = {0, -50, 0};
     Materials[1]                                 = Materials::Stainless_Steel;
   } // void Use_Arrays_From_Code(void) {
