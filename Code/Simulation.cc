@@ -240,10 +240,12 @@ void Simulation::Run_Simulation(void) {
       } // if(m == 0)
 
       // Needle BC's
-      else if(m == 1)
-        for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++)
-          if((Arrays[m])[i].Get_X()[1] > 32.)
+      else if(m == 1) {
+        unsigned Array_m_Num_Particles = (Arrays[m]).Get_Num_Particles();
+        for(i = 0; i < Array_m_Num_Particles; i++)
+          if((Arrays[m])[i].Get_X()[1] > 19.)    // if y component is above threshold, press it.
             (Arrays[m])[i].V = {0, -50, 0};
+      } // else if(m == 1) {
 
     } // for(m = 0; m < Num_Arrays; m++)
 
@@ -311,7 +313,7 @@ void Simulation::Run_Simulation(void) {
     are proprly updated/have the right forces applied each timestpe) */
     for(m = 0; m < Num_Arrays; m++)
       for(i = m + 1; i < Num_Arrays; i++)
-        Particle_Helpers::Contact(Arrays[m], Arrays[i]);
+        Particle_Helpers::Contact(Arrays[i], Arrays[m]);
 
     #pragma omp single nowait
       contact_timer += clock() - timer2;

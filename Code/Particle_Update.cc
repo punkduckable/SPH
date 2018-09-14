@@ -348,10 +348,10 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     multiply our force, in Newtons, by 10^6 and then divide by the mass, in grams,
     then we get acceleration in mm/s^2. */
     a = ((1e+6)*(1./Particles[i].Mass))*(Force_Int                             //        : mm/s^2 Vector
-                                        + Particles[i].Force_Contact
-                                        + Particles[i].Force_Friction
-                                        + Force_HG)
-                                        + g;                                   // gravity
+                                       + Particles[i].Force_Contact
+                                       + Particles[i].Force_Friction
+                                       + Force_HG)
+                                       + g;                                    // gravity
 
     /* Now update the velocity, position vectors. This is done using the
     'leap-frog' integration scheme. However, during the first step of this

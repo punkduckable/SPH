@@ -10,9 +10,16 @@ bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles, const uns
   /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
   particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
   h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
-  neighbor of P2. */
+  neighbor of P2.
 
-  return ( Particles.Get_h() > Magnitude(Particles[i].Get_X() - Particles[j].Get_X()));
+  It should be noted that, since h and |Rj| are positive numbers, if h>|Rj|
+  then h^2>|Rj|^2. We can compute this second condition using a dot product
+  (which is far easier than finding the magnitude)*/
+
+  const Vector Rj = Particles[i].Get_X() - Particles[j].Get_X();
+  double h = Particles.Get_h();
+  
+  return ( h*h > Vector_Dot_Product(Rj, Rj) );
 } // bool Particle_Helpers::Are_Neighbors(const Particle_Array, unsigned int i, unsigned int j) {
 
 

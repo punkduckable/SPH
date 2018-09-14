@@ -1,7 +1,7 @@
 #if !defined(SUMULATION_HEADER)
 #define SUMULATION_HEADER
 
-#define FRICTION_COEFFICIENT .25
+#define FRICTION_COEFFICIENT .1
 
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
@@ -73,8 +73,8 @@ namespace Simulation {
     From_FEB_File[1]                             = false;
     IPS[1]                                       = 1;
     Steps_Per_Update[1]                          = 1;
-    Dimensions[1]                                = {6, 10, 6};
-    Offset[1]                                    = {10-3, 12, 10-3};
+    Dimensions[1]                                = {4, 10, 4};
+    Offset[1]                                    = {10-2, 11, 10-2};
     Initial_Velocity[1]                          = {0, -50, 0};
     Materials[1]                                 = Materials::Stainless_Steel;
   } // void Use_Arrays_From_Code(void) {
