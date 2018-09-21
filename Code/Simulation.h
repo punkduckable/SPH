@@ -14,11 +14,11 @@ namespace Simulation {
   const unsigned char Save_Data_To_File          = 0;
   const unsigned char Print_Forces               = 1;
   const unsigned char Print_Net_Force            = 0;
-  const unsigned int TimeSteps_Between_Prints    = 100;
+  const unsigned int TimeSteps_Between_Prints    = 1000;
 
   // TimeStep paramters
-  const double dt                                = 500e-9;          // Time step        : s
-  const unsigned int Num_Steps                   = 10000;          // Number of time steps
+  const double dt                                = 5e-9;          // Time step        : s
+  const unsigned int Num_Steps                   = 100000;          // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -86,7 +86,7 @@ namespace Simulation {
 
     Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
     Particles.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
-    Particles.Set_alpha(.75);                               // Hg control parameter       : Unitless
+    Particles.Set_alpha(.75);                              // Hg control parameter       : Unitless
     Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
   } // void Set_Particle_Array_Members(Particle_Array & Particles) {
 } // namespace Simulation {

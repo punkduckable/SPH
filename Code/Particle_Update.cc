@@ -175,7 +175,8 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
     and F(t-dt) (in Particles[i].F[i_dt]).*/
     Particles[i].P = (F*S + Visc)*Particles[i].A_Inv;                          //         : Mpa Tensor
     Particles[i].F[i_2dt] = F;                                                 //         : unitless Tensor
-    //Particles[i].Visc = Visc*Particles[i].A_Inv;                               // For debugging
+    if(Simulation::Print_Forces == true)
+      Particles[i].Visc = Visc*Particles[i].A_Inv;                             // For debugging
   } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
@@ -211,7 +212,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   // Current (ith) particle properties
   Vector Force_Int;                              // Internal Force vector                : N Vector
   Vector Force_HG;                               // Hour-glass force                     : N Vector
-  //Vector Force_Visc;                             // For debugging
+  Vector Force_Visc;                             // Viscosity force. Note: This only gets used if Force printing is enabled
   Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
   Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Vector a;                                      // acceleration                         : mm/s^2 Vector
@@ -241,7 +242,8 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     // Now reset the force vectors
     Force_Int = {0,0,0};
     Force_HG = {0,0,0};
-    //Force_Visc = {0,0,0};
+    if(Simulation::Print_Forces == true)
+      Force_Visc = {0,0,0};
 
     // Set up current particle properties
     double V_i = Particles[i].Get_Vol();         // volume of current particle           : mm^3
@@ -272,7 +274,8 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       double V_j = Particles[Neighbor_ID].Vol;   // Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
       Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                              //        : N Vector
-      //Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);// For debugging
+      if(Simulation::Print_Forces == true)
+        Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);    // Viscious force
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -339,7 +342,8 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
     Force_HG *= -.5*E*V_i*alpha;       // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
     Force_Int *= V_i;                  // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
-    //Force_Visc *= V_i;                 // for debugging
+    if(Simulation::Print_Forces == true)
+      Force_Visc *= V_i;               // Viscious force
 
     /* Compute acceleration of particle at new position a(t_i+1).
     Note that all the forces we have calculated have been in units of Newtons.
@@ -379,7 +383,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     if(Simulation::Print_Forces == true) {
       Particles[i].Force_Int = Force_Int;          // update Internal force                : N Vector
       Particles[i].Force_HG = Force_HG;            // update Hourglassing force            : N Vector
-      //Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
+      Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
     } // if(Simulation::Print_Forces == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
