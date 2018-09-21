@@ -18,7 +18,7 @@ bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles, const uns
 
   const Vector Rj = Particles[i].Get_X() - Particles[j].Get_X();
   double h = Particles.Get_h();
-  
+
   return ( h*h > Vector_Dot_Product(Rj, Rj) );
 } // bool Particle_Helpers::Are_Neighbors(const Particle_Array, unsigned int i, unsigned int j) {
 
@@ -175,8 +175,10 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
         if(i == p && j == q && k == r)
           continue;
 
-        if(Are_Neighbors(Particles, i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q))
-          Particle_Neighbor_List.Add_Back(Particles[p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q].Get_ID());
+        if(Are_Neighbors(Particles,
+                         i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j,
+                         p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q))
+          Particle_Neighbor_List.Add_Back(p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q);
       } // for(q = q_min; q <= q_max; q++) {
     } // for(r = r_min; r <= r_max; r++) {
   } // for(p = p_min; p <= p_max; p++) {
@@ -188,9 +190,11 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
   Num_Neighbors = Particle_Neighbor_List.Node_Count();
   Neighbor_IDs = new unsigned int[Num_Neighbors];
 
-  for(p = 0; p < Num_Neighbors; p++) {
+  if(Particles.Get_X_SIDE_LENGTH() == 3)
+    printf("Num neighbors = %u \n", Num_Neighbors);
+
+  for(p = 0; p < Num_Neighbors; p++)
     Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front();
-  } // for(j = 0; j < Num_Neighbors; j++) {
 
   // Now sent the Neighbor list to the particle
   P_In.Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);

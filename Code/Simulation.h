@@ -11,14 +11,14 @@ namespace Simulation {
 
   // Simulation flags/properties
   const unsigned char Load_Data_From_File        = 0;
-  const unsigned char Save_Data_To_File          = 1;
-  const unsigned char Print_Forces               = 0;
-  const unsigned char Print_Net_Force            = 1;
-  const unsigned int TimeSteps_Between_Prints    = 5000;
+  const unsigned char Save_Data_To_File          = 0;
+  const unsigned char Print_Forces               = 1;
+  const unsigned char Print_Net_Force            = 0;
+  const unsigned int TimeSteps_Between_Prints    = 100;
 
   // TimeStep paramters
-  const double dt                                = .0000001;         // Time step        : s
-  const unsigned int Num_Steps                   = 1000000;         // Number of time steps
+  const double dt                                = 500e-9;          // Time step        : s
+  const unsigned int Num_Steps                   = 10000;          // Number of time steps
 
   // Particle_Array properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -59,7 +59,7 @@ namespace Simulation {
     Is_Boundary[0]                               = false;
     Is_Damagable[0]                              = true;
     From_FEB_File[0]                             = false;
-    Steps_Per_Update[0]                          = 10;
+    Steps_Per_Update[0]                          = 100;
     IPS[0]                                       = 1;
     Dimensions[0]                                = {20, 10, 20};
     Offset[0]                                    = {0, 0, 0};
@@ -69,10 +69,10 @@ namespace Simulation {
     Names[1]                                     = "Needle";
     Is_Cuboid[1]                                 = true;
     Is_Boundary[1]                               = false;
-    Is_Damagable[1]                              = true;
+    Is_Damagable[1]                              = false;
     From_FEB_File[1]                             = false;
-    IPS[1]                                       = 1;
     Steps_Per_Update[1]                          = 1;
+    IPS[1]                                       = 1;
     Dimensions[1]                                = {4, 10, 4};
     Offset[1]                                    = {10-2, 11, 10-2};
     Initial_Velocity[1]                          = {0, -50, 0};

@@ -243,7 +243,7 @@ void Simulation::Run_Simulation(void) {
       else if(m == 1) {
         unsigned Array_m_Num_Particles = (Arrays[m]).Get_Num_Particles();
         for(i = 0; i < Array_m_Num_Particles; i++)
-          if((Arrays[m])[i].Get_X()[1] > 19.)    // if y component is above threshold, press it.
+          if((Arrays[m])[i].Get_X()[1] > 17.)    // if y component is above threshold, press it.
             (Arrays[m])[i].V = {0, -50, 0};
       } // else if(m == 1) {
 
