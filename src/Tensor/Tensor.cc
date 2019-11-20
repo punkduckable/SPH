@@ -1,35 +1,38 @@
-#if !defined(TENSOR_SOURCE)
-#define TENSOR_SOURCE
-
+#include <stdio.h>
+#include <assert.h>
+#include <math.h>
 #include "Tensor.h"
-#include "Vector.h"
+#include "Quick_Math.h"
+
 
 /* In this file, I define methods for tensor objects. It should be noted that
 tensor data is stored in a 9 element array rather than a 3x3 matrix. This is
 done because single dimension arrays tend to perform better and are, in my
 personal opinion, easier to work with. As a result, successive elements in a
 column are 3 elements away from each other. Successive elements in a row are one
-element away from each other. Therefore, S[3*i+j] is the same as T(i,j). */
+element away from each other. Therefore, Ar[3*i+j] is the same as T(i,j). */
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constuctors and destructor
 
 Tensor::Tensor(void) {
-  //OP_Count::T_Default_Constructor++;             // Increment operator count (See SPH Diagnostics)
-  //printf("Tensor default constructor\n");
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Default_Constructor++;             // Increment operator count
+  #endif
 } // Tensor::Tensor(void) {
 
 Tensor::Tensor(double t11, double t12, double t13,
                double t21, double t22, double t23,
                double t31, double t32, double t33) {
 
-    // Set the 9 individual components of S using inputs.
-    S[0] = t11; S[1] = t12; S[2] = t13; // Row 1
-    S[3] = t21; S[4] = t22; S[5] = t23; // Row 2
-    S[6] = t31; S[7] = t32; S[8] = t33; // Row 3
+  // Set the 9 individual components of S using inputs.
+  Ar[0] = t11; Ar[1] = t12; Ar[2] = t13; // Row 1
+  Ar[3] = t21; Ar[4] = t22; Ar[5] = t23; // Row 2
+  Ar[6] = t31; Ar[7] = t32; Ar[8] = t33; // Row 3
 
-    //OP_Count::T_Component_Constructor++;         // Increment operator count (See SPH Diagnostics)
-    //printf("Tensor component constrctor\n");
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Component_Constructor++;         // Increment operator count
+  #endif
 } // Tensor:Tensor(double t11,.... double t33) {
 
 
@@ -45,34 +48,35 @@ Tensor::Tensor(const Tensor & Tensor_In) {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  S[3*0 + 0] = Tensor_In[0*3 + 0];                    // i = 0, j = 0
-  S[3*0 + 1] = Tensor_In[0*3 + 1];                    // i = 0, j = 1
-  S[3*0 + 2] = Tensor_In[0*3 + 2];                    // i = 0, j = 2
+  Ar[3*0 + 0] = Tensor_In[0*3 + 0];                    // i = 0, j = 0
+  Ar[3*0 + 1] = Tensor_In[0*3 + 1];                    // i = 0, j = 1
+  Ar[3*0 + 2] = Tensor_In[0*3 + 2];                    // i = 0, j = 2
 
-  S[3*1 + 0] = Tensor_In[1*3 + 0];                    // i = 1, j = 0
-  S[3*1 + 1] = Tensor_In[1*3 + 1];                    // i = 1, j = 1
-  S[3*1 + 2] = Tensor_In[1*3 + 2];                    // i = 1, j = 2
+  Ar[3*1 + 0] = Tensor_In[1*3 + 0];                    // i = 1, j = 0
+  Ar[3*1 + 1] = Tensor_In[1*3 + 1];                    // i = 1, j = 1
+  Ar[3*1 + 2] = Tensor_In[1*3 + 2];                    // i = 1, j = 2
 
-  S[3*2 + 0] = Tensor_In[2*3 + 0];                    // i = 2, j = 0
-  S[3*2 + 1] = Tensor_In[2*3 + 1];                    // i = 2, j = 1
-  S[3*2 + 2] = Tensor_In[2*3 + 2];                    // i = 2, j = 2
+  Ar[3*2 + 0] = Tensor_In[2*3 + 0];                    // i = 2, j = 0
+  Ar[3*2 + 1] = Tensor_In[2*3 + 1];                    // i = 2, j = 1
+  Ar[3*2 + 2] = Tensor_In[2*3 + 2];                    // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 1; i < 3; i++) {
+  for(unsigned i = 1; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      S[3*i + j] = Tensor_In(i,j);
+      Ar[3*i + j] = Tensor_In(i,j);
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 1; i < 3; i++) {
+  } // for(unsigned i = 1; i < 3; i++) {
   */
-  //OP_Count::T_Copy_Constructor++;                // Increment operator count (See SPH Diagnostics)
-  //printf("Tensor Copy contructor\n");
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Copy_Constructor++;                // Increment operator count
+  #endif
 } // Tensor::Tensor(const Tensor & Tensor_In) {
 
 
 
-Tensor::~Tensor(void) {
-  //printf("Tensor destroyed\n");
-}
+Tensor::~Tensor(void) { }
+
+
 
 
 
@@ -89,30 +93,34 @@ Tensor & Tensor::operator=(const Tensor & Tensor_In) {
   To make this a little  more readible, I have included a comment with each
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
-  S[3*0 + 0] = Tensor_In[3*0 + 0];                    // i = 0, j = 0
-  S[3*0 + 1] = Tensor_In[3*0 + 1];                    // i = 0, j = 1
-  S[3*0 + 2] = Tensor_In[3*0 + 2];                    // i = 0, j = 1
+  (*this)[3*0 + 0] = Tensor_In[3*0 + 0];                    // i = 0, j = 0
+  (*this)[3*0 + 1] = Tensor_In[3*0 + 1];                    // i = 0, j = 1
+  (*this)[3*0 + 2] = Tensor_In[3*0 + 2];                    // i = 0, j = 1
 
-  S[3*1 + 0] = Tensor_In[3*1 + 0];                    // i = 1, j = 0
-  S[3*1 + 1] = Tensor_In[3*1 + 1];                    // i = 1, j = 1
-  S[3*1 + 2] = Tensor_In[3*1 + 2];                    // i = 1, j = 2
+  (*this)[3*1 + 0] = Tensor_In[3*1 + 0];                    // i = 1, j = 0
+  (*this)[3*1 + 1] = Tensor_In[3*1 + 1];                    // i = 1, j = 1
+  (*this)[3*1 + 2] = Tensor_In[3*1 + 2];                    // i = 1, j = 2
 
-  S[3*2 + 0] = Tensor_In[3*2 + 0];                    // i = 2, j = 0
-  S[3*2 + 1] = Tensor_In[3*2 + 1];                    // i = 2, j = 1
-  S[3*2 + 2] = Tensor_In[3*2 + 2];                    // i = 2, j = 2
+  (*this)[3*2 + 0] = Tensor_In[3*2 + 0];                    // i = 2, j = 0
+  (*this)[3*2 + 1] = Tensor_In[3*2 + 1];                    // i = 2, j = 1
+  (*this)[3*2 + 2] = Tensor_In[3*2 + 2];                    // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      S[3*i + j] = Tensor_In(i,j);
+      (*this)[3*i + j] = Tensor_In(i,j);
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::T_Equality++;                        // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Equality++;                        // Increment operator count
+  #endif
 
   // return this tensor (element wise equality is done)
   return *this;
 } // Tensor & Tensor::operator=(const Tensor & Tensor_In) {
+
+
 
 
 
@@ -132,26 +140,28 @@ Tensor Tensor::operator+(const Tensor & Tensor_In) const {
   I included comments that specify which loop iteration a given statement would
   correspond to (with i as the row index, j as the column index  */
 
-  Sum[0*3 + 0] = S[3*0 + 0] + Tensor_In[0*3 + 0];     // i = 0, j = 0
-  Sum[0*3 + 1] = S[3*0 + 1] + Tensor_In[0*3 + 1];     // i = 0, j = 1
-  Sum[0*3 + 2] = S[3*0 + 2] + Tensor_In[0*3 + 2];     // i = 0, j = 2
+  Sum[0*3 + 0] = (*this)[3*0 + 0] + Tensor_In[0*3 + 0];     // i = 0, j = 0
+  Sum[0*3 + 1] = (*this)[3*0 + 1] + Tensor_In[0*3 + 1];     // i = 0, j = 1
+  Sum[0*3 + 2] = (*this)[3*0 + 2] + Tensor_In[0*3 + 2];     // i = 0, j = 2
 
-  Sum[1*3 + 0] = S[3*1 + 0] + Tensor_In[1*3 + 0];     // i = 1, j = 0
-  Sum[1*3 + 1] = S[3*1 + 1] + Tensor_In[1*3 + 1];     // i = 1, j = 1
-  Sum[1*3 + 2] = S[3*1 + 2] + Tensor_In[1*3 + 2];     // i = 1, j = 2
+  Sum[1*3 + 0] = (*this)[3*1 + 0] + Tensor_In[1*3 + 0];     // i = 1, j = 0
+  Sum[1*3 + 1] = (*this)[3*1 + 1] + Tensor_In[1*3 + 1];     // i = 1, j = 1
+  Sum[1*3 + 2] = (*this)[3*1 + 2] + Tensor_In[1*3 + 2];     // i = 1, j = 2
 
-  Sum[2*3 + 0] = S[3*2 + 0] + Tensor_In[2*3 + 0];     // i = 2, j = 0
-  Sum[2*3 + 1] = S[3*2 + 1] + Tensor_In[2*3 + 1];     // i = 2, j = 1
-  Sum[2*3 + 2] = S[3*2 + 2] + Tensor_In[2*3 + 2];     // i = 2, j = 2
+  Sum[2*3 + 0] = (*this)[3*2 + 0] + Tensor_In[2*3 + 0];     // i = 2, j = 0
+  Sum[2*3 + 1] = (*this)[3*2 + 1] + Tensor_In[2*3 + 1];     // i = 2, j = 1
+  Sum[2*3 + 2] = (*this)[3*2 + 2] + Tensor_In[2*3 + 2];     // i = 2, j = 2
 
   /* Old, double nested loop.
-  for(int i = 0; i < 3; i++){
+  for(unsigned i = 0; i < 3; i++){
     for(int j = 0; j < 3; j++) {
-      Sum(i,j) = S[3*i + j] + Tensor_In(i,j);
+      Sum(i,j) = (*this)[3*i + j] + Tensor_In(i,j);
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 9; i++){
+  } // for(unsigned i = 0; i < 9; i++){
   */
-  //OP_Count::T_T_Addition++;                      // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_T_Addition++;                      // Increment operator count
+  #endif
 
   return Sum;
 } // Tensor Tensor::operator+(const Tensor & Tensor_In) const {
@@ -171,26 +181,28 @@ Tensor Tensor::operator-(const Tensor & Tensor_In) const {
   I included comments that specify which loop iteration a given statement would
   correspond to (with i as the row index, j as the column index  */
 
-  Diff[0*3 + 0] = S[3*0 + 0] - Tensor_In[0*3 + 0];     // i = 0, j = 0
-  Diff[0*3 + 1] = S[3*0 + 1] - Tensor_In[0*3 + 1];     // i = 0, j = 1
-  Diff[0*3 + 2] = S[3*0 + 2] - Tensor_In[0*3 + 2];     // i = 0, j = 2
+  Diff[0*3 + 0] = (*this)[3*0 + 0] - Tensor_In[0*3 + 0];     // i = 0, j = 0
+  Diff[0*3 + 1] = (*this)[3*0 + 1] - Tensor_In[0*3 + 1];     // i = 0, j = 1
+  Diff[0*3 + 2] = (*this)[3*0 + 2] - Tensor_In[0*3 + 2];     // i = 0, j = 2
 
-  Diff[1*3 + 0] = S[3*1 + 0] - Tensor_In[1*3 + 0];     // i = 1, j = 0
-  Diff[1*3 + 1] = S[3*1 + 1] - Tensor_In[1*3 + 1];     // i = 1, j = 1
-  Diff[1*3 + 2] = S[3*1 + 2] - Tensor_In[1*3 + 2];     // i = 1, j = 2
+  Diff[1*3 + 0] = (*this)[3*1 + 0] - Tensor_In[1*3 + 0];     // i = 1, j = 0
+  Diff[1*3 + 1] = (*this)[3*1 + 1] - Tensor_In[1*3 + 1];     // i = 1, j = 1
+  Diff[1*3 + 2] = (*this)[3*1 + 2] - Tensor_In[1*3 + 2];     // i = 1, j = 2
 
-  Diff[2*3 + 0] = S[3*2 + 0] - Tensor_In[2*3 + 0];     // i = 2, j = 0
-  Diff[2*3 + 1] = S[3*2 + 1] - Tensor_In[2*3 + 1];     // i = 2, j = 1
-  Diff[2*3 + 2] = S[3*2 + 2] - Tensor_In[2*3 + 2];     // i = 2, j = 2
+  Diff[2*3 + 0] = (*this)[3*2 + 0] - Tensor_In[2*3 + 0];     // i = 2, j = 0
+  Diff[2*3 + 1] = (*this)[3*2 + 1] - Tensor_In[2*3 + 1];     // i = 2, j = 1
+  Diff[2*3 + 2] = (*this)[3*2 + 2] - Tensor_In[2*3 + 2];     // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 0; i < 3; i++){
+  for(unsigned i = 0; i < 3; i++){
     for(int j = 0; j < 3; j++) {
-      Diff(i,j) = S[3*i + j] - Tensor_In(i,j);
+      Diff(i,j) = (*this)[3*i + j] - Tensor_In(i,j);
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 9; i++){
+  } // for(unsigned i = 0; i < 9; i++){
   */
-  //OP_Count::T_T_Subtraction++;                   // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_T_Subtraction++;                   // Increment operator count
+  #endif
 
   return Diff;
 } // Tensor Tensor::operator-(const Tensor & Tensor_In) const {
@@ -236,56 +248,58 @@ Tensor Tensor::operator*(const Tensor & Tensor_In) const{
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod[3*0 + 0] = S[3*0 + 0]*Tensor_In[3*0 + 0];      // i = 0, j = 0, p = 0
-  Prod[3*0 + 1] = S[3*0 + 0]*Tensor_In[3*0 + 1];      // i = 0, j = 1, p = 0
-  Prod[3*0 + 2] = S[3*0 + 0]*Tensor_In[3*0 + 2];      // i = 0, j = 2, p = 0
+  Prod[3*0 + 0] = (*this)[3*0 + 0]*Tensor_In[3*0 + 0];      // i = 0, j = 0, p = 0
+  Prod[3*0 + 1] = (*this)[3*0 + 0]*Tensor_In[3*0 + 1];      // i = 0, j = 1, p = 0
+  Prod[3*0 + 2] = (*this)[3*0 + 0]*Tensor_In[3*0 + 2];      // i = 0, j = 2, p = 0
 
-  Prod[3*0 + 0] += S[3*0 + 1]*Tensor_In[3*1 + 0];     // i = 0, j = 0, p = 1
-  Prod[3*0 + 1] += S[3*0 + 1]*Tensor_In[3*1 + 1];     // i = 0, j = 1, p = 1
-  Prod[3*0 + 2] += S[3*0 + 1]*Tensor_In[3*1 + 2];     // i = 0, j = 2, p = 1
+  Prod[3*0 + 0] += (*this)[3*0 + 1]*Tensor_In[3*1 + 0];     // i = 0, j = 0, p = 1
+  Prod[3*0 + 1] += (*this)[3*0 + 1]*Tensor_In[3*1 + 1];     // i = 0, j = 1, p = 1
+  Prod[3*0 + 2] += (*this)[3*0 + 1]*Tensor_In[3*1 + 2];     // i = 0, j = 2, p = 1
 
-  Prod[3*0 + 0] += S[3*0 + 2]*Tensor_In[3*2 + 0];     // i = 0, j = 0, p = 2
-  Prod[3*0 + 1] += S[3*0 + 2]*Tensor_In[3*2 + 1];     // i = 0, j = 1, p = 2
-  Prod[3*0 + 2] += S[3*0 + 2]*Tensor_In[3*2 + 2];     // i = 0, j = 2, p = 2
+  Prod[3*0 + 0] += (*this)[3*0 + 2]*Tensor_In[3*2 + 0];     // i = 0, j = 0, p = 2
+  Prod[3*0 + 1] += (*this)[3*0 + 2]*Tensor_In[3*2 + 1];     // i = 0, j = 1, p = 2
+  Prod[3*0 + 2] += (*this)[3*0 + 2]*Tensor_In[3*2 + 2];     // i = 0, j = 2, p = 2
 
 
   /* i = 1 (2nd row of C) */
-  Prod[3*1 + 0] = S[3*1 + 0]*Tensor_In[3*0 + 0];      // i = 1, j = 0, p = 0
-  Prod[3*1 + 1] = S[3*1 + 0]*Tensor_In[3*0 + 1];      // i = 1, j = 1, p = 0
-  Prod[3*1 + 2] = S[3*1 + 0]*Tensor_In[3*0 + 2];      // i = 1, j = 2, p = 0
+  Prod[3*1 + 0] = (*this)[3*1 + 0]*Tensor_In[3*0 + 0];      // i = 1, j = 0, p = 0
+  Prod[3*1 + 1] = (*this)[3*1 + 0]*Tensor_In[3*0 + 1];      // i = 1, j = 1, p = 0
+  Prod[3*1 + 2] = (*this)[3*1 + 0]*Tensor_In[3*0 + 2];      // i = 1, j = 2, p = 0
 
-  Prod[3*1 + 0] += S[3*1 + 1]*Tensor_In[3*1 + 0];     // i = 1, j = 0, p = 1
-  Prod[3*1 + 1] += S[3*1 + 1]*Tensor_In[3*1 + 1];     // i = 1, j = 1, p = 1
-  Prod[3*1 + 2] += S[3*1 + 1]*Tensor_In[3*1 + 2];     // i = 1, j = 2, p = 1
+  Prod[3*1 + 0] += (*this)[3*1 + 1]*Tensor_In[3*1 + 0];     // i = 1, j = 0, p = 1
+  Prod[3*1 + 1] += (*this)[3*1 + 1]*Tensor_In[3*1 + 1];     // i = 1, j = 1, p = 1
+  Prod[3*1 + 2] += (*this)[3*1 + 1]*Tensor_In[3*1 + 2];     // i = 1, j = 2, p = 1
 
-  Prod[3*1 + 0] += S[3*1 + 2]*Tensor_In[3*2 + 0];     // i = 1, j = 0, p = 2
-  Prod[3*1 + 1] += S[3*1 + 2]*Tensor_In[3*2 + 1];     // i = 1, j = 1, p = 2
-  Prod[3*1 + 2] += S[3*1 + 2]*Tensor_In[3*2 + 2];     // i = 1, j = 2, p = 2
+  Prod[3*1 + 0] += (*this)[3*1 + 2]*Tensor_In[3*2 + 0];     // i = 1, j = 0, p = 2
+  Prod[3*1 + 1] += (*this)[3*1 + 2]*Tensor_In[3*2 + 1];     // i = 1, j = 1, p = 2
+  Prod[3*1 + 2] += (*this)[3*1 + 2]*Tensor_In[3*2 + 2];     // i = 1, j = 2, p = 2
 
 
   /* i = 2 (3rd row) */
-  Prod[3*2 + 0] = S[3*2 + 0]*Tensor_In[3*0 + 0];      // i = 2, j = 0, p = 0
-  Prod[3*2 + 1] = S[3*2 + 0]*Tensor_In[3*0 + 1];      // i = 2, j = 1, p = 0
-  Prod[3*2 + 2] = S[3*2 + 0]*Tensor_In[3*0 + 2];      // i = 2, j = 2, p = 0
+  Prod[3*2 + 0] = (*this)[3*2 + 0]*Tensor_In[3*0 + 0];      // i = 2, j = 0, p = 0
+  Prod[3*2 + 1] = (*this)[3*2 + 0]*Tensor_In[3*0 + 1];      // i = 2, j = 1, p = 0
+  Prod[3*2 + 2] = (*this)[3*2 + 0]*Tensor_In[3*0 + 2];      // i = 2, j = 2, p = 0
 
-  Prod[3*2 + 0] += S[3*2 + 1]*Tensor_In[3*1 + 0];     // i = 2, j = 0, p = 1
-  Prod[3*2 + 1] += S[3*2 + 1]*Tensor_In[3*1 + 1];     // i = 2, j = 1, p = 1
-  Prod[3*2 + 2] += S[3*2 + 1]*Tensor_In[3*1 + 2];     // i = 2, j = 2, p = 1
+  Prod[3*2 + 0] += (*this)[3*2 + 1]*Tensor_In[3*1 + 0];     // i = 2, j = 0, p = 1
+  Prod[3*2 + 1] += (*this)[3*2 + 1]*Tensor_In[3*1 + 1];     // i = 2, j = 1, p = 1
+  Prod[3*2 + 2] += (*this)[3*2 + 1]*Tensor_In[3*1 + 2];     // i = 2, j = 2, p = 1
 
-  Prod[3*2 + 0] += S[3*2 + 2]*Tensor_In[3*2 + 0];     // i = 2, j = 0, p = 2
-  Prod[3*2 + 1] += S[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
-  Prod[3*2 + 2] += S[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
+  Prod[3*2 + 0] += (*this)[3*2 + 2]*Tensor_In[3*2 + 0];     // i = 2, j = 0, p = 2
+  Prod[3*2 + 1] += (*this)[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
+  Prod[3*2 + 2] += (*this)[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
 
   /* Old, loop based Tensor-Tensor product
-  for(int i = 0; i < 3; i++) {    // Row loops
+  for(unsigned i = 0; i < 3; i++) {    // Row loops
     for(int p = 0; p < 3; p++) {    // Dot prod loops
-      Prod(i,0) += S[3*i + p]*Tensor_In(p,0);
-      Prod(i,1) += S[3*i + p]*Tensor_In(p,1);
-      Prod(i,2) += S[3*i + p]*Tensor_In(p,2);
+      Prod(i,0) += (*this)[3*i + p]*Tensor_In(p,0);
+      Prod(i,1) += (*this)[3*i + p]*Tensor_In(p,1);
+      Prod(i,2) += (*this)[3*i + p]*Tensor_In(p,2);
     } // for(int p = 0; p < 3; p++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::T_T_Multiplication++;                // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_T_Multiplication++;                // Increment operator count
+  #endif
 
   return Prod;
 } // Tensor Tensor::operator*(const Tensor & Tensor_In) const{
@@ -302,26 +316,28 @@ Vector Tensor::operator*(const Vector & V_In) const {
   eliminate this overhead, I have written what would have been the loop
   iterations as a series of statements.*/
 
-  Prod[0] =   S[3*0 + 0]*V_In[0] +
-              S[3*0 + 1]*V_In[1] +
-              S[3*0 + 2]*V_In[2];
+  Prod[0] =   (*this)[3*0 + 0]*V_In[0] +
+              (*this)[3*0 + 1]*V_In[1] +
+              (*this)[3*0 + 2]*V_In[2];
 
-  Prod[1] =   S[3*1 + 0]*V_In[0] +
-              S[3*1 + 1]*V_In[1] +
-              S[3*1 + 2]*V_In[2];
+  Prod[1] =   (*this)[3*1 + 0]*V_In[0] +
+              (*this)[3*1 + 1]*V_In[1] +
+              (*this)[3*1 + 2]*V_In[2];
 
-  Prod[2] =   S[3*2 + 0]*V_In[0] +
-              S[3*2 + 1]*V_In[1] +
-              S[3*2 + 2]*V_In[2];
+  Prod[2] =   (*this)[3*2 + 0]*V_In[0] +
+              (*this)[3*2 + 1]*V_In[1] +
+              (*this)[3*2 + 2]*V_In[2];
 
   /* Old loop
-  for(int i = 0; i < 3; i++) {
-    Prod[i] =   S[3*i + 0]*V_In[0] +
-                S[3*i + 1]*V_In[1] +
-                S[3*i + 2]*V_In[2];
-  } //   for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
+    Prod[i] =   (*this)[3*i + 0]*V_In[0] +
+                (*this)[3*i + 1]*V_In[1] +
+                (*this)[3*i + 2]*V_In[2];
+  } //   for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::T_V_Multiplication++;                // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_V_Multiplication++;                // Increment operator count
+  #endif
 
   return Prod;
 } // Vector Tensor::operator*(const Vector & V_In) const {
@@ -341,26 +357,28 @@ Tensor Tensor::operator*(const double c) const {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  Prod[0*3 + 0] = S[3*0 + 0]*c;                  // i = 0, j = 0
-  Prod[0*3 + 1] = S[3*0 + 1]*c;                  // i = 0, j = 1
-  Prod[0*3 + 2] = S[3*0 + 2]*c;                  // i = 0, j = 2
+  Prod[0*3 + 0] = (*this)[3*0 + 0]*c;                  // i = 0, j = 0
+  Prod[0*3 + 1] = (*this)[3*0 + 1]*c;                  // i = 0, j = 1
+  Prod[0*3 + 2] = (*this)[3*0 + 2]*c;                  // i = 0, j = 2
 
-  Prod[1*3 + 0] = S[3*1 + 0]*c;                  // i = 1, j = 0
-  Prod[1*3 + 1] = S[3*1 + 1]*c;                  // i = 1, j = 1
-  Prod[1*3 + 2] = S[3*1 + 2]*c;                  // i = 1, j = 2
+  Prod[1*3 + 0] = (*this)[3*1 + 0]*c;                  // i = 1, j = 0
+  Prod[1*3 + 1] = (*this)[3*1 + 1]*c;                  // i = 1, j = 1
+  Prod[1*3 + 2] = (*this)[3*1 + 2]*c;                  // i = 1, j = 2
 
-  Prod[2*3 + 0] = S[3*2 + 0]*c;                  // i = 2, j = 0
-  Prod[2*3 + 1] = S[3*2 + 1]*c;                  // i = 2, j = 1
-  Prod[2*3 + 2] = S[3*2 + 2]*c;                  // i = 2, j = 2
+  Prod[2*3 + 0] = (*this)[3*2 + 0]*c;                  // i = 2, j = 0
+  Prod[2*3 + 1] = (*this)[3*2 + 1]*c;                  // i = 2, j = 1
+  Prod[2*3 + 2] = (*this)[3*2 + 2]*c;                  // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      Prod(i,j) = S[3*i + j]*c;
+      Prod(i,j) = (*this)[3*i + j]*c;
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::T_S_Multiplication++;                // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_S_Multiplication++;                // Increment operator count
+  #endif
 
   return Prod;
 } // Tensor Tensor::operator*(const double c) const {
@@ -371,8 +389,10 @@ Tensor Tensor::operator/(const double c) const {
   Tensor Quotient;
 
   // Check that quotient is non-zero
-  if(c == 0)
-    printf("You tried dividing a tensor by zero!!!\n");
+  if(c == 0) {
+    throw Divide_By_Zero("Divide by Zero Exception: thrown by Tensor::operator/\n"
+                         "You tried dividing a tensor by zero. Bad!\n");
+  } // if(c == 0) {
 
   /* Here we return the quotient (*this)/c. Normally, doing this would require
   cycling through the row's and col's of S in a double nested loop. However,
@@ -383,29 +403,33 @@ Tensor Tensor::operator/(const double c) const {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  Quotient[0*3 + 0] = S[3*0 + 0]/c;              // i = 0, j = 0
-  Quotient[0*3 + 1] = S[3*0 + 1]/c;              // i = 0, j = 1
-  Quotient[0*3 + 2] = S[3*0 + 2]/c;              // i = 0, j = 2
+  Quotient[0*3 + 0] = (*this)[3*0 + 0]/c;              // i = 0, j = 0
+  Quotient[0*3 + 1] = (*this)[3*0 + 1]/c;              // i = 0, j = 1
+  Quotient[0*3 + 2] = (*this)[3*0 + 2]/c;              // i = 0, j = 2
 
-  Quotient[1*3 + 0] = S[3*1 + 0]/c;              // i = 1, j = 0
-  Quotient[1*3 + 1] = S[3*1 + 1]/c;              // i = 1, j = 1
-  Quotient[1*3 + 2] = S[3*1 + 2]/c;              // i = 1, j = 2
+  Quotient[1*3 + 0] = (*this)[3*1 + 0]/c;              // i = 1, j = 0
+  Quotient[1*3 + 1] = (*this)[3*1 + 1]/c;              // i = 1, j = 1
+  Quotient[1*3 + 2] = (*this)[3*1 + 2]/c;              // i = 1, j = 2
 
-  Quotient[2*3 + 0] = S[3*2 + 0]/c;              // i = 2, j = 0
-  Quotient[2*3 + 1] = S[3*2 + 1]/c;              // i = 2, j = 1
-  Quotient[2*3 + 2] = S[3*2 + 2]/c;              // i = 2, j = 2
+  Quotient[2*3 + 0] = (*this)[3*2 + 0]/c;              // i = 2, j = 0
+  Quotient[2*3 + 1] = (*this)[3*2 + 1]/c;              // i = 2, j = 1
+  Quotient[2*3 + 2] = (*this)[3*2 + 2]/c;              // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-        Quotient(i,j) = S[3*i + j]/c;
+        Quotient(i,j) = (*this)[3*i + j]/c;
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::T_S_Division++;                      // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_S_Division++;                      // Increment operator count
+  #endif
 
   return Quotient;
 } //Tensor Tensor::operator/(const double c) const {
+
+
 
 
 
@@ -423,26 +447,28 @@ Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  S[3*0 + 0] = S[3*0 + 0] + Tensor_In[3*0 + 0];       // i = 0, j = 0
-  S[3*0 + 1] = S[3*0 + 1] + Tensor_In[3*0 + 1];       // i = 0, j = 1
-  S[3*0 + 2] = S[3*0 + 2] + Tensor_In[3*0 + 2];       // i = 0, j = 2
+  (*this)[3*0 + 0] += Tensor_In[3*0 + 0];       // i = 0, j = 0
+  (*this)[3*0 + 1] += Tensor_In[3*0 + 1];       // i = 0, j = 1
+  (*this)[3*0 + 2] += Tensor_In[3*0 + 2];       // i = 0, j = 2
 
-  S[3*1 + 0] = S[3*1 + 0] + Tensor_In[3*1 + 0];       // i = 1, j = 0
-  S[3*1 + 1] = S[3*1 + 1] + Tensor_In[3*1 + 1];       // i = 1, j = 1
-  S[3*1 + 2] = S[3*1 + 2] + Tensor_In[3*1 + 2];       // i = 1, j = 2
+  (*this)[3*1 + 0] += Tensor_In[3*1 + 0];       // i = 1, j = 0
+  (*this)[3*1 + 1] += Tensor_In[3*1 + 1];       // i = 1, j = 1
+  (*this)[3*1 + 2] += Tensor_In[3*1 + 2];       // i = 1, j = 2
 
-  S[3*2 + 0] = S[3*2 + 0] + Tensor_In[3*2 + 0];       // i = 2, j = 0
-  S[3*2 + 1] = S[3*2 + 1] + Tensor_In[3*2 + 1];       // i = 2, j = 1
-  S[3*2 + 2] = S[3*2 + 2] + Tensor_In[3*2 + 2];       // i = 2, j = 2
+  (*this)[3*2 + 0] += Tensor_In[3*2 + 0];       // i = 2, j = 0
+  (*this)[3*2 + 1] += Tensor_In[3*2 + 1];       // i = 2, j = 1
+  (*this)[3*2 + 2] += Tensor_In[3*2 + 2];       // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      S[3*i+j] = S[3*i+ j] + Tensor_In(i,j);
+      (*this)[3*i+j] += Tensor_In(i,j);
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::Compound_T_T_Addition++;             // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::Compound_T_T_Addition++;             // Increment operator count
+  #endif
 
   // Return this tensor (element wise summation is done)
   return *this;
@@ -461,26 +487,28 @@ Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  S[3*0 + 0] = S[3*0 + 0] - Tensor_In[3*0 + 0];       // i = 0, j = 0
-  S[3*0 + 1] = S[3*0 + 1] - Tensor_In[3*0 + 1];       // i = 0, j = 1
-  S[3*0 + 2] = S[3*0 + 2] - Tensor_In[3*0 + 2];       // i = 0, j = 2
+  (*this)[3*0 + 0] -= Tensor_In[3*0 + 0];       // i = 0, j = 0
+  (*this)[3*0 + 1] -= Tensor_In[3*0 + 1];       // i = 0, j = 1
+  (*this)[3*0 + 2] -= Tensor_In[3*0 + 2];       // i = 0, j = 2
 
-  S[3*1 + 0] = S[3*1 + 0] - Tensor_In[3*1 + 0];       // i = 1, j = 0
-  S[3*1 + 1] = S[3*1 + 1] - Tensor_In[3*1 + 1];       // i = 1, j = 1
-  S[3*1 + 2] = S[3*1 + 2] - Tensor_In[3*1 + 2];       // i = 1, j = 2
+  (*this)[3*1 + 0] -= Tensor_In[3*1 + 0];       // i = 1, j = 0
+  (*this)[3*1 + 1] -= Tensor_In[3*1 + 1];       // i = 1, j = 1
+  (*this)[3*1 + 2] -= Tensor_In[3*1 + 2];       // i = 1, j = 2
 
-  S[3*2 + 0] = S[3*2 + 0] - Tensor_In[3*2 + 0];       // i = 2, j = 0
-  S[3*2 + 1] = S[3*2 + 1] - Tensor_In[3*2 + 1];       // i = 2, j = 1
-  S[3*2 + 2] = S[3*2 + 2] - Tensor_In[3*2 + 2];       // i = 2, j = 2
+  (*this)[3*2 + 0] -= Tensor_In[3*2 + 0];       // i = 2, j = 0
+  (*this)[3*2 + 1] -= Tensor_In[3*2 + 1];       // i = 2, j = 1
+  (*this)[3*2 + 2] -= Tensor_In[3*2 + 2];       // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      S[3*i+j] = S[3*i+ j] - Tensor_In(i,j);
+      (*this)[3*i+j] -= Tensor_In(i,j);
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::Compound_T_T_Subtraction++;          // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::Compound_T_T_Subtraction++;          // Increment operator count
+  #endif
 
   // Return this tensor (element wise subtraction is done)
   return *this;
@@ -527,113 +555,142 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod[3*0 + 0] = S[3*0 + 0]*Tensor_In[3*0 + 0];      // i = 0, j = 0, p = 0
-  Prod[3*0 + 1] = S[3*0 + 0]*Tensor_In[3*0 + 1];      // i = 0, j = 1, p = 0
-  Prod[3*0 + 2] = S[3*0 + 0]*Tensor_In[3*0 + 2];      // i = 0, j = 2, p = 0
+  Prod[3*0 + 0] = (*this)[3*0 + 0]*Tensor_In[3*0 + 0];      // i = 0, j = 0, p = 0
+  Prod[3*0 + 1] = (*this)[3*0 + 0]*Tensor_In[3*0 + 1];      // i = 0, j = 1, p = 0
+  Prod[3*0 + 2] = (*this)[3*0 + 0]*Tensor_In[3*0 + 2];      // i = 0, j = 2, p = 0
 
-  Prod[3*0 + 0] += S[3*0 + 1]*Tensor_In[3*1 + 0];     // i = 0, j = 0, p = 1
-  Prod[3*0 + 1] += S[3*0 + 1]*Tensor_In[3*1 + 1];     // i = 0, j = 1, p = 1
-  Prod[3*0 + 2] += S[3*0 + 1]*Tensor_In[3*1 + 2];     // i = 0, j = 2, p = 1
+  Prod[3*0 + 0] += (*this)[3*0 + 1]*Tensor_In[3*1 + 0];     // i = 0, j = 0, p = 1
+  Prod[3*0 + 1] += (*this)[3*0 + 1]*Tensor_In[3*1 + 1];     // i = 0, j = 1, p = 1
+  Prod[3*0 + 2] += (*this)[3*0 + 1]*Tensor_In[3*1 + 2];     // i = 0, j = 2, p = 1
 
-  Prod[3*0 + 0] += S[3*0 + 2]*Tensor_In[3*2 + 0];     // i = 0, j = 0, p = 2
-  Prod[3*0 + 1] += S[3*0 + 2]*Tensor_In[3*2 + 1];     // i = 0, j = 1, p = 2
-  Prod[3*0 + 2] += S[3*0 + 2]*Tensor_In[3*2 + 2];     // i = 0, j = 2, p = 2
+  Prod[3*0 + 0] += (*this)[3*0 + 2]*Tensor_In[3*2 + 0];     // i = 0, j = 0, p = 2
+  Prod[3*0 + 1] += (*this)[3*0 + 2]*Tensor_In[3*2 + 1];     // i = 0, j = 1, p = 2
+  Prod[3*0 + 2] += (*this)[3*0 + 2]*Tensor_In[3*2 + 2];     // i = 0, j = 2, p = 2
 
 
   /* i = 1 (2nd row of C) */
-  Prod[3*1 + 0] = S[3*1 + 0]*Tensor_In[3*0 + 0];      // i = 1, j = 0, p = 0
-  Prod[3*1 + 1] = S[3*1 + 0]*Tensor_In[3*0 + 1];      // i = 1, j = 1, p = 0
-  Prod[3*1 + 2] = S[3*1 + 0]*Tensor_In[3*0 + 2];      // i = 1, j = 2, p = 0
+  Prod[3*1 + 0] = (*this)[3*1 + 0]*Tensor_In[3*0 + 0];      // i = 1, j = 0, p = 0
+  Prod[3*1 + 1] = (*this)[3*1 + 0]*Tensor_In[3*0 + 1];      // i = 1, j = 1, p = 0
+  Prod[3*1 + 2] = (*this)[3*1 + 0]*Tensor_In[3*0 + 2];      // i = 1, j = 2, p = 0
 
-  Prod[3*1 + 0] += S[3*1 + 1]*Tensor_In[3*1 + 0];     // i = 1, j = 0, p = 1
-  Prod[3*1 + 1] += S[3*1 + 1]*Tensor_In[3*1 + 1];     // i = 1, j = 1, p = 1
-  Prod[3*1 + 2] += S[3*1 + 1]*Tensor_In[3*1 + 2];     // i = 1, j = 2, p = 1
+  Prod[3*1 + 0] += (*this)[3*1 + 1]*Tensor_In[3*1 + 0];     // i = 1, j = 0, p = 1
+  Prod[3*1 + 1] += (*this)[3*1 + 1]*Tensor_In[3*1 + 1];     // i = 1, j = 1, p = 1
+  Prod[3*1 + 2] += (*this)[3*1 + 1]*Tensor_In[3*1 + 2];     // i = 1, j = 2, p = 1
 
-  Prod[3*1 + 0] += S[3*1 + 2]*Tensor_In[3*2 + 0];     // i = 1, j = 0, p = 2
-  Prod[3*1 + 1] += S[3*1 + 2]*Tensor_In[3*2 + 1];     // i = 1, j = 1, p = 2
-  Prod[3*1 + 2] += S[3*1 + 2]*Tensor_In[3*2 + 2];     // i = 1, j = 2, p = 2
+  Prod[3*1 + 0] += (*this)[3*1 + 2]*Tensor_In[3*2 + 0];     // i = 1, j = 0, p = 2
+  Prod[3*1 + 1] += (*this)[3*1 + 2]*Tensor_In[3*2 + 1];     // i = 1, j = 1, p = 2
+  Prod[3*1 + 2] += (*this)[3*1 + 2]*Tensor_In[3*2 + 2];     // i = 1, j = 2, p = 2
 
 
   /* i = 2 (3rd row) */
-  Prod[3*2 + 0] = S[3*2 + 0]*Tensor_In[3*0 + 0];      // i = 2, j = 0, p = 0
-  Prod[3*2 + 1] = S[3*2 + 0]*Tensor_In[3*0 + 1];      // i = 2, j = 1, p = 0
-  Prod[3*2 + 2] = S[3*2 + 0]*Tensor_In[3*0 + 2];      // i = 2, j = 2, p = 0
+  Prod[3*2 + 0] = (*this)[3*2 + 0]*Tensor_In[3*0 + 0];      // i = 2, j = 0, p = 0
+  Prod[3*2 + 1] = (*this)[3*2 + 0]*Tensor_In[3*0 + 1];      // i = 2, j = 1, p = 0
+  Prod[3*2 + 2] = (*this)[3*2 + 0]*Tensor_In[3*0 + 2];      // i = 2, j = 2, p = 0
 
-  Prod[3*2 + 0] += S[3*2 + 1]*Tensor_In[3*1 + 0];     // i = 2, j = 0, p = 1
-  Prod[3*2 + 1] += S[3*2 + 1]*Tensor_In[3*1 + 1];     // i = 2, j = 1, p = 1
-  Prod[3*2 + 2] += S[3*2 + 1]*Tensor_In[3*1 + 2];     // i = 2, j = 2, p = 1
+  Prod[3*2 + 0] += (*this)[3*2 + 1]*Tensor_In[3*1 + 0];     // i = 2, j = 0, p = 1
+  Prod[3*2 + 1] += (*this)[3*2 + 1]*Tensor_In[3*1 + 1];     // i = 2, j = 1, p = 1
+  Prod[3*2 + 2] += (*this)[3*2 + 1]*Tensor_In[3*1 + 2];     // i = 2, j = 2, p = 1
 
-  Prod[3*2 + 0] += S[3*2 + 2]*Tensor_In[3*2 + 0];     // i = 2, j = 0, p = 2
-  Prod[3*2 + 1] += S[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
-  Prod[3*2 + 2] += S[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
+  Prod[3*2 + 0] += (*this)[3*2 + 2]*Tensor_In[3*2 + 0];     // i = 2, j = 0, p = 2
+  Prod[3*2 + 1] += (*this)[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
+  Prod[3*2 + 2] += (*this)[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
 
   /*
   // Old triple nested loop.
-  for(int i = 0; i < 3; i++) {    // Row loop
+  for(unsigned i = 0; i < 3; i++) {    // Row loop
     for(int p = 0; p < 3; p++) {    // Dot prod loop
       for(int j = 0; j < 3; j++) {    // Col loop
-        Prod(i,j) += S[3*i + p]*Tensor_In(p,j);
+        Prod(i,j) += (*this)[3*i + p]*Tensor_In(p,j);
       } // for(int j = 0; j < 3; j++) {
     } // for(int p = 0; p < 3; p++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
 
-  /* Copy Prod to S (in this Tensor). To do this normally would require two
+  /* Copy Prod to this Tensor. To do this normally would require two
   nested loops (one for the rows and one for the cols). However, as before, we
   want to minimize overhead. This means unrolling loops. Thus, rather than using
   a double loop to cycle through the 9 elements of our tensor, I have witten out
   the 9 iterations. To make the code a little more readible, I included the
   origional iteration numbers as comments. */
 
-  S[3*0 + 0] = Prod[3*0 + 0];                    // i = 0, j = 0
-  S[3*0 + 1] = Prod[3*0 + 1];                    // i = 0, j = 1
-  S[3*0 + 2] = Prod[3*0 + 2];                    // i = 0, j = 1
+  (*this)[3*0 + 0] = Prod[3*0 + 0];                    // i = 0, j = 0
+  (*this)[3*0 + 1] = Prod[3*0 + 1];                    // i = 0, j = 1
+  (*this)[3*0 + 2] = Prod[3*0 + 2];                    // i = 0, j = 1
 
-  S[3*1 + 0] = Prod[3*1 + 0];                    // i = 1, j = 0
-  S[3*1 + 1] = Prod[3*1 + 1];                    // i = 1, j = 1
-  S[3*1 + 2] = Prod[3*1 + 2];                    // i = 1, j = 2
+  (*this)[3*1 + 0] = Prod[3*1 + 0];                    // i = 1, j = 0
+  (*this)[3*1 + 1] = Prod[3*1 + 1];                    // i = 1, j = 1
+  (*this)[3*1 + 2] = Prod[3*1 + 2];                    // i = 1, j = 2
 
-  S[3*2 + 0] = Prod[3*2 + 0];                    // i = 2, j = 0
-  S[3*2 + 1] = Prod[3*2 + 1];                    // i = 2, j = 1
-  S[3*2 + 2] = Prod[3*2 + 2];                    // i = 2, j = 2
+  (*this)[3*2 + 0] = Prod[3*2 + 0];                    // i = 2, j = 0
+  (*this)[3*2 + 1] = Prod[3*2 + 1];                    // i = 2, j = 1
+  (*this)[3*2 + 2] = Prod[3*2 + 2];                    // i = 2, j = 2
 
   /* Old loop
-  for(int i = 0; i < 3; i++) {
-    S[3*i + 0] = Prod(i,0);
-    S[3*i + 1] = Prod(i,1);
-    S[3*i + 2] = Prod(i,2);
-  } //   for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
+    (*this)[3*i + 0] = Prod(i,0);
+    (*this)[3*i + 1] = Prod(i,1);
+    (*this)[3*i + 2] = Prod(i,2);
+  } //   for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::Compound_T_T_Multiplication++;       // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::Compound_T_T_Multiplication++;       // Increment operator count
+  #endif
 
   return *this;
 } // Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
 
 
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Tensor element access: ()
 
-double & Tensor::operator()(const uByte row, const uByte col) {
-  /* Check if desired rows or col is > 3. Note that this function only accepts
-  unsigned integer inputs. Thus, there is no possibility of row or col being
-  negative.  Therefore we only need to check that row and col are < 3 */
-  if(row >= 3 || col >=3)
-      printf("Index out of bounds\n");
+double & Tensor::operator()(const unsigned row, const unsigned col) {
+  /* Tensors have 3 rows and 3 columns.
+  Thus, valid row and col indicies are 0, 1, and 2.
+  Therefore, we check that row and col are both less than 3 */
+  assert(row < 3);
+  assert(col < 3);
 
   // Return the specified element (treat it like matirx notation)
-  return S[3*row + col];
-} // double & Tensor::operator()(const uByte row, const uByte col) {
+  return (*this)[3*row + col];
+} // double & Tensor::operator()(const unsigned row, const unsigned col) {
 
 
 
-double Tensor::operator()( const uByte row, const uByte col) const {
-  if(row >= 3 || col >=3)
-      printf("Index out of bounds\n");
+double & Tensor::operator[](const unsigned index) {
+  /* Tensors only have 9 components. Thus, the valid indicies are 0-8
+  Thus, we check that index < 9.  */
+  assert(index < 9);
+
+  return (*this)[index];
+} // double & Tensor::operator[](const unsigned index) {
+
+
+
+double Tensor::operator()( const unsigned row, const unsigned col) const {
+  /* Tensors have 3 rows and 3 columns.
+  Thus, valid row and col indicies are 0, 1, and 2.
+  Therefore, we check that row and col are both less than 3 */
+  assert(row < 3);
+  assert(col < 3);
 
   // Return the specified element (treat it like matirx notation)
-  return S[3*row + col];
-} // double Tensor::operator()(const uByte row, const uByte col) const {
+  return (*this)[3*row + col];
+} // double Tensor::operator()(const unsigned row, const unsigned col) const {
+
+
+
+double Tensor::operator[](const unsigned index) const {
+  /* Tensors only have 9 components. Thus, the valid indicies are 0-8
+  Thus, we check that index < 9.  */
+  assert(index < 9);
+
+  return (*this)[index];
+} // double Tensor::operator[](const unsigned index) const {
+
+
 
 
 
@@ -647,8 +704,8 @@ Tensor Tensor::Inverse(void) const{
   A = | d e f |
       | g h i |
 
-  Then, by solving for A^(-1) in A*A^(-1) = I by working through some awful
-  algebra we get,
+  Then, by solving for A^(-1) in A*A^(-1) = I (which involves working through
+  some awful algebra) we get,
                       | -hf + ei    ch - bi   -ce + bf |
   A^(-1) = (1/Det(A))*|  fg - di   -cg + ai    cd - af |
                       | -eg + dh    bg - ah   -bd + ae |
@@ -665,43 +722,51 @@ Tensor Tensor::Inverse(void) const{
   Inverse. Thus, we should hault computation if the determinant is zero. */
 
   if(Det_S == 0) {
-    printf("This tensor is singular. No Inverse exists! Returning 0 tensor\n");
-    (*this).Print();
-    return Tensor{0,0,0,
-                  0,0,0,
-                  0,0,0};
+    char Error_Message_Buffer[500];
+    sprintf(Error_Message_Buffer,
+            "Zero_Determinant Exception: Thrown by Tensor::Inverse\n"
+            "| %9.2e %9.2e %9.2e |\n"
+            "| %9.2e %9.2e %9.2e |\n"
+            "| %9.2e %9.2e %9.2e |\n"
+            "This tensor is singular. No Inverse exists!\n",
+            (*this)[0*3 + 0], (*this)[0*3 + 1], (*this)[0*3 + 2],
+            (*this)[1*3 + 0], (*this)[1*3 + 1], (*this)[1*3 + 2],
+            (*this)[2*3 + 0], (*this)[2*3 + 1], (*this)[2*3 + 2]);
+    throw Zero_Determinant(Error_Message_Buffer);
   } // if(Det_S == 0) {
 
-  Tensor_Inv[3*0 + 0] = -S[2*3 + 1]*S[1*3 + 2]
-                   +S[1*3 + 1]*S[2*3 + 2];      // -hf + ei
+  Tensor_Inv[3*0 + 0] = -(*this)[2*3 + 1]*(*this)[1*3 + 2]
+                        +(*this)[1*3 + 1]*(*this)[2*3 + 2];      // -hf + ei
 
-  Tensor_Inv[3*0 + 1] =  S[0*3 + 2]*S[2*3 + 1]
-                   -S[0*3 + 1]*S[2*3 + 2];      // ch - bi
+  Tensor_Inv[3*0 + 1] =  (*this)[0*3 + 2]*(*this)[2*3 + 1]
+                        -(*this)[0*3 + 1]*(*this)[2*3 + 2];      // ch - bi
 
-  Tensor_Inv[3*0 + 2] = -S[0*3 + 2]*S[1*3 + 1]
-                   +S[0*3 + 1]*S[1*3 + 2];      // -ce + bf
+  Tensor_Inv[3*0 + 2] = -(*this)[0*3 + 2]*(*this)[1*3 + 1]
+                        +(*this)[0*3 + 1]*(*this)[1*3 + 2];      // -ce + bf
 
-  Tensor_Inv[3*1 + 0] =  S[1*3 + 2]*S[2*3 + 0]
-                   -S[1*3 + 0]*S[2*3 + 2];      // fg - di
+  Tensor_Inv[3*1 + 0] =  (*this)[1*3 + 2]*(*this)[2*3 + 0]
+                        -(*this)[1*3 + 0]*(*this)[2*3 + 2];      // fg - di
 
-  Tensor_Inv[3*1 + 1] = -S[0*3 + 2]*S[2*3 + 0]
-                   +S[0*3 + 0]*S[2*3 + 2];      // -cg + ai
+  Tensor_Inv[3*1 + 1] = -(*this)[0*3 + 2]*(*this)[2*3 + 0]
+                        +(*this)[0*3 + 0]*(*this)[2*3 + 2];      // -cg + ai
 
-  Tensor_Inv[3*1 + 2] =  S[0*3 + 2]*S[1*3 + 0]
-                   -S[0*0 + 0]*S[1*3 + 2];      // cd - af
+  Tensor_Inv[3*1 + 2] =  (*this)[0*3 + 2]*(*this)[1*3 + 0]
+                        -(*this)[0*0 + 0]*(*this)[1*3 + 2];      // cd - af
 
-  Tensor_Inv[3*2 + 0] = -S[1*3 + 1]*S[2*3 + 0]
-                   +S[1*3 + 0]*S[2*3 + 1];      // -eg + dh
+  Tensor_Inv[3*2 + 0] = -(*this)[1*3 + 1]*(*this)[2*3 + 0]
+                        +(*this)[1*3 + 0]*(*this)[2*3 + 1];      // -eg + dh
 
-  Tensor_Inv[3*2 + 1] =  S[0*3 + 1]*S[2*3 + 0]
-                   -S[0*3 + 0]*S[2*3 + 1];      // bg - ah
+  Tensor_Inv[3*2 + 1] =  (*this)[0*3 + 1]*(*this)[2*3 + 0]
+                        -(*this)[0*3 + 0]*(*this)[2*3 + 1];      // bg - ah
 
-  Tensor_Inv[3*2 + 2] = -S[0*3 + 1]*S[1*3 + 0]
-                   +S[0*3 + 0]*S[1*3 + 1];      // -bd + ae
+  Tensor_Inv[3*2 + 2] = -(*this)[0*3 + 1]*(*this)[1*3 + 0]
+                        +(*this)[0*3 + 0]*(*this)[1*3 + 1];      // -bd + ae
 
   Tensor_Inv = (1/Det_S)*Tensor_Inv;
 
-  //OP_Count::T_Inverse++;                         // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Inverse++;                         // Increment operator count
+  #endif
 
   return Tensor_Inv;
 } // Tensor Inverse(void) const{
@@ -715,25 +780,31 @@ Tensor Tensor::operator^(const int exp) {
   with a -1, we return the inverse, and if it is called with a -2 then we
   return the inverse transpose. */
 
-  // First check if exp = -1. If so then return Inverse of T
-  if(exp == -1) {
-    return (*this).Inverse();
-  } // if(exp == -1) {
-
-  // Check if exp is T (T = 2). If so then return transpose
-  else if (exp == T){
-    return (*this).Transpose();
-  }
-
-  // Check fi exp is -T (-T = -2). If so then return inverse transpose
-  else if(exp == -T) {
-    return (*this).Inverse().Transpose();
-  }
-
-  // Otherwise, throw an error message
-  printf("Invalid input for ^ operator (Tensor).\n Valid inputs are -1 : Inverse, T (2) : Transpose, and -T (-2) : Inverse transpose\n");
-  return (*this);
+  switch (exp) {
+    case -1:
+      // If exp = -1 then return Inverse of T
+      return (*this).Inverse();
+    case T:
+      // If exp = T (T = 2) then return transpose
+      return (*this).Transpose();
+    case -T:
+      // If exp = -T (-T = -2) then return inverse transpose
+      return (*this).Inverse().Transpose();
+    default:
+      /* If we end up in this case then exp was none of -1, T, and -T. Since
+      exponentiation is only defined for these values, we throw an exception. */
+      char Error_Message_Buffer[500];
+      sprintf(Error_Message_Buffer,
+              "Undefined Exponent Exception: Thrown by Tensor::operator^\n"
+              "If S is a tensor, then S^exp is currently only defined if exp = -1 (for inverse), \n"
+              "T (for transpose), or -T (for inverse transpose).\n"
+              "You used exp = %d\n",
+              exp);
+      throw Undefined_Exponent(Error_Message_Buffer);
+  } // switch (exp) {
 } // Tensor & operator^(const char exp) {
+
+
 
 
 
@@ -741,14 +812,16 @@ Tensor Tensor::operator^(const int exp) {
 // Other Tensor methods
 
 double Tensor::Determinant(void) const {
-  //OP_Count::T_Determinant++;                     // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Determinant++;                     // Increment operator count
+  #endif
 
-  return (S[0*3 + 0]*(S[1*3 + 1]*S[2*3 + 2]
-                     -S[2*3 + 1]*S[1*3 + 2])
-         +S[0*3 + 1]*(S[2*3 + 0]*S[1*3 + 2]
-                     -S[1*3 + 0]*S[2*3 + 2])
-         +S[0*3 + 2]*(S[1*3 + 0]*S[2*3 + 1]
-                     -S[2*3 + 0]*S[1*3 + 1]));
+  return ((*this)[0*3 + 0]*((*this)[1*3 + 1]*(*this)[2*3 + 2]
+                           -(*this)[2*3 + 1]*(*this)[1*3 + 2])
+         +(*this)[0*3 + 1]*((*this)[2*3 + 0]*(*this)[1*3 + 2]
+                           -(*this)[1*3 + 0]*(*this)[2*3 + 2])
+         +(*this)[0*3 + 2]*((*this)[1*3 + 0]*(*this)[2*3 + 1]
+                           -(*this)[2*3 + 0]*(*this)[1*3 + 1]));
 } // double Tensor::Determinant(void) const {
 
 
@@ -767,43 +840,36 @@ Tensor Tensor::Transpose(void) const {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  T_Transpose[3*0 + 0] = S[3*0 + 0];             // i = 0, j = 0
-  T_Transpose[3*0 + 1] = S[3*1 + 0];             // i = 0, j = 1
-  T_Transpose[3*0 + 2] = S[3*2 + 0];             // i = 0, j = 2
+  T_Transpose[3*0 + 0] = (*this)[3*0 + 0];             // i = 0, j = 0
+  T_Transpose[3*0 + 1] = (*this)[3*1 + 0];             // i = 0, j = 1
+  T_Transpose[3*0 + 2] = (*this)[3*2 + 0];             // i = 0, j = 2
 
-  T_Transpose[3*1 + 0] = S[3*0 + 1];             // i = 1, j = 0
-  T_Transpose[3*1 + 1] = S[3*1 + 1];             // i = 1, j = 1
-  T_Transpose[3*1 + 2] = S[3*2 + 1];             // i = 1, j = 2
+  T_Transpose[3*1 + 0] = (*this)[3*0 + 1];             // i = 1, j = 0
+  T_Transpose[3*1 + 1] = (*this)[3*1 + 1];             // i = 1, j = 1
+  T_Transpose[3*1 + 2] = (*this)[3*2 + 1];             // i = 1, j = 2
 
-  T_Transpose[3*2 + 0] = S[3*0 + 2];             // i = 2, j = 0
-  T_Transpose[3*2 + 1] = S[3*1 + 2];             // i = 2, j = 1
-  T_Transpose[3*2 + 2] = S[3*2 + 2];             // i = 2, j = 2
+  T_Transpose[3*2 + 0] = (*this)[3*0 + 2];             // i = 2, j = 0
+  T_Transpose[3*2 + 1] = (*this)[3*1 + 2];             // i = 2, j = 1
+  T_Transpose[3*2 + 2] = (*this)[3*2 + 2];             // i = 2, j = 2
 
   /* Old double nested loop
-  for(int i = 0; i < 3; i++) {
+  for(unsigned i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
-      T_Transpose(i,j) = S[3*j + i];
+      T_Transpose(i,j) = (*this)[3*j + i];
     } // for(int j = 0; j < 3; j++) {
-  } // for(int i = 0; i < 3; i++) {
+  } // for(unsigned i = 0; i < 3; i++) {
   */
-  //OP_Count::T_Transpose++;                       // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Transpose++;                       // Increment operator count
+  #endif
+
 
   return T_Transpose;
 } // Tensor Tensor::Transpose(void) const {
 
 
 
-void Tensor::Print(void) const {
-  for(int i = 0; i < 3; i++)
-    printf("| %9.2e %9.2e %9.2e |\n",S[i*3], S[i*3 + 1], S[i*3 + 2]);
-} // void Tensor::Print(void) const {
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Friend functions
-
-const Vector Eigenvalues(const Tensor & S_In, const char Mode) {
+const Vector Tensor::Eigenvalues(const char Mode) const {
   double p, p_inv, p1, p2, q, r, phi;
   Vector Eig_Values;
   Tensor B;
@@ -811,25 +877,30 @@ const Vector Eigenvalues(const Tensor & S_In, const char Mode) {
               0,1,0,
               0,0,1};
 
-  // First, check if matrix is symmetric
-  p1 = S_In[3*0 + 1]*S_In[3*0 + 1] + S_In[3*0 + 2]*S_In[3*0 + 2] + S_In[3*1 + 2]*S_In[3*1 + 2];
+  // First, calculate p1
+  p1 = (*this)[3*0 + 1]*(*this)[3*0 + 1]
+     + (*this)[3*0 + 2]*(*this)[3*0 + 2]
+     + (*this)[3*1 + 2]*(*this)[3*1 + 2];
 
+  /* If p1 == 0 then the Tensor is diagional . In this case, the eivenvalues are
+  simply the diagional entris of the tensor */
   if(p1 == 0) {
-    Eig_Values[0] = S_In[3*0 + 0];
-    Eig_Values[1] = S_In[3*1 + 1];
-    Eig_Values[2] = S_In[3*2 + 2];
+    Eig_Values[0] = (*this)[3*0 + 0];
+    Eig_Values[1] = (*this)[3*1 + 1];
+    Eig_Values[2] = (*this)[3*2 + 2];
   } // if(p1 == 0) {
-  else {
-    q = (1./3.)*(S_In[3*0 + 0] + S_In[3*1 + 1] + S_In[3*2 + 2]);
 
-    p2 = (S_In[3*0 + 0] - q)*(S_In[3*0 + 0] - q) +
-         (S_In[3*1 + 1] - q)*(S_In[3*1 + 1] - q) +
-         (S_In[3*2 + 2] - q)*(S_In[3*2 + 2] - q) +
+  else {
+    q = (1./3.)*((*this)[3*0 + 0] + (*this)[3*1 + 1] + (*this)[3*2 + 2]);
+
+    p2 = ((*this)[3*0 + 0] - q)*((*this)[3*0 + 0] - q) +
+         ((*this)[3*1 + 1] - q)*((*this)[3*1 + 1] - q) +
+         ((*this)[3*2 + 2] - q)*((*this)[3*2 + 2] - q) +
          2*p1;
 
     p = sqrt(p2/6.);
     p_inv = 1./p;
-    B = S_In - q*I;
+    B = (*this) - q*I;
     r = (.5)*(p_inv)*(p_inv)*(p_inv)*B.Determinant();
 
     /* In theory, r should be in (-1,1). However, because of floating point
@@ -843,6 +914,7 @@ const Vector Eigenvalues(const Tensor & S_In, const char Mode) {
       Eig_Values[1] = q - p;
       Eig_Values[2] = Eig_Values[1];
     } // if(r >= 1) {
+
     else if(r <= -1) {
       /* This corresponds to phi = PI/3. However, if phi = PI/3 then cos(phi) = 1/2
       and cos(phi + 2*Pi/3) = -1 */
@@ -850,6 +922,7 @@ const Vector Eigenvalues(const Tensor & S_In, const char Mode) {
       Eig_Values[1] = q - 2*p;
       Eig_Values[2] = Eig_Values[0];
     } // else if(r <= -1) {
+
     else {
 
       // Fast mode: Use my approximation methods
@@ -859,14 +932,15 @@ const Vector Eigenvalues(const Tensor & S_In, const char Mode) {
         Eig_Values[1] = q + 2*p*Quick_Math::cos(phi + 2.*PI/3.);
       } // if(Mode == 'F') {
 
-      // Accurate mode, use C's built in cost functions
+      // Accurate mode, use C's built in cos functions.
       else if(Mode == 'A' || Mode == 'a') {
         phi = (1./3.)*acos(r);
         Eig_Values[0] = q + 2*p*cos(phi);
         Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
       } // else if(Mode == 'A') {
+
       else {
-        printf("Invalid mode selection! 'F' = Fast mode, 'A' = Accurate mode\n");
+        printf("Invalid mode selection! 'F' = Fast , 'A' = Accurate\n ");
         return Vector{0,0,0};
       } // else {
 
@@ -875,31 +949,28 @@ const Vector Eigenvalues(const Tensor & S_In, const char Mode) {
   } // else {
 
   return Eig_Values;
-} // const Vector Max_Eigenvalue(const Tensor & S_In) {
+} // const Vector Tensor::Eigenvalues(const char mode) {
 
 
 
-Tensor operator*(const double c, const Tensor & Tensor_In) {
-  return Tensor_In*c;
-} // Tensor operator*(const double c, const Tensor & Tensor_In) {
+void Tensor::Print(void) const {
+  for(unsigned i = 0; i < 3; i++)
+    printf("| %9.2e %9.2e %9.2e |\n",(*this)[i*3], (*this)[i*3 + 1], (*this)[i*3 + 2]);
+} // void Tensor::Print(void) const {
 
 
 
-Tensor Inverse(const Tensor & Tensor_In) {
-  return Tensor_In.Inverse();
-} // Tensor Inverse(const Tensor & Tensor_In) {
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Functions that operate on tensors but are not part of the Tensor class.
 
-double Determinant(const Tensor & Tensor_In) {
-  return Tensor_In.Determinant();
-} // double Determinant(const Tensor & Tensor_In) {
-
-
-
-Tensor Transpose(const Tensor & Tensor_In) {
-  return Tensor_In.Transpose();
-} // Tensor Transpose(const Tensor & Tensor_In) {
+Tensor operator*(const double c, const Tensor & Tensor_In) { return Tensor_In*c; }
+Tensor Inverse(const Tensor & Tensor_In) { return Tensor_In.Inverse(); }
+double Determinant(const Tensor & Tensor_In) { return Tensor_In.Determinant(); }
+Tensor Transpose(const Tensor & Tensor_In) { return Tensor_In.Transpose(); }
+const Vector Eigenvalues(const Tensor & T_In, const char Mode) { return T_In.Eigenvalues(Mode); }
+void Print(const Tensor & Tensor_In) { Tensor_In.Print(); }
 
 
 
@@ -907,17 +978,11 @@ double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
   /* This returns T1:T2, the tensor dot product of T1 and T2. This is given by
   T1(0,0)*T2(0,0) + T1(0,1)*T2(0,1) + .... T1(2,2)*T2(2,2) */
 
-  //OP_Count::T_Dot_Product++;                     // Increment operator count (See SPH Diagnostics)
+  #ifdef OPERATION_COUNT
+    OP_Count::T_Dot_Product++;                     // Increment operator count
+  #endif
 
   return T1[3*0 + 0]*T2[3*0 + 0] + T1[3*0 + 1]*T2[3*0 + 1] + T1[3*0 + 2]*T2[3*0 + 2] +
          T1[3*1 + 0]*T2[3*1 + 0] + T1[3*1 + 1]*T2[3*1 + 1] + T1[3*1 + 2]*T2[3*1 + 2] +
          T1[3*2 + 0]*T2[3*2 + 0] + T1[3*2 + 1]*T2[3*2 + 1] + T1[3*2 + 2]*T2[3*2 + 2];
 } // double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
-
-
-
-void Print(const Tensor & Tensor_In) {
-  Tensor_In.Print();
-} // void Print(const Tensor & Tensor_In) {
-
-#endif

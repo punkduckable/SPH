@@ -1,7 +1,10 @@
 #if !defined(VECTOR_HEADER)
 #define VECTOR_HEADER
+//#define VECTOR_MONITOR
 
-/*  This is the header file for my vector class. Most of the methods for this
+/*  File description:
+
+This is the header file for my vector class. Most of the methods for this
 class define operations with vectors and scalars. The intent of this is to make
 vector objects act just like mathematical vectors. As such, things like vector
 addition, scalar multiplication, vector equality, etc.. have been defined.
@@ -9,18 +12,13 @@ Each method has a comment explaining what that method does. V, V1, and V2 denote
 Vector objects, V[3] denotes a vector stored as an array, and c denotes a scalar
 constant. */
 
-class Vector {
-  friend class Tensor;
+#include "Classes.h"
+#include "Tensor/Tensor.h"
+#include "Errors.h"
 
+class Vector {
   private:
     double V[3];                                           // Holds the three components of the Vector
-
-    double & operator[](const uByte index) {               // Write to a component of vector (no checks, faster)
-      return V[index];
-    };                                                     // Read a componnet of the vector (no checks, faster)
-    const double operator[](const uByte index) const {
-      return V[index];
-    };
 
   public:
     // Constructors, destructor
@@ -43,48 +41,30 @@ class Vector {
     Vector operator/(const double c) const;                // Scalar Divide (defines V/c).
 
     Vector & operator+=(const Vector & V_In);              // Compound Vector addition (Defines V1 += V2)
-    Vector & operator+=(const double V_In[3]);             // Compound Vector addition with a 3 element array (Defines V1 += V2[3])
-    Vector & operator-=(const Vector & V_In);
-    Vector & operator*=(const double c);                   // Compound Scalar multiplication (defines V *= c)
+    Vector & operator-=(const Vector & V_In);              // Compounted Vector subtraction (Defines V1 -= V2)
+    Vector & operator*=(const double c);                   // Compound Scalar multiplication (Defines V *= c)
 
-    double & operator()(const uByte index);                // Write to a component of the vector (runs checks, safer)
-    double operator()(const uByte index) const;            // Read a component of the vector (runs checks, safer)
+    double & operator()(const unsigned index);                // Write to a component of the vector
+    double & operator[](const unsigned index);                // Write to a component of the vector
+    double operator()(const unsigned index) const;            // Read a component of the vector
+    double operator[](const unsigned index) const;            // Read a component of the vector
 
-    // Magnitude method
-    double Magnitude(void) const;                          // Returns magnitude of vector
 
     // Other methods
-
-    // Friends
-    friend const Vector Eigenvalues(const Tensor & S_In,
-                                    const char Mode);
-    friend double Max_Component(const Vector & V_In);      // Returns maximum component of vector.
-    friend Vector operator*(double c,                      // Scalar multiplication (defines c*V)
-                            const Vector & V_In);
-    friend double Magnitude(const Vector & V_In);
-    friend double Vector_Dot_Product(const Vector & V1,
-                                     const Vector & V2);
-    friend void Print(const Vector & V_In);
-    friend Tensor Dyadic_Product(const Vector & V1,
-                                 const Vector & V2);
-
-    // Temporary friends (should remove)
-    friend void Particle_Tests(void);
-    friend void Simulation::Run_Simulation(void);
-    friend void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles);
-    friend void VTK_File::Export_Particle_Positions(const Particle_Array & Particles);
-    friend void Particle_Helpers::Update_x(Particle_Array & Particles,
-                                           const double dt);
-
-    // Printing functions
+    double Magnitude(void) const;                          // Returns magnitude of vector
+    double Max_Component(void) const;                      // Returns maximum component of vector.
     void Print(void) const;                                // Print vector components
 }; // class Vector {
 
-// Vector functions that don't belong in the vector class
-Tensor Dyadic_Product(const Vector & V1,const Vector & V2);
-double Magnitue(const Vector & V_In);
+
+double Max_Component(const Vector & V_In);      // Returns maximum component of vector.
+Vector operator*(double c,                      // Scalar multiplication (defines c*V)
+                 const Vector & V_In);
+double Magnitude(const Vector & V_In);
 double Vector_Dot_Product(const Vector & V1,
                           const Vector & V2);
+Tensor Dyadic_Product(const Vector & V1,
+                      const Vector & V2);
 void Print(const Vector & V_In);
 
 #endif

@@ -1,7 +1,9 @@
 #if !defined(TENSOR_HEADER)
 #define TENSOR_HEADER
 
-/*  This is the header file for my Tensor class. Most of the methods for this
+/*  File Description:
+
+This is the header file for my Tensor class. Most of the methods for this
 class define operations with Tensors, Vectors, and Scalars. The intent of this
 is to make Tensor objects act just like second order tensors. As such, things
 like vector Tensor Tensor products, Tensor Vector products, Scalar
@@ -10,23 +12,16 @@ been defined. Each method has a comment explaining what that method does. T, T1,
 and T2 denote 2nd order Tensor objects, S[9] denotes a tensor stored as a 9 element
 array, V denotes a Vector object, c denotes a scalar. */
 
-#if !defined(T)
-  #define T 2
-#endif
+#include "Vector/Vector.h"
+#include "Classes.h"
+#include "Errors.h"
+
+// Used for ^ method (to define ^T and stuff).
+#define T 2
 
 class Tensor {
-  friend class Particle;
-
   private:
-    double S[9];                                  // Holds the 9 components of the Tensor
-
-    double & operator[](const uByte N) {          // Write to a component of the tensor (no checks, faster)
-      return S[N];
-    }
-
-    double operator[](const uByte N) const {      // Read a component of the tensor (no checks, faster)
-      return S[N];
-    }
+    double Ar[9];                                  // Holds the 9 components of the Tensor
 
   public:
     // Constructors, destructor
@@ -38,8 +33,12 @@ class Tensor {
 
     ~Tensor(void);                                // Destructor
 
+
+
     // Tensor equality
     Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
+
+
 
     // Simple arithmetic operators
     Tensor operator+(const Tensor & T_In) const;  // Tensor addition (defines T1 + T2)
@@ -49,48 +48,50 @@ class Tensor {
     Tensor operator*(const double c) const;       // Scalar multiplication (defines T*c)
     Tensor operator/(const double c) const;       // Scalar division (defines T/c)
 
+
+
     // Compound arithmetic operators
     Tensor & operator+=(const Tensor & T_In);     // Compound Tensor addition (defines T1 += T2)
     Tensor & operator-=(const Tensor & T_In);     // Compound tensor subtraction (defines T1 -= T2)
     Tensor & operator*=(const Tensor & T_In);     // Compound Tensor-Tensor multiplication (defines T1 *= T2)
 
+
+
     // Component access (public)
-    double & operator()(const uByte row,
-                       const uByte col);          // Write to a component of the tensor (defines T(i,j) = ....) (runs checks, safer)
-    double operator()(const uByte row,
-                      const uByte col) const;     // Read a component of the tensor (defines ... = T(i,j)) (runs checks, safer)
+    double & operator()(const unsigned row,
+                       const unsigned col);       // Write to a component of the tensor (defines T(i,j) = ....)
+    double & operator[](const unsigned index);    // Write to a component of the tensor
+    double operator()(const unsigned row,
+                      const unsigned col) const;  // Read a component of the tensor (defines ... = T(i,j)) (runs checks, safer)
+    double operator[](const unsigned index) const;// Read a component of the tensor (no checks, faster)
+
+
 
     // Inverse methods
     Tensor operator^(const int exp);
     Tensor Inverse(void) const;                   // Tensor Inverse. Returns T^(-1)
 
+
+
     // Other methods
     double Determinant(void) const;               // Tensor Determinant. Returns Det(T)
-    Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T (Tranpose of T)
+    Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T  (Tranpose of T)
+    const Vector Eigenvalues(const char Mode = 'A') const; // Returns eigenvalues of the Tensor
     void Print(void) const;                       // Print tensor components
-
-    // Friends
-    friend const Vector Eigenvalues(const Tensor & S_In,
-                                    const char Mode);
-    friend Tensor operator*(double c,
-                            const Tensor & T_In); // Scalar multiplication (defines c*T)
-    friend Tensor Inverse(const Tensor & T_In);
-    friend double Determinant(const Tensor & T_In);
-    friend Tensor Transpose(const Tensor & T_In);
-    friend double Tensor_Dot_Product(const Tensor & T1,
-                                     const Tensor & T2);
-    friend void Print(const Tensor & T_In);
-    friend Tensor Dyadic_Product(const Vector & V1,
-                                 const Vector & V2);
-    friend void VTK_File::Export_Particle_Positions(const Particle_Array & Particles);
 }; // class Tensor {
 
-// Tensor functions that don't belong in the tensor class
+// Tensor methods that don't belong in the Tensor class.
+Tensor operator*(double c,
+                 const Tensor & T_In); // Scalar multiplication (defines c*T)
 Tensor Inverse(const Tensor & T_In);
 double Determinant(const Tensor & T_In);
 Tensor Transpose(const Tensor & T_In);
-double Tensor_Dot_Product(const Tensor & T1,
-                          const Tensor & T2);
+const Vector Eigenvalues(const Tensor & S_In,
+                         const char Mode = 'A');
 void Print(const Tensor & T_In);
 
+
+
+double Tensor_Dot_Product(const Tensor & T1,
+                                 const Tensor & T2);
 #endif

@@ -1,3 +1,9 @@
+TODO:
+  Redo OP count using hashtables
+  Exceptions everywhere
+  
+
+
 Development History:
  DONE: Create Vector, Tensor Classes
      - Write definitions + test all methods... see that they're working
@@ -39,7 +45,6 @@ Development History:
 
   - Parallelize (using OpenMP)
 
-TODO / development history:
  - Vector class:
     DONE 6/5: Move class and methods to separate header/source file
     DONE 6/5: Add += operator
