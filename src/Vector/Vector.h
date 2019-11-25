@@ -30,9 +30,11 @@ class Vector {
 
     ~Vector(void);                                         // Destructor
 
+
     // Vector equality
     Vector & operator=(const double V_In[3]);              // Vector equality (defines V1 = V2[3])
     Vector & operator=(const Vector & V_In);               // Vector equalitty (defines V1 = V2)
+
 
     // Operator overloading
     Vector operator+(const Vector & V_In) const;           // Vector addition (defines V1 + V2)
@@ -48,6 +50,9 @@ class Vector {
     double & operator[](const unsigned index);                // Write to a component of the vector
     double operator()(const unsigned index) const;            // Read a component of the vector
     double operator[](const unsigned index) const;            // Read a component of the vector
+
+    bool operator==(const Vector & V_In) const;
+    bool operator!=(const Vector & V_In) const;
 
 
     // Other methods

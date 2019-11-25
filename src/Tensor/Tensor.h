@@ -17,7 +17,7 @@ array, V denotes a Vector object, c denotes a scalar. */
 #include "Errors.h"
 
 // Used for ^ method (to define ^T and stuff).
-#define T 2
+const unsigned T = 2;
 
 class Tensor {
   private:

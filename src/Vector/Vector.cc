@@ -95,7 +95,7 @@ Vector Vector::operator+(const Vector & V_In) const {
   // Declare a sum Vector. This will be used to store the sum
   Vector Sum;
 
-  Sum[0] = (*this[0] + V_In[0];
+  Sum[0] = (*this)[0] + V_In[0];
   Sum[1] = (*this)[1] + V_In[1];
   Sum[2] = (*this)[2] + V_In[2];
 
@@ -244,6 +244,27 @@ double Vector::operator[](const unsigned index) const {
 } // double Vector::operator()(const unsigned index) const {
 
 double Vector::operator()(const unsigned index) const { return (*this)[index]; }
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Boolean operators
+
+bool Vector::operator==(const Vector & V_In) const {
+  return ((*this)[0] == V_In[0] &&
+          (*this)[1] == V_In[1] &&
+          (*this)[2] == V_In[2]);
+} // bool Vector::operator==(const Vector & V_In) const {
+
+
+
+bool Vector::operator!=(const Vector & V_In) const {
+  return ((*this)[0] != V_In[0] ||
+          (*this)[1] != V_In[1] ||
+          (*this)[2] != V_In[2]);
+} // bool Vector::operator!=(const Vector & V_In) const {
 
 
 
