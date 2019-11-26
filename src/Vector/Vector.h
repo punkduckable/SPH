@@ -62,14 +62,18 @@ class Vector {
 }; // class Vector {
 
 
-double Max_Component(const Vector & V_In);      // Returns maximum component of vector.
+// Functions of a single vector
 Vector operator*(double c,                      // Scalar multiplication (defines c*V)
                  const Vector & V_In);
+double Max_Component(const Vector & V_In);      // Returns maximum component of vector.
 double Magnitude(const Vector & V_In);
-double Vector_Dot_Product(const Vector & V1,
-                          const Vector & V2);
+void Print(const Vector & V_In);
+
+
+// Functions of multiple vectors
+double Dot_Product(const Vector & V1,
+                   const Vector & V2);
 Tensor Dyadic_Product(const Vector & V1,
                       const Vector & V2);
-void Print(const Vector & V_In);
 
 #endif

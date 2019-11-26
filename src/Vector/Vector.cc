@@ -144,25 +144,18 @@ Vector Vector::operator*(const double c) const {
 
 
 Vector Vector::operator/(const double c) const {
-  // Declare product vector
-  Vector Quotient;
-
   // Check for divide by zero
   if(c == 0) {
     throw Divide_By_Zero("Divide by Zero exception: Thrown by Vector::operator/\n"
                          "You tried to divide a vector by zero. Bad!\n");
   } // if(c == 0) {
 
-  // Divide components of V by c
-  Quotient[0] = (*this)[0]/c;
-  Quotient[1] = (*this)[1]/c;
-  Quotient[2] = (*this)[2]/c;
-
   #ifdef OPERATION_COUNT
+    OP_Count::V_S_Multiplication++;                // This prevents double counting. /s uses *s
     OP_Count::V_S_Division++;                      // Increment operator count
   #endif
 
-  return Quotient;
+  return (*this)*(1./c);
 } // Vector Vector::operator/(const double c) const {
 
 
@@ -182,14 +175,14 @@ Vector & Vector::operator+=(const Vector & V_In) {
   #endif
 
   // Return this vector
-  return *this;
+  return (*this);
 } // Vector & Vector:operator+=(const Vector & V_In) {
 
 
 
 Vector & Vector::operator-=(const Vector & V_In) {
   (*this)[0] -= V_In[0];
-  (*this)[0] -= V_In[1];
+  (*this)[1] -= V_In[1];
   (*this)[2] -= V_In[2];
 
   #ifdef OPERATION_COUNT
@@ -197,13 +190,12 @@ Vector & Vector::operator-=(const Vector & V_In) {
   #endif
 
   // Return this vector
-  return *this;
+  return (*this);
 } // Vector & Vector::operator-=(const Vector & V_In) {
 
 
 
 Vector & Vector::operator*=(const double c) {
-  // Scale the components of V by c.
   (*this)[0] *= c;
   (*this)[1] *= c;
   (*this)[2] *= c;
@@ -213,7 +205,7 @@ Vector & Vector::operator*=(const double c) {
   #endif
 
   // Return this vector (now scalled by c)
-  return *this;
+  return (*this);
 } // Vector & Vector::operator*=(const double c) {
 
 
@@ -304,23 +296,27 @@ double Vector::Max_Component(void) const {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Friend methods
+// Functions of a single vector
 
 Vector operator*(double c, const Vector & V_In) { return V_In*c; }
 
-
-void Print(const Vector & V_In) { V_In.Print(); }
-double Magnitude(const Vector & V_In)  { return V_In.Magnitude(); }
 double Max_Component(const Vector & V_In) { return V_In.Max_Component(); }
 
+double Magnitude(const Vector & V_In)  { return V_In.Magnitude(); }
+
+void Print(const Vector & V_In) { V_In.Print(); }
 
 
-double Vector_Dot_Product(const Vector & V1, const Vector & V2) {
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Functions of multiple vectors
+
+double Dot_Product(const Vector & V1, const Vector & V2) {
   return (V1[0]*V2[0] + V1[1]*V2[1] + V1[2]*V2[2]);
-} // double Vector_Dot_Product(const Vector & V1, const Vector & V2) {
-
-
-
+} // double Dot_Product(const Vector & V1, const Vector & V2) {
 
 
 

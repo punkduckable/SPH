@@ -33,91 +33,75 @@ TEST_CASE("Vector_Base","[Vector][Constructor][Access_Operator][Boolean_Operator
   REQUIRE(V1 != V2);
 } // TEST_CASE("Vector_Base","[Vector][Constructor][Access_Operator][Boolean_Operators]") {
 
+
+
 TEST_CASE("Vector_Algebra","[Vector][Addition][Subtraction][Scaling]") {
   Vector V1{0,1,2};
   Vector V2{1,1,1};
+  double c;
 
+  // Addition
   Vector V3 = V1 + V2;
   REQUIRE( V3 == Vector{1,2,3});
+
+  // Subtraction
+  V3 = V1 - V2;
+  REQUIRE( V3 == Vector{-1, 0, 1});
+
+  // Scalar Multiplication
+  c = 17;
+  V3 = V1*c;
+  REQUIRE( V3 == Vector{0, 1*c, 2*c} );
+
+  c = 82.2;
+  V3 = V1*c;
+  REQUIRE( V3 == Vector{0, c*1, c*2} );
+
+  // Scalar Division
+  c = 2.39;
+  V3 = V1/c;
+  REQUIRE( V3 == Vector{0, 1./c, 2./c} );
+
+  // Compound Vector Addition
+  V1 = {11930, 2932, 293920};
+  V2 = {229, 293, 2039};
+  V2 += V1;
+  REQUIRE( V2 == Vector{11930+229, 2932+293, 293920+2039} );
+
+  // Compound Vector Subtraction
+  V1 = {15829, 29382, 22};
+  V2 = {67839, 28, 6902};
+  V2 -= V1;
+  REQUIRE( V2 == Vector{67839-15829, 28-29382, 6902-22} );
+
+  // Compound Scalar Multiplication
+  V3 = {1,2,3};
+  c = 128.29;
+  V3 *= c;
+  REQUIRE( V3 == Vector{1*c, 2*c, 3*c} );
 } // TEST_CASE("Vector_Algebra","[Vector][Addition][Subtraction][Scaling]") {
 
-/*
-  //////////////////////////////////////////////////////////////////////////////
-  // Test vector methods
 
-  printf("Vector method tests: \n\n");
 
-  // Check that Component constructor works
-  Vector V1;
-  Vector V2(1,2,3);
-  printf("V2(1,2,3)    : ");
-  V2.Print();
+TEST_CASE("Vector_Other","[Vector][Magnitude][Max_Component][Dot_Product]") {
+  Vector V1{2., 4., 4.};
+  Vector V2{29., 192., 4290.};
 
-  // Check that Vector-Vector Equality works
-  V1 = V2;
-  printf("V1 = V2      : ");
-  V1.Print();
+  // Mangnitude
+  double c = V1.Magnitude();
+  REQUIRE(c == 6.);
 
-  // Check that Vector-Array equality works
-  V2 = {4,5,6};
-  printf("V2 = {4,5,6} : ");
-  V2.Print();
+  c = Magnitude(V1);
+  REQUIRE(c == 6.);
 
-  // Check Vector-Vector addition
-  Vector V3 = V1 + V2;
-  printf("V3 = V1 + V2 : ");
-  V3.Print();
+  // Maximum component
+  c = V2.Max_Component();
+  REQUIRE(c == 4290.);
 
-  // Check that Vector-Vector subtraction works
-  V3 = V1 - V2;
-  printf("V3 = V1 - V2 : ");
-  V3.Print();
+  c = Max_Component(V2);
+  REQUIRE(c == 4290.);
 
-  // Check that scalar multiplication works
-  V3 = V1*5;
-  printf("V3 = V1*5    : ");
-  V3.Print();
-
-  // Check that the other scalar multiplication works
-  V3 = 5*V1;
-  printf("V3 = 5*V1    : ");
-  V3.Print();
-
-  // Check that scalar division works
-  V3 = V1/((float)5);
-  printf("V3 = V1/5.   : ");
-  V3.Print();
-
-  // Check that compound Vector-Vector addition works
-  V1 += V2;
-  printf("V1 += V2     : ");
-  V1.Print();
-
-  // Check that compound Vector-Array addition works
-  V1 += {1,2,3};
-  printf("V1 += {1,2,3}: ");
-  V1.Print();
-
-  // Check that compound scalar multiplication works
-  V1 *= 5;
-  printf("V1 *= 5      : ");
-  V1.Print();
-
-  // Check that () access works
-  double v = V1(1);
-  printf("v = V1(1)    : %f\n",v);
-
-  // Test that magnitude method works
-  v = Magnitude(V1);
-  printf("v = |V1|     : %f\n",v);
-
-  // Test dyadic product
-  Tensor S = Dyadic_Product(V1,V2);
-  printf(" S = V1 dyad V2\n");
-  S.Print();
-
-  // Test Vector dot product
-  V1 = {1,2,3}; V2 = {1,2,3};
-  double dot_prod = Vector_Dot_Product(V1,V2);
-  printf("V1 = V2 = {1,2,3}. V1 dot V2 = %f\n", dot_prod);
-*/
+  // Dot Product
+  c = Dot_Product(V1, V2);
+  REQUIRE(c == (2.*29. + 4.*192. + 4.*4290.));
+} // TEST_CASE("Vector_Other","[Vector][Magnitude][Max_Component][Dot_Product]") {
