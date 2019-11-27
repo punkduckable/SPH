@@ -558,7 +558,7 @@ double & Tensor::operator[](const unsigned index) {
   Thus, we check that index < 9.  */
   assert(index < 9);
 
-  return (*this)[index];
+  return (*this).Ar[index];
 } // double & Tensor::operator[](const unsigned index) {
 
 
@@ -581,8 +581,31 @@ double Tensor::operator[](const unsigned index) const {
   Thus, we check that index < 9.  */
   assert(index < 9);
 
-  return (*this)[index];
+  return (*this).Ar[index];
 } // double Tensor::operator[](const unsigned index) const {
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Boolean operators
+
+bool Tensor::operator==(const Tensor & T_In) const {
+  // First, check if any components don't match. If so, return false.
+  for(unsigned i = 0; i < 9; i++) { if((*this)[i] != T_In[i]) { return false; } }
+
+  // If they all match, return true
+  return true;
+} // bool Tensor::operator==(const Tensor & T_In) const {
+
+
+
+bool Tensor::operator!=(const Tensor & T_In) const {
+  // Return the negation of (*this) == T_In
+  return !((*this) == T_In);
+} // bool Tensor::operator==(const Tensor & T_In) const {
+
 
 
 

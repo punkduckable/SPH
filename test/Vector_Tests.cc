@@ -2,18 +2,26 @@
 #include "Errors.h"
 
 TEST_CASE("Vector_Base","[Vector][Constructor][Access_Operator][Boolean_Operators]") {
-  // First, check that the component constructor and access operators work.
+  // First, check that the component constructor works
   Vector V1{1,2,3};
   REQUIRE(V1[0] == 1);
   REQUIRE(V1[1] == 2);
   REQUIRE(V1[2] == 3);
 
+  // Now check that () and [] give the same numbers
   REQUIRE(V1[0] == V1(0));
   REQUIRE(V1[1] == V1(1));
   REQUIRE(V1[2] == V1(2));
 
+  // Now check that = works
+  Vector V2{2,1,2};
+  V2 = V1;
+  REQUIRE(V2[0] == V1[0]);
+  REQUIRE(V2[1] == V1[1]);
+  REQUIRE(V2[2] == V1[2]);
+
   // Now check that the == and != operators work
-  Vector V2{1,2,3};
+  V2 = V1;
   REQUIRE(V1 == V2);
   REQUIRE_FALSE(V1 != V2);
 

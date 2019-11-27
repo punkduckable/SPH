@@ -59,6 +59,10 @@ class Tensor {
                       const unsigned col) const;  // Read a component of the tensor (defines ... = T(i,j)) (runs checks, safer)
     double operator[](const unsigned index) const;// Read a component of the tensor (no checks, faster)
 
+    // Boolean operators
+    bool operator==(const Tensor & T_In) const;
+    bool operator!=(const Tensor & T_In) const;
+
 
 
     // Inverse methods
@@ -80,7 +84,7 @@ Tensor operator*(double c,
 Tensor Inverse(const Tensor & T_In);
 double Determinant(const Tensor & T_In);
 Tensor Transpose(const Tensor & T_In);
-const Vector Eigenvalues(const Tensor & S_In,
+const Vector Eigenvalues(const Tensor & T_In,
                          const char Mode = 'A');
 double Dot_Product(const Tensor & T1,
                    const Tensor & T2);
