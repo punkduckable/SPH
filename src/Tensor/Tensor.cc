@@ -21,6 +21,8 @@ Tensor::Tensor(void) {
   #endif
 } // Tensor::Tensor(void) {
 
+
+
 Tensor::Tensor(double t11, double t12, double t13,
                double t21, double t22, double t23,
                double t31, double t32, double t33) {
@@ -60,13 +62,6 @@ Tensor::Tensor(const Tensor & Tensor_In) {
   Ar[3*2 + 1] = Tensor_In[2*3 + 1];                    // i = 2, j = 1
   Ar[3*2 + 2] = Tensor_In[2*3 + 2];                    // i = 2, j = 2
 
-  /* Old double nested loop
-  for(unsigned i = 1; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      Ar[3*i + j] = Tensor_In(i,j);
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 1; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_Copy_Constructor++;                // Increment operator count
   #endif
@@ -105,13 +100,6 @@ Tensor & Tensor::operator=(const Tensor & Tensor_In) {
   (*this)[3*2 + 1] = Tensor_In[3*2 + 1];                    // i = 2, j = 1
   (*this)[3*2 + 2] = Tensor_In[3*2 + 2];                    // i = 2, j = 2
 
-  /* Old double nested loop
-  for(unsigned i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      (*this)[3*i + j] = Tensor_In(i,j);
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_Equality++;                        // Increment operator count
   #endif
@@ -152,13 +140,6 @@ Tensor Tensor::operator+(const Tensor & Tensor_In) const {
   Sum[2*3 + 1] = (*this)[3*2 + 1] + Tensor_In[2*3 + 1];     // i = 2, j = 1
   Sum[2*3 + 2] = (*this)[3*2 + 2] + Tensor_In[2*3 + 2];     // i = 2, j = 2
 
-  /* Old, double nested loop.
-  for(unsigned i = 0; i < 3; i++){
-    for(int j = 0; j < 3; j++) {
-      Sum(i,j) = (*this)[3*i + j] + Tensor_In(i,j);
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 9; i++){
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_T_Addition++;                      // Increment operator count
   #endif
@@ -193,13 +174,6 @@ Tensor Tensor::operator-(const Tensor & Tensor_In) const {
   Diff[2*3 + 1] = (*this)[3*2 + 1] - Tensor_In[2*3 + 1];     // i = 2, j = 1
   Diff[2*3 + 2] = (*this)[3*2 + 2] - Tensor_In[2*3 + 2];     // i = 2, j = 2
 
-  /* Old double nested loop
-  for(unsigned i = 0; i < 3; i++){
-    for(int j = 0; j < 3; j++) {
-      Diff(i,j) = (*this)[3*i + j] - Tensor_In(i,j);
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 9; i++){
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_T_Subtraction++;                   // Increment operator count
   #endif
@@ -288,15 +262,6 @@ Tensor Tensor::operator*(const Tensor & Tensor_In) const{
   Prod[3*2 + 1] += (*this)[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
   Prod[3*2 + 2] += (*this)[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
 
-  /* Old, loop based Tensor-Tensor product
-  for(unsigned i = 0; i < 3; i++) {    // Row loops
-    for(int p = 0; p < 3; p++) {    // Dot prod loops
-      Prod(i,0) += (*this)[3*i + p]*Tensor_In(p,0);
-      Prod(i,1) += (*this)[3*i + p]*Tensor_In(p,1);
-      Prod(i,2) += (*this)[3*i + p]*Tensor_In(p,2);
-    } // for(int p = 0; p < 3; p++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_T_Multiplication++;                // Increment operator count
   #endif
@@ -328,13 +293,6 @@ Vector Tensor::operator*(const Vector & V_In) const {
               (*this)[3*2 + 1]*V_In[1] +
               (*this)[3*2 + 2]*V_In[2];
 
-  /* Old loop
-  for(unsigned i = 0; i < 3; i++) {
-    Prod[i] =   (*this)[3*i + 0]*V_In[0] +
-                (*this)[3*i + 1]*V_In[1] +
-                (*this)[3*i + 2]*V_In[2];
-  } //   for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_V_Multiplication++;                // Increment operator count
   #endif
@@ -369,13 +327,6 @@ Tensor Tensor::operator*(const double c) const {
   Prod[2*3 + 1] = (*this)[3*2 + 1]*c;                  // i = 2, j = 1
   Prod[2*3 + 2] = (*this)[3*2 + 2]*c;                  // i = 2, j = 2
 
-  /* Old double nested loop
-  for(unsigned i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      Prod(i,j) = (*this)[3*i + j]*c;
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_S_Multiplication++;                // Increment operator count
   #endif
@@ -386,47 +337,22 @@ Tensor Tensor::operator*(const double c) const {
 
 
 Tensor Tensor::operator/(const double c) const {
-  Tensor Quotient;
-
   // Check that quotient is non-zero
   if(c == 0) {
     throw Divide_By_Zero("Divide by Zero Exception: thrown by Tensor::operator/\n"
                          "You tried dividing a tensor by zero. Bad!\n");
   } // if(c == 0) {
 
-  /* Here we return the quotient (*this)/c. Normally, doing this would require
-  cycling through the row's and col's of S in a double nested loop. However,
-  loops have overhead. To eliminate this overhead, I wrote what would have been
-  the 9 iterations of this double loop as 9 statemenets.
 
-  To make this a little  more readible, I have included a comment with each
-  statement that identifies which loop iteration that statement would have
-  corresponded to (with i as the row index and j as the column index) */
-
-  Quotient[0*3 + 0] = (*this)[3*0 + 0]/c;              // i = 0, j = 0
-  Quotient[0*3 + 1] = (*this)[3*0 + 1]/c;              // i = 0, j = 1
-  Quotient[0*3 + 2] = (*this)[3*0 + 2]/c;              // i = 0, j = 2
-
-  Quotient[1*3 + 0] = (*this)[3*1 + 0]/c;              // i = 1, j = 0
-  Quotient[1*3 + 1] = (*this)[3*1 + 1]/c;              // i = 1, j = 1
-  Quotient[1*3 + 2] = (*this)[3*1 + 2]/c;              // i = 1, j = 2
-
-  Quotient[2*3 + 0] = (*this)[3*2 + 0]/c;              // i = 2, j = 0
-  Quotient[2*3 + 1] = (*this)[3*2 + 1]/c;              // i = 2, j = 1
-  Quotient[2*3 + 2] = (*this)[3*2 + 2]/c;              // i = 2, j = 2
-
-  /* Old double nested loop
-  for(unsigned i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-        Quotient(i,j) = (*this)[3*i + j]/c;
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
+    OP_Count::T_S_Multiplication--;                // This prevents double counting. /s uses *s
     OP_Count::T_S_Division++;                      // Increment operator count
   #endif
 
-  return Quotient;
+  /* To improve performance, we return (*this)*(1/c). One division (to
+  calculate 1/c) and 9 multiplications (to to tensor-scalar multiplication)
+  is faster than 9 divisions. */
+  return (*this)*(1/c);
 } //Tensor Tensor::operator/(const double c) const {
 
 
@@ -459,13 +385,6 @@ Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
   (*this)[3*2 + 1] += Tensor_In[3*2 + 1];       // i = 2, j = 1
   (*this)[3*2 + 2] += Tensor_In[3*2 + 2];       // i = 2, j = 2
 
-  /* Old double nested loop
-  for(unsigned i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      (*this)[3*i+j] += Tensor_In(i,j);
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::Compound_T_T_Addition++;             // Increment operator count
   #endif
@@ -499,13 +418,6 @@ Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
   (*this)[3*2 + 1] -= Tensor_In[3*2 + 1];       // i = 2, j = 1
   (*this)[3*2 + 2] -= Tensor_In[3*2 + 2];       // i = 2, j = 2
 
-  /* Old double nested loop
-  for(unsigned i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      (*this)[3*i+j] -= Tensor_In(i,j);
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::Compound_T_T_Subtraction++;          // Increment operator count
   #endif
@@ -595,17 +507,6 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
   Prod[3*2 + 1] += (*this)[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
   Prod[3*2 + 2] += (*this)[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
 
-  /*
-  // Old triple nested loop.
-  for(unsigned i = 0; i < 3; i++) {    // Row loop
-    for(int p = 0; p < 3; p++) {    // Dot prod loop
-      for(int j = 0; j < 3; j++) {    // Col loop
-        Prod(i,j) += (*this)[3*i + p]*Tensor_In(p,j);
-      } // for(int j = 0; j < 3; j++) {
-    } // for(int p = 0; p < 3; p++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
-
   /* Copy Prod to this Tensor. To do this normally would require two
   nested loops (one for the rows and one for the cols). However, as before, we
   want to minimize overhead. This means unrolling loops. Thus, rather than using
@@ -625,13 +526,6 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
   (*this)[3*2 + 1] = Prod[3*2 + 1];                    // i = 2, j = 1
   (*this)[3*2 + 2] = Prod[3*2 + 2];                    // i = 2, j = 2
 
-  /* Old loop
-  for(unsigned i = 0; i < 3; i++) {
-    (*this)[3*i + 0] = Prod(i,0);
-    (*this)[3*i + 1] = Prod(i,1);
-    (*this)[3*i + 2] = Prod(i,2);
-  } //   for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::Compound_T_T_Multiplication++;       // Increment operator count
   #endif
@@ -852,17 +746,9 @@ Tensor Tensor::Transpose(void) const {
   T_Transpose[3*2 + 1] = (*this)[3*1 + 2];             // i = 2, j = 1
   T_Transpose[3*2 + 2] = (*this)[3*2 + 2];             // i = 2, j = 2
 
-  /* Old double nested loop
-  for(unsigned i = 0; i < 3; i++) {
-    for(int j = 0; j < 3; j++) {
-      T_Transpose(i,j) = (*this)[3*j + i];
-    } // for(int j = 0; j < 3; j++) {
-  } // for(unsigned i = 0; i < 3; i++) {
-  */
   #ifdef OPERATION_COUNT
     OP_Count::T_Transpose++;                       // Increment operator count
   #endif
-
 
   return T_Transpose;
 } // Tensor Tensor::Transpose(void) const {
@@ -963,18 +849,21 @@ void Tensor::Print(void) const {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Functions that operate on tensors but are not part of the Tensor class.
+// Functions of a tensor
 
 Tensor operator*(const double c, const Tensor & Tensor_In) { return Tensor_In*c; }
+
 Tensor Inverse(const Tensor & Tensor_In) { return Tensor_In.Inverse(); }
+
 double Determinant(const Tensor & Tensor_In) { return Tensor_In.Determinant(); }
+
 Tensor Transpose(const Tensor & Tensor_In) { return Tensor_In.Transpose(); }
+
 const Vector Eigenvalues(const Tensor & T_In, const char Mode) { return T_In.Eigenvalues(Mode); }
+
 void Print(const Tensor & Tensor_In) { Tensor_In.Print(); }
 
-
-
-double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
+double Dot_Product(const Tensor & T1, const Tensor & T2) {
   /* This returns T1:T2, the tensor dot product of T1 and T2. This is given by
   T1(0,0)*T2(0,0) + T1(0,1)*T2(0,1) + .... T1(2,2)*T2(2,2) */
 
@@ -985,4 +874,4 @@ double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
   return T1[3*0 + 0]*T2[3*0 + 0] + T1[3*0 + 1]*T2[3*0 + 1] + T1[3*0 + 2]*T2[3*0 + 2] +
          T1[3*1 + 0]*T2[3*1 + 0] + T1[3*1 + 1]*T2[3*1 + 1] + T1[3*1 + 2]*T2[3*1 + 2] +
          T1[3*2 + 0]*T2[3*2 + 0] + T1[3*2 + 1]*T2[3*2 + 1] + T1[3*2 + 2]*T2[3*2 + 2];
-} // double Tensor_Dot_Product(const Tensor & T1, const Tensor & T2) {
+} // double Dot_Product(const Tensor & T1, const Tensor & T2) {

@@ -1,6 +1,5 @@
 #include "Vector/Vector.h"
 #include "Errors.h"
-#include "Catch.hpp"
 
 TEST_CASE("Vector_Base","[Vector][Constructor][Access_Operator][Boolean_Operators]") {
   // First, check that the component constructor and access operators work.

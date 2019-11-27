@@ -5,6 +5,8 @@
   #define CATCH_CONFIG_MAIN
 #endif
 
+#include "Catch.hpp"
 #include "Vector_Tests.cc"
+#include "Tensor_Tests.cc"
 
 #endif

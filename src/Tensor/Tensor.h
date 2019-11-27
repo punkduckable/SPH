@@ -38,8 +38,6 @@ class Tensor {
     // Tensor equality
     Tensor & operator=(const Tensor & T_In);      // Tensor equaltiy (defines T1 = T2)
 
-
-
     // Simple arithmetic operators
     Tensor operator+(const Tensor & T_In) const;  // Tensor addition (defines T1 + T2)
     Tensor operator-(const Tensor & T_In) const;  // Tensor subtraction (defines T1 - T2);
@@ -48,18 +46,14 @@ class Tensor {
     Tensor operator*(const double c) const;       // Scalar multiplication (defines T*c)
     Tensor operator/(const double c) const;       // Scalar division (defines T/c)
 
-
-
     // Compound arithmetic operators
     Tensor & operator+=(const Tensor & T_In);     // Compound Tensor addition (defines T1 += T2)
     Tensor & operator-=(const Tensor & T_In);     // Compound tensor subtraction (defines T1 -= T2)
     Tensor & operator*=(const Tensor & T_In);     // Compound Tensor-Tensor multiplication (defines T1 *= T2)
 
-
-
-    // Component access (public)
+    // Component access
     double & operator()(const unsigned row,
-                       const unsigned col);       // Write to a component of the tensor (defines T(i,j) = ....)
+                        const unsigned col);       // Write to a component of the tensor (defines T(i,j) = ....)
     double & operator[](const unsigned index);    // Write to a component of the tensor
     double operator()(const unsigned row,
                       const unsigned col) const;  // Read a component of the tensor (defines ... = T(i,j)) (runs checks, safer)
@@ -80,7 +74,7 @@ class Tensor {
     void Print(void) const;                       // Print tensor components
 }; // class Tensor {
 
-// Tensor methods that don't belong in the Tensor class.
+// Functions of a tensor
 Tensor operator*(double c,
                  const Tensor & T_In); // Scalar multiplication (defines c*T)
 Tensor Inverse(const Tensor & T_In);
@@ -88,10 +82,8 @@ double Determinant(const Tensor & T_In);
 Tensor Transpose(const Tensor & T_In);
 const Vector Eigenvalues(const Tensor & S_In,
                          const char Mode = 'A');
+double Dot_Product(const Tensor & T1,
+                   const Tensor & T2);
 void Print(const Tensor & T_In);
 
-
-
-double Tensor_Dot_Product(const Tensor & T1,
-                                 const Tensor & T2);
 #endif
