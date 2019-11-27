@@ -352,7 +352,7 @@ Tensor Tensor::operator/(const double c) const {
   /* To improve performance, we return (*this)*(1/c). One division (to
   calculate 1/c) and 9 multiplications (to to tensor-scalar multiplication)
   is faster than 9 divisions. */
-  return (*this)*(1/c);
+  return (*this)*(1./c);
 } //Tensor Tensor::operator/(const double c) const {
 
 
@@ -592,10 +592,14 @@ double Tensor::operator[](const unsigned index) const {
 // Boolean operators
 
 bool Tensor::operator==(const Tensor & T_In) const {
-  // First, check if any components don't match. If so, return false.
-  for(unsigned i = 0; i < 9; i++) { if((*this)[i] != T_In[i]) { return false; } }
+  /* First, check if any components are more than Tensor Epsilon apart. If so
+  then return false */
+  for(unsigned i = 0; i < 9; i++) {
+    double d = (*this)[i] - T_In[i];
+    if(d < -Tensor_Epsilon || d > Tensor_Epsilon) { return false; }
+  }
 
-  // If they all match, return true
+  // If all components are sufficiently close together then return true.
   return true;
 } // bool Tensor::operator==(const Tensor & T_In) const {
 
@@ -894,7 +898,13 @@ double Dot_Product(const Tensor & T1, const Tensor & T2) {
     OP_Count::T_Dot_Product++;                     // Increment operator count
   #endif
 
-  return T1[3*0 + 0]*T2[3*0 + 0] + T1[3*0 + 1]*T2[3*0 + 1] + T1[3*0 + 2]*T2[3*0 + 2] +
-         T1[3*1 + 0]*T2[3*1 + 0] + T1[3*1 + 1]*T2[3*1 + 1] + T1[3*1 + 2]*T2[3*1 + 2] +
-         T1[3*2 + 0]*T2[3*2 + 0] + T1[3*2 + 1]*T2[3*2 + 1] + T1[3*2 + 2]*T2[3*2 + 2];
+  return T1[0]*T2[0] +
+         T1[1]*T2[1] +
+         T1[2]*T2[2] +
+         T1[3]*T2[3] +
+         T1[4]*T2[4] +
+         T1[5]*T2[5] +
+         T1[6]*T2[6] +
+         T1[7]*T2[7] +
+         T1[8]*T2[8];
 } // double Dot_Product(const Tensor & T1, const Tensor & T2) {

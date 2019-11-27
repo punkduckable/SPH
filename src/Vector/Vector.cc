@@ -245,17 +245,22 @@ double Vector::operator()(const unsigned index) const { return (*this)[index]; }
 // Boolean operators
 
 bool Vector::operator==(const Vector & V_In) const {
-  return ((*this)[0] == V_In[0] &&
-          (*this)[1] == V_In[1] &&
-          (*this)[2] == V_In[2]);
+  /* Check that the distance between components is <= Vector Epsilon.
+  If it is then return false. */
+  for(unsigned i = 0; i < 3; i++) {
+    double d = (*this)[i] - V_In[i];
+    if( d < -Vector_Epsilon || d > Vector_Epsilon) { return false; }
+  } // for(unsigned i = 0; i < 3; i++) {
+
+  // If all components are sufficiently close, return true.
+  return true;
 } // bool Vector::operator==(const Vector & V_In) const {
 
 
 
 bool Vector::operator!=(const Vector & V_In) const {
-  return ((*this)[0] != V_In[0] ||
-          (*this)[1] != V_In[1] ||
-          (*this)[2] != V_In[2]);
+  // Return negation of (*this) == V_In.
+  return !((*this) == V_In);
 } // bool Vector::operator!=(const Vector & V_In) const {
 
 

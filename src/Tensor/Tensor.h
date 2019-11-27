@@ -19,6 +19,15 @@ array, V denotes a Vector object, c denotes a scalar. */
 // Used for ^ method (to define ^T and stuff).
 const unsigned T = 2;
 
+/* Smallest allowed difference for equality
+Getting exact equality (even when you should) is difficult with floating point
+operations (because of roundoffs). Thus, we say that two floating point numbers
+are "equal" if they are sufficiently close to one another. Vector_Epsilon is
+the largest allowed distance between two "equal" floats.
+
+This is used by the ==and != operators */
+const double Tensor_Epsilon = 1e-16;
+
 class Tensor {
   private:
     double Ar[9];                                  // Holds the 9 components of the Tensor
