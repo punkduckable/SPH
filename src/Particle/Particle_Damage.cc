@@ -233,8 +233,9 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Body & Particles
     Pi_New_Num_Neighbors = Pi_New_Neighbor_List.Node_Count();
     Pi_New_Neighbors = new unsigned[Pi_New_Num_Neighbors];
 
-    for(k = 0; k < Pi_New_Num_Neighbors; k++)
-        Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Remove_Front();
+    for(k = 0; k < Pi_New_Num_Neighbors; k++) {
+      Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Remove_Front();
+    } // for(k = 0; k < Pi_New_Num_Neighbors; k++) {
 
     /* When we set new neighbors, the Set_Neighbors function will allocate
     new dynamic arrays for the Particle's members (for the W, Grad_W, etc..
@@ -256,7 +257,6 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Body & Particles
     // Now we can free the New_Neighbors array (it will be reallocated in the
     // next loop cycle, we free it to prevent a memory leak)
     delete [] Pi_New_Neighbors;
-
   } // for(i = 0; i < P_In.Num_Neighbors; i++) {
 
   /* Now that we've causally removed the damaged particle from the particles

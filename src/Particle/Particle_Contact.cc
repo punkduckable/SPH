@@ -37,8 +37,7 @@ void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
   #pragma omp for schedule(dynamic)
   for(i = 0; i < Num_Particles_A; i++) {
     // Skip broken particles
-    if(Body_A[i].Get_D() >= 1)
-      continue;
+    if(Body_A[i].Get_D() >= 1) { continue; } 
 
     double V_i = Body_A[i].Get_Vol();                                          //        : mm^3
     const double KV_i = K*V_i;                                                 //        : N*mm
@@ -102,11 +101,12 @@ void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
   add these contributions to Body_B's particles one by one (using a critical
   region) */
   #pragma omp critical
-  if(Contact_Flag)
+  if(Contact_Flag) {
     for(i = 0; i < Num_Particles_B; i++) {
       Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                      //        : N Vector
       Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                    //        : N Vector
     } // for(i = 0; i < Num_Particles_B; i++) {
+  } // if(Contact_Flag) {
 
   // Now free any dynamically allocated memory.
   delete [] Body_B_x;
@@ -128,10 +128,12 @@ void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const un
 
   // First, open the file.
   FILE * File;
-  if(Times_Printed_Net_External_Force == 0)
+  if(Times_Printed_Net_External_Force == 0) {
     File = fopen("../Files/Force_Files/Net_External_Force.txt","w");
-  else
+  } // if(Times_Printed_Net_External_Force == 0) {
+  else {
     File = fopen("../Files/Force_Files/Net_External_Force.txt","a");
+  } // else {
 
   // Increment the number of times that we're printed net force data.
   Times_Printed_Net_External_Force++;
@@ -144,7 +146,7 @@ void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const un
   for(unsigned i = 0; i < Num_Particles; i++) {
     Net_Contact_Force += Particles[i].Get_Force_Friction();
     Net_Contact_Force += Particles[i].Get_Force_Contact();
-  } //   for(unsigned i = 0; i < Num_Particles; i++) {
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   fprintf(File,"%6u:  <%10.4f, %10.4f, %10.4f>\n", l, Net_Contact_Force(0), Net_Contact_Force(1), Net_Contact_Force(2));
 

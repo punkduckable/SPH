@@ -8,8 +8,7 @@ std::string Particle_Debugger::Get_File_Name(const std::string & Str) {
   unsigned Num_Names = Name_List.Node_Count();
   for(i = 0; i < Num_Names; i++) {
     // Compare the ith name in the Name List to the supplied string.
-    if(Name_List[i].compare(Str) == 0)
-      break;
+    if(Name_List[i].compare(Str) == 0) { break; } 
   } // for(unsigned i = 0; i <= Num_Names; i++) {
 
   // If the supplied string is NOT in the list, then add Str to the end of the

@@ -29,7 +29,7 @@ Particle::~Particle(void) {
     delete [] W;                                                               //        : unitless
     delete [] Grad_W;                                                          //        : 1/mm Vector
     delete [] Neighbor_IDs;
-  }
+  } // if(Neighbors_Are_Set == true) {
 } // Particle::~Particle(void) {
 
 
@@ -104,6 +104,8 @@ void Particle::Set_Neighbors(const unsigned N, const unsigned * Neighbor_ID_Arra
 
 
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Printing functions
 
@@ -155,7 +157,3 @@ void Particle::Print(void) const {
 
   } // if(Neighbors_Are_Set == true) {
 } // void Particle::Print(void) const {
-
-void Print(const Particle & P_In) {
-  P_In.Print();
-} // void Print(const Particle & P_In) {

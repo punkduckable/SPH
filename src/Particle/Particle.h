@@ -139,8 +139,8 @@ class Particle {
                                                 const unsigned i,
                                                 const unsigned j);
 
-    friend void Particle_Helpers::Find_Neighbors_Box(Particle & P_In,
-                                                     Particle_Array & Particles);
+    friend void Particle_Helpers::Find_Neighbors_Cuboid(Particle & P_In,
+                                                        Particle_Array & Particles);
 
     friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
                                                   const unsigned Remove_Neighbor_ID,
@@ -168,6 +168,6 @@ class Particle {
     void Print(void) const;                                  // Print's info about particle (mostly for testing)
 }; // class Particle {
 
-void Print(const Particle & P_In);                         // Calls Print method
+void Print(const Particle & P_In) { P_In.Print(); };         // Calls Print method
 
 #endif

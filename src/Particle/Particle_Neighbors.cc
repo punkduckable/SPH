@@ -34,13 +34,11 @@ void Particle_Helpers::Find_Neighbors(Body & Particles) {
     /* For each particle, cycle through the potential neighbors (every particle) */
     for(j = 0; j < Num_Particles; j++) {
       // ith particle is not its own neighbor.
-      if(j == i)
-        continue;
+      if(j == i) { continue; }
 
       // Test if jth particle is inside support radius of ith particle. If so,
       // add P_j to P_i's neighbor list.
-      if(Are_Neighbors(Particles, i, j))
-        Particle_Neighbor_List.Add_Back(Particles[j].Get_ID());
+      if(Are_Neighbors(Particles, i, j)) { Particle_Neighbor_List.Add_Back(Particles[j].Get_ID()); }
     } // for(unsigned j = 0; j < Num_Particles; j++) {
 
     /* Now that we have the neighbor list, we can make it into an array. To do
@@ -50,8 +48,7 @@ void Particle_Helpers::Find_Neighbors(Body & Particles) {
     Num_Neighbors = Particle_Neighbor_List.Node_Count();
     Neighbor_IDs = new unsigned[Num_Neighbors];
 
-    for(j = 0; j < Num_Neighbors; j++)
-      Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front();
+    for(j = 0; j < Num_Neighbors; j++) { Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front(); }
 
     // Now sent the Neighbor list to the particle
     Particles[i].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
@@ -63,10 +60,9 @@ void Particle_Helpers::Find_Neighbors(Body & Particles) {
 
 
 
-void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Body & Particles) {
+void Particle_Helpers::Find_Neighbors_Cuboid(Particle & P_In, Body & Particles) {
   /* This function is a modified version of the Neighbor List generating
-  function that is specialized for Box particle geometries. By box, I mean
-  some kind of cuboid.
+  function that is specialized for Cuboid particle geometries.
 
   Let us establish a few definitions:
   By a 'Vertical Layer' we mean a sheet of particles that all have the same x
@@ -132,45 +128,33 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Body & Particles) {
   as a comment for each check */
 
   // i index (x coordinate) checks
-  if(i < SUPPORT_RADIUS)                         // Same as if(i - SUPPORT_RADIUS < 0).
-    p_min = 0;
-  else
-    p_min  = i - SUPPORT_RADIUS;
+  if(i < SUPPORT_RADIUS) { p_min = 0; }                                        // Same as if i - SUPPORT_RADIUS < 0
+  else { p_min  = i - SUPPORT_RADIUS; }
 
-  if(i > (X_SIDE_LENGTH - 1) - SUPPORT_RADIUS)   // Same as if(i + SUPPORT_RADIUS > X_SIDE_LENGTH -1)
-    p_max = X_SIDE_LENGTH - 1;
-  else
-    p_max = i + SUPPORT_RADIUS;
+
+  if(i > (X_SIDE_LENGTH - 1) - SUPPORT_RADIUS) { p_max = X_SIDE_LENGTH - 1; }  // Same as if(i + SUPPORT_RADIUS > X_SIDE_LENGTH -1)
+  else { p_max = i + SUPPORT_RADIUS; }
 
   // j index (y coordinate) checks
-  if(j < SUPPORT_RADIUS)                         // Same as if(j - SUPPORT_RADIUS < 0)
-    q_min = 0;
-  else
-    q_min = j - SUPPORT_RADIUS;
+  if(j < SUPPORT_RADIUS) { q_min = 0; }                                        // Same as if(j - SUPPORT_RADIUS < 0)
+  else { q_min = j - SUPPORT_RADIUS; }
 
-  if(j > (Y_SIDE_LENGTH - 1) - SUPPORT_RADIUS)   // Same as if(j + SUPPORT_RADIUS > Y_SIDE_LENGTH - 1)
-    q_max = Y_SIDE_LENGTH - 1;
-  else
-    q_max = j + SUPPORT_RADIUS;
+  if(j > (Y_SIDE_LENGTH - 1) - SUPPORT_RADIUS) { q_max = Y_SIDE_LENGTH - 1; }  // Same as if(j + SUPPORT_RADIUS > Y_SIDE_LENGTH - 1)
+  else { q_max = j + SUPPORT_RADIUS; }
 
   // k index (z coordinate) checks
-  if(k < SUPPORT_RADIUS)                         // Same as if(k - SUPPORT_RADIUS < 0)
-    r_min = 0;
-  else
-    r_min = k - SUPPORT_RADIUS;
+  if(k < SUPPORT_RADIUS) { r_min = 0; }                                        // Same as if(k - SUPPORT_RADIUS < 0)
+  else { r_min = k - SUPPORT_RADIUS; }
 
-  if(k > (Z_SIDE_LENGTH - 1) - SUPPORT_RADIUS)   // Same as if(k + SUPPORT_RADIUS > Z_SIDE_LENGTH - 1)
-    r_max = Z_SIDE_LENGTH - 1;
-  else
-    r_max = k + SUPPORT_RADIUS;
+  if(k > (Z_SIDE_LENGTH - 1) - SUPPORT_RADIUS) { r_max = Z_SIDE_LENGTH - 1; }  // Same as if(k + SUPPORT_RADIUS > Z_SIDE_LENGTH - 1)
+  else { r_max = k + SUPPORT_RADIUS; }
 
   // Loop through potential neighbors, generate neighbor list
   for(p = p_min; p <= p_max; p++) {
     for(r = r_min; r <= r_max; r++) {
       for(q = q_min; q <= q_max; q++) {
         // a given particle is NOT its own neighbor
-        if(i == p && j == q && k == r)
-          continue;
+        if(i == p && j == q && k == r) { continue; }
 
         if(Are_Neighbors(Particles,
                          i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j,
@@ -187,18 +171,14 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Body & Particles) {
   Num_Neighbors = Particle_Neighbor_List.Node_Count();
   Neighbor_IDs = new unsigned[Num_Neighbors];
 
-  if(Particles.Get_X_SIDE_LENGTH() == 3)
-    printf("Num neighbors = %u \n", Num_Neighbors);
-
-  for(p = 0; p < Num_Neighbors; p++)
-    Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front();
+  for(p = 0; p < Num_Neighbors; p++) { Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front(); }
 
   // Now sent the Neighbor list to the particle
   P_In.Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
 
   /* Now free Neighbor_IDs array for next particle! */
   delete [] Neighbor_IDs;
-} // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Body & Particles) {
+} // void Particle_Helpers::Find_Neighbors_Cuboid(Particle & P_In, Body & Particles) {
 
 
 
@@ -206,8 +186,9 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned Remove_Ne
   // This function is used to remove 1 neighbor from an existing particle.
 
   // To be able to remove a neighbor, we need to have neighbors!
-  if(P_In.Neighbors_Are_Set == false || P_In.Num_Neighbors == 0)
+  if(P_In.Neighbors_Are_Set == false || P_In.Num_Neighbors == 0) {
     printf("Particle %d has no neighbors! We can't remove %d\n", P_In.ID, Remove_Neighbor_ID);
+  } // if(P_In.Neighbors_Are_Set == false || P_In.Num_Neighbors == 0) {
 
   /* Note: We use the term 'Neighbor Arrays' to refer to the dynamic particle
   member varialbes that hold neighbor information (R, W, Grad_W, etc...)
@@ -237,8 +218,7 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned Remove_Ne
 
   for(i = 0; i < P_In.Num_Neighbors; i++) {
     // Check if ith neighbor ID matches Remove_Neighbor_ID
-    if(P_In.Neighbor_IDs[i] == Remove_Neighbor_ID)
-      continue;
+    if(P_In.Neighbor_IDs[i] == Remove_Neighbor_ID) { continue; }
 
     // If not, then this is a new neighbor, increment j.
     j++;
@@ -248,7 +228,7 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned Remove_Ne
     if(j == P_In.Num_Neighbors - 1) {
       printf("%d was not a neighbor of %d\n",Remove_Neighbor_ID, P_In.ID);
       return;
-    }
+    } // if(j == P_In.Num_Neighbors - 1) {
 
     // Copy old Neighbor data to New Neighbor arrays.
     New_Neighbor_IDs[j] = P_In.Neighbor_IDs[i];                                //        : unitless
@@ -281,5 +261,4 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned Remove_Ne
 
   // Now we can calculate the new A^(-1) from New_A.
   P_In.A_Inv = New_A^(-1);                                                     //        : unitless Tensor
-
 } // void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned Remove_Neighbor_ID, const Body & Particles) {

@@ -523,7 +523,7 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
     for(i = 0; i < X_SIDE_LENGTH; i++)
       for(j = 0; j < Y_SIDE_LENGTH; j++)
         for(k = 0; k < Z_SIDE_LENGTH; k++)
-          Particle_Helpers::Find_Neighbors_Box(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
+          Particle_Helpers::Find_Neighbors_Cuboid(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
 
     timer1 = clock() - timer1;
     #if defined(_OPENMP)

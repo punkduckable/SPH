@@ -26,7 +26,7 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
               0,0,1};
 
   const double Tau = Particles.Get_Tau();                                      //        : unitless
-  List<unsigned> Damaged_Particle_List;      // Keeps track of which particles are newly damaged
+  List<unsigned> Damaged_Particle_List;          // Keeps track of which particles are newly damaged
 
 
   const double Lame = Particles.Get_Lame();      // Lame paramater                       : Mpa
@@ -44,8 +44,8 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
   #pragma omp for
   for(unsigned i = 0; i < Num_Particles; i++) {
     // First, Check if the current particle is damaged (if so, we skip this particle)
-    if(Particles[i].D >= 1)
-      continue;
+    if(Particles[i].D >= 1) { continue; }
+
 
     ////////////////////////////////////////////////////////////////////////////
     /* Now, we can calculate F for the current particle by cycling through
@@ -71,6 +71,7 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
     // Deformation gradient with correction
     F *= Particles[i].A_Inv;                                                   //        : unitless Tensor
 
+
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Damage:
     To do this, we first need to find the principle stretch. To do this, we
@@ -86,13 +87,15 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
 
     // If this stretch is greater than max stretch, update particle's Max stretch.
     Particles[i].Stretch_M = Stretch_Max_Principle;
-    if(Stretch_Max_Principle > Particles[i].Stretch_H)
+    if(Stretch_Max_Principle > Particles[i].Stretch_H) {
       Particles[i].Stretch_H = Stretch_Max_Principle;
+    } // if(Stretch_Max_Principle > Particles[i].Stretch_H) {
 
     // if damage is enabled and Max is greater than crticial then start adding damage
     if(Particles.Get_Damagable() == true) {
-      if(Particles[i].Stretch_H > Particles[i].Stretch_Critical)
+      if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
         Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1;
+      } // if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
 
       // If particle is fully damaged, add this particle to the damaged list
       // and move on (we'll remove it later)
@@ -100,7 +103,8 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
         Damaged_Particle_List.Add_Back(Particles[i].ID);
         continue;
       } // if(Particles[i].D >= 1) {
-    } //   if(Particles.Get_Damagable() == true) {
+    } // if(Particles.Get_Damagable() == true) {
+
 
     ////////////////////////////////////////////////////////////////////////////
     /* Now that we have calculated the deformation gradient, we need to calculate
@@ -118,17 +122,17 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
 
       // Let's also print this Particle's neighbor ID's (this helps debug issues)
       printf("Neighbor ID's: ");
-      for(unsigned j = 0; j < Particles[i].Num_Neighbors; j++)
-        printf("%u ",Particles[i].Neighbor_IDs[j]);
+      for(unsigned j = 0; j < Particles[i].Num_Neighbors; j++) { printf("%u ",Particles[i].Neighbor_IDs[j]); }
       printf("\n");
 
       // Now we add the bad particles to the Damaged_Particle list (we'll remove
       // it once we have cycled through all partilces)
       Damaged_Particle_List.Add_Back(Particles[i].ID);
       continue;
-    } //   if(J < 0) {
+    } // if(J < 0) {
 
     S = (1- Particles[i].D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));        //        : Mpa Tensor
+
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate viscosity tensor:
@@ -152,10 +156,8 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
     */
     unsigned char i_dt, i_2dt;
     i_dt = Particles.Get_F_Index();
-    if(i_dt == 0)
-      i_2dt = 1;
-    else
-      i_2dt = 0;
+    if(i_dt == 0) { i_2dt = 1; }
+    else { i_2dt = 0; }
 
     F_Prime = (1./(2.*dt))*(3*F - 4*Particles[i].F[i_dt] + Particles[i].F[i_2dt]);      // 1/s Tensor
     L = F_Prime*(F^(-1));                                                      //        : 1/s Tensor
@@ -180,8 +182,9 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
   #pragma omp critical
-  while(Damaged_Particle_List.Node_Count() != 0)
+  while(Damaged_Particle_List.Node_Count() != 0) {
     Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
+  } // while(Damaged_Particle_List.Node_Count() != 0) {
 
   // Explicit barrier to ensure that all broken particles have been removed
   // before any thread is allowed to move on.
@@ -237,8 +240,7 @@ void Particle_Helpers::Update_x(Body & Particles, const double dt) {
   #pragma omp for
   for(unsigned i = 0; i < Num_Particles; i++) {
     // First, check if particle is damaged (if so, we skip this particle)
-    if( Particles[i].Get_D() >= 1)
-      continue;
+    if( Particles[i].Get_D() >= 1) { continue; }
 
     // Now reset the force vectors
     Force_Int = {0,0,0};
@@ -397,16 +399,17 @@ void Particle_Helpers::Update_x(Body & Particles, const double dt) {
     } // if(Simulation::Print_Forces == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
-    // Now we need to remove the damaged particles. To do this, we can one by one
-    // have each thread remove its damaged particles
-    #pragma omp critical
-    while(Damaged_Particle_List.Node_Count() != 0)
-      Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
+  // Now we need to remove the damaged particles. To do this, we can one by one
+  // have each thread remove its damaged particles
+  #pragma omp critical
+  while(Damaged_Particle_List.Node_Count() != 0) {
+    Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
+  } // while(Damaged_Particle_List.Node_Count() != 0) {
 
-    /* Note, there is no explicit barrier here because the next kernel, which
-    updates each particle's timestep counter, does not use any data being
-    written in the critial second above and because that kernel contains
-    its own implied barrier. Therefore, once the data above is called upon, we
-    can be sure that all particles have been damaged. Therefore, we don't
-    need a barrier. */
+  /* Note, there is no explicit barrier here because the next kernel, which
+  updates each particle's timestep counter, does not use any data being
+  written in the critial second above and because that kernel contains
+  its own implied barrier. Therefore, once the data above is called upon, we
+  can be sure that all particles have been damaged. Therefore, we don't
+  need a barrier. */
 } // void Particle_Helpers::Update_x(const Body & Particles, const double dt) {
