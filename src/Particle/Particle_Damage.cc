@@ -1,12 +1,9 @@
-#if !defined(PARTICLE_DAMAGE)
-#define PARTICLE_DAMAGE
-
 #include "Particle_Helpers.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods
 
-void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array & Particles) {
+void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Body & Particles) {
   printf("Particle %d is damaged. ",P_In.ID);
   P_In.X.Print();
 
@@ -117,17 +114,17 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array &
   If all three conditions are passed, then P_j is in the shadow region of P_In;
   thus, we remove P_i and P_j's neighbor status. */
 
-  unsigned int i,j,k;                           // index variables
+  unsigned i,j,k;                           // index variables
   const double r_Squared = P_In.Radius*P_In.Radius;                            //        : mm^2
 
   // Particle i (P_j) paramaters
-  unsigned int Pi_ID;                            // ID of P_i
-  unsigned int Pi_New_Num_Neighbors;             // Number of neighbors of P_i
-  List<unsigned int> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in P_In's shadow region
-  unsigned int * Pi_New_Neighbors;               // Stores P_i's new neighbors.
+  unsigned Pi_ID;                            // ID of P_i
+  unsigned Pi_New_Num_Neighbors;             // Number of neighbors of P_i
+  List<unsigned> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in P_In's shadow region
+  unsigned * Pi_New_Neighbors;               // Stores P_i's new neighbors.
 
   // Particle j (P_j) paramaters
-  unsigned int Pj_ID;                            // ID of P_j
+  unsigned Pj_ID;                            // ID of P_j
 
   // Rays (Vectors between particle's Reference positions)
   Vector Rj_Ri;                                  // R_j - R_i                            : mm Vector
@@ -173,12 +170,12 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array &
       // Check if the scalar projection of R_In - R_i onto Rj - Rj is positive
       // or negative.
 
-      if( Vector_Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
+      if( Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
         // If not positive, then Ri and Rj must be neighbors, add P_j to P_i's
         // new neighbor list.
         Pi_New_Neighbor_List.Add_Front(Pj_ID);
         continue;
-      } // if( Vector_Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
+      } // if( Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
 
       //////////////////////////////////////////////////////////////////////////
       // Second Check:
@@ -186,8 +183,8 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array &
       // check. To do this, we make sure that the magnitude of RIn_Rj is less
       // than the magnitude of Rj_Ri.
 
-      RIn_Ri_Dot_RIn_Ri = Vector_Dot_Product(RIn_Ri, RIn_Ri);                  //        : mm
-      Rj_Ri_Dot_Rj_Ri = Vector_Dot_Product(Rj_Ri, Rj_Ri);                      //        : mm
+      RIn_Ri_Dot_RIn_Ri = Dot_Product(RIn_Ri, RIn_Ri);                         //        : mm
+      Rj_Ri_Dot_Rj_Ri = Dot_Product(Rj_Ri, Rj_Ri);                             //        : mm
 
       if(RIn_Ri_Dot_RIn_Ri >= Rj_Ri_Dot_Rj_Ri) {
         // if |RIn_Ri| > |Rj_Ri| then P_j is NOT in the shadow region of P_In.
@@ -202,9 +199,9 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array &
       // by calculating d^2 and comparing it to r^2.
 
       // Calculate d^2
-      RIn_Ri_Dot_Rj_Ri = Vector_Dot_Product(RIn_Ri, Rj_Ri);                    //        : mm
+      RIn_Ri_Dot_Rj_Ri = Dot_Product(RIn_Ri, Rj_Ri);                           //        : mm
 
-      d_Squared = Vector_Dot_Product(RIn_Ri, RIn_Ri) - (RIn_Ri_Dot_Rj_Ri * RIn_Ri_Dot_Rj_Ri) / Rj_Ri_Dot_Rj_Ri;        // mm
+      d_Squared = Dot_Product(RIn_Ri, RIn_Ri) - (RIn_Ri_Dot_Rj_Ri * RIn_Ri_Dot_Rj_Ri) / Rj_Ri_Dot_Rj_Ri;        // mm
 
       // Check if d^2 < r^2
       if(d_Squared <= r_Squared) {
@@ -234,7 +231,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array &
     shadow region particles removed). We can now begin the process of redoing
     P_i's member variables. */
     Pi_New_Num_Neighbors = Pi_New_Neighbor_List.Node_Count();
-    Pi_New_Neighbors = new unsigned int[Pi_New_Num_Neighbors];
+    Pi_New_Neighbors = new unsigned[Pi_New_Num_Neighbors];
 
     for(k = 0; k < Pi_New_Num_Neighbors; k++)
         Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Remove_Front();
@@ -265,6 +262,4 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array &
   /* Now that we've causally removed the damaged particle from the particles
   array, we need to make that it think that it has no neighbors */
   P_In.Num_Neighbors = 0;
-} // void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Particle_Array & Particles) {
-
-#endif
+} // void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Body & Particles) {

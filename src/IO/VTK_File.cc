@@ -7,14 +7,14 @@
 std::string VTK_File::Get_File_Name(const std::string & Str) {
   // First, figure out if we've seen this string before. if so, then it'll be
   // in the name list
-  unsigned int i;
+  unsigned i;
 
-  unsigned int Num_Names = Name_List.Node_Count();
+  unsigned Num_Names = Name_List.Node_Count();
   for(i = 0; i < Num_Names; i++) {
     // Compare the ith name in the Name List to the supplied string.
     if(Name_List[i].compare(Str) == 0)
       break;
-  } // for(unsigned int i = 0; i <= Num_Names; i++) {
+  } // for(unsigned i = 0; i <= Num_Names; i++) {
 
   // If the supplied string is NOT in the list, then add Str to the end of the
   // name list and add a zero node to the File_Number list.
@@ -39,7 +39,7 @@ std::string VTK_File::Get_File_Name(const std::string & Str) {
 
 
 
-void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_Particles, double * Data) {
+void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) {
   // Print header.
   fprintf(File,"SCALARS ");
   fprintf(File,Weight_Name);
@@ -47,12 +47,12 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned int Num_
   fprintf(File,"LOOKUP_TABLE default\n");
 
   // Now print supplied data to file
-  for(unsigned int i = 0; i < Num_Particles; i++)
+  for(unsigned i = 0; i < Num_Particles; i++)
     fprintf(File,"\t %8.3f\n",Data[i]);
 }
 
-void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
-  const unsigned int Num_Particles = Particles.Get_Num_Particles();
+void VTK_File::Export_Particle_Positions(const Body & Particles) {
+  const unsigned Num_Particles = Particles.Get_Num_Particles();
 
   // Set up file
   std::string File_Name = Get_File_Name(Particles.Get_Name());
@@ -73,11 +73,11 @@ void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
   //////////////////////////////////////////////////////////////////////////////
   // Cycle through particles, print spacial positions of each particle
   Vector x;
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) {
     x = Particles[i].Get_x();
 
     fprintf(File,"%8.3f \t %8.3f \t %8.3f\n",x[0], x[1], x[2]);
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   //////////////////////////////////////////////////////////////////////////////
   /* Find the components of S and E for each particle
@@ -133,7 +133,7 @@ void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
            0,1,0,
            0,0,1};
 
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) {
     LamM[i] = Particles[i].Get_Stretch_M();
     //LamH[i] = Particles[i].Get_Stretch_H();
     //LamC[i] = Particles[i].Get_Stretch_Critical();
@@ -259,6 +259,6 @@ void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
 
   // Free the file
   fclose(File);
-} // void VTK_File::Export_Particle_Positions(const Particle_Array & Particles) {
+} // void VTK_File::Export_Particle_Positions(const Body & Particles) {
 
 #endif

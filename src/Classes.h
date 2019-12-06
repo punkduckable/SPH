@@ -4,7 +4,7 @@
   class Tensor;
   class Vector;
   class Particle;
-  class Particle_Array;
+  class Body;
 
   template <typename Type>
   class List;

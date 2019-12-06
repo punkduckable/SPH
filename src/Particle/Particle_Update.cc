@@ -1,15 +1,11 @@
-
-#if !defined(PARTICLE_UPDATE)
-#define PARTICLE_UPDATE
-
 #include "Particle_Helpers.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Friend functions (Update P, Update particle position)
 
-void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
+void Particle_Helpers::Update_P(Body & Particles, const double dt) {
   /* The purpose of this function is to calculate the First Piola-Kirchhoff
-  stress tensor for each particle in the Particles Particle_Array.
+  stress tensor for each particle in the Particles Body.
 
   This function assumes that the position each partilce in Particle's has been
   updated to the previous time step. It also assumes that each particle has
@@ -30,13 +26,13 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
               0,0,1};
 
   const double Tau = Particles.Get_Tau();                                      //        : unitless
-  List<unsigned int> Damaged_Particle_List;      // Keeps track of which particles are newly damaged
+  List<unsigned> Damaged_Particle_List;      // Keeps track of which particles are newly damaged
 
 
   const double Lame = Particles.Get_Lame();      // Lame paramater                       : Mpa
   const double mu0 = Particles.Get_mu0();        // Shear modulus                        : Mpa
   const double mu = Particles.Get_mu();          // Viscosity                            : Mpa*s
-  const unsigned int Num_Particles = Particles.Get_Num_Particles();
+  const unsigned Num_Particles = Particles.Get_Num_Particles();
 
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
@@ -46,7 +42,7 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
   // Let's update each particle's stress tensors, keeping track of which
   // particles are damaged (in the Damaged_Particle_List)
   #pragma omp for
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) {
     // First, Check if the current particle is damaged (if so, we skip this particle)
     if(Particles[i].D >= 1)
       continue;
@@ -59,8 +55,8 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
          0,0,0,
          0,0,0};
 
-    const unsigned int Num_Neighbors = Particles[i].Num_Neighbors;
-    for(unsigned int j = 0; j < Num_Neighbors; j++) {
+    const unsigned Num_Neighbors = Particles[i].Num_Neighbors;
+    for(unsigned j = 0; j < Num_Neighbors; j++) {
       // Get neighbor ID and volume of jth particle
       unsigned Neighbor_ID = Particles[i].Neighbor_IDs[j]; // Index of jth neighbor.
       double V_j = Particles[Neighbor_ID].Vol;             // Volume of jth neighbor     : mm^3
@@ -70,7 +66,7 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
 
       // Calculate deformation gradient from jth particle.
       F += Dyadic_Product(rj, V_j*Particles[i].Grad_W[j]);                     //        : unitless Tensor
-    } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
+    } // for(unsigned j = 0; j < Num_Neighbors; j++) {
 
     // Deformation gradient with correction
     F *= Particles[i].A_Inv;                                                   //        : unitless Tensor
@@ -122,7 +118,7 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
 
       // Let's also print this Particle's neighbor ID's (this helps debug issues)
       printf("Neighbor ID's: ");
-      for(unsigned int j = 0; j < Particles[i].Num_Neighbors; j++)
+      for(unsigned j = 0; j < Particles[i].Num_Neighbors; j++)
         printf("%u ",Particles[i].Neighbor_IDs[j]);
       printf("\n");
 
@@ -175,9 +171,11 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
     and F(t-dt) (in Particles[i].F[i_dt]).*/
     Particles[i].P = (F*S + Visc)*Particles[i].A_Inv;                          //         : Mpa Tensor
     Particles[i].F[i_2dt] = F;                                                 //         : unitless Tensor
-    if(Simulation::Print_Forces == true)
-      Particles[i].Visc = Visc*Particles[i].A_Inv;                             // For debugging
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
+
+    #if defined(PARTICLE_DEBUG)
+      Particles[i].Visc = Visc*Particles[i].A_Inv;
+    #endif
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
@@ -188,11 +186,11 @@ void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
   // Explicit barrier to ensure that all broken particles have been removed
   // before any thread is allowed to move on.
   #pragma omp barrier
-} // void Particle_Helpers::Update_P(Particle_Array & Particles, const double dt) {
+} // void Particle_Helpers::Update_P(Body & Particles, const double dt) {
 
 
 
-void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
+void Particle_Helpers::Update_x(Body & Particles, const double dt) {
   /* This function is used to update the position (spatial position) of every
   partile in some particle array.
 
@@ -212,10 +210,13 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   // Current (ith) particle properties
   Vector Force_Int;                              // Internal Force vector                : N Vector
   Vector Force_HG;                               // Hour-glass force                     : N Vector
-  Vector Force_Visc;                             // Viscosity force. Note: This only gets used if Force printing is enabled
   Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
   Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Vector a;                                      // acceleration                         : mm/s^2 Vector
+
+  #if defined(PARTICLE_DEBUG)
+    Vector Force_Visc;                           // Viscosity force.
+  #endif
 
   // Neighboring (jth) particle properties
   Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
@@ -227,14 +228,14 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
   const double alpha = Particles.Get_alpha();    // alpha member of the particles array  : unitless
   const double E = Particles.Get_E();            // Hourglass stiffness                  : Mpa
   const unsigned char F_Index = Particles.Get_F_Index();   // Keeps track of which F was most recently updated
-  const unsigned int Num_Particles = Particles.Get_Num_Particles();
+  const unsigned Num_Particles = Particles.Get_Num_Particles();
 
   // Damage variables
-  List<unsigned int> Damaged_Particle_List;      // Keeps track of which particles have broken
+  List<unsigned> Damaged_Particle_List;      // Keeps track of which particles have broken
 
   // Now loop through each partilce in the Partilces' array
   #pragma omp for
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) {
     // First, check if particle is damaged (if so, we skip this particle)
     if( Particles[i].Get_D() >= 1)
       continue;
@@ -242,8 +243,10 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     // Now reset the force vectors
     Force_Int = {0,0,0};
     Force_HG = {0,0,0};
-    if(Simulation::Print_Forces == true)
+
+    #if defined(PARTICLE_DEBUG)
       Force_Visc = {0,0,0};
+    #endif
 
     // Set up current particle properties
     double V_i = Particles[i].Get_Vol();         // volume of current particle           : mm^3
@@ -254,11 +257,11 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     double * W = Particles[i].W;                 // Kernel function array                : 1/mm^3
     Vector * Grad_W = Particles[i].Grad_W;       // Grad_W array                         : 1/mm^4 Vector
 
-    const unsigned int Num_Neighbors = Particles[i].Num_Neighbors;
+    const unsigned Num_Neighbors = Particles[i].Num_Neighbors;
 
-    for(unsigned int j = 0; j < Num_Neighbors; j++) {
+    for(unsigned j = 0; j < Num_Neighbors; j++) {
       // Update Neighbor
-      unsigned int Neighbor_ID = Particles[i].Neighbor_IDs[j];       // ID of current neighbor particle
+      unsigned Neighbor_ID = Particles[i].Neighbor_IDs[j];       // ID of current neighbor particle
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Internal force */
@@ -274,8 +277,10 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       double V_j = Particles[Neighbor_ID].Vol;   // Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
       Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                              //        : N Vector
-      if(Simulation::Print_Forces == true)
-        Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);    // Viscious force
+
+      #if defined(PARTICLE_DEBUG)
+        Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
+      #endif
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -300,7 +305,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       and should therefore perform better. */
       rj = Particles[Neighbor_ID].x - Particles[i].x;                          //        : mm Vector
       double Mag_rj = Magnitude(rj);                                           //        : mm
-      double delta_ij = Vector_Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;    //        : mm
+      double delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
 
       /* Here we calculate delta_ji.
             delta_ji = ( Error_ji dot r_ji )/|r_ji|
@@ -330,7 +335,7 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       */
 
       F_j = Particles[Neighbor_ID].F[F_Index];                                 //        : unitless Tensor
-      double delta_ji = Vector_Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;    //        : mm
+      double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
 
       /* Finally, we calculate the hour glass force. However, it should be
       noted that each term of Force_HG is multiplied by -(1/2), E, alpha,
@@ -339,11 +344,13 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
       several thousand floating point operations per particle!)*/
       Force_HG += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*                    //        : (1/mm) Vector
                   (delta_ij + delta_ji))*(rj);
-    } // for(unsigned int j = 0; j < Num_Neighbors; j++) {
+    } // for(unsigned j = 0; j < Num_Neighbors; j++) {
     Force_HG *= -.5*E*V_i*alpha;       // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
     Force_Int *= V_i;                  // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
-    if(Simulation::Print_Forces == true)
+
+    #if defined(PARTICLE_DEBUG)
       Force_Visc *= V_i;               // Viscious force
+    #endif
 
     /* Compute acceleration of particle at new position a(t_i+1).
     Note that all the forces we have calculated have been in units of Newtons.
@@ -383,7 +390,10 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     if(Simulation::Print_Forces == true) {
       Particles[i].Force_Int = Force_Int;          // update Internal force                : N Vector
       Particles[i].Force_HG = Force_HG;            // update Hourglassing force            : N Vector
-      Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
+
+      #if defined(PARTICLE_DEBUG)
+        Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
+      #endif
     } // if(Simulation::Print_Forces == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
@@ -399,6 +409,4 @@ void Particle_Helpers::Update_x(Particle_Array & Particles, const double dt) {
     its own implied barrier. Therefore, once the data above is called upon, we
     can be sure that all particles have been damaged. Therefore, we don't
     need a barrier. */
-} // void Particle_Helpers::Update_x(const Particle_Array & Particles, const double dt) {
-
-#endif
+} // void Particle_Helpers::Update_x(const Body & Particles, const double dt) {

@@ -4,7 +4,7 @@
 namespace FEB_File {
   using std::string;
 
-  int Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned int & Num_Nodes);
+  int Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes);
 }
 
 #endif

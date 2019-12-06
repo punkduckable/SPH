@@ -3,20 +3,20 @@
 
 #include "Data_Dump.h"
 
-void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned int Num_Arrays) {
+void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) {
   /* This Function is used to save a simulation. This function prints all the
   information that is needed to re-create the state of a simulation. This is
   done by first printing information on the number of particle arrays, as well
   as their names. Once this is done, each particle array gets a new file that
-  contains all the information needed to re-create that particle_array object.
+  contains all the information needed to re-create that Body object.
   The intent of this is to allow the user 'save' a simulation, allowing the user
   to - at a future point - pick up where they left off.*/
 
-  unsigned int i,j;
+  unsigned i,j;
 
-  // First, we need to know how many times each Particle_Array has been printed
-  unsigned int * VTK_File_Numbers = new unsigned int[Num_Arrays];
-  unsigned int * Force_File_Numbers = new unsigned int[Num_Arrays];
+  // First, we need to know how many times each Body has been printed
+  unsigned * VTK_File_Numbers = new unsigned[Num_Arrays];
+  unsigned * Force_File_Numbers = new unsigned[Num_Arrays];
 
   for(i = 0;  i < Num_Arrays; i++) {
     // First, get the ith particle's array VTK file number
@@ -49,16 +49,16 @@ void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned in
         Force_File_Numbers[i] = 0;
   } // for(i = 0;  i < Num_Arrays; i++) {
 
-  // Open a new file. This file will store the number of Particle_Arrays as
+  // Open a new file. This file will store the number of Bodys as
   // well as their names.
-  FILE * File = fopen("../Files/Saves/Particle_Array_Data.txt","w");
+  FILE * File = fopen("../Files/Saves/Body_Data.txt","w");
 
   // Print number of Arrays to this file
   fprintf(File,   "Number of Particle Arrays:    %u\n\n", Num_Arrays);
 
-  // Now print each Particle_Array's name and other essential information
+  // Now print each Body's name and other essential information
   for(i = 0; i < Num_Arrays; i++) {
-    fprintf(File, "Particle_Array %3u name:      %s\n", i, Arrays[i].Get_Name().c_str());
+    fprintf(File, "Body %3u name:      %s\n", i, Arrays[i].Get_Name().c_str());
     fprintf(File, "     Is a Cuboid:             %u\n",    Arrays[i].Get_Cuboid());
 
     if(Arrays[i].Get_Cuboid() == true) {
@@ -77,35 +77,35 @@ void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned in
 
   // Now print each Particle array to its own file
   for(i = 0; i < Num_Arrays; i++)
-    Save_Particle_Array(Arrays[i]);
+    Save_Body(Arrays[i]);
 
   fclose(File);
-} // void Data_Dump::Save_Simulation(const Particle_Array * Arrays, const unsigned int Num_Arrays) {
+} // void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) {
 
 
 
-void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
+void Data_Dump::Save_Body(const Body & Particles) {
   /* This function prints all data needed to reconstruct a particular
-  Particle_Array. This information is printed to a file named after the
-  Particle_Array that it's printing from. This prints the basic material
+  Body. This information is printed to a file named after the
+  Body that it's printing from. This prints the basic material
   properties of the particles array, as well as all the information that is
-  needed to recreate all the particles in that Particle_Array. The intent of
-  this is to allow the user 'save' a Particle_Array object. */
+  needed to recreate all the particles in that Body. The intent of
+  this is to allow the user 'save' a Body object. */
 
-  // Get name + number of particles of passed Particle_Array object.
+  // Get name + number of particles of passed Body object.
   const std::string Name = Particles.Get_Name();
-  const unsigned int Num_Particles = Particles.Get_Num_Particles();
+  const unsigned Num_Particles = Particles.Get_Num_Particles();
 
   // Now make a file path for this Particle's file
   std::string File_Path = "../Files/Saves/";
   File_Path += Name;
   File_Path += ".txt";
 
-  /* Now let's make a file for this Particle_Array. Note, if there is already
-  a save file for this Particle_Array it will be overwritten by this new file */
+  /* Now let's make a file for this Body. Note, if there is already
+  a save file for this Body it will be overwritten by this new file */
   FILE * File = fopen(File_Path.c_str(), "w");
 
-  // Let's begin by printing the Particle_Array paramaters
+  // Let's begin by printing the Body paramaters
   fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
 
   fprintf(File,   "Is a cuboid:                  %u\n",    Particles.Get_Cuboid());
@@ -145,12 +145,12 @@ void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
   //fprintf(File,   "Z Side Length:                %u\n\n",  Simulation::Z_SIDE_LENGTH);
 
   // Now let's print all particle data to the file
-  for(unsigned int i = 0; i < Num_Particles; i++)
+  for(unsigned i = 0; i < Num_Particles; i++)
     Save_Particle(Particles[i], File, Particles.Get_Cuboid());
 
   // We've now written the 'Particle_Data' file, we can close it.
   fclose(File);
-} // void Data_Dump::Save_Particle_Array(const Particle_Array & Particles) {
+} // void Data_Dump::Save_Body(const Body & Particles) {
 
 
 
@@ -167,7 +167,7 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
   to read. This function assumes that the File has already been setup (with
   static particle class paramaters). */
 
-  unsigned int i;                                // index variable
+  unsigned i;                                // index variable
 
   const Vector X = P_In.Get_X();
   const Vector x = P_In.Get_x();
@@ -202,7 +202,7 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
   fprintf(File,   "D:                            %5lf\n",  P_In.Get_D());
 
   // Now, let's figure out how many neighbors this particle has.
-  unsigned int Num_Neighbors = P_In.Get_Num_Neighbors();
+  unsigned Num_Neighbors = P_In.Get_Num_Neighbors();
 
   // Neighbor paramters
   fprintf(File,   "Number of neighbors:          %u\n", P_In.Get_Num_Neighbors());
@@ -217,31 +217,31 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
 
 
 
-int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_Arrays) {
+int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
   // First, open up the Particle_data file
-  FILE * File = fopen("../Files/Saves/Particle_Array_Data.txt","r");
+  FILE * File = fopen("../Files/Saves/Body_Data.txt","r");
   fseek(File, 0, SEEK_SET);
 
   if(File == NULL) {
-    printf("Couldn't find Particle_Array_Data.txt   :(\n");
+    printf("Couldn't find Body_Data.txt   :(\n");
     return 1;
   } // if(File == NULL) {
 
   // First, read how many Particle arrays we need to make.
-  unsigned int Buf_Length = 100;
+  unsigned Buf_Length = 100;
   char Buf[Buf_Length];                                 // Buffer to store text from file
-  unsigned int uBuf;
+  unsigned uBuf;
   std::string strBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %u\n\n", &Num_Arrays);
 
   // Now use this information to genrate our arrays
-  *Array_Ptr = new Particle_Array[Num_Arrays];
+  *Array_Ptr = new Body[Num_Arrays];
 
   Vector Dimensions;
-  unsigned int Is_Cuboid;
+  unsigned Is_Cuboid;
 
   // Now read in each array's name + Fundamental properties
-  for(unsigned int i = 0; i < Num_Arrays; i++) {
+  for(unsigned i = 0; i < Num_Arrays; i++) {
     /* We want to get each particle's name. The issue here is that there's no
     way to directly scan to a string. Instead, we can scan to a char array, Buf
     in this case. This copies over the contents of the name as well as a null
@@ -257,10 +257,10 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
     Buf[Buf_Length-1] = '\0';
     strBuf = Buf;
 
-    // Set Particle_Arrays name.
+    // Set Bodys name.
     (*Array_Ptr)[i].Set_Name(strBuf);
 
-    // Now determine if this Particle_Array is a Cuboid
+    // Now determine if this Body is a Cuboid
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &Is_Cuboid);
 
     if(Is_Cuboid == true) {
@@ -278,7 +278,7 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     (*Array_Ptr)[i].Set_Damageable(uBuf);
 
-    // Now read in number of particles and use if this Particle_Array is not a cuboid
+    // Now read in number of particles and use if this Body is not a cuboid
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     if(Is_Cuboid == false) {
       (*Array_Ptr)[i].Set_Num_Particles(uBuf);
@@ -292,24 +292,24 @@ int Data_Dump::Load_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_A
     fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
     Particle_Debugger::Name_List.Add_Back((*Array_Ptr)[i].Get_Name());
     Particle_Debugger::File_Number_List.Add_Back(uBuf);
-  } // for(unsigned int i = 0; i < Num_Arrays; i++) {
+  } // for(unsigned i = 0; i < Num_Arrays; i++) {
 
   // pass the newly created particle arrays to the 'load particle array' function
-  for(unsigned int i = 0; i < Num_Arrays; i++)
-    Load_Particle_Array((*Array_Ptr)[i]);
+  for(unsigned i = 0; i < Num_Arrays; i++)
+    Load_Body((*Array_Ptr)[i]);
 
   fclose(File);
   return 0;
-} // int Data_Dump::Load_Saved_Simulation(Particle_Array ** Array_Ptr, unsigned int & Num_Arrays) {
+} // int Data_Dump::Load_Saved_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
 
 
 
-int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
+int Data_Dump::Load_Body(Body & Particles) {
   /* This function is designed to read in particle and use it to create a
   particles array. */
 
   // First, open up the desired file.
-  unsigned int Num_Particles = 0;
+  unsigned Num_Particles = 0;
 
   // First, get a path to the file
   std::string File_Path = "../Files/Saves/";
@@ -324,10 +324,10 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   } // if(File == NULL) {
 
   // Buffers to hold variables that we read in (we need to do this b/c the
-  // Particle_Array's varialbes are hidden/seed to be set with setters)
-  unsigned int Buf_Length = 100;
+  // Body's varialbes are hidden/seed to be set with setters)
+  unsigned Buf_Length = 100;
   char Buf[Buf_Length];                          // Buffer to store text from file
-  unsigned int uBuf;
+  unsigned uBuf;
   double lfBuf;
   Materials::Material Mat;
 
@@ -335,7 +335,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   fprintf(File,   "       -- Particles --\n");
   fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
 
-  // We already have the Particle_Array's name, cuboid/boundary flags, and
+  // We already have the Body's name, cuboid/boundary flags, and
   // dimensions (if cuboid). We can therefore skip over these lines.
   fgets(Buf, 99, File);                          // Skip 'name' line.
   fgets(Buf, 99, File);                          // Skip blank line
@@ -395,12 +395,12 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
 
   // Now read in particles.
-  for(unsigned int i = 0; i < Num_Particles; i++)
+  for(unsigned i = 0; i < Num_Particles; i++)
     Load_Particle(Particles[i], File, Particles.Get_Cuboid());
 
   //////////////////////////////////////////////////////////////////////////////
   // Now recreate each Particle's neighbor arrays.
-  unsigned int Neighbor_ID;
+  unsigned Neighbor_ID;
   double V_j;                                    // Volume of jth neighbor               : mm^3
   Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
            0,0,0,
@@ -408,7 +408,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
   const double Shape_Function_Amp = Particles.Get_Shape_Function_Amplitude();
   const double h = Particles.Get_h();
 
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) {
     // Check that the current particle has Neighbors
 
     if(Particles[i].Num_Neighbors != 0) {
@@ -417,7 +417,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
                  0,0,0,
                  0,0,0);
 
-      for(unsigned int j = 0; j < Particles[i].Num_Neighbors; j++) {
+      for(unsigned j = 0; j < Particles[i].Num_Neighbors; j++) {
         Neighbor_ID = Particles[i].Neighbor_IDs[j];
 
         // Calculate displacement vectors
@@ -436,7 +436,7 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
         // Add in the Current Neighbor's contribution to the Shape tensor
         V_j = Particles[Neighbor_ID].Vol;
         A += Dyadic_Product((V_j*Particles[i].Grad_W[j]), Particles[i].R[j]);
-      } // for(unsigned int j = 0; j < Particles[i].Num_Neighbors; i++) {
+      } // for(unsigned j = 0; j < Particles[i].Num_Neighbors; i++) {
 
       // Now we can calculate A^(-1) from A.
       Particles[i].A_Inv = A^(-1);
@@ -444,13 +444,13 @@ int Data_Dump::Load_Particle_Array(Particle_Array & Particles) {
       // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
       Particles[i].Neighbors_Are_Set = true;
     } // if(Particles[i].Num_Neighbors != 0) {
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   // All done, close the file.
   fclose(File);
 
   return 0;
-} // int Data_Dump::Load_Data_From_File(unsigned int & Num_Particles, Particle_Array Particles) {
+} // int Data_Dump::Load_Data_From_File(unsigned & Num_Particles, Body Particles) {
 
 
 
@@ -493,7 +493,7 @@ void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &P_In.Num_Neighbors);
 
   // Now allocate memory for P_In's neighbor arrays
-  P_In.Neighbor_IDs = new unsigned int[P_In.Num_Neighbors];
+  P_In.Neighbor_IDs = new unsigned[P_In.Num_Neighbors];
   P_In.R = new Vector[P_In.Num_Neighbors];                                     //        : mm Vector
   P_In.Mag_R = new double[P_In.Num_Neighbors];                                 //        : mm
   P_In.W = new double[P_In.Num_Neighbors];                                     //        : unitless
@@ -502,7 +502,7 @@ void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid
   // Now read in neighbor IDs. Before we can do that, however, we need to move
   // the file pointer ahead, past 'Neighbor IDs: '
   fread(Buf, 1, 30, File);
-  for(unsigned int i = 0; i < P_In.Num_Neighbors; i++)
+  for(unsigned i = 0; i < P_In.Num_Neighbors; i++)
     fscanf(File, " %u", &P_In.Neighbor_IDs[i]);
 } // void Data_Dump::Load_Particle(Particle & P_In, const FILE * File, const bool Is_Cuboid) {
 

@@ -10,7 +10,15 @@ INC_PATH :=       -iquote ./src \
 # Object files for compiling + their paths
 OBJS :=            Main.o \
 					         Vector.o \
-	                 Tensor.o
+	                 Tensor.o \
+									 Particle.o \
+									 Particle_Contact.o \
+									 Particle_Damage.o \
+									 Particle_Debugger.o \
+									 Particle_Neighbors.o \
+									 Particle_Update.o \
+									 Body.o
+
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 
 
@@ -23,8 +31,10 @@ TEST_OBJ_PATHS := $(patsubst %,obj/%,$(TEST_OBJS))
 
 
 # Tells Make where to search for dependencies
-VPATH :=     ./bin ./obj ./src \
+VPATH :=     ./bin ./obj \
+	           ./src \
              ./src/Vector ./src/Tensor \
+						 ./src/Particle ./src/Body \
 						 ./test
 
 
@@ -71,6 +81,29 @@ obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
+# Particle Class
+obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Particle_Neighbors.o: Particle_Neighbors.cc Particles.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Particle_Update.o: Particle_Update.cc Particles.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Particle_Damage.o: Particle_Damage.cc Particles.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Particle_Contact.o: Particle_Contact.cc Particles.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Particle_Debugger.o: Particle_Debugger.cc Particles.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+
+# Body class
+obj/Body.o: Body.cc Body.h Vector.h Tensor.h Errors.h Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 ################################################################################

@@ -3,7 +3,7 @@
 
 #include "FEB_File.h"
 
-int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned int & Num_Nodes) {
+int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
   // First, we need to get the path to the Febio file. Now we can open the file
   string File_Path = "../Files/";
   File_Path += File_Name;                        // Add file name
@@ -19,10 +19,10 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
   } // if(File == NULL) {
 
   // Now search through FEBio file until we come to 'Nodes' section
-  unsigned int i;
+  unsigned i;
   bool Nodes_Found = false;
   long Start_Of_Nodes;
-  const unsigned int Buf_Length = 100;
+  const unsigned Buf_Length = 100;
   char Buf[Buf_Length+1];
 
   // Assign null character to final element of Buf.
@@ -103,7 +103,7 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
   fseek(File, Start_Of_Nodes, SEEK_SET);
 
   // Allocate an array to hold the reference positons of the nodes
-  unsigned int ID_Buf;
+  unsigned ID_Buf;
   *X_Ptr = new Vector[Num_Nodes];
 
   for(i = 0; i < Num_Nodes; i++)
@@ -113,6 +113,6 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
   fclose(File);
 
   return 0;
-} // int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned int & Num_Nodes) {
+} // int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
 
 #endif

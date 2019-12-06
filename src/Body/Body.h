@@ -1,31 +1,34 @@
-#if !defined PARTICLE_ARRAY_HEADER
-#define PARTICLE_ARRAY_HEADER
+#if !defined BODY_HEADER
+#define BODY_HEADER
+
+#include "Particle/Particle.h"
+#include "Vector/Vector.h"
 
 #if !defined(PI)
   #define PI 3.1415926535897932384626
 #endif
 
-class Particle_Array {
+class Body {
   private:
     // Particle array name
     std::string Name;
 
     // Cuboid parameters.
     bool Is_Cuboid = false;
-    unsigned int X_SIDE_LENGTH = 0;
-    unsigned int Y_SIDE_LENGTH = 0;
-    unsigned int Z_SIDE_LENGTH = 0;
+    unsigned X_SIDE_LENGTH = 0;
+    unsigned Y_SIDE_LENGTH = 0;
+    unsigned Z_SIDE_LENGTH = 0;
 
     // Boundary parameters
     bool Is_Boundary = false;
 
     // The array of particles
-    unsigned int Num_Particles = 0;
+    unsigned Num_Particles = 0;
     Particle * Array = NULL;
 
     // Kernel parameters
     double Inter_Particle_Spacing = 0;                     //                            : mm
-    unsigned int Support_Radius = 0;                       // Support radius in Inter Particle Spacints's    : unitless
+    unsigned Support_Radius = 0;                       // Support radius in Inter Particle Spacings's    : unitless
     double h = 0;                                          // Support radius in mm's     : mm
     double Shape_Function_Amplitude = 0;                   // Shape function Amplitude   : 1/(mm^6)
 
@@ -41,7 +44,7 @@ class Particle_Array {
 
     // Damage paramaters
     double Tau;                                            // Damage rate parameter (see eq 26)
-    bool Damageable = 1;                                   // If true, allows this Particle_Array to take damage.
+    bool Damageable = 1;                                   // If true, allows this Body to take damage.
 
     // First time step?
     bool First_Time_Step = true;
@@ -54,32 +57,32 @@ class Particle_Array {
 
   public:
     // Constructors, destructor
-    Particle_Array(void);                                  // default constructor
-    Particle_Array(const unsigned int Num_Particles_In);   // generate array constructor
-    Particle_Array(const Particle_Array & Ar_In) {         // do nothing copy constructor
+    Body(void);                                  // default constructor
+    Body(const unsigned Num_Particles_In);   // generate array constructor
+    Body(const Body & Ar_In) {         // do nothing copy constructor
       printf("Copy constructor is NOT enabled for Particle Arrays\n");
     }
-    ~Particle_Array(void);                                 // destructor
+    ~Body(void);                                 // destructor
 
     // Operator overloading
-    Particle_Array & operator=(Particle_Array & Ar_In) {   // do nothing = operator
+    Body & operator=(Body & Ar_In) {   // do nothing = operator
       printf("Equality is NOT defined for Particle arrays\n");
       return Ar_In;
     }
-    Particle & operator[](const unsigned int i) {
+    Particle & operator[](const unsigned i) {
       return Array[i];
     }
-    const Particle & operator[](const unsigned int i) const {
+    const Particle & operator[](const unsigned i) const {
       return Array[i];
     }
 
 
     // Set methods
-    void Set_Num_Particles(const unsigned int Num_Particles_In);
+    void Set_Num_Particles(const unsigned Num_Particles_In);
     void Set_Name(const std::string & S_In) { Name = S_In; }
 
     void Set_Inter_Particle_Spacing(const double IPS);
-    void Set_Support_Radius(const unsigned int SR_In);
+    void Set_Support_Radius(const unsigned SR_In);
 
     void Set_Material(const Materials::Material & Mat_In) { Array_Material = Mat_In; }
     void Set_mu(const double mu_In) { mu = mu_In; }
@@ -110,11 +113,11 @@ class Particle_Array {
     } // void Increment_F_Counter(void) {
 
     // Getters
-    unsigned int Get_Num_Particles(void) const { return Num_Particles; }
+    unsigned Get_Num_Particles(void) const { return Num_Particles; }
     std::string Get_Name(void) const { return Name; }
 
     double Get_Inter_Particle_Spacing(void) const { return Inter_Particle_Spacing; }
-    unsigned int Get_Support_Radius(void) const { return Support_Radius; }
+    unsigned Get_Support_Radius(void) const { return Support_Radius; }
 
     double Get_h(void) const { return h; }
     double Get_Shape_Function_Amplitude(void) const { return Shape_Function_Amplitude; }
@@ -131,9 +134,9 @@ class Particle_Array {
     bool Get_Damagable(void) const { return Damageable; }
 
     bool Get_Cuboid(void) const { return Is_Cuboid; }
-    unsigned int Get_X_SIDE_LENGTH(void) const { return X_SIDE_LENGTH; }
-    unsigned int Get_Y_SIDE_LENGTH(void) const { return Y_SIDE_LENGTH; }
-    unsigned int Get_Z_SIDE_LENGTH(void) const { return Z_SIDE_LENGTH; }
+    unsigned Get_X_SIDE_LENGTH(void) const { return X_SIDE_LENGTH; }
+    unsigned Get_Y_SIDE_LENGTH(void) const { return Y_SIDE_LENGTH; }
+    unsigned Get_Z_SIDE_LENGTH(void) const { return Z_SIDE_LENGTH; }
 
     bool Get_Boundary(void) const { return Is_Boundary; }
 
@@ -141,6 +144,6 @@ class Particle_Array {
 
     // Other Methods
     void Print_Parameters(void) const;
-}; // class Particle_Array {
+}; // class Body {
 
 #endif

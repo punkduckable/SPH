@@ -1,12 +1,9 @@
-#if !defined(PARTICLE_NEIGHBORS)
-#define PARTICLE_NEIGHBORS
-
 #include "Particle_Helpers.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Neighbor methods!
 
-bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles, const unsigned int i, const unsigned int j) {
+bool Particle_Helpers::Are_Neighbors(const Body & Particles, const unsigned i, const unsigned j) {
   /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
   particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
   h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
@@ -19,17 +16,17 @@ bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles, const uns
   const Vector Rj = Particles[i].Get_X() - Particles[j].Get_X();
   double h = Particles.Get_h();
 
-  return ( h*h > Vector_Dot_Product(Rj, Rj) );
-} // bool Particle_Helpers::Are_Neighbors(const Particle_Array, unsigned int i, unsigned int j) {
+  return ( h*h > Dot_Product(Rj, Rj) );
+} // bool Particle_Helpers::Are_Neighbors(const Body, unsigned i, unsigned j) {
 
 
 
-void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
-  unsigned int i,j;                              // Loop index variables
-  List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
-  const unsigned int Num_Particles = Particles.Get_Num_Particles();
-  unsigned int Num_Neighbors;                    // Number of neighbors found
-  unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
+void Particle_Helpers::Find_Neighbors(Body & Particles) {
+  unsigned i,j;                              // Loop index variables
+  List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
+  const unsigned Num_Particles = Particles.Get_Num_Particles();
+  unsigned Num_Neighbors;                    // Number of neighbors found
+  unsigned *Neighbor_IDs;                    // Array that holds final list of neighbors
 
   // Cycle through the particles
   for(i = 0; i < Num_Particles; i++) {
@@ -44,14 +41,14 @@ void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
       // add P_j to P_i's neighbor list.
       if(Are_Neighbors(Particles, i, j))
         Particle_Neighbor_List.Add_Back(Particles[j].Get_ID());
-    } // for(unsigned int j = 0; j < Num_Particles; j++) {
+    } // for(unsigned j = 0; j < Num_Particles; j++) {
 
     /* Now that we have the neighbor list, we can make it into an array. To do
     this, we allocate an array whose length is equal to the length of the
     neighbor list. We then populate this array with the elements of the list
     and finally send this off to the particle (whose neighbors we found) */
     Num_Neighbors = Particle_Neighbor_List.Node_Count();
-    Neighbor_IDs = new unsigned int[Num_Neighbors];
+    Neighbor_IDs = new unsigned[Num_Neighbors];
 
     for(j = 0; j < Num_Neighbors; j++)
       Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front();
@@ -61,12 +58,12 @@ void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
 
     /* Now free Neighbor_IDs array for next particle! */
     delete [] Neighbor_IDs;
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
-} // void Particle_Helpers::Find_Neighbors(Particle_Array & Particles) {
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
+} // void Particle_Helpers::Find_Neighbors(Body & Particles) {
 
 
 
-void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles) {
+void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Body & Particles) {
   /* This function is a modified version of the Neighbor List generating
   function that is specialized for Box particle geometries. By box, I mean
   some kind of cuboid.
@@ -103,7 +100,7 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
   So how do you use this function?
   This function is used just like the Generage_Neighbor_List function but it
   works on an indiviudal particle rather than an entire particle array. We can
-  determine the cuboid dimensions from the Particle_Array. These dimensions are
+  determine the cuboid dimensions from the Body. These dimensions are
   stored in X_SIDE_LENGTH, Y_SIDE_LENGTH, and Z_SIDE_LENGTH. If the cuboid has p
   particles in a vertical column then Z_SIDE_LENGTH is p. For a 100x50x200
   cuboid of particles, X_SIDE_LENGTH is 100, Y_SIDE_LENGTH is 50, and
@@ -115,18 +112,18 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
   const unsigned Z_SIDE_LENGTH = Particles.Get_Z_SIDE_LENGTH();
 
   // Set up local varialbes.
-  unsigned int i = P_In.Get_i(), j = P_In.Get_j(), k = P_In.Get_k();
-  unsigned int p,q,r;                             // Loop index variables
-  unsigned int p_min, p_max, q_min, q_max, r_min, r_max;
-  List<unsigned int> Particle_Neighbor_List;     // Linked list to store known neighbors
-  unsigned int Num_Neighbors;                    // Number of neighbors found
-  unsigned int *Neighbor_IDs;                    // Array that holds final list of neighbors
-  const unsigned int SUPPORT_RADIUS = Particles.Get_Support_Radius();
+  unsigned i = P_In.Get_i(), j = P_In.Get_j(), k = P_In.Get_k();
+  unsigned p,q,r;                             // Loop index variables
+  unsigned p_min, p_max, q_min, q_max, r_min, r_max;
+  List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
+  unsigned Num_Neighbors;                    // Number of neighbors found
+  unsigned *Neighbor_IDs;                    // Array that holds final list of neighbors
+  const unsigned SUPPORT_RADIUS = Particles.Get_Support_Radius();
 
   /* If we are near the edge of the cube then we need to adjust which
   particles we search through
 
-  Note: Because unsigned integers rollover, we need to be careful to
+  Note: Because unsignedegers rollover, we need to be careful to
   structure our tests such that they do not modify i j or k. For example,
   if k = 0 then check if k - SUPPORT_RADIUS < 0 will ALWAYS return
   false since 0 - SUPPORT_RADIUS = ~4 billion (rollover!). However,
@@ -188,7 +185,7 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
   neighbor list. We then populate this array with the elements of the list
   and finally send this off to the particle (whose neighbors we found) */
   Num_Neighbors = Particle_Neighbor_List.Node_Count();
-  Neighbor_IDs = new unsigned int[Num_Neighbors];
+  Neighbor_IDs = new unsigned[Num_Neighbors];
 
   if(Particles.Get_X_SIDE_LENGTH() == 3)
     printf("Num neighbors = %u \n", Num_Neighbors);
@@ -201,11 +198,11 @@ void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Part
 
   /* Now free Neighbor_IDs array for next particle! */
   delete [] Neighbor_IDs;
-} // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Particle_Array & Particles) {
+} // void Particle_Helpers::Find_Neighbors_Box(Particle & P_In, Body & Particles) {
 
 
 
-void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle_Array & Particles) {
+void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned Remove_Neighbor_ID, const Body & Particles) {
   // This function is used to remove 1 neighbor from an existing particle.
 
   // To be able to remove a neighbor, we need to have neighbors!
@@ -225,11 +222,11 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remov
   Neighbor arrays and point this particle's arrays to the new Neighbor
   arrays. */
 
-  unsigned int i, j = -1;                              // index variables
+  unsigned i, j = -1;                              // index variables
   double V_j;
 
   // New neighbor arrays
-  unsigned int *New_Neighbor_IDs = new unsigned int[P_In.Num_Neighbors - 1];   //        : unitless
+  unsigned *New_Neighbor_IDs = new unsigned[P_In.Num_Neighbors - 1];   //        : unitless
   Vector *New_R = new Vector[P_In.Num_Neighbors - 1];                          //        : mm Vector
   double *New_Mag_R = new double[P_In.Num_Neighbors - 1];                      //        : mm
   double *New_W = new double[P_In.Num_Neighbors - 1];                          //        : 1/(mm^3)
@@ -285,6 +282,4 @@ void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remov
   // Now we can calculate the new A^(-1) from New_A.
   P_In.A_Inv = New_A^(-1);                                                     //        : unitless Tensor
 
-} // void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned int Remove_Neighbor_ID, const Particle_Array & Particles) {
-
-#endif
+} // void Particle_Helpers::Remove_Neighbor(Particle & P_In, const unsigned Remove_Neighbor_ID, const Body & Particles) {

@@ -1,12 +1,9 @@
-#if !defined(PARTICLE_CONTACT)
-#define PARTICLE_CONTACT
-
 #include "Particle_Helpers.h"
 
-void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B) {
+void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
   // Get paramaters from Body_A, Body_B
-  const unsigned int Num_Particles_A = Body_A.Get_Num_Particles();
-  const unsigned int Num_Particles_B = Body_B.Get_Num_Particles();
+  const unsigned Num_Particles_A = Body_A.Get_Num_Particles();
+  const unsigned Num_Particles_B = Body_B.Get_Num_Particles();
   const double Shape_Function_Amp = Body_A.Get_Shape_Function_Amplitude();
 
   /* This function implements Particle-Particle 'contact'.
@@ -15,7 +12,7 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   force is in the direction of the line between the two particles centers. */
   const double h = Simulation::Contact_Distance;           // Contact force support radius         : mm
   const double h_squared = h*h;                            // Square of support radius   : mm^2
-  unsigned int i;
+  unsigned i;
   Vector r_ij;                                                                 //        : mm Vector
   Vector * Body_B_x = new Vector[Num_Particles_B];                             //        : mm Vector
   Vector Grad_W;                                                               //        : 1/mm^4 Vector
@@ -47,7 +44,7 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
     const double KV_i = K*V_i;                                                 //        : N*mm
     x_i = Body_A[i].Get_x();                                                   //        : mm Vector
 
-    for(unsigned int j = 0; j < Num_Particles_B; j++) {
+    for(unsigned j = 0; j < Num_Particles_B; j++) {
       r_ij = x_i - Body_B_x[j];                                                //        : mm Vector
 
       // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
@@ -120,11 +117,11 @@ void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B)
   , update_x , has a for loop before it uses the forces modified above. This
   means that the update_x method will force synchronize each thread before any
   data from here is used. Therefore, we don't need a barrier. */
-} // void Particle_Helpers::Contact(Particle_Array & Body_A, Particle_Array & Body_B) {
+} // void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
 
 
 
-void Particle_Helpers::Print_Net_External_Force(const Particle_Array & Particles, const unsigned int l) {
+void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const unsigned l) {
   /* This function is used to find and print the net external force on a partilce
   array. This function can NOT be called by multiple threads at once (this
   function is not thread safe). */
@@ -141,18 +138,16 @@ void Particle_Helpers::Print_Net_External_Force(const Particle_Array & Particles
 
   // Now add up net external force on supplied particle array and print it out
   // Note that we must do this using a single thread
-  unsigned int Num_Particles = Particles.Get_Num_Particles();
+  unsigned Num_Particles = Particles.Get_Num_Particles();
   Vector Net_Contact_Force = {0,0,0};
 
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) {
     Net_Contact_Force += Particles[i].Get_Force_Friction();
     Net_Contact_Force += Particles[i].Get_Force_Contact();
-  } //   for(unsigned int i = 0; i < Num_Particles; i++) {
+  } //   for(unsigned i = 0; i < Num_Particles; i++) {
 
   fprintf(File,"%6u:  <%10.4f, %10.4f, %10.4f>\n", l, Net_Contact_Force(0), Net_Contact_Force(1), Net_Contact_Force(2));
 
   // Now close the file.
   fclose(File);
-} // void Particle_Helpers::Print_Net_External_Force(const Partilce_Array & Particles, const unsigned int l) {
-
-#endif
+} // void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const unsigned l) {
