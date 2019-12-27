@@ -7,7 +7,7 @@ double Body::K = 400;
 // Constructors, destructor
 
 Body::Body(void) {
-  Array = nullptr;
+  Particles = nullptr;
   Num_Particles = 0;
   X_SIDE_LENGTH = 0;
   Y_SIDE_LENGTH = 0;
@@ -193,11 +193,11 @@ void Body::Print_Parameters(void) const {
   printf(         "h:                            %lf\n",   h);
   printf(         "Support Radius:               %u\n",    Support_Radius);
   printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
-  printf(         "Material:                     %s\n",    Body_Matterial.Name.c_str());
-  printf(         "Lame:                         %lf\n",   Body_Matterial.Lame);
-  printf(         "mu0 (Shear modulus):          %lf\n",   Body_Matterial.mu0);
+  printf(         "Material:                     %s\n",    Body_Material.Name.c_str());
+  printf(         "Lame:                         %lf\n",   Body_Material.Lame);
+  printf(         "mu0 (Shear modulus):          %lf\n",   Body_Material.mu0);
   printf(         "mu (Viscosity):               %lf\n",   mu);
-  printf(         "E (Young's modulus):          %lf\n",   Body_Matterial.E);
+  printf(         "E (Young's modulus):          %lf\n",   Body_Material.E);
   printf(         "Tau (Damage rate):            %lf\n\n", Tau);
 } // void Body::Print_Parameters(void) const {
 
@@ -237,11 +237,11 @@ void Body::Print_Net_External_Force(const unsigned time_step) {
 
 
 
-void Body::Export_Particle_Forces(const unsigned time_step) const {
+void Body::Print_Particle_Forces(void) {
   // Create a file path for the new file (based on the Body's name
   // and time_step)
   char Buf[6];
-  sprintf(Buf,"%06u",time_step);
+  sprintf(Buf,"%05u",Times_Printed_Particle_Forces);
   std::string File_Path = "./IO/Force_Files/";
   File_Path += (*this).Name.c_str();
   File_Path +=  "_Force_";
@@ -249,6 +249,9 @@ void Body::Export_Particle_Forces(const unsigned time_step) const {
 
   // Now open the file.
   FILE * File = fopen(File_Path.c_str(), "w");
+
+  // Increment the number of times that we're printed particle force data.
+  Times_Printed_Particle_Forces++;
 
   // Print header.
   fprintf(File,"  ID  |");
@@ -280,4 +283,4 @@ void Body::Export_Particle_Forces(const unsigned time_step) const {
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   fclose(File);
-} // void Body::Export_Particle_Forces(void) const {
+} // void Body::Print_Particle_Forces(void) {

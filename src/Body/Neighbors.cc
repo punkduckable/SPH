@@ -11,55 +11,74 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
   assert(Particles[i].Neighbors_Are_Set == false);
 
   // Set Num_Neighbors using input
-  Num_Neighbors = Num_Neighbors_In;
+  Particles[i].Num_Neighbors = Num_Neighbors_In;
 
-  /* Next, check that N > 0. if N = 0, then there are no neighbors. */
+  /* Next, check that Num_Neighbors_In > 0. if Num_Neighbors_In = 0, then there are no neighbors. */
   if(Num_Neighbors_In == 0) {
     printf("You didn't supply any neighbors for particle %u! I'm damaging this particle.\n", i);
     Particles[i].D = 1;
     return;
   } // if(Num_Neighbors_In == 0) {
 
-  // Allocate memory for the Dynamic arrays
-  Neighbor_IDs = new unsigned[Num_Neighbors];
-  R = new Vector[Num_Neighbors];                                               //        : mm Vector
-  Mag_R = new double[Num_Neighbors];                                           //        : mm
-  W = new double[Num_Neighbors];                                               //        : unitless
-  Grad_W = new Vector[Num_Neighbors];                                          //        : 1/mm Vector
 
+
+  //////////////////////////////////////////////////////////////////////////////
   /* Now that we know our neighbors IDs, we can figure out everything that we
   want to know about them. We an set the Neighbor_IDs, r, R, W, and Grad_W
   members. These can be used to calculate the shape matrix (and its inverse)! */
 
+
+  // Allocate memory for the Dynamic arrays
+  unsigned * Neighbor_IDs = new unsigned[Num_Neighbors_In];
+  Vector * R = new Vector[Num_Neighbors_In];                                   //        : mm Vector
+  double * Mag_R = new double[Num_Neighbors_In];                               //        : mm
+  double * W = new double[Num_Neighbors_In];                                   //        : unitless
+  Vector * Grad_W = new Vector[Num_Neighbors_In];                              //        : 1/mm Vector
+
+  // Allocate some variables
   int Neighbor_ID;                               // Keep track of current particle
   double V_j;                                    // Volume of jth neighbor               : mm^3
   Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
            0,0,0,
            0,0,0};
 
-  for(unsigned j = 0; j < Num_Neighbors; j++) {
+  // Loop through each neighbor, determine relevant information
+  for(unsigned j = 0; j < Num_Neighbors_In; j++) {
     Neighbor_ID = Neighbor_ID_Array[j];          // Get Neighbor ID (index in Particles array)
     Neighbor_IDs[j] = Neighbor_ID;               // Set jth element of Neighbor_IDs member
 
     // Calculate displacement vectors
-    R[j] = Particles[Neighbor_ID].X - X;         // Reference displacement vector        : mm Vector
+    R[j] = Particles[Neighbor_ID].X - Particles[i].X;      // Reference displacement vector        : mm Vector
     Mag_R[j] = R[j].Magnitude();                 // |R[j]|                               : mm
 
     // Calculate shape function, shape function gradient for jth neighbor
-    W[j] = Shape_Function_Amp*(h - Mag_R[j])*(h - Mag_R[j])*(h - Mag_R[j]);    //        : unitless
-    Grad_W[j] = -3*Shape_Function_Amp*((h - Mag_R[j])*(h - Mag_R[j]))*(R[j] / Mag_R[j]); // 1/mm Vector
+    W[j] = Shape_Function_Amplitude*(h - Mag_R[j])                             //        : unitless
+                                   *(h - Mag_R[j])
+                                   *(h - Mag_R[j]);
+    Grad_W[j] = -3*Shape_Function_Amplitude                                    //        : 1/mm Vector
+                  *((h - Mag_R[j])*(h - Mag_R[j]))
+                  *(R[j] / Mag_R[j]);
 
     // Add in the Current Neighbor's contribution to the Shape tensor
     V_j = Particles[Neighbor_ID].Vol;            // Neighbor Volume                      : mm^3
     A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless Tensor
-  } // for(unsigned j = 0; j < N; j++) {
+  } // for(unsigned j = 0; j < Num_Neighbors_In; j++) {
 
-  // Now we can calculate A^(-1) from A.
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Now set the ith particle's members
+  Particles[i].Neighbor_IDs = Neighbor_IDs;
+  Particles[i].R = R;                                                          //        : mm Vector
+  Particles[i].Mag_R = Mag_R;                                                  //        : mm
+  Particles[i].W = W;                                                          //        : unitless
+  Particles[i].Grad_W = Grad_W;                                                //        : 1/mm Vector
   Particles[i].A_Inv = A^(-1);                                                 //        : unitless Tensor
+
 
   // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
   Particles[i].Neighbors_Are_Set = true;
-} // void Body::Set_Neighbors(const unsigned particle_index, const unsigned N, const unsigned * Neighbor_ID_Array) {
+} // void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors, const unsigned * Neighbor_ID_Array) {
 
 
 
@@ -225,18 +244,18 @@ void Body::Find_Neighbors_Cuboid(void) {
         for(p = 0; p < Num_Neighbors; p++) { Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front(); }
 
         // Now sent the Neighbor list to the particle
-        Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j].Set_Neighbors(Num_Neighbors, Neighbor_IDs, Particles);
+        Set_Neighbors(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, Num_Neighbors, Neighbor_IDs);
 
         /* Now free Neighbor_IDs array for next particle! */
         delete [] Neighbor_IDs;
       } // for(unsigned k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
-} // void Particle_Helpers::Find_Neighbors_Cuboid(void) {
+} // void Body::Find_Neighbors_Cuboid(void) {
 
 
 
-void Particle_Helpers::Remove_Neighbor(const unsinged i, const unsigned Remove_Neighbor_ID) {
+void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) {
   // This function is used to remove 1 neighbor from an existing particle.
 
   // To be able to remove a neighbor, the particle in question must have neighbors!
@@ -290,7 +309,7 @@ void Particle_Helpers::Remove_Neighbor(const unsinged i, const unsigned Remove_N
     New_R[p]            = Particles[i].R[j];                                   //        : mm Vector
     New_Mag_R[p]        = Particles[i].Mag_R[j];                               //        : mm
     New_W[p]            = Particles[i].W[j];                                   //        : 1/(mm^3)
-    New_Grad_W[p]       = Particles[i].Grad_W[n];                              //        : 1/(mm^4) Vector
+    New_Grad_W[p]       = Particles[i].Grad_W[j];                              //        : 1/(mm^4) Vector
 
     // Calculate New shape tensor.
     Vol_p = Particles[Particles[i].Neighbor_IDs[p]].Vol;                       //        : mm^3
@@ -316,4 +335,4 @@ void Particle_Helpers::Remove_Neighbor(const unsinged i, const unsigned Remove_N
 
   // Now we can calculate the new A^(-1) from New_A.
   Particles[i].A_Inv = New_A^(-1);                                             //        : unitless Tensor
-} // void Particle_Helpers::Remove_Neighbor(const unsinged i, const unsigned Remove_Neighbor_ID) {
+} // void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) {

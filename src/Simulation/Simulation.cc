@@ -161,7 +161,7 @@ void Simulation::Run_Simulation(void) {
 
     if(Print_Forces == true)
       for(m = 0; m < Num_Arrays; m++)
-        Arrays[m].Export_Particle_Forces(l);
+        Arrays[m].Print_Particle_Forces();
   } // if(Load_Data_From_File == false) {
 
   // time step loop.
@@ -413,7 +413,7 @@ void Simulation::Run_Simulation(void) {
       if(Print_Forces == true) {
         #pragma omp for nowait
         for(m = 0; m < Num_Arrays; m++ )
-          Particle_Debugger::Export_Particle_Forces(Arrays[m]);
+          Arrays[m].Print_Particle_Forces();
       } // if(Print_Forces == true) {
 
       if(Print_Net_Force == true) {

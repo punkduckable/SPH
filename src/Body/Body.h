@@ -7,6 +7,7 @@
 #include "Vector/Vector.h"
 #include "IO/Data_Dump.h"
 #include "Simulation/Materials.h"
+#include "List.h"
 #include <string>
 #include <assert.h>
 
@@ -67,8 +68,14 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Contact parameters
-    static const double K;                                                     //        : N/(mm^2)
+    static double K;                             // Set in Body.h                        : N/(mm^2)
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Printing Parameters
     unsigned Times_Printed_Net_External_Force = 0;
+    unsigned Times_Printed_Particle_Forces = 0;
 
 
 
@@ -212,9 +219,9 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Printing methods
-    void Print_Net_External_Force(const unsigned time_step) const;
+    void Print_Net_External_Force(const unsigned time_step);
     void Print_Parameters(void) const;
-    void Export_Particle_Forces(const unsigned time_step) const;
+    void Print_Particle_Forces(void);
 
 
 
