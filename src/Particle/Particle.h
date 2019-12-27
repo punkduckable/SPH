@@ -6,7 +6,6 @@
 #include "Body/Body.h"
 #include "IO/Data_Dump.h"
 #include "Simulation/Simulation.h"
-#include "Particle/Particle_Helpers.h"
 #include "Particle_Debugger.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
@@ -87,7 +86,7 @@ class Particle {
 
     ////////////////////////////////////////////////////////////////////////////
     // Core methods
-    
+
     // Contact method friends
     friend void Particle_Helpers::Contact(Body & Body_A,
                                           Body & Body_B);
