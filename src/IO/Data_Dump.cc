@@ -220,10 +220,10 @@ int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
   FILE * File = fopen("../Files/Saves/Body_Data.txt","r");
   fseek(File, 0, SEEK_SET);
 
-  if(File == NULL) {
+  if(File == nullptr) {
     printf("Couldn't find Body_Data.txt   :(\n");
     return 1;
-  } // if(File == NULL) {
+  } // if(File == nullptr) {
 
   // First, read how many Particle arrays we need to make.
   unsigned Buf_Length = 100;
@@ -316,10 +316,10 @@ int Data_Dump::Load_Body(Body & Body_In) {
 
   FILE * File = fopen(File_Path.c_str(), "r");
 
-  if(File == NULL) {
+  if(File == nullptr) {
     printf("Could not open Particle data file\n");
     return 1;
-  } // if(File == NULL) {
+  } // if(File == nullptr) {
 
   // Buffers to hold variables that we read in (we need to do this b/c the
   // Body's varialbes are hidden/seed to be set with setters)

@@ -1,6 +1,8 @@
 #if !defined(LIST_HEADER)
 #define LIST_HEADER
 
+#include <stdio.h>
+
 template <typename Type>
 class List {
   private:
@@ -42,8 +44,8 @@ class List {
 template <typename Type>
 List<Type>::List(void) {
   Num_Nodes = 0;
-  Beginning = NULL;
-  End = NULL;
+  Beginning = nullptr;
+  End = nullptr;
 } // List<Type>::List() {
 
 
@@ -58,15 +60,15 @@ List<Type>::List(const List & L_In) {
   Type value;
 
   Beginning = Node_Ptr;
-  End = Beginning = NULL;
+  End = Beginning = nullptr;
   Num_Nodes = 0;
 
-  while(Node_Ptr != NULL) {
+  while(Node_Ptr != nullptr) {
     value = Node_Ptr->Value;                         // Get latest node's value
     Add_Back(value);                                        // Append a new node onto our list
     Num_Nodes++;                                           // Increment number of nodes
     Node_Ptr = Node_Ptr->Next_Node;                        // Point to next node in the list
-  } //   while(Node_Ptr != NULL) {
+  } //   while(Node_Ptr != nullptr) {
 } // List<Type>::List(const List & L_In) {
 
 
@@ -77,14 +79,14 @@ List<Type>::~List(void) {
   our list. To do this, we need to delete our nodes one by one. */
 
   Node * temp;
-  while(Beginning != NULL) {
+  while(Beginning != nullptr) {
     temp = Beginning;                  // Store current Beginning in temp (so we can free it!)
     Beginning = Beginning->Next_Node;  // Move Beginning forward one node
     delete temp;                       // free the old Beginning node
 
     Num_Nodes--;
     //printf("%d nodes remaining\n",Num_Nodes);
-  } // while(Beginning != NULL) {
+  } // while(Beginning != nullptr) {
 } // List<Type>::~List(void) {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,15 +102,15 @@ List<Type> & List<Type>::operator=(const List<Type> & L_In) {
   Node* Node_Ptr = L_In.Beginning;
   Type value;
 
-  Beginning = End = NULL;
+  Beginning = End = nullptr;
   Num_Nodes = 0;
 
-  while(Node_Ptr != NULL) {
+  while(Node_Ptr != nullptr) {
     value = Node_Ptr->Value;                         // Get latest node's value
     Add_Back(value);                                        // Append a new node onto our list
     Num_Nodes++;                                           // Increment number of nodes
     Node_Ptr = Node_Ptr->Next_Node;                        // Point to next node in the list
-  } //   while(Node_Ptr != NULL) {
+  } //   while(Node_Ptr != nullptr) {
 
   return *this;
 } // List & List<Type>::operator=(const List & L_In) {
@@ -163,7 +165,7 @@ void List<Type>::Add_Back(const Type ID_In) {
   one, points to the new node, make End point to new node). */
   Node * add = new Node;                       // Dynamically allocate the new node
   add->Value = ID_In;                    // New Node's ID is the input ID
-  add->Next_Node = NULL;                       // New node is End, so there is no next node
+  add->Next_Node = nullptr;                       // New node is End, so there is no next node
 
   /* Check if there are any nodes in our list.
 
@@ -174,7 +176,7 @@ void List<Type>::Add_Back(const Type ID_In) {
   is the Previous_Node for add.*/
   if(Num_Nodes == 0) {
     Beginning = add;
-    add->Previous_Node = NULL;                 // Add is new Beginning (and End), so there is no previous node.
+    add->Previous_Node = nullptr;                 // Add is new Beginning (and End), so there is no previous node.
   }
   else {
     add->Previous_Node = End;                  // add is new End. Previous node previous node for add (new end)
@@ -195,7 +197,7 @@ void List<Type>::Add_Front(const Type ID_In) {
 
   Node *add = new Node;                        // Dynamically allocate new node
   add->Value = ID_In;                    // The new node's value is the input ID
-  add->Previous_Node = NULL;                   // add will be new Beginning, so there is no node before add.
+  add->Previous_Node = nullptr;                   // add will be new Beginning, so there is no node before add.
 
   /* Check if there are any nodes in our list:
 
@@ -206,7 +208,7 @@ void List<Type>::Add_Front(const Type ID_In) {
   Next_Node for add */
   if(Num_Nodes == 0) {
     End = add;
-    add->Next_Node = NULL;
+    add->Next_Node = nullptr;
   }
   else {
     add->Next_Node = Beginning;                  // Old Beginning is next_node for add (new Beginning).
@@ -226,7 +228,7 @@ Type List<Type>::Remove_Back(void) {
   old End. */
 
   // Check if there is a node to remove.
-  if(End == NULL)
+  if(End == nullptr)
     return -1;
 
   Type ID_Out = End->Value;
@@ -239,9 +241,9 @@ Type List<Type>::Remove_Back(void) {
   //printf("Node removed from end. %d nodes remaining\n",Num_Nodes);      // For testing
 
   /* check if there are any nodes left in the list. If there are none, then
-  Beginning should point to NULL */
+  Beginning should point to nullptr */
   if(Num_Nodes == 0)
-    Beginning = NULL;
+    Beginning = nullptr;
 
   return ID_Out;
 } // Type List<Type>::Remove_Back(void) {
@@ -255,7 +257,7 @@ Type List<Type>::Remove_Front(void) {
   old Beginning. */
 
   // Check if there is a noe to remove
-  if(Beginning == NULL)
+  if(Beginning == nullptr)
     return -1;
 
   Type ID_Out = Beginning->Value;
@@ -268,9 +270,9 @@ Type List<Type>::Remove_Front(void) {
   //printf("Node remove from Beginning. %d nodes remaining\n",Num_Nodes);       // For testing
 
   /* Check if there are any nodes left in the list. If there are none, then End
-  should point to NULL. */
+  should point to nullptr. */
   if(Num_Nodes == 0)
-    End = NULL;
+    End = nullptr;
 
   return ID_Out;
 } // Type List<Type>::Remove_Front(void) {
@@ -293,7 +295,7 @@ void List<Type>::Print_Node_Info(void) const {
   printf("Beginning: %p\n",Beginning);
   printf("End:       %p\n\n",End);
 
-  while(Current_Node != NULL) {
+  while(Current_Node != nullptr) {
     // Print info on current node
     printf("Node #%d\n",Node_Num);
     printf("Value:     %d\n",Current_Node->Value);
@@ -304,7 +306,7 @@ void List<Type>::Print_Node_Info(void) const {
     // Go to next node, cycle node count
     Current_Node = Current_Node->Next_Node;
     Node_Num++;
-  } //   while(Current_Node != NULL) {
+  } //   while(Current_Node != nullptr) {
 } // void List<Type>::Print_Node_Info(void) const {
 
 #endif

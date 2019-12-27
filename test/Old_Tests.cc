@@ -1,4 +1,4 @@
-#if !defined(TESTS_SOURCE)
+nullptr#if !defined(TESTS_SOURCE)
 #define TESTS_SOURCE
 
 #include "Tests.h"
@@ -230,7 +230,7 @@ void Tensor_Tests(void) {
 
 
 void List_Tests(void) {
-  // Create a new Node, test that the two ends point to NULL
+  // Create a new Node, test that the two ends point to nullptr
   List<unsigned int> L1;
   printf("Newly created node. \n");
   L1.Print_Node_Info();

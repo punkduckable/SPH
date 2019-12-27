@@ -6,7 +6,6 @@
 #include "Body/Body.h"
 #include "IO/Data_Dump.h"
 #include "Simulation/Simulation.h"
-#include "Particle_Debugger.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
 #include "Errors.h"
@@ -77,6 +76,7 @@ class Particle {
     ~Particle(void);                                       // Destructor
 
 
+
     ////////////////////////////////////////////////////////////////////////////
     // Operator Overloading
 
@@ -84,24 +84,6 @@ class Particle {
     Particle & operator=(const Particle & P_In) = delete;  // Defines P1 = P2
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Core methods
-
-    // Contact method friends
-    friend void Particle_Helpers::Contact(Body & Body_A,
-                                          Body & Body_B);
-
-    // Other friends
-    friend void Particle_Tests(void);
-    friend void Simulation::Run_Simulation(void);
-    friend void Particle_Debugger::Export_Particle_Forces(const Body & Body_In);
-    friend int Data_Dump::Load_Body(Body & Body_In);
-    friend void Data_Dump::Load_Particle(Particle & P_In,
-                                         FILE * File,
-                                         const bool Is_Cuboid);
-
-    // Printing function
-    void Print(void) const;                                  // Print's info about particle (mostly for testing)
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters
@@ -114,6 +96,7 @@ class Particle {
     void Set_V(const Vector & V_In) { V = V_In; }          // Set particle's velocity    : mm/s Vector
     void Set_a(const Vector & a_In) { a = a_In; }          // Set particle's acel        : mm/s^2 Vector
     void Set_D(const double D_In) { D = D_In; }            // Set Damage parameter       : unitless
+
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -142,6 +125,20 @@ class Particle {
       printf("Requested neighbor ID is out of bounds! Num_Neighbors = %u, requested index = %u\n",Num_Neighbors, i);
       return 0;
     } // unsigned Get_Neighbor_IDs(unsigned i) const {
+
+
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Friends, Printing
+  friend void Particle_Tests(void);
+  friend void Simulation::Run_Simulation(void);
+  friend int Data_Dump::Load_Body(Body & Body_In);
+  friend void Data_Dump::Load_Particle(Particle & P_In,
+                                       FILE * File,
+                                       const bool Is_Cuboid);
+
+  // Printing function
+  void Print(void) const;                                  // Print's info about particle (mostly for testing)
 }; // class Particle {
 
 void Print(const Particle & P_In) { P_In.Print(); };         // Calls Print method

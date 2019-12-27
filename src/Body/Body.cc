@@ -7,7 +7,7 @@ double Body::K = 400;
 // Constructors, destructor
 
 Body::Body(void) {
-  Array = NULL;
+  Array = nullptr;
   Num_Particles = 0;
   X_SIDE_LENGTH = 0;
   Y_SIDE_LENGTH = 0;
@@ -176,7 +176,7 @@ void Body::Set_Cuboid_Dimensions(const Vector & Dimensions) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Other methods
+// Printing Methods
 
 void Body::Print_Parameters(void) const {
   printf(         "Name:                         %s\n",    Name.c_str());
@@ -200,3 +200,84 @@ void Body::Print_Parameters(void) const {
   printf(         "E (Young's modulus):          %lf\n",   Body_Matterial.E);
   printf(         "Tau (Damage rate):            %lf\n\n", Tau);
 } // void Body::Print_Parameters(void) const {
+
+
+
+void Body::Print_Net_External_Force(const unsigned time_step) {
+  /* This function is used to find and print the net external force on a body
+  This function can NOT be called by multiple threads at once (this
+  function is not thread safe). */
+
+  // First, open the file.
+  FILE * File;
+  if(Times_Printed_Net_External_Force == 0) {
+    File = fopen("../Files/Force_Files/Net_External_Force.txt","w");
+  } // if(Times_Printed_Net_External_Force == 0) {
+  else {
+    File = fopen("../Files/Force_Files/Net_External_Force.txt","a");
+  } // else {
+
+  // Increment the number of times that we're printed net force data.
+  Times_Printed_Net_External_Force++;
+
+  // Now add up net external force on supplied particle array and print it out
+  // Note that we must do this using a single thread
+  Vector Net_Contact_Force = {0,0,0};
+
+  for(unsigned i = 0; i < Num_Particles; i++) {
+    Net_Contact_Force += Particles[i].Get_Force_Friction();
+    Net_Contact_Force += Particles[i].Get_Force_Contact();
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+  fprintf(File,"%6u:  <%10.4f, %10.4f, %10.4f>\n", time_step, Net_Contact_Force(0), Net_Contact_Force(1), Net_Contact_Force(2));
+
+  // Now close the file.
+  fclose(File);
+} // void Body::Print_Net_External_Force(const unsigned time_step) {
+
+
+
+void Body::Export_Particle_Forces(const unsigned time_step) const {
+  // Create a file path for the new file (based on the Body's name
+  // and time_step)
+  char Buf[6];
+  sprintf(Buf,"%06u",time_step);
+  std::string File_Path = "./IO/Force_Files/";
+  File_Path += (*this).Name.c_str();
+  File_Path +=  "_Force_";
+  File_Path +=  Buf;
+
+  // Now open the file.
+  FILE * File = fopen(File_Path.c_str(), "w");
+
+  // Print header.
+  fprintf(File,"  ID  |");
+  fprintf(File," Particle Pos  |");
+  fprintf(File,"        Internal Force        |");
+
+  #if defined(PARTICLE_DEBUG)
+    fprintf(File,"        Viscous Force         |");
+  #endif
+
+  fprintf(File,"        Contact Force         |");
+  fprintf(File,"        Friction Force        |");
+  fprintf(File,"        Hourglass Force       |");
+  fprintf(File,"\n");
+
+  // Cycle through particles, print spacial positions of each particle
+  for(unsigned i = 0; i < Num_Particles; i++) {
+    fprintf(File,"%6u|", Particles[i].Get_ID());
+    fprintf(File,"%4.1f,%4.1f,%4.1f | ",    Particles[i].X[0],            Particles[i].X[1],            Particles[i].X[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Int[0],    Particles[i].Force_Int[1],    Particles[i].Force_Int[2]);
+
+    #if defined(PARTICLE_DEBUG)
+      fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Visc[0],   Particles[i].Force_Visc[1],   Particles[i].Force_Visc[2]);
+    #endif
+
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Contact[0], Particles[i].Force_Contact[1], Particles[i].Force_Contact[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Friction[0],Particles[i].Force_Friction[1],Particles[i].Force_Friction[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",   Particles[i].Force_HG[0],      Particles[i].Force_HG[1],      Particles[i].Force_HG[2]);
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+  fclose(File);
+} // void Body::Export_Particle_Forces(void) const {

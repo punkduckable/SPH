@@ -13,10 +13,10 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
   FILE * File = fopen(File_Path.c_str(), "r");
 
   // Check that file could be opened
-  if(File == NULL) {
+  if(File == nullptr) {
     printf("Requested FEBio file does not exist.\n");
     return 1;
-  } // if(File == NULL) {
+  } // if(File == nullptr) {
 
   // Now search through FEBio file until we come to 'Nodes' section
   unsigned i;
@@ -28,7 +28,7 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
   // Assign null character to final element of Buf.
   Buf[Buf_Length] = '\0';
 
-  while(fgets(Buf, Buf_Length, File) != NULL && Nodes_Found == false) {
+  while(fgets(Buf, Buf_Length, File) != nullptr && Nodes_Found == false) {
     for(i = 0; i < Buf_Length - 5; i++) {
       if(Buf[i] ==   '<' &&
          Buf[i+1] == 'N' &&
@@ -47,7 +47,7 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
 
     if(Nodes_Found == true)
       break;
-  } // while(fgets(Buf, Buf_Length, File) != NULL) {
+  } // while(fgets(Buf, Buf_Length, File) != nullptr) {
 
   // Record current file position.
   Start_Of_Nodes = ftell(File);
@@ -61,7 +61,7 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
     Start_Of_Current_Line = ftell(File);
 
     // Read in a line and check if we're at the end of the nodes section
-    if(fgets(Buf, Buf_Length, File) == NULL) {
+    if(fgets(Buf, Buf_Length, File) == nullptr) {
       printf("Couldn't find end of FEBio file\n");
       return 1;
     }

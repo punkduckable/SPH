@@ -63,7 +63,7 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
 
 
 
-bool Body::Are_Neighbors(const unsigned i, const unsigned j) {
+bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
   /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
   particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
   h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
@@ -75,7 +75,7 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) {
 
   const Vector Rj = (*this).Particles[i].Get_X() - (*this).Particles[j].Get_X();
   return ( h*h > Dot_Product(Rj, Rj) );
-} // bool Body::Are_Neighbors(const unsigned i, const unsigned j) {
+} // bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 
 
 

@@ -3,6 +3,16 @@
 
 #include "Simulation.h"
 
+void Simulation::Set_Body_Members(Body & Particles) {
+  unsigned Support_Radius = 3;                           // Support radius in units of Inter Particle spacings
+
+  Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
+  Particles.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
+  Particles.Set_alpha(.75);                              // Hg control parameter       : Unitless
+  Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
+} // void Simulation::Set_Body_Members(Body & Particles) {
+
+
 void Simulation::Run_Simulation(void) {
   //////////////////////////////////////////////////////////////////////////////
   // Simulation variables
@@ -151,7 +161,7 @@ void Simulation::Run_Simulation(void) {
 
     if(Print_Forces == true)
       for(m = 0; m < Num_Arrays; m++)
-        Particle_Debugger::Export_Particle_Forces(Arrays[m]);
+        Arrays[m].Export_Particle_Forces(l);
   } // if(Load_Data_From_File == false) {
 
   // time step loop.
@@ -547,7 +557,7 @@ void Simulation::Setup_Cuboid(Body & Particles, const unsigned m) {
 void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
   // First, we need to know how many particles we have, and the reference
   // position of each of the particles.
-  Vector * X = NULL;
+  Vector * X = nullptr;
   unsigned Num_Particles;
   FEB_File::Read_FEB_File(Names[m], &X, Num_Particles);    // Names in Simulation.h
 

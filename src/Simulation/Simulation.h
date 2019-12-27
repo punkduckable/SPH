@@ -88,14 +88,7 @@ namespace Simulation {
 
 
   // Default Body members
-  void Set_Body_Members(Body & Particles) {
-    unsigned Support_Radius = 3;                       // Support radius in units of Inter Particle spacings
-
-    Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
-    Particles.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
-    Particles.Set_alpha(.75);                              // Hg control parameter       : Unitless
-    Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
-  } // void Set_Body_Members(Body & Particles) {
+  void Set_Body_Members(Body & Particles);
 } // namespace Simulation {
 
 #endif

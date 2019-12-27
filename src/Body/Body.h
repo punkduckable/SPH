@@ -5,6 +5,7 @@
 
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
+#include "IO/Data_Dump.h"
 #include "Simulation/Materials.h"
 #include <string>
 #include <assert.h>
@@ -37,7 +38,7 @@ class Body {
     // The array of particles
     bool Particles_Set_Up = false;
     unsigned Num_Particles = 0;
-    Particle * Particles = NULL;
+    Particle * Particles = nullptr;
 
     // Kernel parameters
     double Inter_Particle_Spacing = 0;                     //                            : mm
@@ -106,7 +107,7 @@ class Body {
     void Find_Neighbors(void);                   // Generate neighbor list for every particle in 'Particles' array
     void Find_Neighbors_Cuboid(void);            // Generate neighbor list for 'cuboid' geometry
     bool Are_Neighbors(const unsigned i,         // Returns true if particles i,j are neighbors
-                       const unsigned j);
+                       const unsigned j) const;
     void Remove_Neighbor(const unsigned i,       // Removes one of particle i's neighbors
                          const unsigned Remove_Neighbor_ID);
 
@@ -157,7 +158,7 @@ class Body {
     void Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
 
     void Set_F_Index(const unsigned char i) {
-      assert(i <= 1)
+      assert(i <= 1);
       F_Index = i;
     } // void Set_F_Counter(const unsigned char i) {
 
@@ -211,8 +212,9 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Printing methods
-    void Print_Net_External_Force(const unsigned l);
+    void Print_Net_External_Force(const unsigned time_step) const;
     void Print_Parameters(void) const;
+    void Export_Particle_Forces(const unsigned time_step) const;
 
 
 

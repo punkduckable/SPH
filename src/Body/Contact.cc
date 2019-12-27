@@ -118,37 +118,3 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   means that the update_x method will force synchronize each thread before any
   data from here is used. Therefore, we don't need a barrier. */
 } // void Body::Contact(Body & Body_A, Body & Body_B) {
-
-
-
-void Body::Print_Net_External_Force(const unsigned l) {
-  /* This function is used to find and print the net external force on a body
-  This function can NOT be called by multiple threads at once (this
-  function is not thread safe). */
-
-  // First, open the file.
-  FILE * File;
-  if(Times_Printed_Net_External_Force == 0) {
-    File = fopen("../Files/Force_Files/Net_External_Force.txt","w");
-  } // if(Times_Printed_Net_External_Force == 0) {
-  else {
-    File = fopen("../Files/Force_Files/Net_External_Force.txt","a");
-  } // else {
-
-  // Increment the number of times that we're printed net force data.
-  Times_Printed_Net_External_Force++;
-
-  // Now add up net external force on supplied particle array and print it out
-  // Note that we must do this using a single thread
-  Vector Net_Contact_Force = {0,0,0};
-
-  for(unsigned i = 0; i < Num_Particles; i++) {
-    Net_Contact_Force += Particles[i].Get_Force_Friction();
-    Net_Contact_Force += Particles[i].Get_Force_Contact();
-  } // for(unsigned i = 0; i < Num_Particles; i++) {
-
-  fprintf(File,"%6u:  <%10.4f, %10.4f, %10.4f>\n", l, Net_Contact_Force(0), Net_Contact_Force(1), Net_Contact_Force(2));
-
-  // Now close the file.
-  fclose(File);
-} // void Body::Print_Net_External_Force(const unsigned l) {

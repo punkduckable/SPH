@@ -12,7 +12,6 @@ OBJS :=            Main.o \
 					         Vector.o \
 	                 Tensor.o \
 									 Particle.o \
-									 Particle_Debugger.o \
 									 Body.o \
 									 Neighbors.o \
 									 Update.o \
@@ -87,10 +86,6 @@ obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
 
 # Particle Class
 obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
-	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
-
-
-obj/Particle_Debugger.o: Particle_Debugger.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
