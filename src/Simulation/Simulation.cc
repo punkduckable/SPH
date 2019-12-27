@@ -272,7 +272,7 @@ void Simulation::Run_Simulation(void) {
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
         if(Time_Step_Index[m] == 0)
-          Particle_Helpers::Update_P(Arrays[m], Steps_Per_Update[m]*dt);
+          Arrays[m].Update_P(Steps_Per_Update[m]*dt);
     } // for(m = 0; m < Num_Arrays; m++) {
 
     #pragma omp single nowait
@@ -313,7 +313,7 @@ void Simulation::Run_Simulation(void) {
     are proprly updated/have the right forces applied each timestpe) */
     for(m = 0; m < Num_Arrays; m++)
       for(i = m + 1; i < Num_Arrays; i++)
-        Particle_Helpers::Contact(Arrays[i], Arrays[m]);
+        Body::Contact(Arrays[i], Arrays[m]);
 
     #pragma omp single nowait
       contact_timer += clock() - timer2;
@@ -346,7 +346,7 @@ void Simulation::Run_Simulation(void) {
             Arrays[m].Increment_F_Index();
 
           // Now update the position of each particle in this body.
-          Particle_Helpers::Update_x(Arrays[m], dt);
+          Arrays[m].Update_x(dt);
         } //         if(Time_Step_Index[m] == 0) {
         else {
           /* If we're not on an update step, then we'll let this body continue
@@ -408,7 +408,7 @@ void Simulation::Run_Simulation(void) {
 
       if(Print_Net_Force == true) {
         #pragma omp single nowait
-        Particle_Helpers::Print_Net_External_Force(Arrays[1], l+1);
+        Arrays[1].Print_Net_External_Force(l+1);
       } // if(Print_Net_Force == true) {
     } // if((k+1)%100 == 0) {
 
@@ -577,7 +577,7 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
   // Now set up neighbors. (if the body is not a boundary)
   if(FEB_Body.Get_Boundary() == false) {
     printf("Setting up neighbors for %s...\n",FEB_Body.Get_Name().c_str());
-    Particle_Helpers::Find_Neighbors(FEB_Body);
+    FEB_Body.Find_Neighbors();
     printf("Done!\n");
   } // if(FEB_Body.Get_Boundary() == false) {
 } // void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {

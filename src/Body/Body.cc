@@ -1,5 +1,8 @@
 #include "Body.h"
 
+// Set K (static member of Body class)
+double Body::K = 400;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors, destructor
 

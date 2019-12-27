@@ -63,6 +63,14 @@ class Body {
     bool First_Time_Step = true;
 
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Contact parameters
+    static const double K;                                                     //        : N/(mm^2)
+    unsigned Times_Printed_Net_External_Force = 0;
+
+
+
     ////////////////////////////////////////////////////////////////////////////
     // Private methods
     void Set_h(const double h_in) {
@@ -80,6 +88,7 @@ class Body {
     ~Body(void);                                 // destructor
 
 
+
     ////////////////////////////////////////////////////////////////////////////
     // Operator overloading
     Body & operator=(Body & Ar_In) = delete;     // deleted = operator
@@ -87,10 +96,10 @@ class Body {
     const Particle & operator[](const unsigned i) const;
 
 
+
     ////////////////////////////////////////////////////////////////////////////
     // Neighbor methods.
     // These functions are defined in Neighbors.cc
-
     void Set_Neighbors(const unsigned i,         // Set Neighbors
                        const unsigned Num_Neighbors_In,
                        const unsigned * Neighbor_ID_Array);
@@ -102,36 +111,28 @@ class Body {
                          const unsigned Remove_Neighbor_ID);
 
 
+
     //////////////////////////////////////////////////////////////////////////////
     // Update methods.
     // These function are defined in Update.cc
-
     void Update_P(const double dt);             // Update Second Piola-Kirchhoff stress tensor of each particle in a Body
     void Update_x(const double dt);             // Updates spacial position of each particle in a Body
 
 
+
     //////////////////////////////////////////////////////////////////////////////
     // Damage methods.
-    // These functions are defined in Damage.cc
-    
+    // This function is defined in Damage.cc
     void Remove_Damaged_Particle(const unsigned i);
 
 
+
     //////////////////////////////////////////////////////////////////////////////
-    // Contact methods. Function definitions are in Particle_Contact.c
+    // Contact methods.
+    // This Function is defined in Contact.cc
+    static void Contact(Body & Body_A,
+                        Body & Body_B);
 
-    const double K = 400;                                                        //        : N/(mm^2)
-
-    void Contact(Body & Body_A,
-                 Body & Body_B);
-
-    unsigned Times_Printed_Net_External_Force = 0;
-
-    void Print_Net_External_Force(const Body & Body_In,
-                                  const unsigned l);
-
-
-    void Print_Parameters(void) const;
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -205,6 +206,14 @@ class Body {
     bool Get_Boundary(void) const { return Is_Boundary; }
 
     bool Get_First_Time_Step(void) const { return First_Time_Step; }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Printing methods
+    void Print_Net_External_Force(const unsigned l);
+    void Print_Parameters(void) const;
+
 
 
     ////////////////////////////////////////////////////////////////////////////

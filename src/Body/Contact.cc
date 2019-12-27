@@ -1,6 +1,6 @@
-#include "Particle_Helpers.h"
+#include "Body.h"
 
-void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
+void Body::Contact(Body & Body_A, Body & Body_B) {
   // Get paramaters from Body_A, Body_B
   const unsigned Num_Particles_A = Body_A.Get_Num_Particles();
   const unsigned Num_Particles_B = Body_B.Get_Num_Particles();
@@ -117,13 +117,13 @@ void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
   , update_x , has a for loop before it uses the forces modified above. This
   means that the update_x method will force synchronize each thread before any
   data from here is used. Therefore, we don't need a barrier. */
-} // void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
+} // void Body::Contact(Body & Body_A, Body & Body_B) {
 
 
 
-void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const unsigned l) {
-  /* This function is used to find and print the net external force on a partilce
-  array. This function can NOT be called by multiple threads at once (this
+void Body::Print_Net_External_Force(const unsigned l) {
+  /* This function is used to find and print the net external force on a body
+  This function can NOT be called by multiple threads at once (this
   function is not thread safe). */
 
   // First, open the file.
@@ -140,7 +140,6 @@ void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const un
 
   // Now add up net external force on supplied particle array and print it out
   // Note that we must do this using a single thread
-  unsigned Num_Particles = Particles.Get_Num_Particles();
   Vector Net_Contact_Force = {0,0,0};
 
   for(unsigned i = 0; i < Num_Particles; i++) {
@@ -152,4 +151,4 @@ void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const un
 
   // Now close the file.
   fclose(File);
-} // void Particle_Helpers::Print_Net_External_Force(const Body & Particles, const unsigned l) {
+} // void Body::Print_Net_External_Force(const unsigned l) {

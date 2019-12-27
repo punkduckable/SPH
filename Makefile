@@ -12,12 +12,12 @@ OBJS :=            Main.o \
 					         Vector.o \
 	                 Tensor.o \
 									 Particle.o \
-									 Particle_Contact.o \
 									 Particle_Debugger.o \
 									 Body.o \
 									 Neighbors.o \
 									 Update.o \
 									 Damage.o \
+									 Contact.o \
 									 Simulation.o
 
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
@@ -89,8 +89,6 @@ obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
 obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Contact.o: Particle_Contact.cc Particle.h
-	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Particle_Debugger.o: Particle_Debugger.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
@@ -108,6 +106,9 @@ obj/Update.o: Update.cc Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Damage.o: Damage.cc Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Contact.o: Contact.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
