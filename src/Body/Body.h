@@ -3,6 +3,9 @@
 
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
+#include "Materials.h"
+#include <string>
+#include <assert.h>
 
 #if !defined(PI)
   #define PI 3.1415926535897932384626
@@ -58,24 +61,15 @@ class Body {
   public:
     // Constructors, destructor
     Body(void);                                  // default constructor
-    Body(const unsigned Num_Particles_In);   // generate array constructor
-    Body(const Body & Ar_In) {         // do nothing copy constructor
-      printf("Copy constructor is NOT enabled for Particle Arrays\n");
-    }
+    Body(const unsigned Num_Particles_In);       // generate array constructor
+    Body(const Body & Ar_In) = delete;           // do nothing copy constructor
+
     ~Body(void);                                 // destructor
 
     // Operator overloading
-    Body & operator=(Body & Ar_In) {   // do nothing = operator
-      printf("Equality is NOT defined for Particle arrays\n");
-      return Ar_In;
-    }
-    Particle & operator[](const unsigned i) {
-      return Array[i];
-    }
-    const Particle & operator[](const unsigned i) const {
-      return Array[i];
-    }
-
+    Body & operator=(Body & Ar_In) = delete;
+    Particle & operator[](const unsigned i);
+    const Particle & operator[](const unsigned i) const;
 
     // Set methods
     void Set_Num_Particles(const unsigned Num_Particles_In);

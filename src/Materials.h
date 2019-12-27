@@ -1,6 +1,8 @@
 #if !defined MATERIALS_HEADER
 #define MATERAIALS_HEADER
 
+#include <string>
+
 namespace Materials {
   // Material structure
   struct Material {

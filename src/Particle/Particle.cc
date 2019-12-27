@@ -112,48 +112,49 @@ void Particle::Set_Neighbors(const unsigned N, const unsigned * Neighbor_ID_Arra
 void Particle::Print(void) const {
   // Print basic particle parameters.
   printf("X:   ");
-  X.Print();
+  (*this).X.Print();
   printf("x:   ");
-  x.Print();
+  (*this).x.Print();
   printf("vel: ");
-  vel.Print();
-  printf("F:   \n");
-  F.Print();
-  printf("P:   \n");
-  P.Print();
-  printf("A^(-1)\n");
-  A_Inv.Print();
-  printf("Num Neighbors: %d\n",Num_Neighbors);
-  printf("F_Int = ");
-  Force_Int.Print();
+  (*this).V.Print();
 
+  printf("F[0]:   \n");
+  (*this).F[0].Print();
+  printf("F[1]:   \n");
+  (*this).F[1].Print();
+  printf("P:   \n");
+  (*this).P.Print();
+  printf("A^(-1)\n");
+  (*this).A_Inv.Print();
+
+  printf("F_Int = ");
+  (*this).Force_Int.Print();
   #if defined(PARTICLE_DEBUG)
     printf("F_Visc = ");
-    Force_Visc.Print()
+    (*this).Force_Visc.Print()
   #endif
-
   printf("F_Hg = ");
-  Force_HG.Print();
+  (*this).Force_HG.Print();
   printf("\n");
 
   // If we have neighbors, print neighbor information
   if(Neighbors_Are_Set == true) {
+    printf("Num Neighbors: %d\n",Num_Neighbors);
     //unsigned i;                              // Loop index variable
 
     /* Print neighbor ID's */
     printf("Neighbor ID's  : {");
-    for(i = 0; i < Num_Neighbors-1; i++) {
-      printf("%5d, ",Neighbor_IDs[i]);
+    for(unsigned i = 0; i < (*this).Num_Neighbors-1; i++) {
+      printf("%5d, ",(*this).Neighbor_IDs[i]);
     } // for(i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5d } \n", Neighbor_IDs[Num_Neighbors-1]); // */
+    printf("%5d } \n", (*this).Neighbor_IDs[Num_Neighbors-1]); // */
 
     /* Print Grad_W magnitudes */
     printf("%p\n",Grad_W);
     printf("|Grad_W|       : {");
-    for(unsigned i = 0; i < Num_Neighbors-1; i++) {
-      printf("%5.3f, ",Magnitude(Grad_W[i]));
+    for(unsigned i = 0; i < (*this).Num_Neighbors-1; i++) {
+      printf("%5.3f, ",Magnitude((*this).Grad_W[i]));
     } // for(unsigned i = 0; i < Num_Neighbors-1; i++) {
-    printf("%5.3f } \n", Magnitude(Grad_W[Num_Neighbors-1])); // */
-
+    printf("%5.3f } \n", Magnitude((*this).Grad_W[Num_Neighbors-1])); // */
   } // if(Neighbors_Are_Set == true) {
 } // void Particle::Print(void) const {

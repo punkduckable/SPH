@@ -3,6 +3,7 @@
 
 #include "Classes.h"
 #include "Body/Body.h"
+#include "Particle/Particle_Helpers.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
 #include "Errors.h"
@@ -123,43 +124,43 @@ class Particle {
     } // unsigned Get_Neighbor_IDs(unsigned i) const {
 
     // Update P
-    friend void Particle_Helpers::Update_P(Body & Particles,         // Updates P_In's Second Piola-Kirchhoff stress tensor
+    friend void Particle_Helpers::Update_P(Body & Particles,                   // Updates P_In's Second Piola-Kirchhoff stress tensor
                                            const double dt);
 
     // Update x
-    friend void Particle_Helpers::Update_x(Particle_Array & Particles,         // Updates P_In's spacial position
+    friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates P_In's spacial position
                                            const double dt);
 
     // Neighbor friends (other neighbor methods are in Particle_Neighbors.cc)
     void Set_Neighbors(const unsigned N,                                       // Set Neighbors
                        const unsigned * Neighbor_ID_Array,
-                       const Particle_Array & Particles);
+                       const Body & Particles);
 
-    friend bool Particle_Helpers::Are_Neighbors(const Particle_Array & Particles,
+    friend bool Particle_Helpers::Are_Neighbors(const Body & Particles,
                                                 const unsigned i,
                                                 const unsigned j);
 
     friend void Particle_Helpers::Find_Neighbors_Cuboid(Particle & P_In,
-                                                        Particle_Array & Particles);
+                                                        Body & Particles);
 
     friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
                                                   const unsigned Remove_Neighbor_ID,
-                                                  const Particle_Array & Particles);
+                                                  const Body & Particles);
 
     // Damage method friends
     friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
-                                                          Particle_Array & Particles);
+                                                          Body & Particles);
 
     // Contact method friends
-    friend void Particle_Helpers::Contact(Particle_Array & Body_A,
-                                          Particle_Array & Body_B);
+    friend void Particle_Helpers::Contact(Body & Body_A,
+                                          Body & Body_B);
 
     // Other friends
     friend void Particle_Tests(void);
     friend void Simulation::Run_Simulation(void);
     friend void Simulation::Set_Static_Particle_Members(void);
-    friend void Particle_Debugger::Export_Particle_Forces(const Particle_Array & Particles);
-    friend int Data_Dump::Load_Particle_Array(Particle_Array & Particles);
+    friend void Particle_Debugger::Export_Particle_Forces(const Body & Particles);
+    friend int Data_Dump::Load_Body(Body & Particles);
     friend void Data_Dump::Load_Particle(Particle & P_In,
                                          FILE * File,
                                          const bool Is_Cuboid);

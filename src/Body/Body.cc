@@ -45,11 +45,28 @@ Body::Body(const unsigned Num_Particles_In) {
 
 
 
-Body::~Body(void) {
-  // Only attempt to delete the Array if it has been setup.
-  if(Num_Particles != 0)
-    delete [] Array;
-} // Body::~Body(void) {
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Operator Overoading
+
+Particle & Body::operator[](const unsigned i) {
+  // Check that i is within bounds of Array.
+  assert(i < (Num_Particles);
+
+  return (*this).Array[i];
+} // Particle & Body::operator[](const unsigned i) {
+
+
+
+const Particle & Body::operator[](const unsigned i) const {
+  // Check that i is within bounds of Array.
+  assert(i < (*this).Num_Particles);
+
+  return (*this).Array[i];
+} // const Particle & Body::operator[](const unsigned i) const {
+
+
 
 
 

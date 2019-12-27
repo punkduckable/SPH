@@ -158,8 +158,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Body & Particles
       Pj_ID = Particles[Pi_ID].Neighbor_IDs[j];
 
       // First, check if P_j is the damaged particle
-      if(Pj_ID == P_In.ID)
-        continue;
+      if(Pj_ID == P_In.ID) { continue; }
 
       //////////////////////////////////////////////////////////////////////////
       // Checks: Now we check if P_j is in P_In's shadow region
