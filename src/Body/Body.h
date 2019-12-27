@@ -88,7 +88,9 @@ class Body {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // Neighbor methods. Function definitions are in Neighbors.cc
+    // Neighbor methods.
+    // These functions are defined in Neighbors.cc
+
     void Set_Neighbors(const unsigned i,         // Set Neighbors
                        const unsigned Num_Neighbors_In,
                        const unsigned * Neighbor_ID_Array);
@@ -99,15 +101,19 @@ class Body {
     void Remove_Neighbor(const unsigned i,       // Removes one of particle i's neighbors
                          const unsigned Remove_Neighbor_ID);
 
-    //////////////////////////////////////////////////////////////////////////////
-    // Update methods. Function definitions are in Particle_Update.c
-    void Update_P(const double dt);             // Update Second Piola-Kirchhoff stress tensor of each particle in a Body
 
+    //////////////////////////////////////////////////////////////////////////////
+    // Update methods.
+    // These function are defined in Update.cc
+
+    void Update_P(const double dt);             // Update Second Piola-Kirchhoff stress tensor of each particle in a Body
     void Update_x(const double dt);             // Updates spacial position of each particle in a Body
 
 
     //////////////////////////////////////////////////////////////////////////////
-    // Damage methods. Function definitions are in Particle_Damage.c
+    // Damage methods.
+    // These functions are defined in Damage.cc
+    
     void Remove_Damaged_Particle(const unsigned i);
 
 
@@ -121,7 +127,7 @@ class Body {
 
     unsigned Times_Printed_Net_External_Force = 0;
 
-    void Print_Net_External_Force(const Body & Particles,
+    void Print_Net_External_Force(const Body & Body_In,
                                   const unsigned l);
 
 
@@ -199,6 +205,11 @@ class Body {
     bool Get_Boundary(void) const { return Is_Boundary; }
 
     bool Get_First_Time_Step(void) const { return First_Time_Step; }
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Friends
+    friend int Data_Dump::Load_Body(Body & Body_In);
 }; // class Body {
 
 #endif

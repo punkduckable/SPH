@@ -1,21 +1,19 @@
-#include "Particle_Helpers.h"
+#include "Body.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Friend functions (Update P, Update particle position)
+// Update methods
 
-void Particle_Helpers::Update_P(Body & Particles, const double dt) {
+void Body::Update_P(const double dt) {
   /* The purpose of this function is to calculate the First Piola-Kirchhoff
-  stress tensor for each particle in the Particles Body.
+  stress tensor for each particle in a Body.
 
   This function assumes that the position each partilce in Particle's has been
   updated to the previous time step. It also assumes that each particle has
   a neighbor list, has calculate A^(-1), and has populated its dynamic array
   members. This function should not be called until these assumptions are valid.
 
-  what are the arguments? This function accepts a Particle (P_In), a list of all
-  particles in the current body, and the desired time step. This function uses
-  these arguments to calculate P (the first Piola-Kirchhoff stress tensor). dt
-  is used in calculating the viscosity. */
+  what are the arguments? This function accepts a the desired time step. dt
+  is used to calculate the viscosity. */
 
   // First, let's declare some local variables.
   Tensor F;                                      // Deformation gradient                 : unitless Tensor
@@ -25,14 +23,7 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
               0,1,0,
               0,0,1};
 
-  const double Tau = Particles.Get_Tau();                                      //        : unitless
   List<unsigned> Damaged_Particle_List;          // Keeps track of which particles are newly damaged
-
-
-  const double Lame = Particles.Get_Lame();      // Lame paramater                       : Mpa
-  const double mu0 = Particles.Get_mu0();        // Shear modulus                        : Mpa
-  const double mu = Particles.Get_mu();          // Viscosity                            : Mpa*s
-  const unsigned Num_Particles = Particles.Get_Num_Particles();
 
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
@@ -118,7 +109,7 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
     non-positive. If it is, then we treat this particle as damaged. */
     if(J <= 0) {
       Particles[i].D = 1;
-      printf("Particle %d in %s has a non-positive Jacobian, J =  %lf.\n",Particles[i].ID, Particles.Get_Name().c_str(), J);
+      printf("Particle %d in %s has a non-positive Jacobian, J =  %lf.\n",Particles[i].ID, Name.c_str(), J);
 
       // Let's also print this Particle's neighbor ID's (this helps debug issues)
       printf("Neighbor ID's: ");
@@ -155,7 +146,7 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
            Viscosity = 2*J*Mu*d*F^(-T)
     */
     unsigned char i_dt, i_2dt;
-    i_dt = Particles.Get_F_Index();
+    i_dt = F_Index;
     if(i_dt == 0) { i_2dt = 1; }
     else { i_2dt = 0; }
 
@@ -183,29 +174,28 @@ void Particle_Helpers::Update_P(Body & Particles, const double dt) {
   // have each thread remove its damaged particles
   #pragma omp critical
   while(Damaged_Particle_List.Node_Count() != 0) {
-    Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
+    Particles.Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
   } // while(Damaged_Particle_List.Node_Count() != 0) {
 
   // Explicit barrier to ensure that all broken particles have been removed
   // before any thread is allowed to move on.
   #pragma omp barrier
-} // void Particle_Helpers::Update_P(Body & Particles, const double dt) {
+} // void Body::Update_P(const double dt) {
 
 
 
-void Particle_Helpers::Update_x(Body & Particles, const double dt) {
+void Body::Update_x(const double dt) {
   /* This function is used to update the position (spatial position) of every
-  partile in some particle array.
+  partile in a Body.
 
-  To do this, we cycle through each particle in the particle array. For each
+  To do this, we cycle through the particles in the Body. For each
   particle, we calculate the internal, hourglassing, and external forces that
   are applied to the particle. Once the forces have been found, the particle's
   acceleration is calculated. From the acceleration, we use leapfrog integration
   to get a new velocity and position of the particle.
 
-  This function assumes that every particle in the Particle's array has
-  an updated P tensor. This function should not be run until this assumption
-  is valid. */
+  This function assumes that every particle in the Body has an updated P tensor.
+  This function should not be run until this assumption is valid. */
 
   // First, define some local variables.
   const Vector g = {0,0,0};                  // Gravity                              : mm/s^2 Vector
@@ -225,13 +215,6 @@ void Particle_Helpers::Update_x(Body & Particles, const double dt) {
   Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Tensor F_j;                                    // Deformation gradient                 : unitless Tensor
   Vector rj;                                     // Displacement vector                  : mm Vector
-
-  /* Particle array parameters:
-  Note: these are all declared as constants to avoid accidential modification */
-  const double alpha = Particles.Get_alpha();    // alpha member of the particles array  : unitless
-  const double E = Particles.Get_E();            // Hourglass stiffness                  : Mpa
-  const unsigned char F_Index = Particles.Get_F_Index();   // Keeps track of which F was most recently updated
-  const unsigned Num_Particles = Particles.Get_Num_Particles();
 
   // Damage variables
   List<unsigned> Damaged_Particle_List;      // Keeps track of which particles have broken
@@ -369,17 +352,17 @@ void Particle_Helpers::Update_x(Body & Particles, const double dt) {
     /* Now update the velocity, position vectors. This is done using the
     'leap-frog' integration scheme. However, during the first step of this
     scheme, we need to use forward euler to get the initial velocity.*/
-    if(Particles.Get_First_Time_Step() == true) {
-      Particles.Set_First_Time_Step(false);
+    if(First_Time_Step == true) {
+      First_Time_Step = false;
       Particles[i].V += (dt/2.)*a;                                             // velocity starts at t_i+1/2           : mm/s Vector
-    } // if(Particles.Get_First_Time_Step() == true) {
+    } // if(First_Time_Step == true) {
 
     /* Before updating the velocity/position, let's check if the particle has
     diverged. This happens whenever any of the components of the acceleration
     vector are 'nan'. If they are, then we damage and remove this Particle.
     It should be noted that this is sort of a last resort mechanism. */
     if(std::isnan(a[0]) || std::isnan(a[1]) || std::isnan(a[2])) {
-      printf("Particle %d in %s has a nan acceleration :(\n",Particles[i].ID, Particles.Get_Name().c_str());
+      printf("Particle %d in %s has a nan acceleration :(\n",Particles[i].ID, Name.c_str());
       Particles[i].D = 1;
       Damaged_Particle_List.Add_Back(Particles[i].ID);
       continue;
@@ -403,7 +386,7 @@ void Particle_Helpers::Update_x(Body & Particles, const double dt) {
   // have each thread remove its damaged particles
   #pragma omp critical
   while(Damaged_Particle_List.Node_Count() != 0) {
-    Particle_Helpers::Remove_Damaged_Particle(Particles[Damaged_Particle_List.Remove_Back()], Particles);
+    Particles.Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
   } // while(Damaged_Particle_List.Node_Count() != 0) {
 
   /* Note, there is no explicit barrier here because the next kernel, which
@@ -412,4 +395,4 @@ void Particle_Helpers::Update_x(Body & Particles, const double dt) {
   its own implied barrier. Therefore, once the data above is called upon, we
   can be sure that all particles have been damaged. Therefore, we don't
   need a barrier. */
-} // void Particle_Helpers::Update_x(const Body & Particles, const double dt) {
+} // void Body::Update_x(const double dt) {

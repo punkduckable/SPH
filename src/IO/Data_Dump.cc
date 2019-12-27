@@ -386,7 +386,7 @@ int Data_Dump::Load_Body(Body & Body_In) {
   // Read in Particle properties.
 
   // Set first time step flag to false
-  Body_In.Set_First_Time_Step(false);
+  Body_In.First_Time_Step == false;
 
   // Now read in number of particles
   fgets(Buf, 99, File);                          // Skip 'Particles' line.

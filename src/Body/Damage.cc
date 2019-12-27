@@ -1,9 +1,9 @@
-#include "Particle_Helpers.h"
+#include "Body.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods
 
-void Particle_Helpers::Remove_Damaged_Particle(const unsigned i) {
+void Body::Remove_Damaged_Particle(const unsigned i) {
   #if defined(DAMAGE_MONITOR)
     printf("Particle %d is damaged. ",i);
     Particles[i].X.Print();
@@ -269,4 +269,4 @@ void Particle_Helpers::Remove_Damaged_Particle(const unsigned i) {
   /* Now that we've causally removed the damaged particle from the particles
   array, we need to make that it think that it has no neighbors */
   Particle[i].Num_Neighbors = 0;
-} // void Particle_Helpers::Remove_Damaged_Particle(const unsigned i) {
+} // void Body::Remove_Damaged_Particle(const unsigned i) {

@@ -96,7 +96,7 @@ class Particle {
     // Update x
     friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates spatial position for each particle in a Body
                                            const double dt);
-                                           
+
     // Contact method friends
     friend void Particle_Helpers::Contact(Body & Body_A,
                                           Body & Body_B);
@@ -104,8 +104,8 @@ class Particle {
     // Other friends
     friend void Particle_Tests(void);
     friend void Simulation::Run_Simulation(void);
-    friend void Particle_Debugger::Export_Particle_Forces(const Body & Particles);
-    friend int Data_Dump::Load_Body(Body & Particles);
+    friend void Particle_Debugger::Export_Particle_Forces(const Body & Body_In);
+    friend int Data_Dump::Load_Body(Body & Body_In);
     friend void Data_Dump::Load_Particle(Particle & P_In,
                                          FILE * File,
                                          const bool Is_Cuboid);
