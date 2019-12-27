@@ -96,12 +96,7 @@ class Particle {
     // Update x
     friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates spatial position for each particle in a Body
                                            const double dt);
-
-       // body method
-    // Damage method friends
-    friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
-                                                          Body & Particles);
-
+                                           
     // Contact method friends
     friend void Particle_Helpers::Contact(Body & Body_A,
                                           Body & Body_B);

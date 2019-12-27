@@ -17,12 +17,6 @@ namespace Particle_Helpers {
 
 
   //////////////////////////////////////////////////////////////////////////////
-  // Damage methods. Function definitions are in Particle_Damage.c
-  void Remove_Damaged_Particle(Particle & P_In,
-                               Body & Particles);
-
-
-  //////////////////////////////////////////////////////////////////////////////
   // Contact methods. Function definitions are in Particle_Contact.c
 
   const double K = 400;                                                        //        : N/(mm^2)
