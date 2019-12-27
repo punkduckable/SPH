@@ -6,7 +6,7 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "IO/Data_Dump.h"
-#include "Simulation/Materials.h"
+#include "Materials.h"
 #include "List.h"
 #include <string>
 #include <assert.h>
