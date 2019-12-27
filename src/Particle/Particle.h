@@ -13,12 +13,10 @@
 #include "Errors.h"
 
 class Particle {
-  private:
-    // Cuboid parameters (should be deleted if not working with a rectangle)
-    unsigned i,j,k;                                        // ijk position of particle in the cuboid
+  friend Body;
 
-    // Particle ID
-    unsigned ID;                                           // Particle ID in the Particle's array.
+  private:
+    unsigned ID;
 
     // Particle dimensions (Mass, Vol, etc...)
     double Mass;                                           // Particle Mass              : g
@@ -72,21 +70,56 @@ class Particle {
     Tensor A_Inv;                                          // Inverse of shape tensor                                                      : unitless
 
   public:
+    ////////////////////////////////////////////////////////////////////////////
     // Constructors, destructor
     Particle(void);                                        // Default constructor
     Particle(const Particle & P_In) = delete;              // Copy constructor
 
     ~Particle(void);                                       // Destructor
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Operator Overloading
+
     // Particle equality
     Particle & operator=(const Particle & P_In) = delete;  // Defines P1 = P2
 
-    // Methods to set particle properties
-    void Set_ijk(const unsigned i_in, const unsigned j_in, const unsigned k_in) {
-      i = i_in;
-      j = j_in;
-      k = k_in;
-    } // void Set_ijk(const unsigned i_in, const unsigned j_in, const unsigned k_in) {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Core methods
+      // body method
+    // Update P
+    friend void Particle_Helpers::Update_P(Body & Particles,                   // Updates Second Piola-Kirchhoff stress tensor for each particle in a Body
+                                           const double dt);
+
+       // body method
+    // Update x
+    friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates spatial position for each particle in a Body
+                                           const double dt);
+
+       // body method
+    // Damage method friends
+    friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
+                                                          Body & Particles);
+
+    // Contact method friends
+    friend void Particle_Helpers::Contact(Body & Body_A,
+                                          Body & Body_B);
+
+    // Other friends
+    friend void Particle_Tests(void);
+    friend void Simulation::Run_Simulation(void);
+    friend void Particle_Debugger::Export_Particle_Forces(const Body & Particles);
+    friend int Data_Dump::Load_Body(Body & Particles);
+    friend void Data_Dump::Load_Particle(Particle & P_In,
+                                         FILE * File,
+                                         const bool Is_Cuboid);
+
+    // Printing function
+    void Print(void) const;                                  // Print's info about particle (mostly for testing)
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Setters
     void Set_ID(const unsigned ID_In) { ID = ID_In; }
     void Set_Mass(const double Mass_In) { Mass = Mass_In; }                    //        : g
     void Set_Vol(const double Vol_In) { Vol = Vol_In; }                        //        : mm^3
@@ -98,10 +131,8 @@ class Particle {
     void Set_D(const double D_In) { D = D_In; }            // Set Damage parameter       : unitless
 
 
-    // Methods to get particle properties
-    unsigned Get_i(void) const { return i; }
-    unsigned Get_j(void) const { return j; }
-    unsigned Get_k(void) const { return k; }
+    ////////////////////////////////////////////////////////////////////////////
+    // Getters
     unsigned Get_ID(void) const { return ID; }
     double Get_Mass(void) const { return Mass; }
     double Get_Vol(void) const { return Vol; }
@@ -126,58 +157,6 @@ class Particle {
       printf("Requested neighbor ID is out of bounds! Num_Neighbors = %u, requested index = %u\n",Num_Neighbors, i);
       return 0;
     } // unsigned Get_Neighbor_IDs(unsigned i) const {
-
-      // body method
-    // Update P
-    friend void Particle_Helpers::Update_P(Body & Particles,                   // Updates Second Piola-Kirchhoff stress tensor for each particle in a Body
-                                           const double dt);
-
-       // body method
-    // Update x
-    friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates spatial position for each particle in a Body
-                                           const double dt);
-
-    // Neighbor friends (other neighbor methods are in Particle_Neighbors.cc)
-    void Set_Neighbors(const unsigned N,                                       // Set Neighbors
-                       const unsigned * Neighbor_ID_Array,
-                       const Body & Particles);
-
-      // body method
-    friend bool Particle_Helpers::Are_Neighbors(const Body & Particles,
-                                                const unsigned i,
-                                                const unsigned j);
-
-      // body method
-    friend void Particle_Helpers::Find_Neighbors_Cuboid(Particle & P_In,
-                                                        Body & Particles);
-
-      // body method
-    friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
-                                                  const unsigned Remove_Neighbor_ID,
-                                                  const Body & Particles);
-
-       // body method
-    // Damage method friends
-    friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
-                                                          Body & Particles);
-
-    // Contact method friends
-    friend void Particle_Helpers::Contact(Body & Body_A,
-                                          Body & Body_B);
-
-    // Other friends
-    friend void Particle_Tests(void);
-    friend void Simulation::Run_Simulation(void);
-      // body method
-    friend void Particle_Debugger::Export_Particle_Forces(const Body & Particles);
-      // body method
-    friend int Data_Dump::Load_Body(Body & Particles);
-    friend void Data_Dump::Load_Particle(Particle & P_In,
-                                         FILE * File,
-                                         const bool Is_Cuboid);
-
-    // Printing function
-    void Print(void) const;                                  // Print's info about particle (mostly for testing)
 }; // class Particle {
 
 void Print(const Particle & P_In) { P_In.Print(); };         // Calls Print method

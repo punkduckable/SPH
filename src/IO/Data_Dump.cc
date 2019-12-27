@@ -84,7 +84,7 @@ void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) 
 
 
 
-void Data_Dump::Save_Body(const Body & Particles) {
+void Data_Dump::Save_Body(const Body & Body_In) {
   /* This function prints all data needed to reconstruct a particular
   Body. This information is printed to a file named after the
   Body that it's printing from. This prints the basic material
@@ -93,8 +93,8 @@ void Data_Dump::Save_Body(const Body & Particles) {
   this is to allow the user 'save' a Body object. */
 
   // Get name + number of particles of passed Body object.
-  const std::string Name = Particles.Get_Name();
-  const unsigned Num_Particles = Particles.Get_Num_Particles();
+  const std::string Name = Body_In.Get_Name();
+  const unsigned Num_Particles = Body_In.Get_Num_Particles();
 
   // Now make a file path for this Particle's file
   std::string File_Path = "../Files/Saves/";
@@ -108,35 +108,35 @@ void Data_Dump::Save_Body(const Body & Particles) {
   // Let's begin by printing the Body paramaters
   fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
 
-  fprintf(File,   "Is a cuboid:                  %u\n",    Particles.Get_Cuboid());
-  if(Particles.Get_Cuboid() == true) {
-    fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Particles.Get_X_SIDE_LENGTH());
-    fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Particles.Get_Y_SIDE_LENGTH());
-    fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Particles.Get_Z_SIDE_LENGTH());
-  } //   if(Particles.Get_Cuboid() == true) {
-  fprintf(File,   "Is a Boundary:                %u\n",    Particles.Get_Boundary());
-  fprintf(File,   "Is Damageable:                %u\n\n",  Particles.Get_Damagable());
+  fprintf(File,   "Is a cuboid:                  %u\n",    Body_In.Get_Cuboid());
+  if(Body_In.Get_Cuboid() == true) {
+    fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Body_In.Get_X_SIDE_LENGTH());
+    fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Body_In.Get_Y_SIDE_LENGTH());
+    fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Body_In.Get_Z_SIDE_LENGTH());
+  } //   if(Body_In.Get_Cuboid() == true) {
+  fprintf(File,   "Is a Boundary:                %u\n",    Body_In.Get_Boundary());
+  fprintf(File,   "Is Damageable:                %u\n\n",  Body_In.Get_Damagable());
 
   fprintf(File,   "       -- Kernel Parameters --\n");
-  fprintf(File,   "Inter Particle Spacing:       %5lf\n",  Particles.Get_Inter_Particle_Spacing());
-  fprintf(File,   "Support Radius (IPS):         %u\n",    Particles.Get_Support_Radius());
-  fprintf(File,   "Support Radius (mm) aka h:    %5lf\n",  Particles.Get_h());
-  fprintf(File,   "Shape Function Amplitude:     %5lf\n\n",Particles.Get_Shape_Function_Amplitude());
+  fprintf(File,   "Inter Particle Spacing:       %5lf\n",  Body_In.Get_Inter_Particle_Spacing());
+  fprintf(File,   "Support Radius (IPS):         %u\n",    Body_In.Get_Support_Radius());
+  fprintf(File,   "Support Radius (mm) aka h:    %5lf\n",  Body_In.Get_h());
+  fprintf(File,   "Shape Function Amplitude:     %5lf\n\n",Body_In.Get_Shape_Function_Amplitude());
 
   fprintf(File,   "       -- Material Parameters --\n");
-  fprintf(File,   "Material:                     %s\n",    Particles.Get_Material().Name.c_str());
-  fprintf(File,   "Lame parameter:               %5lf\n",  Particles.Get_Lame());
-  fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Particles.Get_mu0());
-  fprintf(File,   "Viscosity (mu):               %5lf\n",  Particles.Get_mu());
-  fprintf(File,   "F_Index:                      %u\n",    Particles.Get_F_Index());
-  fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Particles.Get_E());
-  fprintf(File,   "Material density:             %5lf\n",  Particles.Get_density());
-  fprintf(File,   "alpha (HG parameter):         %5lf\n",  Particles.Get_alpha());
-  fprintf(File,   "Tau (damage parameter):       %5lf\n\n",Particles.Get_Tau());
+  fprintf(File,   "Material:                     %s\n",    Body_In.Get_Material().Name.c_str());
+  fprintf(File,   "Lame parameter:               %5lf\n",  Body_In.Get_Lame());
+  fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Body_In.Get_mu0());
+  fprintf(File,   "Viscosity (mu):               %5lf\n",  Body_In.Get_mu());
+  fprintf(File,   "F_Index:                      %u\n",    Body_In.Get_F_Index());
+  fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Body_In.Get_E());
+  fprintf(File,   "Material density:             %5lf\n",  Body_In.Get_density());
+  fprintf(File,   "alpha (HG parameter):         %5lf\n",  Body_In.Get_alpha());
+  fprintf(File,   "Tau (damage parameter):       %5lf\n\n",Body_In.Get_Tau());
 
   // Now let's print the number of particles
   fprintf(File,   "       -- Particles --\n");
-  fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
+  fprintf(File,   "Number of particles:          %u\n\n",    Body_In.Get_Num_Particles());
 
   // Finally, let's print the cuboid paramaters (should be removed if not using
   // a cuboid)
@@ -146,11 +146,11 @@ void Data_Dump::Save_Body(const Body & Particles) {
 
   // Now let's print all particle data to the file
   for(unsigned i = 0; i < Num_Particles; i++)
-    Save_Particle(Particles[i], File, Particles.Get_Cuboid());
+    Save_Particle(Body_In[i], File, Body_In.Get_Cuboid());
 
   // We've now written the 'Particle_Data' file, we can close it.
   fclose(File);
-} // void Data_Dump::Save_Body(const Body & Particles) {
+} // void Data_Dump::Save_Body(const Body & Body_In) {
 
 
 
@@ -177,8 +177,6 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
 
   // Print particle ID, dimensions
   fprintf(File,   "ID:                           %u\n",    P_In.Get_ID());
-  if(Is_Cuboid == true)
-    fprintf(File,   "ijk:                          %u %u %u\n", P_In.Get_i(), P_In.Get_j(), P_In.Get_k());
   fprintf(File,   "Mass:                         %5e\n",   P_In.Get_Mass());
   fprintf(File,   "Volume:                       %5e\n",   P_In.Get_Vol());
   fprintf(File,   "Radius:                       %5lf\n",  P_In.Get_Radius());
@@ -304,7 +302,7 @@ int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
 
 
 
-int Data_Dump::Load_Body(Body & Particles) {
+int Data_Dump::Load_Body(Body & Body_In) {
   /* This function is designed to read in particle and use it to create a
   particles array. */
 
@@ -313,7 +311,7 @@ int Data_Dump::Load_Body(Body & Particles) {
 
   // First, get a path to the file
   std::string File_Path = "../Files/Saves/";
-  File_Path += Particles.Get_Name();
+  File_Path += Body_In.Get_Name();
   File_Path += ".txt";
 
   FILE * File = fopen(File_Path.c_str(), "r");
@@ -333,7 +331,7 @@ int Data_Dump::Load_Body(Body & Particles) {
 
   // Now let's print the number of particles
   fprintf(File,   "       -- Particles --\n");
-  fprintf(File,   "Number of particles:          %u\n\n",    Particles.Get_Num_Particles());
+  fprintf(File,   "Number of particles:          %u\n\n",    Body_In.Get_Num_Particles());
 
   // We already have the Body's name, cuboid/boundary flags, and
   // dimensions (if cuboid). We can therefore skip over these lines.
@@ -341,11 +339,11 @@ int Data_Dump::Load_Body(Body & Particles) {
   fgets(Buf, 99, File);                          // Skip blank line
   fgets(Buf, 99, File);                          // Skip 'Is a cuboid' line
 
-  if(Particles.Get_Cuboid() == true) {           // if a cuboid, skip the 3 dimension lines.
+  if(Body_In.Get_Cuboid() == true) {           // if a cuboid, skip the 3 dimension lines.
     fgets(Buf, 99, File);
     fgets(Buf, 99, File);
     fgets(Buf, 99, File);
-  } // if(Particles.Get_Cuboid() == true) {
+  } // if(Body_In.Get_Cuboid() == true) {
 
   fgets(Buf, 99, File);                          // Skip 'is a boundary' line
   fgets(Buf, 99, File);                          // Skip 'Is Damageable' line
@@ -354,8 +352,8 @@ int Data_Dump::Load_Body(Body & Particles) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Kernel parameters.
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_Inter_Particle_Spacing(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_Support_Radius(uBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Body_In.Set_Inter_Particle_Spacing(lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Body_In.Set_Support_Radius(uBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);         // Skip 'Support radius (mm)' line
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);       // Skip 'Shape Function Amplitude' line
 
@@ -372,23 +370,23 @@ int Data_Dump::Load_Body(Body & Particles) {
   // Read in other material properties
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.Lame = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.mu0 = lfBuf;
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_mu(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Particles.Set_F_Index(uBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Body_In.Set_mu(lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Body_In.Set_F_Index(uBuf);
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.E = lfBuf;
   fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.density = lfBuf;
 
   // Our material is now fully characterized, we can set Particle's material
-  Particles.Set_Material(Mat);
+  Body_In.Set_Material(Mat);
 
   // Read other material properties.
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Particles.Set_alpha(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);  Particles.Set_Tau(lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Body_In.Set_alpha(lfBuf);
+  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);  Body_In.Set_Tau(lfBuf);
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Particle properties.
 
   // Set first time step flag to false
-  Particles.Set_First_Time_Step(false);
+  Body_In.Set_First_Time_Step(false);
 
   // Now read in number of particles
   fgets(Buf, 99, File);                          // Skip 'Particles' line.
@@ -396,7 +394,7 @@ int Data_Dump::Load_Body(Body & Particles) {
 
   // Now read in particles.
   for(unsigned i = 0; i < Num_Particles; i++)
-    Load_Particle(Particles[i], File, Particles.Get_Cuboid());
+    Load_Particle(Body_In[i], File, Body_In.Get_Cuboid());
 
   //////////////////////////////////////////////////////////////////////////////
   // Now recreate each Particle's neighbor arrays.
@@ -405,52 +403,52 @@ int Data_Dump::Load_Body(Body & Particles) {
   Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
            0,0,0,
            0,0,0};
-  const double Shape_Function_Amp = Particles.Get_Shape_Function_Amplitude();
-  const double h = Particles.Get_h();
+  const double Shape_Function_Amp = Body_In.Get_Shape_Function_Amplitude();
+  const double h = Body_In.Get_h();
 
   for(unsigned i = 0; i < Num_Particles; i++) {
     // Check that the current particle has Neighbors
 
-    if(Particles[i].Num_Neighbors != 0) {
+    if(Body_In[i].Num_Neighbors != 0) {
       // If so, then set up this particle's neighbor arrays.
       A = Tensor(0,0,0,
                  0,0,0,
                  0,0,0);
 
-      for(unsigned j = 0; j < Particles[i].Num_Neighbors; j++) {
-        Neighbor_ID = Particles[i].Neighbor_IDs[j];
+      for(unsigned j = 0; j < Body_In[i].Num_Neighbors; j++) {
+        Neighbor_ID = Body_In[i].Neighbor_IDs[j];
 
         // Calculate displacement vectors
-        Particles[i].R[j] = Particles[Neighbor_ID].X - Particles[i].X;
-        Particles[i].Mag_R[j] = Particles[i].R[j].Magnitude();
+        Body_In[i].R[j] = Body_In[Neighbor_ID].X - Body_In[i].X;
+        Body_In[i].Mag_R[j] = Body_In[i].R[j].Magnitude();
 
         // Calculate shape function, shape function gradient for jth neighbor
-        Particles[i].W[j] = Shape_Function_Amp*(h - Particles[i].Mag_R[j])
-                            *(h - Particles[i].Mag_R[j])
-                            *(h - Particles[i].Mag_R[j]);
+        Body_In[i].W[j] = Shape_Function_Amp*(h - Body_In[i].Mag_R[j])
+                            *(h - Body_In[i].Mag_R[j])
+                            *(h - Body_In[i].Mag_R[j]);
 
-        Particles[i].Grad_W[j] = (-3*Shape_Function_Amp
-                                 *((h - Particles[i].Mag_R[j])*(h - Particles[i].Mag_R[j]))/ Particles[i].Mag_R[j])
-                                 *Particles[i].R[j];
+        Body_In[i].Grad_W[j] = (-3*Shape_Function_Amp
+                                 *((h - Body_In[i].Mag_R[j])*(h - Body_In[i].Mag_R[j]))/ Body_In[i].Mag_R[j])
+                                 *Body_In[i].R[j];
 
         // Add in the Current Neighbor's contribution to the Shape tensor
-        V_j = Particles[Neighbor_ID].Vol;
-        A += Dyadic_Product((V_j*Particles[i].Grad_W[j]), Particles[i].R[j]);
-      } // for(unsigned j = 0; j < Particles[i].Num_Neighbors; i++) {
+        V_j = Body_In[Neighbor_ID].Vol;
+        A += Dyadic_Product((V_j*Body_In[i].Grad_W[j]), Body_In[i].R[j]);
+      } // for(unsigned j = 0; j < Body_In[i].Num_Neighbors; i++) {
 
       // Now we can calculate A^(-1) from A.
-      Particles[i].A_Inv = A^(-1);
+      Body_In[i].A_Inv = A^(-1);
 
       // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
-      Particles[i].Neighbors_Are_Set = true;
-    } // if(Particles[i].Num_Neighbors != 0) {
-  } // for(unsigned i = 0; i < Num_Particles; i++) {
+      Body_In[i].Neighbors_Are_Set = true;
+    } // if(Body_In[i].Num_Neighbors != 0) {
+  } // for(unsigned i = 0; i < Body_In; i++) {
 
   // All done, close the file.
   fclose(File);
 
   return 0;
-} // int Data_Dump::Load_Data_From_File(unsigned & Num_Particles, Body Particles) {
+} // int Data_Dump::Load_Data_From_File(unsigned & Num_Particles, Body Body_In) {
 
 
 

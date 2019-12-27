@@ -8,22 +8,6 @@
 
 namespace Particle_Helpers {
   //////////////////////////////////////////////////////////////////////////////
-  // Neighbor methods. Function definitions are in Particle_Neighbors.c
-  void Find_Neighbors(Body & Particles);                   // Generate neighbor list for every particle in 'Partilces' array
-
-  void Find_Neighbors_Cuboid(Particle & P_In,              // Generate neighbor list for 'cuboid' geometry
-                             Body & Particles);
-
-  bool Are_Neighbors(const Body & Particles,               // Returns true P1 and P2 are neighbors, false otherwise
-                     const unsigned i,
-                     const unsigned j);
-
-  void Remove_Neighbor(Particle & P_In,                    // Removes a paricular one of P_In's neighbors.
-                       const unsigned Remove_Neighbor_ID,
-                       const Body & Particles);
-
-
-  //////////////////////////////////////////////////////////////////////////////
   // Update methods. Function definitions are in Particle_Update.c
   void Update_P(Body & Particles,               // Updates P_In's Second Piola-Kirchhoff stress tensor
                 const double dt);

@@ -213,7 +213,7 @@ void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In, Body & Particles
         neighbor of P_j, we need to re-do P_j's neighbor list, including
         every old neighbor except for P_i. This is done in the 'Remove Neighbor
         member function' */
-        Particle_Helpers::Remove_Neighbor(Particles[Pj_ID], Pi_ID, Particles);
+        Particles.Remove_Neighbor(Pj_ID, Pi_ID);
 
         continue;
       } // if(d_squared < r_squared) {

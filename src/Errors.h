@@ -29,7 +29,7 @@ class Exception {
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////
 /* General exceptions
 These exceptions are not specific to any particular class. */
 
@@ -39,7 +39,7 @@ class Divide_By_Zero : public Exception {
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////
 /* Tensor exceptions
 Tensor_Exception: Base Tensor exception class.
 
@@ -59,5 +59,10 @@ class Undefined_Exponent : public Tensor_Exception {
   public: Undefined_Exponent(const char* Message_In) : Tensor_Exception(Message_In) {}
 }; // class Undefined_Exponent : public Tensor_Exception {
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+/* Body exceptions
+Body_Exception: Base Body exception class */
 
 #endif

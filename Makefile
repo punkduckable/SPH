@@ -89,9 +89,6 @@ obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
 obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Neighbors.o: Particle_Neighbors.cc Particle.h
-	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
-
 obj/Particle_Update.o: Particle_Update.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
@@ -108,6 +105,9 @@ obj/Particle_Debugger.o: Particle_Debugger.cc Particle.h
 
 # Body class
 obj/Body.o: Body.cc Body.h Vector.h Tensor.h Errors.h Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Neighbors.o: Neighbors.cc Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
