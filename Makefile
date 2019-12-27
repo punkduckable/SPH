@@ -92,9 +92,6 @@ obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
 obj/Particle_Update.o: Particle_Update.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Damage.o: Particle_Damage.cc Particle.h
-	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
-
 obj/Particle_Contact.o: Particle_Contact.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
@@ -108,6 +105,9 @@ obj/Body.o: Body.cc Body.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Neighbors.o: Neighbors.cc Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Damage.o: Damage.cc Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 

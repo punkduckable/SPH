@@ -520,10 +520,7 @@ void Simulation::Setup_Cuboid(Body & Particles, const unsigned m) {
   if(Particles.Get_Boundary() == false) {
     printf(         "Generating %s's neighbor lists...", Particles.Get_Name().c_str());
     timer1 = clock();
-    for(i = 0; i < X_SIDE_LENGTH; i++)
-      for(j = 0; j < Y_SIDE_LENGTH; j++)
-        for(k = 0; k < Z_SIDE_LENGTH; k++)
-          Particle_Helpers::Find_Neighbors_Cuboid(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j], Particles);
+    Particles.Find_Neighbors_Cuboid();
 
     timer1 = clock() - timer1;
     #if defined(_OPENMP)
@@ -539,7 +536,7 @@ void Simulation::Setup_Cuboid(Body & Particles, const unsigned m) {
   for(i = 0; i < 1; i++) {                     // Depth of cut
     for(k = 0; k < Z_SIDE_LENGTH; k++) {       // Length of cut
       Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)].Set_D(1);
-      Particle_Helpers::Remove_Damaged_Particle(Particles[i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2)], Particles);
+      Particles.Remove_Damaged_Particle(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + (Y_SIDE_LENGTH/2));
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
   */

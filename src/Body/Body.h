@@ -1,6 +1,8 @@
 #if !defined BODY_HEADER
 #define BODY_HEADER
 
+#define DAMAGE_MONITOR
+
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "Simulation/Materials.h"
@@ -87,29 +89,26 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Neighbor methods. Function definitions are in Neighbors.cc
-    void Set_Neighbors(const unsigned i,
+    void Set_Neighbors(const unsigned i,         // Set Neighbors
                        const unsigned Num_Neighbors_In,
                        const unsigned * Neighbor_ID_Array);
     void Find_Neighbors(void);                   // Generate neighbor list for every particle in 'Particles' array
-    void Find_Neighbors_Cuboid(void); // Generate neighbor list for 'cuboid' geometry
+    void Find_Neighbors_Cuboid(void);            // Generate neighbor list for 'cuboid' geometry
     bool Are_Neighbors(const unsigned i,         // Returns true if particles i,j are neighbors
                        const unsigned j);
-    void Remove_Neighbor(const unsigned i,        // Removes one of particle i's neighbors
+    void Remove_Neighbor(const unsigned i,       // Removes one of particle i's neighbors
                          const unsigned Remove_Neighbor_ID);
 
     //////////////////////////////////////////////////////////////////////////////
     // Update methods. Function definitions are in Particle_Update.c
-    void Update_P(Body & Particles,               // Updates P_In's Second Piola-Kirchhoff stress tensor
-                  const double dt);
+    void Update_P(const double dt);             // Update Second Piola-Kirchhoff stress tensor of each particle in a Body
 
-    void Update_x(Body & Particles,               // Updates P_In's spacial position
-                  const double dt);
+    void Update_x(const double dt);             // Updates spacial position of each particle in a Body
 
 
     //////////////////////////////////////////////////////////////////////////////
     // Damage methods. Function definitions are in Particle_Damage.c
-    void Remove_Damaged_Particle(Particle & P_In,
-                                 Body & Particles);
+    void Remove_Damaged_Particle(const unsigned i);
 
 
     //////////////////////////////////////////////////////////////////////////////
