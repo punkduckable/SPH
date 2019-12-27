@@ -87,16 +87,7 @@ class Particle {
 
     ////////////////////////////////////////////////////////////////////////////
     // Core methods
-      // body method
-    // Update P
-    friend void Particle_Helpers::Update_P(Body & Particles,                   // Updates Second Piola-Kirchhoff stress tensor for each particle in a Body
-                                           const double dt);
-
-       // body method
-    // Update x
-    friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates spatial position for each particle in a Body
-                                           const double dt);
-
+    
     // Contact method friends
     friend void Particle_Helpers::Contact(Body & Body_A,
                                           Body & Body_B);

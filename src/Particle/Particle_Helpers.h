@@ -8,15 +8,6 @@
 
 namespace Particle_Helpers {
   //////////////////////////////////////////////////////////////////////////////
-  // Update methods. Function definitions are in Particle_Update.c
-  void Update_P(Body & Particles,               // Updates P_In's Second Piola-Kirchhoff stress tensor
-                const double dt);
-
-  void Update_x(Body & Particles,               // Updates P_In's spacial position
-                const double dt);
-
-
-  //////////////////////////////////////////////////////////////////////////////
   // Contact methods. Function definitions are in Particle_Contact.c
 
   const double K = 400;                                                        //        : N/(mm^2)
