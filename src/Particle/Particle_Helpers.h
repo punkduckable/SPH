@@ -1,8 +1,10 @@
-#if !defined(PARTICLE_FRIENDS_HEADER)
-#define PARTICLE_FRIENDS_HEADER
+#if !defined(PARTICLE_HELPERS_HEADER)
+#define PARTICLE_HELPERS_HEADER
 
+#include "Namespaces.h"
 #include "Particle.h"
 #include "Body/Body.h"
+#include "List.h"
 
 namespace Particle_Helpers {
   //////////////////////////////////////////////////////////////////////////////

@@ -3,31 +3,38 @@
 
 #define FRICTION_COEFFICIENT .1
 
+#include "Body/Body.h"
+#include "Materials.h"
+#include "Vector/Vector.h"
+#include "Tensor/Tensor.h"
+
+
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
 namespace Simulation {
-  void Setup_Cuboid(Particle_Array & Body, const unsigned int m);
-  void Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m);
+  void Run_Simulation(void);
+  void Setup_Cuboid(Body & Body, const unsigned m);
+  void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
 
   // Simulation flags/properties
   const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 0;
   const unsigned char Print_Forces               = 1;
   const unsigned char Print_Net_Force            = 0;
-  const unsigned int TimeSteps_Between_Prints    = 1000;
+  const unsigned TimeSteps_Between_Prints    = 1000;
 
   // TimeStep paramters
   const double dt                                = 5e-9;          // Time step        : s
-  const unsigned int Num_Steps                   = 100000;          // Number of time steps
+  const unsigned Num_Steps                   = 100000;          // Number of time steps
 
-  // Particle_Array properties
+  // Body properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
   std::string * Names;                           // The names of each body (name must match File name if reading from FEB file)
   bool * Is_Cuboid;                              // Which bodies are cuboids
   bool * Is_Boundary;                            // Which bodies are boundaries (can be from FEB file or cuboid)
   bool * Is_Damagable;                           // Which bodies can be damaged
   bool * From_FEB_File;                          // Which bodies will be read from file
-  unsigned int * Steps_Per_Update;               // How many time steps pass between updating this Body's P-K tensor
+  unsigned * Steps_Per_Update;               // How many time steps pass between updating this Body's P-K tensor
   double * IPS;                                  // Inter particle spacing in mm.
   Vector * Dimensions;                           // Dimensions of cuboids (only applicable for cuboids)
   Vector * Offset;                               // Poisition offset (only applicable for cuboids)
@@ -46,7 +53,7 @@ namespace Simulation {
     Is_Boundary = new bool[Num_Arrays];
     Is_Damagable = new bool[Num_Arrays];
     From_FEB_File = new bool[Num_Arrays];
-    Steps_Per_Update = new unsigned int[Num_Arrays];
+    Steps_Per_Update = new unsigned[Num_Arrays];
     IPS = new double[Num_Arrays];
     Dimensions = new Vector[Num_Arrays];
     Offset = new Vector[Num_Arrays];
@@ -80,15 +87,15 @@ namespace Simulation {
   } // void Use_Arrays_From_Code(void) {
 
 
-  // Default Particle_Array members
-  void Set_Particle_Array_Members(Particle_Array & Particles) {
-    unsigned int Support_Radius = 3;                       // Support radius in units of Inter Particle spacings
+  // Default Body members
+  void Set_Body_Members(Body & Particles) {
+    unsigned Support_Radius = 3;                       // Support radius in units of Inter Particle spacings
 
     Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
     Particles.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
     Particles.Set_alpha(.75);                              // Hg control parameter       : Unitless
     Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
-  } // void Set_Particle_Array_Members(Particle_Array & Particles) {
+  } // void Set_Body_Members(Body & Particles) {
 } // namespace Simulation {
 
 #endif

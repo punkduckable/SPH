@@ -2,8 +2,12 @@
 #define PARTICLE_HEADER
 
 #include "Classes.h"
+#include "Namespaces.h"
 #include "Body/Body.h"
+#include "IO/Data_Dump.h"
+#include "Simulation/Simulation.h"
 #include "Particle/Particle_Helpers.h"
+#include "Particle_Debugger.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
 #include "Errors.h"
@@ -123,12 +127,14 @@ class Particle {
       return 0;
     } // unsigned Get_Neighbor_IDs(unsigned i) const {
 
+      // body method
     // Update P
-    friend void Particle_Helpers::Update_P(Body & Particles,                   // Updates P_In's Second Piola-Kirchhoff stress tensor
+    friend void Particle_Helpers::Update_P(Body & Particles,                   // Updates Second Piola-Kirchhoff stress tensor for each particle in a Body
                                            const double dt);
 
+       // body method
     // Update x
-    friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates P_In's spacial position
+    friend void Particle_Helpers::Update_x(Body & Particles,                   // Updates spatial position for each particle in a Body
                                            const double dt);
 
     // Neighbor friends (other neighbor methods are in Particle_Neighbors.cc)
@@ -136,17 +142,21 @@ class Particle {
                        const unsigned * Neighbor_ID_Array,
                        const Body & Particles);
 
+      // body method
     friend bool Particle_Helpers::Are_Neighbors(const Body & Particles,
                                                 const unsigned i,
                                                 const unsigned j);
 
+      // body method
     friend void Particle_Helpers::Find_Neighbors_Cuboid(Particle & P_In,
                                                         Body & Particles);
 
+      // body method
     friend void Particle_Helpers::Remove_Neighbor(Particle & P_In,
                                                   const unsigned Remove_Neighbor_ID,
                                                   const Body & Particles);
 
+       // body method
     // Damage method friends
     friend void Particle_Helpers::Remove_Damaged_Particle(Particle & P_In,
                                                           Body & Particles);
@@ -158,8 +168,9 @@ class Particle {
     // Other friends
     friend void Particle_Tests(void);
     friend void Simulation::Run_Simulation(void);
-    friend void Simulation::Set_Static_Particle_Members(void);
+      // body method
     friend void Particle_Debugger::Export_Particle_Forces(const Body & Particles);
+      // body method
     friend int Data_Dump::Load_Body(Body & Particles);
     friend void Data_Dump::Load_Particle(Particle & P_In,
                                          FILE * File,

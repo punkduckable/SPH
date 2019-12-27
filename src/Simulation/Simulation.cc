@@ -8,7 +8,7 @@ void Simulation::Run_Simulation(void) {
   // Simulation variables
 
   // Loop indicies
-  unsigned int i,j,k,l,m;
+  unsigned i,j,k,l,m;
 
   // Computation time measurement variables
   clock_t timer1,
@@ -19,9 +19,9 @@ void Simulation::Run_Simulation(void) {
           update_x_timer = 0,
           Print_timer = 0;
 
-  // Set up Particle_Arrays.
-  Particle_Array * Arrays;                                           // Will point to the Particle Array's for this simulation
-  unsigned int * Time_Step_Index;                                    // Time step counters for each particle array
+  // Set up Bodys.
+  Body * Arrays;                                           // Will point to the Particle Array's for this simulation
+  unsigned * Time_Step_Index;                                    // Time step counters for each particle array
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
@@ -49,7 +49,7 @@ void Simulation::Run_Simulation(void) {
     Data_Dump::Load_Simulation(&Arrays, Num_Arrays);
 
     // Now set up the time step counters
-    Time_Step_Index = new unsigned int[Num_Arrays];
+    Time_Step_Index = new unsigned[Num_Arrays];
     for(i = 0; i < Num_Arrays; i++)
       Time_Step_Index[i] = 0;
 
@@ -68,9 +68,9 @@ void Simulation::Run_Simulation(void) {
     // Use arrays defined in Simulation.h
     Use_Arrays_From_Code();
 
-    // First, allocate the array of Particle_Arrays, time step counters
-    Arrays = new Particle_Array[Num_Arrays];
-    Time_Step_Index = new unsigned int[Num_Arrays];
+    // First, allocate the array of Bodys, time step counters
+    Arrays = new Body[Num_Arrays];
+    Time_Step_Index = new unsigned[Num_Arrays];
     for(i = 0; i < Num_Arrays; i++)
       Time_Step_Index[i] = 0;
 
@@ -82,14 +82,14 @@ void Simulation::Run_Simulation(void) {
       // Set inter particle spacing
       Arrays[m].Set_Inter_Particle_Spacing(IPS[m]);
 
-      // Now set the ith Particle_Array's material
+      // Now set the ith Body's material
       Arrays[m].Set_Material(Materials[m]);
 
-      // Now set wheather or not the ith Particle_Array is damagable
+      // Now set wheather or not the ith Body is damagable
       Arrays[m].Set_Damageable(Is_Damagable[m]);
 
-      // Now set other Particle_Array members.
-      Set_Particle_Array_Members(Arrays[m]);
+      // Now set other Body members.
+      Set_Body_Members(Arrays[m]);
 
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
@@ -108,7 +108,7 @@ void Simulation::Run_Simulation(void) {
       } // if(Is_Cuboid[m] == false && Is_Boundary == false) {
 
       //////////////////////////////////////////////////////////////////////////
-      // Now set up the Particle_Array's particles
+      // Now set up the Body's particles
 
       /* If the body is a boundary, we need to designate it as such.
       note: this applies if the body is a cuboid, or from FEB file... anything
@@ -190,9 +190,9 @@ void Simulation::Run_Simulation(void) {
         respectivly. */
 
         // Establish side lengths (we assume Array[m] is a cuboid)
-        unsigned int X_SIDE_LENGTH = Arrays[m].Get_X_SIDE_LENGTH();
-        unsigned int Y_SIDE_LENGTH = Arrays[m].Get_Y_SIDE_LENGTH();
-        unsigned int Z_SIDE_LENGTH = Arrays[m].Get_Z_SIDE_LENGTH();
+        unsigned X_SIDE_LENGTH = Arrays[m].Get_X_SIDE_LENGTH();
+        unsigned Y_SIDE_LENGTH = Arrays[m].Get_Y_SIDE_LENGTH();
+        unsigned Z_SIDE_LENGTH = Arrays[m].Get_Z_SIDE_LENGTH();
 
         // Front face (i = 0)
         i = 0;
@@ -261,12 +261,12 @@ void Simulation::Run_Simulation(void) {
       timer2 = clock();
 
     for(m = 0; m < Num_Arrays; m++) {
-      // Note: We don't update P for Particle_Arrays that are boundaries
+      // Note: We don't update P for Bodys that are boundaries
       if(Arrays[m].Get_Boundary() == true)
         continue;
       else
         /* Update each Particles's P tensor.
-        We only update P when the mth Particle_Array's counter is zero. Note
+        We only update P when the mth Body's counter is zero. Note
         That the Update_P method has an orphaned for loop (and takes care of
         removing damaged particles in parallel, damaged particles are not
         removed until every particle's P tensor has been updated. This makes
@@ -283,22 +283,22 @@ void Simulation::Run_Simulation(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Contact
     /* Here we enable particle-particle contact. To do this, we cycle through
-    each Particle_Array. For the mth array, we check if any of its particles are
+    each Body. For the mth array, we check if any of its particles are
     in contact with any of the partilces in the ith array for i > m. We only
     use i > m so that we only run the contact algorythm on each part of
-    Particle_Arrays once. Further, we only calculate the contact forces for the
-    mth particle_Array if that partilce_array is being updated this time step. */
+    Bodys once. Further, we only calculate the contact forces for the
+    mth Body if that partilce_array is being updated this time step. */
 
     #pragma omp single nowait
       timer2 = clock();
 
     /* First, we need to set each particle's contact force to zero. It should be
-    noted that we only do this for a particular Particle_Array if that array
+    noted that we only do this for a particular Body if that array
     is updating it's position this turn. Otherwise, since the force won't be
     used for anything, there's no reason to waste CPU cycles setting that
     array's particle's contact forces to zero. */
     for(m = 0; m < Num_Arrays; m++) {
-      unsigned int Num_Particles = (Arrays[m]).Get_Num_Particles();
+      unsigned Num_Particles = (Arrays[m]).Get_Num_Particles();
 
       if(Time_Step_Index[m] == 0)
         #pragma omp for
@@ -327,20 +327,20 @@ void Simulation::Run_Simulation(void) {
       timer2 = clock();
 
     for(m = 0; m < Num_Arrays; m++) {
-      // Note: we don't update P for Particle_Arrays that are boundaries
+      // Note: we don't update P for Bodys that are boundaries
       if(Arrays[m].Get_Boundary() == true)
         continue;
       else {
         /* We only want to update x (the traditional way) if we're on a timestep
-        where the mth Particle_Array gets updated. Suppose that the mth particle
+        where the mth Body gets updated. Suppose that the mth particle
         array only updates once every k steps (meaning that Stpes_Between_Update[m] = k)
         on the 0th step, the mth particle arrays's counter is zero. After
         each step it increments. On the kth step, its counter reaches k and the
         counter gets truncaed back to zero. Therefore, every k steps the mth
-        particle_array's counter will be zero. Thus, we use a 0 counter
-        as an indicator that we should update this particle_array. */
+        Body's counter will be zero. Thus, we use a 0 counter
+        as an indicator that we should update this Body. */
         if(Time_Step_Index[m] == 0) {
-          /* First, update the 'F_Index' for the current Particle_Array. This
+          /* First, update the 'F_Index' for the current Body. This
           controls which member of each particle's 'F' array is the 'newest'. */
           #pragma omp single
             Arrays[m].Increment_F_Index();
@@ -352,7 +352,7 @@ void Simulation::Run_Simulation(void) {
           /* If we're not on an update step, then we'll let this body continue
           accelerating at whatever acceleration it attained after the last
           time step. */
-          unsigned int Num_Particles = (Arrays[m]).Get_Num_Particles();
+          unsigned Num_Particles = (Arrays[m]).Get_Num_Particles();
 
           #pragma omp for
           for(i = 0; i < Num_Particles; i++) {
@@ -373,7 +373,7 @@ void Simulation::Run_Simulation(void) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Update each time step counter
-    /* Here we increment each Particle_Array's counter. If a particular counter
+    /* Here we increment each Body's counter. If a particular counter
     reaches its limit (the value of Steps_Per_Update[m]) then we set that
     counter to zero (reset the counter). */
 
@@ -460,8 +460,8 @@ void Simulation::Run_Simulation(void) {
 
 
 
-void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) {
-  unsigned int i,j,k;
+void Simulation::Setup_Cuboid(Body & Particles, const unsigned m) {
+  unsigned i,j,k;
   clock_t timer1;
 
   // Particle paramaters
@@ -470,10 +470,10 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
   const double Particle_Radius = IPS*.578;                                     //        : mm
   const double Particle_Mass = Particle_Volume*Particles.Get_density();        //        : g
 
-  // Furst, let's get number of partilces in the Particle_Arrays
-  const unsigned int X_SIDE_LENGTH = Particles.Get_X_SIDE_LENGTH();
-  const unsigned int Y_SIDE_LENGTH = Particles.Get_Y_SIDE_LENGTH();
-  const unsigned int Z_SIDE_LENGTH = Particles.Get_Z_SIDE_LENGTH();
+  // Furst, let's get number of partilces in the Bodys
+  const unsigned X_SIDE_LENGTH = Particles.Get_X_SIDE_LENGTH();
+  const unsigned Y_SIDE_LENGTH = Particles.Get_Y_SIDE_LENGTH();
+  const unsigned Z_SIDE_LENGTH = Particles.Get_Z_SIDE_LENGTH();
 
   // Vectors to hold onto Parameters
   Vector X, x;
@@ -543,15 +543,15 @@ void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) 
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
   */
-} // void Simulation::Setup_Cuboid(Particle_Array & Particles, const unsigned int m) {
+} // void Simulation::Setup_Cuboid(Body & Particles, const unsigned m) {
 
 
 
-void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m) {
+void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
   // First, we need to know how many particles we have, and the reference
   // position of each of the particles.
   Vector * X = NULL;
-  unsigned int Num_Particles;
+  unsigned Num_Particles;
   FEB_File::Read_FEB_File(Names[m], &X, Num_Particles);    // Names in Simulation.h
 
   printf("\nReading in Particles for %s from FEB file...\n", FEB_Body.Get_Name().c_str());
@@ -568,14 +568,14 @@ void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m)
   Vector V = Initial_Velocity[m];                          // Initial_Velocity set in Simulation.h
 
 
-  for(unsigned int i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) {
     FEB_Body[i].Set_Mass(Particle_Mass);
     FEB_Body[i].Set_Vol(Particle_Volume);
     FEB_Body[i].Set_Radius(Particle_Radius);
     FEB_Body[i].Set_X(X[i]);
     FEB_Body[i].Set_x(X[i]);
     FEB_Body[i].Set_V(V);
-  } //   for(unsigned int i = 0; i < Num_Particles; i++) {
+  } //   for(unsigned i = 0; i < Num_Particles; i++) {
 
   // Now set up neighbors. (if the body is not a boundary)
   if(FEB_Body.Get_Boundary() == false) {
@@ -583,6 +583,6 @@ void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m)
     Particle_Helpers::Find_Neighbors(FEB_Body);
     printf("Done!\n");
   } // if(FEB_Body.Get_Boundary() == false) {
-} // void Simulation::Setup_FEB_Body(Particle_Array & FEB_Body, const unsigned int m) {
+} // void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
 
 #endif

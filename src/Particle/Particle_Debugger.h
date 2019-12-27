@@ -2,6 +2,7 @@
 #define PARTICLE_FILE_HEADER
 
 #include "Particle.h"
+#include "List.h"
 
 // If defined, PARTICLE_DEBUG adds the Visc and Force_Visc members to the
 // Tensor class. These members are for debugging the particle class.

@@ -37,7 +37,7 @@ void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
   #pragma omp for schedule(dynamic)
   for(i = 0; i < Num_Particles_A; i++) {
     // Skip broken particles
-    if(Body_A[i].Get_D() >= 1) { continue; } 
+    if(Body_A[i].Get_D() >= 1) { continue; }
 
     double V_i = Body_A[i].Get_Vol();                                          //        : mm^3
     const double KV_i = K*V_i;                                                 //        : N*mm
@@ -48,7 +48,7 @@ void Particle_Helpers::Contact(Body & Body_A, Body & Body_B) {
 
       // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
       // If so, add contact force
-      if(Vector_Dot_Product(r_ij, r_ij) < h_squared) {
+      if(Dot_Product(r_ij, r_ij) < h_squared) {
         /* First, set the 'contact flag' to true. This flag is designed to
         improve perfomance. The idea here is that there will be no contact
         for most of the time steps. Because of this, it doesn't make sense

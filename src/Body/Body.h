@@ -3,7 +3,7 @@
 
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
-#include "Materials.h"
+#include "Simulation/Materials.h"
 #include <string>
 #include <assert.h>
 

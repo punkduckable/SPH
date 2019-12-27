@@ -17,7 +17,8 @@ OBJS :=            Main.o \
 									 Particle_Debugger.o \
 									 Particle_Neighbors.o \
 									 Particle_Update.o \
-									 Body.o
+									 Body.o \
+									 Simulation.o
 
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 
@@ -35,6 +36,7 @@ VPATH :=     ./bin ./obj \
 	           ./src \
              ./src/Vector ./src/Tensor \
 						 ./src/Particle ./src/Body \
+						 ./src/Simulation \
 						 ./test
 
 
@@ -76,34 +78,48 @@ obj/Vector.o: Vector.cc Vector.h Tensor.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
+
 # Tensor class.
 obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
 
 
 # Particle Class
 obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Neighbors.o: Particle_Neighbors.cc Particles.h
+obj/Particle_Neighbors.o: Particle_Neighbors.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Update.o: Particle_Update.cc Particles.h
+obj/Particle_Update.o: Particle_Update.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Damage.o: Particle_Damage.cc Particles.h
+obj/Particle_Damage.o: Particle_Damage.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Contact.o: Particle_Contact.cc Particles.h
+obj/Particle_Contact.o: Particle_Contact.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Particle_Debugger.o: Particle_Debugger.cc Particles.h
+obj/Particle_Debugger.o: Particle_Debugger.cc Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
 
 
 # Body class
 obj/Body.o: Body.cc Body.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+
+
+obj/Simulation.o: Simulation.cc Simulation.h Vector.h Tensor.h Particle.h Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+
+
+obj/Data_Dump.o: Data_Dump.cc Data_Dump.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
 
 
 ################################################################################

@@ -1,5 +1,5 @@
 #if !defined MATERIALS_HEADER
-#define MATERAIALS_HEADER
+#define MATERIALS_HEADER
 
 #include <string>
 

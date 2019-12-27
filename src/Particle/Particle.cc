@@ -1,4 +1,5 @@
 #include "Particle.h"
+#include <random>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors and destructor
@@ -131,7 +132,7 @@ void Particle::Print(void) const {
   (*this).Force_Int.Print();
   #if defined(PARTICLE_DEBUG)
     printf("F_Visc = ");
-    (*this).Force_Visc.Print()
+    (*this).Force_Visc.Print();
   #endif
   printf("F_Hg = ");
   (*this).Force_HG.Print();

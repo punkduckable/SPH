@@ -16,16 +16,10 @@ definition. My resolution to this issue was to make a new file that can be used
 to house the parts of each namespace that needs to come before everything else
 (such as the Run_Simulation prototype for the Simulation namespace)*/
 
-namespace Simulation {
-  void Run_Simulation(void);
-  void Set_Static_Particle_Members(void);
-}
+
 namespace Data_Dump {}
 namespace FEB_File {}
-namespace Particle_Helpers {
-  void Update_x(Particle_Array & Particles,
-                const double dt);
-}
+namespace Particle_Helpers {}
 namespace Quick_Math {}
 namespace Particle_Debugger {}
 namespace OP_Count {}
