@@ -21,11 +21,11 @@ namespace Simulation {
   const unsigned char Save_Data_To_File          = 0;
   const unsigned char Print_Forces               = 1;
   const unsigned char Print_Net_Force            = 0;
-  const unsigned TimeSteps_Between_Prints    = 1000;
+  const unsigned TimeSteps_Between_Prints        = 1000;
 
   // TimeStep paramters
   const double dt                                = 5e-9;          // Time step        : s
-  const unsigned Num_Steps                   = 100000;          // Number of time steps
+  const unsigned Num_Steps                       = 100000;          // Number of time steps
 
   // Body properties
   unsigned Num_Arrays;                           // Number of bodies in simulation
@@ -34,7 +34,7 @@ namespace Simulation {
   bool * Is_Boundary;                            // Which bodies are boundaries (can be from FEB file or cuboid)
   bool * Is_Damagable;                           // Which bodies can be damaged
   bool * From_FEB_File;                          // Which bodies will be read from file
-  unsigned * Steps_Per_Update;               // How many time steps pass between updating this Body's P-K tensor
+  unsigned * Steps_Per_Update;                   // How many time steps pass between updating this Body's P-K tensor
   double * IPS;                                  // Inter particle spacing in mm.
   Vector * Dimensions;                           // Dimensions of cuboids (only applicable for cuboids)
   Vector * Offset;                               // Poisition offset (only applicable for cuboids)

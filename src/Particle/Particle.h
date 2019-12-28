@@ -5,7 +5,7 @@
 #include "Namespaces.h"
 #include "Body/Body.h"
 #include "IO/Data_Dump.h"
-#include "Simulation/Simulation.h"
+//include "Simulation/Simulation.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
 #include "Errors.h"
@@ -131,7 +131,7 @@ class Particle {
   ////////////////////////////////////////////////////////////////////////////
   // Friends, Printing
   friend void Particle_Tests(void);
-  friend void Simulation::Run_Simulation(void);
+  //friend void Simulation::Run_Simulation(void);
   friend int Data_Dump::Load_Body(Body & Body_In);
   friend void Data_Dump::Load_Particle(Particle & P_In,
                                        FILE * File,

@@ -2,6 +2,9 @@
 #define SIMULATION_SOURCE
 
 #include "Simulation.h"
+#if defined(_OPENMP)
+  #include <omp.h>
+#endif
 
 void Simulation::Set_Body_Members(Body & Particles) {
   unsigned Support_Radius = 3;                           // Support radius in units of Inter Particle spacings

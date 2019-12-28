@@ -16,8 +16,8 @@ OBJS :=            Main.o \
 									 Neighbors.o \
 									 Update.o \
 									 Damage.o \
-									 Contact.o \
-									 Simulation.o
+									 Contact.o #\
+									 #Simulation.o
 
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 
@@ -47,7 +47,7 @@ VPATH :=     ./bin ./obj \
 compile: bin/SPH
 
 bin/SPH: $(OBJ_PATHS)
-	$(COMPILER) $(OBJ_PATHS) -o $@
+	$(COMPILER) -fopenmp $(OBJ_PATHS) -o $@
 
 obj/Main.o: Main.cc
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@

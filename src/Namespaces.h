@@ -19,11 +19,10 @@ to house the parts of each namespace that needs to come before everything else
 
 namespace Data_Dump {}
 namespace FEB_File {}
-namespace Particle_Helpers {}
 namespace Quick_Math {}
-namespace Particle_Debugger {}
 namespace OP_Count {}
 namespace VTK_File {}
+namespace Simulation {}
 namespace Materials {}
 
 #endif
