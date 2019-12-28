@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <math.h>
 
 // Set K (static member of Body class)
 double Body::K = 400;
@@ -75,7 +76,18 @@ const Particle & Body::operator[](const unsigned i) const {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Set methods
+// Setters
+
+//---//---//---//---//---//---//---//---//---//---//---//---//---//---//---//--//
+// Private
+
+void Body::Set_h(const double h_In) {
+  (*this).h = h_In;
+  (*this).Shape_Function_Amplitude =  15./(PI*pow(h_In,6));
+} // void Body::Set_h(const double h_In) {
+
+//---//---//---//---//---//---//---//---//---//---//---//---//---//---//---//--//
+// Public
 
 void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
   if(Is_Cuboid == true) {
@@ -102,6 +114,10 @@ void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
 
   (*this).Particles_Set_Up = true;
 } // void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
+
+
+
+void Body::Set_Name(const std::string & S_In) { Name = S_In; }
 
 
 
@@ -132,6 +148,16 @@ void Body::Set_Support_Radius(const unsigned SR_In) {
 
   Support_Radius = SR_In;
 } // void Body::Set_Support_Radius(const unsigned SR_In) {
+
+
+
+void Body::Set_Material(const Materials::Material & Mat_In) { Body_Material = Mat_In; }
+void Body::Set_mu(const double mu_In) { mu = mu_In; }
+void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }
+
+void Body::Set_Tau(const double Tau_In) { Tau = Tau_In; }
+void Body::Set_Damageable(const bool D_In) { Damageable = D_In; }
+
 
 
 
@@ -172,6 +198,72 @@ void Body::Set_Cuboid_Dimensions(const Vector & Dimensions) {
 
   (*this).Particles_Set_Up = true;
 } // void Body::Set_Cuboid_Dimensions(const Vector & Dimensions); {
+
+
+
+void Body::Set_Boundary(const bool Boundary_In) { Is_Boundary = Boundary_In; }
+
+void Body::Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
+
+void Body::Set_F_Index(const unsigned char i) {
+  assert(i <= 1);
+  F_Index = i;
+} // void Body::Set_F_Counter(const unsigned char i) {
+
+
+
+void Body::Increment_F_Index(void) {
+  if(F_Index == 0) { F_Index++; }
+  else { F_Index = 0; }
+} // void Body::Increment_F_Counter(void) {
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Getters
+
+unsigned Body::Get_Num_Particles(void) const { return Num_Particles; }
+std::string Body::Get_Name(void) const { return Name; }
+
+double Body::Get_Inter_Particle_Spacing(void) const { return Inter_Particle_Spacing; }
+unsigned Body::Get_Support_Radius(void) const { return Support_Radius; }
+
+double Body::Get_h(void) const { return h; }
+double Body::Get_Shape_Function_Amplitude(void) const { return Shape_Function_Amplitude; }
+Materials::Material Body::Get_Material(void) const { return Body_Material; }
+double Body::Get_Lame(void) const { return Body_Material.Lame; }
+double Body::Get_mu0(void) const { return Body_Material.mu0; }
+double Body::Get_mu(void) const { return mu; }
+double Body::Get_E(void) const { return Body_Material.E; }
+double Body::Get_density(void) const { return Body_Material.density; }
+double Body::Get_alpha(void) const { return alpha; }
+
+unsigned char Body::Get_F_Index(void) const { return F_Index; }
+
+double Body::Get_Tau(void) const { return Tau; }
+bool Body::Get_Damagable(void) const { return Damageable; }
+
+bool Body::Get_Cuboid(void) const { return Is_Cuboid; }
+unsigned Body::Get_X_SIDE_LENGTH(void) const {
+  assert( (*this).Is_Cuboid );
+  return X_SIDE_LENGTH;
+} // unsigned Get_X_SIDE_LENGTH(void) const {
+unsigned Body::Get_Y_SIDE_LENGTH(void) const {
+  assert( (*this).Is_Cuboid );
+  return Y_SIDE_LENGTH;
+} // unsigned Get_Y_SIDE_LENGTH(void) const {
+unsigned Body::Get_Z_SIDE_LENGTH(void) const {
+  assert( (*this).Is_Cuboid );
+  return Z_SIDE_LENGTH;
+} // unsigned Get_Z_SIDE_LENGTH(void) const {
+
+bool Body::Get_Boundary(void) const { return Is_Boundary; }
+
+bool Body::Get_First_Time_Step(void) const { return First_Time_Step; }
+
+
 
 
 

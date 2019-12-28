@@ -1,8 +1,6 @@
 #if !defined(SUMULATION_HEADER)
 #define SUMULATION_HEADER
 
-#define FRICTION_COEFFICIENT .1
-
 #include "Body/Body.h"
 #include "Materials.h"
 #include "Vector/Vector.h"
@@ -24,7 +22,7 @@ namespace Simulation {
   const unsigned TimeSteps_Between_Prints        = 1000;
 
   // TimeStep paramters
-  const double dt                                = 5e-9;          // Time step        : s
+  const double dt                                = 5e-9;            // Time step        : s
   const unsigned Num_Steps                       = 100000;          // Number of time steps
 
   // Body properties
@@ -44,6 +42,10 @@ namespace Simulation {
 
   // Contact parameter
   const double Contact_Distance = 1;             // Distance at which bodies begin contacting one another.   : mm
+
+  // Friction coefficient.
+  const double Friction_Coefficient .1;                                        //        : unitless
+
 
   void Use_Arrays_From_Code(void) {
     Num_Arrays                                   = 2;

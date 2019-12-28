@@ -5,7 +5,7 @@
 #include "Namespaces.h"
 #include "Body/Body.h"
 #include "IO/Data_Dump.h"
-//include "Simulation/Simulation.h"
+#include "Simulation/Simulation.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
 #include "Errors.h"
@@ -90,10 +90,12 @@ class Particle {
     void Set_Mass(const double Mass_In);                                       //        : g
     void Set_Vol(const double Vol_In);                                         //        : mm^3
     void Set_Radius(const double Radius_In);                                   //        : mm
+
     void Set_X(const Vector & X_In);                       // Set ref position           : mm Vector
     void Set_x(const Vector & x_In);                       // Set spacial position       : mm Vector
     void Set_V(const Vector & V_In);                       // Set particle's velocity    : mm/s Vector
     void Set_a(const Vector & a_In);                       // Set particle's acel        : mm/s^2 Vector
+
     void Set_D(const double D_In);                         // Set Damage parameter       : unitless
 
 
@@ -104,18 +106,22 @@ class Particle {
     double Get_Mass(void) const;                                               //        : g
     double Get_Vol(void) const;                                                //        : mm^3
     double Get_Radius(void) const;                                             //        : mm
+
     const Vector & Get_X(void) const;                                          //        : mm Vector
     const Vector & Get_x(void) const;                                          //        : mm Vector
     const Vector & Get_V(void) const;                                          //        : mm/s Vector
     const Vector & Get_a(void) const;                                          //        : mm/s^2 Vector
     const Tensor & Get_P(void) const;                                          //        : Mpa Tensor
     const Tensor & Get_F(const unsigned i) const;                              //        : unitless Tensor
+
     const Vector & Get_Force_Friction(void) const;                             //        : N Vector
     const Vector & Get_Force_Contact(void) const;                              //        : N Vector
+
     double Get_Stretch_M(void) const;                                          //        : unitless
     double Get_Stretch_H(void) const;                                          //        : unitless
     double Get_Stretch_Critical(void) const;                                   //        : unitless
     double Get_D(void) const;                                                  //        : unitless
+
     unsigned Get_Num_Neighbors(void) const;
     unsigned Get_Neighbor_IDs(unsigned i) const;
 
@@ -124,7 +130,7 @@ class Particle {
   ////////////////////////////////////////////////////////////////////////////
   // Friends, Printing
   friend void Particle_Tests(void);
-  //friend void Simulation::Run_Simulation(void);
+  friend void Simulation::Run_Simulation(void);
   friend int Data_Dump::Load_Body(Body & Body_In);
   friend void Data_Dump::Load_Particle(Particle & P_In,
                                        FILE * File,

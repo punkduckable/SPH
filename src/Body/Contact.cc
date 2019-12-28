@@ -89,7 +89,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
         Relative_Velocity = Body_A[i].V - Body_B[j].V;                         //        : mm/s Vector
 
         // Now we can calculate the frictional force and apply it to the two bodies
-        F_Friction = ((-1*FRICTION_COEFFICIENT*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
+        F_Friction = ((-1*Simulation::Friction_Coefficient*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
         Body_A[i].Force_Friction += F_Friction;                                //        : N Vector
         Body_B_F_Friction_Local[j] -= F_Friction;                              //        : N Vector
       } // if(Magnitude(r_ij) < h) {
