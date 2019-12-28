@@ -1,7 +1,7 @@
 # Compiler stuff
 COMPILER :=        g++-9
 
-CFLAGS :=         -c -Wall -Wsign-compare -Wextra -O2 -std=c++11
+CFLAGS :=         -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11
 
 INC_PATH :=       -iquote ./src \
                   -iquote ./test
@@ -94,16 +94,16 @@ obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
 obj/Body.o: Body.cc Body.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Neighbors.o: Neighbors.cc Body.h
+obj/Neighbors.o: Neighbors.cc obj/Body.o
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Update.o: Update.cc Body.h
+obj/Update.o: Update.cc obj/Body.o
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Damage.o: Damage.cc Body.h
+obj/Damage.o: Damage.cc obj/Body.o
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Contact.o: Contact.cc Particle.h
+obj/Contact.o: Contact.cc obj/Body.o
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 

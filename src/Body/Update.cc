@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <math.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Update methods
@@ -23,12 +24,18 @@ void Body::Update_P(const double dt) {
               0,1,0,
               0,0,1};
 
+
   List<unsigned> Damaged_Particle_List;          // Keeps track of which particles are newly damaged
 
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
   Tensor Visc;                                   // Viscosity correction term for P      : Mpa*s Tensor
   Vector rj;                                     // Displacemtn vector of jth neighbor   : mm Vector
+
+
+  // Material parameters
+  const double Lame = Body_Material.Lame;        // Lame paramater                       : Mpa
+  const double mu0 = Body_Material.mu0;          // Shear modulus                        : Mpa
 
   // Let's update each particle's stress tensors, keeping track of which
   // particles are damaged (in the Damaged_Particle_List)
@@ -83,7 +90,7 @@ void Body::Update_P(const double dt) {
     } // if(Stretch_Max_Principle > Particles[i].Stretch_H) {
 
     // if damage is enabled and Max is greater than crticial then start adding damage
-    if(Particles.Get_Damagable() == true) {
+    if((*this).Damageable == true) {
       if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
         Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1;
       } // if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
@@ -94,7 +101,7 @@ void Body::Update_P(const double dt) {
         Damaged_Particle_List.Add_Back(Particles[i].ID);
         continue;
       } // if(Particles[i].D >= 1) {
-    } // if(Particles.Get_Damagable() == true) {
+    } // if((*this).Damageable == true) {
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -174,7 +181,7 @@ void Body::Update_P(const double dt) {
   // have each thread remove its damaged particles
   #pragma omp critical
   while(Damaged_Particle_List.Node_Count() != 0) {
-    Particles.Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
+    Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
   } // while(Damaged_Particle_List.Node_Count() != 0) {
 
   // Explicit barrier to ensure that all broken particles have been removed
@@ -215,6 +222,9 @@ void Body::Update_x(const double dt) {
   Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Tensor F_j;                                    // Deformation gradient                 : unitless Tensor
   Vector rj;                                     // Displacement vector                  : mm Vector
+
+  // Material parameters
+  const double E = (*this).Body_Material.E;      // Hourglass stiffness                  : Mpa
 
   // Damage variables
   List<unsigned> Damaged_Particle_List;      // Keeps track of which particles have broken
@@ -386,7 +396,7 @@ void Body::Update_x(const double dt) {
   // have each thread remove its damaged particles
   #pragma omp critical
   while(Damaged_Particle_List.Node_Count() != 0) {
-    Particles.Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
+    Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
   } // while(Damaged_Particle_List.Node_Count() != 0) {
 
   /* Note, there is no explicit barrier here because the next kernel, which
