@@ -38,6 +38,59 @@ Particle::~Particle(void) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// Getters
+
+void Particle::Set_ID(const unsigned ID_In) { ID = ID_In; }
+void Particle::Set_Mass(const double Mass_In) { Mass = Mass_In; }
+void Particle::Set_Vol(const double Vol_In) { Vol = Vol_In; }
+void Particle::Set_Radius(const double Radius_In) { Radius = Radius_In; }
+void Particle::Set_X(const Vector & X_In) { X = X_In; }
+void Particle::Set_x(const Vector & x_In) { x = x_In; }
+void Particle::Set_V(const Vector & V_In) { V = V_In; }
+void Particle::Set_a(const Vector & a_In) { a = a_In; }
+void Particle::Set_D(const double D_In) { D = D_In; }
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Getters
+
+unsigned Particle::Get_ID(void) const { return ID; }
+double Particle::Get_Mass(void) const { return Mass; }
+double Particle::Get_Vol(void) const { return Vol; }
+double Particle::Get_Radius(void) const { return Radius; }
+const Vector & Particle::Get_X(void) const { return X; }
+const Vector & Particle::Get_x(void) const { return x; }
+const Vector & Particle::Get_V(void) const { return V; }
+const Vector & Particle::Get_a(void) const { return a; }
+const Tensor & Particle::Get_P(void) const { return P; }
+const Tensor & Particle::Get_F(const unsigned i) const { return F[i]; }
+const Vector & Particle::Get_Force_Friction(void) const { return Force_Friction; }
+const Vector & Particle::Get_Force_Contact(void) const { return Force_Contact; }
+double Particle::Get_Stretch_M(void) const { return Stretch_M; }
+double Particle::Get_Stretch_H(void) const { return Stretch_H; }
+double Particle::Get_Stretch_Critical(void) const { return Stretch_Critical; }
+double Particle::Get_D(void) const { return D; }
+unsigned Particle::Get_Num_Neighbors(void) const { return Num_Neighbors; }
+unsigned Particle::Get_Neighbor_IDs(unsigned i) const {
+  if(i < Num_Neighbors) { return Neighbor_IDs[i]; }
+  else {
+    char buffer[500];
+    sprintf(buffer,
+            "Bad Neighbor Index exception: Thrown by Particle::Get_Neighbor_IDs\n"
+            "Particle %u has %u neighbors. You requested neighbor %u\n",
+            ID, Num_Neighbors, i);
+    throw Bad_Neighbor_Index(Error_Message_Buffer);
+  } // else
+} // unsigned Particle::Get_Neighbor_IDs(unsigned i) const {
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 // Printing functions
 
 void Particle::Print(void) const {
@@ -89,3 +142,7 @@ void Particle::Print(void) const {
     printf("%5.3f } \n", Magnitude((*this).Grad_W[Num_Neighbors-1])); // */
   } // if(Neighbors_Are_Set == true) {
 } // void Particle::Print(void) const {
+
+
+
+void Print(const Particle & P_In) { P_In.Print(); };         // Calls Print method

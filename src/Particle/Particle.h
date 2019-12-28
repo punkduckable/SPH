@@ -80,51 +80,44 @@ class Particle {
     ////////////////////////////////////////////////////////////////////////////
     // Operator Overloading
 
-    // Particle equality
-    Particle & operator=(const Particle & P_In) = delete;  // Defines P1 = P2
+    Particle & operator=(const Particle & P_In) = delete;  // deleted = operator
 
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters
-    void Set_ID(const unsigned ID_In) { ID = ID_In; }
-    void Set_Mass(const double Mass_In) { Mass = Mass_In; }                    //        : g
-    void Set_Vol(const double Vol_In) { Vol = Vol_In; }                        //        : mm^3
-    void Set_Radius(const double Radius_In) { Radius = Radius_In; }            //        : mm
-    void Set_X(const Vector & X_In) { X = X_In; }          // Set ref position           : mm Vector
-    void Set_x(const Vector & x_In) { x = x_In; }          // Set spacial position       : mm Vector
-    void Set_V(const Vector & V_In) { V = V_In; }          // Set particle's velocity    : mm/s Vector
-    void Set_a(const Vector & a_In) { a = a_In; }          // Set particle's acel        : mm/s^2 Vector
-    void Set_D(const double D_In) { D = D_In; }            // Set Damage parameter       : unitless
+    void Set_ID(const unsigned ID_In);
+    void Set_Mass(const double Mass_In);                                       //        : g
+    void Set_Vol(const double Vol_In);                                         //        : mm^3
+    void Set_Radius(const double Radius_In);                                   //        : mm
+    void Set_X(const Vector & X_In);                       // Set ref position           : mm Vector
+    void Set_x(const Vector & x_In);                       // Set spacial position       : mm Vector
+    void Set_V(const Vector & V_In);                       // Set particle's velocity    : mm/s Vector
+    void Set_a(const Vector & a_In);                       // Set particle's acel        : mm/s^2 Vector
+    void Set_D(const double D_In);                         // Set Damage parameter       : unitless
 
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Getters
-    unsigned Get_ID(void) const { return ID; }
-    double Get_Mass(void) const { return Mass; }
-    double Get_Vol(void) const { return Vol; }
-    double Get_Radius(void) const { return Radius; }
-    const Vector & Get_X(void) const { return X; }
-    const Vector & Get_x(void) const { return x; }
-    const Vector & Get_V(void) const { return V; }
-    const Vector & Get_a(void) const { return a; }
-    const Tensor & Get_P(void) const { return P; }
-    const Tensor & Get_F(const unsigned i) const { return F[i]; }
-    const Vector & Get_Force_Friction(void) const { return Force_Friction; }
-    const Vector & Get_Force_Contact(void) const { return Force_Contact; }
-    double Get_Stretch_M(void) const { return Stretch_M; }
-    double Get_Stretch_H(void) const { return Stretch_H; }
-    double Get_Stretch_Critical(void) const { return Stretch_Critical; }
-    double Get_D(void) const { return D; }
-    unsigned Get_Num_Neighbors(void) const { return Num_Neighbors; }
-    unsigned Get_Neighbor_IDs(unsigned i) const {
-      if(i < Num_Neighbors)
-        return Neighbor_IDs[i];
-
-      printf("Requested neighbor ID is out of bounds! Num_Neighbors = %u, requested index = %u\n",Num_Neighbors, i);
-      return 0;
-    } // unsigned Get_Neighbor_IDs(unsigned i) const {
+    unsigned Get_ID(void) const;                                               //
+    double Get_Mass(void) const;                                               //        : g
+    double Get_Vol(void) const;                                                //        : mm^3
+    double Get_Radius(void) const;                                             //        : mm
+    const Vector & Get_X(void) const;                                          //        : mm Vector
+    const Vector & Get_x(void) const;                                          //        : mm Vector
+    const Vector & Get_V(void) const;                                          //        : mm/s Vector
+    const Vector & Get_a(void) const;                                          //        : mm/s^2 Vector
+    const Tensor & Get_P(void) const;                                          //        : Mpa Tensor
+    const Tensor & Get_F(const unsigned i) const;                              //        : unitless Tensor
+    const Vector & Get_Force_Friction(void) const;                             //        : N Vector
+    const Vector & Get_Force_Contact(void) const;                              //        : N Vector
+    double Get_Stretch_M(void) const;                                          //        : unitless
+    double Get_Stretch_H(void) const;                                          //        : unitless
+    double Get_Stretch_Critical(void) const;                                   //        : unitless
+    double Get_D(void) const;                                                  //        : unitless
+    unsigned Get_Num_Neighbors(void) const;
+    unsigned Get_Neighbor_IDs(unsigned i) const;
 
 
 
@@ -141,6 +134,6 @@ class Particle {
   void Print(void) const;                                  // Print's info about particle (mostly for testing)
 }; // class Particle {
 
-void Print(const Particle & P_In) { P_In.Print(); };         // Calls Print method
+void Print(const Particle & P_In);
 
 #endif
