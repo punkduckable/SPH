@@ -3,13 +3,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods
 
-void Body::Remove_Damaged_Particle(const unsigned i) {
+void Body::Remove_Damaged_Particle(const unsigned p) {
   #if defined(DAMAGE_MONITOR)
-    printf("Particle %d is damaged. ",i);
-    Particles[i].X.Print();
+    printf("Particle %d is damaged. ",p);
+    Particles[p].X.Print();
   #endif
 
-  /* Particle i (which we will refer to as P) is damaged. We want to causally
+  /* Particle p (which we will refer to as P) is damaged. We want to causally
   remove P from the Particles array. This means that the position of P can no
   longer impact the stress or motion of any particles in the array. How do we do
   this? By removing P from every other particle's neighbor lists! But we must do
@@ -116,13 +116,12 @@ void Body::Remove_Damaged_Particle(const unsigned i) {
   If all three conditions are passed, then P_j is in the shadow region of P;
   thus, we remove P_i and P_j's neighbor status. */
 
-  unsigned i,j,k;                           // index variables
-  const double r_Squared = Particles[i].Radius*Particles[i].Radius;            //        : mm^2
+  const double r_Squared = Particles[p].Radius*Particles[p].Radius;            //        : mm^2
 
   // Particle i (P_j) paramaters
   unsigned Pi_ID;                            // ID of P_i
   unsigned Pi_New_Num_Neighbors;             // Number of neighbors of P_i
-  List<unsigned> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in Particles[i]'s shadow region
+  List<unsigned> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in Particles[p]'s shadow region
   unsigned * Pi_New_Neighbors;               // Stores P_i's new neighbors.
 
   // Particle j (P_j) paramaters
@@ -144,28 +143,29 @@ void Body::Remove_Damaged_Particle(const unsigned i) {
   particles A and B, if A is neighbor of B then B is a neighbor of A. Thus, we
   simply cycle through each if the damaged particle's neighbors. For each
   neighbor, P_i we check if the ray between P_i and each of its neighbors, P_j
-  passes through Particle[i]'s' shadow region. If so, we remove its neighbor
+  passes through Particles[i]'s' shadow region. If so, we remove its neighbor
   status. This is done by redoing P_i's neighbors list to exclude the damaged
   particle. Once we have done this, we can recalibrate the neighbor particle's
   members using the new reduced list. */
-  for(i = 0; i < Particle[i].Num_Neighbors; i++) {
+  unsigned Num_Neighbors = Particles[p].Num_Neighbors;
+  for(unsigned i = 0; i < Num_Neighbors; i++) {
     /* For each neighbor of the damaged particle, P_i, we need to remove the
-    neirhbors of Particle[i] as well as any of P_i's neighbors that are in the
+    neirhbors of Particles[i] as well as any of P_i's neighbors that are in the
     shadow region from P_i's neighbor list. Thus, we need to cycle through P_i's
     neighbors. */
-    Pi_ID = Particles[i].Neighbor_IDs[i];
+    Pi_ID = Particles[p].Neighbor_IDs[i];
 
-    RIn_Ri = Particles[i].X - Particles[Pi_ID].X;                                      //        : mm Vector
+    RIn_Ri = Particles[p].X - Particles[Pi_ID].X;                                      //        : mm Vector
 
-    for(j = 0; j < Particles[Pi_ID].Num_Neighbors; j++) {
+    for(unsigned j = 0; j < Particles[Pi_ID].Num_Neighbors; j++) {
       Pj_ID = Particles[Pi_ID].Neighbor_IDs[j];
 
       // First, check if P_j is the damaged particle
-      if(Pj_ID == Particles[i].ID) { continue; }
+      if(Pj_ID == Particles[p].ID) { continue; }
 
 
       //////////////////////////////////////////////////////////////////////////
-      // Checks: Now we check if P_j is in Particle[i]'s shadow region
+      // Checks: Now we check if P_j is in Particles[i]'s shadow region
       Rj_Ri = Particles[Pj_ID].X - Particles[Pi_ID].X;                         //        : mm Vecor
 
 
@@ -193,7 +193,7 @@ void Body::Remove_Damaged_Particle(const unsigned i) {
 
       if(RIn_Ri_Dot_RIn_Ri >= Rj_Ri_Dot_Rj_Ri) {
         // if |RIn_Ri| > |Rj_Ri| then P_j is NOT in the shadow region of
-        // Particle[i]. thus, P_j is still a neighbor of P_i.
+        // Particles[i]. thus, P_j is still a neighbor of P_i.
         Pi_New_Neighbor_List.Add_Front(Pj_ID);
         continue;
       } // if(RIn_Ri_Dot_RIn_Ri >= Rj_Ri_Dot_Rj_Ri) {
@@ -220,7 +220,7 @@ void Body::Remove_Damaged_Particle(const unsigned i) {
         neighbor of P_j, we need to re-do P_j's neighbor list, including
         every old neighbor except for P_i. This is done in the 'Remove Neighbor
         member function' */
-        Particles.Remove_Neighbor(Pj_ID, Pi_ID);
+        Remove_Neighbor(Pj_ID, Pi_ID);
 
         continue;
       } // if(d_squared < r_squared) {
@@ -234,13 +234,13 @@ void Body::Remove_Damaged_Particle(const unsigned i) {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /* We now have a complete new neighbor list for P_i (with Particle[i] and the
+    /* We now have a complete new neighbor list for P_i (with Particles[i] and the
     shadow region particles removed). We can now begin the process of redoing
     P_i's member variables. */
     Pi_New_Num_Neighbors = Pi_New_Neighbor_List.Node_Count();
     Pi_New_Neighbors = new unsigned[Pi_New_Num_Neighbors];
 
-    for(k = 0; k < Pi_New_Num_Neighbors; k++) {
+    for(unsigned k = 0; k < Pi_New_Num_Neighbors; k++) {
       Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Remove_Front();
     } // for(k = 0; k < Pi_New_Num_Neighbors; k++) {
 
@@ -259,14 +259,14 @@ void Body::Remove_Damaged_Particle(const unsigned i) {
     Particles[Pi_ID].Neighbors_Are_Set = false;
 
     // Now we can reset the neighbors
-    Particles.Set_Neighbors(Pi_ID, Pi_New_Num_Neighbors, Pi_New_Neighbors);
+    Set_Neighbors(Pi_ID, Pi_New_Num_Neighbors, Pi_New_Neighbors);
 
     // Now we can free the New_Neighbors array (it will be reallocated in the
     // next loop cycle, we free it to prevent a memory leak)
     delete [] Pi_New_Neighbors;
-  } // for(i = 0; i < Particle[i].Num_Neighbors; i++) {
+  } // for(i = 0; i < Particles[i].Num_Neighbors; i++) {
 
   /* Now that we've causally removed the damaged particle from the particles
   array, we need to make that it think that it has no neighbors */
-  Particle[i].Num_Neighbors = 0;
+  Particles[p].Num_Neighbors = 0;
 } // void Body::Remove_Damaged_Particle(const unsigned i) {
