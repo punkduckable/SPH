@@ -1,5 +1,8 @@
 #include "Particle.h"
+#include "Body/Body.h"
+#include "Errors.h"
 #include <random>
+#include <assert.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors and destructor

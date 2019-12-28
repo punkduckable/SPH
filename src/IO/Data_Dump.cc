@@ -1,7 +1,7 @@
-#if !defined(DATA_DUMP_SOURCE)
-#define DATA_DUMP_SOURCE
-
 #include "Data_Dump.h"
+#include "Body/Body.h"
+#include "Particle/Particle.h"
+#include "VTK_File.h"
 
 void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) {
   /* This Function is used to save a simulation. This function prints all the
@@ -20,33 +20,26 @@ void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) 
 
   for(i = 0;  i < Num_Arrays; i++) {
     // First, get the ith particle's array VTK file number
-    for(j = 0; j < VTK_File::Name_List.Node_Count(); j++)
+    for(j = 0; j < VTK_File::Name_List.Node_Count(); j++) {
       if(VTK_File::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
         VTK_File_Numbers[i] = VTK_File::File_Number_List[j];
         break;
       } // if(VTK_File::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
+    } // for(j = 0; j < VTK_File::Name_List.Node_Count(); j++) {
 
     /* Now we need to check if the ith particle array is not in the list. This
     would happen if j == VTK_File::Name_List.Node_Count (if the for loop
     never broke). If this is the case, then we should set VTK_File_Number[i]
     to zero. */
-    if(j == VTK_File::Name_List.Node_Count())
-        VTK_File_Numbers[i] = 0;
+    if(j == VTK_File::Name_List.Node_Count()) {
+      VTK_File_Numbers[i] = 0;
+    } // if(j == VTK_File::Name_List.Node_Count()) {
 
 
     // Now, get the ith particle's array Force file number
-    for(j = 0; j < Particle_Debugger::Name_List.Node_Count(); j++)
-      if(Particle_Debugger::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
-        Force_File_Numbers[i] = Particle_Debugger::File_Number_List[j];
-        break;
-      } // if(Particle_Debugger::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
-
-    /* Now we need to check if the ith particle array is not in the list. This
-    would happen if j == Particle_Debugger::Name_List.Node_Count (if the for loop
-    never broke). If this is the case, then we should set Force_File_Number[i]
-    to zero. */
-    if(j == Particle_Debugger::Name_List.Node_Count())
-        Force_File_Numbers[i] = 0;
+    for(j = 0; j < Num_Arrays; j++) {
+      Force_File_Numbers[j] = Arrays[j].Times_Printed_Particle_Forces;
+    } // for(j = 0; j < Num_Arrays; j++) {
   } // for(i = 0;  i < Num_Arrays; i++) {
 
   // Open a new file. This file will store the number of Bodys as
@@ -145,8 +138,9 @@ void Data_Dump::Save_Body(const Body & Body_In) {
   //fprintf(File,   "Z Side Length:                %u\n\n",  Simulation::Z_SIDE_LENGTH);
 
   // Now let's print all particle data to the file
-  for(unsigned i = 0; i < Num_Particles; i++)
-    Save_Particle(Body_In[i], File, Body_In.Get_Cuboid());
+  for(unsigned i = 0; i < Num_Particles; i++) {
+    Save_Particle(Body_In[i], File);
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   // We've now written the 'Particle_Data' file, we can close it.
   fclose(File);
@@ -154,7 +148,7 @@ void Data_Dump::Save_Body(const Body & Body_In) {
 
 
 
-void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_Cuboid) {
+void Data_Dump::Save_Particle(const Particle & P_In, FILE * File) {
   /* This function prints all the information that is needed to re-create the
   input particle. Notably, this means that we do NOT need to print the first
   Piola Kirchoff stress tensor (P), the deformation gradient (F), any of the
@@ -211,7 +205,7 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_
     fprintf(File,"%d ",P_In.Get_Neighbor_IDs(i));
 
   fprintf(File,"\n\n");
-} // void Data_Dump::Save_Particle(const Particle & P_In, FILE * File, const bool Is_Cuboid) {
+} // void Data_Dump::Save_Particle(const Particle & P_In, FILE * File) {
 
 
 
@@ -278,9 +272,7 @@ int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
 
     // Now read in number of particles and use if this Body is not a cuboid
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
-    if(Is_Cuboid == false) {
-      (*Array_Ptr)[i].Set_Num_Particles(uBuf);
-    } // if(Is_Cuboid == false) {
+    if(Is_Cuboid == false) { (*Array_Ptr)[i].Set_Num_Particles(uBuf); }
 
     // Finally read in File number information
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
@@ -288,17 +280,15 @@ int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
     VTK_File::File_Number_List.Add_Back(uBuf);
 
     fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
-    Particle_Debugger::Name_List.Add_Back((*Array_Ptr)[i].Get_Name());
-    Particle_Debugger::File_Number_List.Add_Back(uBuf);
+    (*Array_Ptr)[i].Times_Printed_Particle_Forces = uBuf;
   } // for(unsigned i = 0; i < Num_Arrays; i++) {
 
   // pass the newly created particle arrays to the 'load particle array' function
-  for(unsigned i = 0; i < Num_Arrays; i++)
-    Load_Body((*Array_Ptr)[i]);
+  for(unsigned i = 0; i < Num_Arrays; i++) { Load_Body((*Array_Ptr)[i]); }
 
   fclose(File);
   return 0;
-} // int Data_Dump::Load_Saved_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
+} // int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
 
 
 
@@ -385,16 +375,14 @@ int Data_Dump::Load_Body(Body & Body_In) {
   //////////////////////////////////////////////////////////////////////////////
   // Read in Particle properties.
 
-  // Set first time step flag to false
-  Body_In.First_Time_Step == false;
-
   // Now read in number of particles
   fgets(Buf, 99, File);                          // Skip 'Particles' line.
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
 
   // Now read in particles.
-  for(unsigned i = 0; i < Num_Particles; i++)
-    Load_Particle(Body_In[i], File, Body_In.Get_Cuboid());
+  for(unsigned i = 0; i < Num_Particles; i++) {
+    Load_Particle(Body_In[i], File);
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Now recreate each Particle's neighbor arrays.
@@ -452,7 +440,7 @@ int Data_Dump::Load_Body(Body & Body_In) {
 
 
 
-void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid) {
+void Data_Dump::Load_Particle(Particle & P_In, FILE * File) {
   /* This function reads in the particle data for a specific particle. This
   data is transfered from the File to P_In. */
 
@@ -460,10 +448,6 @@ void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid
 
   // First, read in the particle's ID and dimensions
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &P_In.ID);
-
-  if(Is_Cuboid == true) {
-    fread(Buf, 1, 30, File); fscanf(File, " %u %u %u\n", &P_In.i, &P_In.j, &P_In.k);
-  }
 
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Mass);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Vol);
@@ -500,8 +484,7 @@ void Data_Dump::Load_Particle(Particle & P_In, FILE * File, const bool Is_Cuboid
   // Now read in neighbor IDs. Before we can do that, however, we need to move
   // the file pointer ahead, past 'Neighbor IDs: '
   fread(Buf, 1, 30, File);
-  for(unsigned i = 0; i < P_In.Num_Neighbors; i++)
+  for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
     fscanf(File, " %u", &P_In.Neighbor_IDs[i]);
-} // void Data_Dump::Load_Particle(Particle & P_In, const FILE * File, const bool Is_Cuboid) {
-
-#endif
+  } // for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
+} // void Data_Dump::Load_Particle(Particle & P_In, FILE * File) {

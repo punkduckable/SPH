@@ -1,19 +1,89 @@
-#if !defined(SIMULATION_SOURCE)
-#define SIMULATION_SOURCE
-
 #include "Simulation.h"
+#include "Body/Body.h"
+#include "Particle/Particle.h"
+#include "Tensor/Tensor.h"
+#include "Vector/Vector.h"
+#include "IO/VTK_File.h"
+#include "IO/Data_Dump.h"
+#include "IO/FEB_File.h"
 #if defined(_OPENMP)
   #include <omp.h>
 #endif
 
-void Simulation::Set_Body_Members(Body & Particles) {
+namespace Simulation {
+    // Body properties
+    unsigned Num_Arrays;                           // Number of bodies in simulation
+    std::string * Names;                           // The names of each body (name must match File name if reading from FEB file)
+    bool * Is_Cuboid;                              // Which bodies are cuboids
+    bool * Is_Boundary;                            // Which bodies are boundaries (can be from FEB file or cuboid)
+    bool * Is_Damagable;                           // Which bodies can be damaged
+    bool * From_FEB_File;                          // Which bodies will be read from file
+    unsigned * Steps_Per_Update;                   // How many time steps pass between updating this Body's P-K tensor
+    double * IPS;                                  // Inter particle spacing in mm.
+    Vector * Dimensions;                           // Dimensions of cuboids (only applicable for cuboids)
+    Vector * Offset;                               // Poisition offset (only applicable for cuboids)
+    Vector * Initial_Velocity;                     // Initial velocity condition
+    double * Num_Particles;                        // The number of particles in each body
+    Materials::Material * Materials;               // Each bodies material
+} // namespace Simulation {
+
+
+
+void Simulation::Use_Arrays_From_Code(void) {
+  Num_Arrays                                   = 2;
+
+  Names = new std::string[Num_Arrays];
+  Is_Cuboid = new bool[Num_Arrays];
+  Is_Boundary = new bool[Num_Arrays];
+  Is_Damagable = new bool[Num_Arrays];
+  From_FEB_File = new bool[Num_Arrays];
+  Steps_Per_Update = new unsigned[Num_Arrays];
+  IPS = new double[Num_Arrays];
+  Dimensions = new Vector[Num_Arrays];
+  Offset = new Vector[Num_Arrays];
+  Initial_Velocity = new Vector[Num_Arrays];
+  Num_Particles = new double[Num_Arrays];
+  Materials = new Materials::Material[Num_Arrays];
+
+  Names[0]                                     = "Body";
+  Is_Cuboid[0]                                 = true;
+  Is_Boundary[0]                               = false;
+  Is_Damagable[0]                              = true;
+  From_FEB_File[0]                             = false;
+  Steps_Per_Update[0]                          = 100;
+  IPS[0]                                       = 1;
+  Dimensions[0]                                = {20, 10, 20};
+  Offset[0]                                    = {0, 0, 0};
+  Initial_Velocity[0]                          = {0, 0, 0};
+  Materials[0]                                 = Materials::Default;
+
+  Names[1]                                     = "Needle";
+  Is_Cuboid[1]                                 = true;
+  Is_Boundary[1]                               = false;
+  Is_Damagable[1]                              = false;
+  From_FEB_File[1]                             = false;
+  Steps_Per_Update[1]                          = 1;
+  IPS[1]                                       = 1;
+  Dimensions[1]                                = {4, 10, 4};
+  Offset[1]                                    = {10-2, 11, 10-2};
+  Initial_Velocity[1]                          = {0, -50, 0};
+  Materials[1]                                 = Materials::Stainless_Steel;
+} // void Simulation::Use_Arrays_From_Code(void) {
+
+
+
+
+
+void Simulation::Set_Body_Members(Body & Body_In) {
   unsigned Support_Radius = 3;                           // Support radius in units of Inter Particle spacings
 
-  Particles.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
-  Particles.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
-  Particles.Set_alpha(.75);                              // Hg control parameter       : Unitless
-  Particles.Set_Tau(.15);                                // Damage rate parameter      : unitless
-} // void Simulation::Set_Body_Members(Body & Particles) {
+  Body_In.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
+  Body_In.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
+  Body_In.Set_alpha(.75);                              // Hg control parameter       : Unitless
+  Body_In.Set_Tau(.15);                                // Damage rate parameter      : unitless
+} // void Simulation::Set_Body_Members(Body & Body_In) {
+
+
 
 
 void Simulation::Run_Simulation(void) {
@@ -594,5 +664,3 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
     printf("Done!\n");
   } // if(FEB_Body.Get_Boundary() == false) {
 } // void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
-
-#endif

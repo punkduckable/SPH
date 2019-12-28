@@ -1,4 +1,7 @@
 #include "Body.h"
+#include "Simulation/Simulation.h"
+#include "Particle/Particle.h"
+#include "Vector/Vector.h"
 
 void Body::Contact(Body & Body_A, Body & Body_B) {
   // Get paramaters from Body_A, Body_B

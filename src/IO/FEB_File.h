@@ -1,6 +1,9 @@
 #if !defined(FEB_HEADER)
 #define FEB_HEADER
 
+#include "Classes.h"
+#include <string>
+
 namespace FEB_File {
   using std::string;
 

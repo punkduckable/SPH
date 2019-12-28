@@ -2,13 +2,10 @@
 #define PARTICLE_HEADER
 
 #include "Classes.h"
-#include "Namespaces.h"
-#include "Body/Body.h"
-#include "IO/Data_Dump.h"
-#include "Simulation/Simulation.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
-#include "Errors.h"
+#include "Simulation/Simulation.h"
+#include "IO/Data_Dump.h"
 
 class Particle {
   friend Body;
@@ -133,8 +130,7 @@ class Particle {
   friend void Simulation::Run_Simulation(void);
   friend int Data_Dump::Load_Body(Body & Body_In);
   friend void Data_Dump::Load_Particle(Particle & P_In,
-                                       FILE * File,
-                                       const bool Is_Cuboid);
+                                       FILE * File);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

@@ -16,8 +16,11 @@ OBJS :=            Main.o \
 									 Neighbors.o \
 									 Update.o \
 									 Damage.o \
-									 Contact.o #\
-									 #Simulation.o
+									 Contact.o \
+									 Simulation.o \
+									 VTK_File.o \
+									 Data_Dump.o \
+									 FEB_File.o
 
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 
@@ -35,6 +38,7 @@ VPATH :=     ./bin ./obj \
 	           ./src \
              ./src/Vector ./src/Tensor \
 						 ./src/Particle ./src/Body \
+						 ./src/IO \
 						 ./src/Simulation \
 						 ./test
 
@@ -85,13 +89,13 @@ obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
 
 
 # Particle Class
-obj/Particle.o: Particle.cc Particle.h Vector.h Tensor.h Errors.h Body.h
+obj/Particle.o: Particle.cc Particle.h Simulation.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 
 # Body class
-obj/Body.o: Body.cc Body.h Vector.h Tensor.h Errors.h Body.h
+obj/Body.o: Body.cc Body.h Simulation.h Vector.h Tensor.h Errors.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Neighbors.o: Neighbors.cc obj/Body.o
@@ -109,13 +113,19 @@ obj/Contact.o: Contact.cc obj/Body.o
 
 
 # Simulation
-obj/Simulation.o: Simulation.cc Simulation.h Vector.h Tensor.h Particle.h Body.h
+obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Tensor.h Vector.h VTK_File.h Data_Dump.h FEB_File.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 
-# Data dump
-obj/Data_Dump.o: Data_Dump.cc Data_Dump.h
+# IO
+obj/Data_Dump.o: Data_Dump.cc Data_Dump.h VTK_File.h Particle.h Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/VTK_File.o: VTK_File.cc VTK_File.h Data_Dump.h Particle.h Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/FEB_File.o: FEB_File.cc FEB_File.h Particle.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 

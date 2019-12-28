@@ -1,6 +1,7 @@
 #if !defined(DATA_DUMP_HEADER)
 #define DATA_DUMP_HEADER
 
+#include "Classes.h"
 #include <stdio.h>
 
 namespace Data_Dump {
@@ -10,8 +11,7 @@ namespace Data_Dump {
   void Save_Body(const Body & Body_In);
 
   void Save_Particle(const Particle & P_In,
-                     FILE * File,
-                     const bool Is_Cuboid);
+                     FILE * File);
 
   int Load_Simulation(Body ** Array_Ptr,
                       unsigned & Num_Bodies);
@@ -19,8 +19,7 @@ namespace Data_Dump {
   int Load_Body(Body & Body_In);
 
   void Load_Particle(Particle & P_In,
-                     FILE * File,
-                     const bool Is_Cuboid);
+                     FILE * File);
 } // namespace Data_Dump {
 
 #endif

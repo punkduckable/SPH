@@ -13,8 +13,6 @@ Vector objects, V[3] denotes a vector stored as an array, and c denotes a scalar
 constant. */
 
 #include "Classes.h"
-#include "Tensor/Tensor.h"
-#include "Errors.h"
 
 /* Smallest allowed difference for equality
 Getting exact equality (even when you should) is difficult with floating point

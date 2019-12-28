@@ -1,16 +1,12 @@
-#if !defined BODY_HEADER
+#if !defined(BODY_HEADER)
 #define BODY_HEADER
 
 #define DAMAGE_MONITOR
 
-#inclue "Simulation/Simulation.h"
-#include "Particle/Particle.h"
-#include "Vector/Vector.h"
-#include "IO/Data_Dump.h"
 #include "Materials.h"
-#include "List.h"
+#include "Classes.h"
+#include "IO/Data_Dump.h"
 #include <string>
-#include <assert.h>
 
 #if !defined(PI)
   #define PI 3.1415926535897932384626
@@ -211,7 +207,10 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Friends
-    friend int Data_Dump::Load_Body(Body & Body_In);
+    friend void Data_Dump::Save_Simulation(const Body * Arrays,
+                                           const unsigned Num_Arrays);
+    friend int Data_Dump::Load_Simulation(Body ** Array_Ptr,
+                                          unsigned & Num_Bodies);
 }; // class Body {
 
 #endif

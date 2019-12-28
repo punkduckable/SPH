@@ -1,9 +1,10 @@
+#include "Tensor.h"
+#include "Vector/Vector.h"
+#include "Errors.h"
+#include "Quick_Math.h"
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
-#include "Tensor.h"
-#include "Quick_Math.h"
-
 
 /* In this file, I define methods for tensor objects. It should be noted that
 tensor data is stored in a 9 element array rather than a 3x3 matrix. This is

@@ -1,7 +1,9 @@
+#include "Vector.h"
+#include "Tensor/Tensor.h"
+#include "Errors.h"
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
-#include "Vector.h"
 
 /* File description:
 

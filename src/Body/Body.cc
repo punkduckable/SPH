@@ -1,4 +1,7 @@
 #include "Body.h"
+#include "Particle/Particle.h"
+#include "Vector/Vector.h"
+#include <assert.h>
 #include <math.h>
 
 // Set K (static member of Body class)
@@ -47,6 +50,10 @@ Body::Body(const unsigned Num_Particles_In) {
 
   (*this).Particles_Set_Up = true;
 } // Body::Body(const unsigned Num_Particles_In) {
+
+
+
+Body::~Body(void) { }
 
 
 

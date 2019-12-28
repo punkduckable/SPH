@@ -1,8 +1,15 @@
-#if !defined(VTK_FILE_SOURCE)
-#define VTK_FILE_SOURCE
-
 #include "VTK_File.h"
-#include "Particle.h"
+#include "Body/Body.h"
+#include "Particle/Particle.h"
+#include <cstring>
+#include <stdio.h>
+
+namespace VTK_File {
+  List<std::string> Name_List{};
+  List<unsigned> File_Number_List{};
+} // namespace VTK_File {
+
+
 
 std::string VTK_File::Get_File_Name(const std::string & Str) {
   // First, figure out if we've seen this string before. if so, then it'll be
@@ -51,11 +58,11 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Part
     fprintf(File,"\t %8.3f\n",Data[i]);
 }
 
-void VTK_File::Export_Particle_Positions(const Body & Particles) {
-  const unsigned Num_Particles = Particles.Get_Num_Particles();
+void VTK_File::Export_Particle_Positions(const Body & Body_In) {
+  const unsigned Num_Particles = Body_In.Get_Num_Particles();
 
   // Set up file
-  std::string File_Name = Get_File_Name(Particles.Get_Name());
+  std::string File_Name = Get_File_Name(Body_In.Get_Name());
 
   std::string File_Path = "../Files/Position_Files/";
   File_Path += File_Name;
@@ -74,7 +81,7 @@ void VTK_File::Export_Particle_Positions(const Body & Particles) {
   // Cycle through particles, print spacial positions of each particle
   Vector x;
   for(unsigned i = 0; i < Num_Particles; i++) {
-    x = Particles[i].Get_x();
+    x = Body_In[i].Get_x();
 
     fprintf(File,"%8.3f \t %8.3f \t %8.3f\n",x[0], x[1], x[2]);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
@@ -134,14 +141,14 @@ void VTK_File::Export_Particle_Positions(const Body & Particles) {
            0,0,1};
 
   for(unsigned i = 0; i < Num_Particles; i++) {
-    LamM[i] = Particles[i].Get_Stretch_M();
-    //LamH[i] = Particles[i].Get_Stretch_H();
-    //LamC[i] = Particles[i].Get_Stretch_Critical();
-    D[i] = Particles[i].Get_D();
+    LamM[i] = Body_In[i].Get_Stretch_M();
+    //LamH[i] = Body_In[i].Get_Stretch_H();
+    //LamC[i] = Body_In[i].Get_Stretch_Critical();
+    D[i] = Body_In[i].Get_D();
 
     // Get F, P from current particle
-    //F = Particles[i].Get_F();
-    //P = Particles[i].Get_P();
+    //F = Body_In[i].Get_F();
+    //P = Body_In[i].Get_P();
 
     // Use F to calculate determinant (J)
     //J[i] = Determinant(F);
@@ -259,6 +266,4 @@ void VTK_File::Export_Particle_Positions(const Body & Particles) {
 
   // Free the file
   fclose(File);
-} // void VTK_File::Export_Particle_Positions(const Body & Particles) {
-
-#endif
+} // void VTK_File::Export_Particle_Positions(const Body & Body_In) {

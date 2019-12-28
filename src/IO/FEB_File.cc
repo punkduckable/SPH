@@ -1,7 +1,5 @@
-#if !defined(FEB_SOURCE)
-#define FEB_SOURCE
-
 #include "FEB_File.h"
+#include "Vector/Vector.h"
 
 int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
   // First, we need to get the path to the Febio file. Now we can open the file
@@ -114,5 +112,3 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
 
   return 0;
 } // int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
-
-#endif

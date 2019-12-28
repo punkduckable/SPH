@@ -1,4 +1,7 @@
 #include "Body.h"
+#include "Particle/Particle.h"
+#include "Vector/Vector.h"
+#include "List.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods

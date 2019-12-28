@@ -1,4 +1,8 @@
 #include "Body.h"
+#include "Simulation/Simulation.h"
+#include "Particle/Particle.h"
+#include "Vector/Vector.h"
+#include "List.h"
 #include <math.h>
 
 ////////////////////////////////////////////////////////////////////////////////
