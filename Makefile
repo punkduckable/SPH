@@ -18,6 +18,7 @@ OBJS :=            Main.o \
 									 Damage.o \
 									 Contact.o \
 									 Simulation.o \
+									 Simulation_Setup.o \
 									 VTK_File.o \
 									 Data_Dump.o \
 									 FEB_File.o
@@ -113,7 +114,10 @@ obj/Contact.o: Contact.cc obj/Body.o
 
 
 # Simulation
-obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Tensor.h Vector.h VTK_File.h Data_Dump.h FEB_File.h
+obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Tensor.h Vector.h VTK_File.h Data_Dump.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h  Particle.h Vector.h FEB_File.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
