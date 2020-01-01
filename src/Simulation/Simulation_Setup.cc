@@ -12,7 +12,7 @@
 
 // Body properties
 namespace Simulation {
-  unsigned Num_Arrays = 0;                       // Number of bodies in simulation
+  unsigned Num_Bodies = 0;                       // Number of bodies in simulation
   std::string * Names = nullptr;                 // The names of each body (name must match File name if reading from FEB file)
   bool * Is_Cuboid = nullptr;                    // Which bodies are cuboids
   bool * Is_Boundary = nullptr;                  // Which bodies are boundaries (can be from FEB file or cuboid)
@@ -26,7 +26,7 @@ namespace Simulation {
   double * Num_Particles = nullptr;              // The number of particles in each body
   Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
 } // namespace Simulation {
-  
+
 
 
 
@@ -35,20 +35,20 @@ namespace Simulation {
 // Simulation set up
 
 void Simulation::Body_Needle_Set_Up(void) {
-  Num_Arrays                                   = 2;
+  Num_Bodies                                   = 2;
 
-  Names = new std::string[Num_Arrays];
-  Is_Cuboid = new bool[Num_Arrays];
-  Is_Boundary = new bool[Num_Arrays];
-  Is_Damagable = new bool[Num_Arrays];
-  From_FEB_File = new bool[Num_Arrays];
-  Steps_Per_Update = new unsigned[Num_Arrays];
-  IPS = new double[Num_Arrays];
-  Dimensions = new Vector[Num_Arrays];
-  Offset = new Vector[Num_Arrays];
-  Initial_Velocity = new Vector[Num_Arrays];
-  Num_Particles = new double[Num_Arrays];
-  Simulation_Materials = new Materials::Material[Num_Arrays];
+  Names = new std::string[Num_Bodies];
+  Is_Cuboid = new bool[Num_Bodies];
+  Is_Boundary = new bool[Num_Bodies];
+  Is_Damagable = new bool[Num_Bodies];
+  From_FEB_File = new bool[Num_Bodies];
+  Steps_Per_Update = new unsigned[Num_Bodies];
+  IPS = new double[Num_Bodies];
+  Dimensions = new Vector[Num_Bodies];
+  Offset = new Vector[Num_Bodies];
+  Initial_Velocity = new Vector[Num_Bodies];
+  Num_Particles = new double[Num_Bodies];
+  Simulation_Materials = new Materials::Material[Num_Bodies];
 
   Names[0]                                     = "Body";
   Is_Cuboid[0]                                 = true;

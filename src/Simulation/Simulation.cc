@@ -37,14 +37,16 @@ void Simulation::Run_Simulation(void) {
   #endif
 
   // Set up Bodys.
-  Body * Arrays;                                           // Will point to the Particle Array's for this simulation
-  unsigned * Time_Step_Index;                                    // Time step counters for each particle array
+  Body * Bodies;                                 // Will point to the Bodies's for this simulation
+  unsigned * Time_Step_Index;                    // Time step counters for each body
+
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
 
   //Display that the simulation has begun
-  printf(         "\nRunning a simulation...\n");
+  printf(         "\nRunning a Simulation...\n");
   printf(         "Load_Data_From_File =         %u\n",    Load_Data_From_File);
   printf(         "Save_Data_To_File =           %u\n",    Save_Data_To_File);
   printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
@@ -65,14 +67,15 @@ void Simulation::Run_Simulation(void) {
       timer1 = clock();
     #endif
 
-    // If loading an existing simulation, read in Particle arrays from file
+    // If loading an existing simulation, read in bodies from file
     printf(       "\nLoading from file....");
-    Data_Dump::Load_Simulation(&Arrays, Num_Arrays);
+    Data_Dump::Load_Simulation(&Bodies, Num_Bodies);
 
     // Now set up the time step counters
-    Time_Step_Index = new unsigned[Num_Arrays];
-    for(i = 0; i < Num_Arrays; i++)
+    Time_Step_Index = new unsigned[Num_Bodies];
+    for(i = 0; i < Num_Bodies; i++) {
       Time_Step_Index[i] = 0;
+    } // for(i = 0; i < Num_Bodies; i++) {
 
 
     #if defined(_OPENMP)
@@ -86,31 +89,30 @@ void Simulation::Run_Simulation(void) {
   } //   if(Load_Data_From_File == 1) {
 
   else if(Load_Data_From_File == 0) {
-    // Use arrays defined in Simulation.h
+    // Use Bodies defined in Simulation.h
     Body_Needle_Set_Up();
 
     // First, allocate the array of Bodys, time step counters
-    Arrays = new Body[Num_Arrays];
-    Time_Step_Index = new unsigned[Num_Arrays];
-    for(i = 0; i < Num_Arrays; i++)
-      Time_Step_Index[i] = 0;
+    Bodies = new Body[Num_Bodies];
+    Time_Step_Index = new unsigned[Num_Bodies];
+    for(i = 0; i < Num_Bodies; i++) {  Time_Step_Index[i] = 0; }
 
-    // Now set up each array using the paramaters in Simulation.h
-    for(m = 0; m < Num_Arrays; m++) {
-      // Set Partilce Array's name
-      Arrays[m].Set_Name(Names[m]);
+    // Now set up each body using the paramaters in Simulation.h
+    for(m = 0; m < Num_Bodies; m++) {
+      // Set Partilce Body's name
+      Bodies[m].Set_Name(Names[m]);
 
       // Set inter particle spacing
-      Arrays[m].Set_Inter_Particle_Spacing(IPS[m]);
+      Bodies[m].Set_Inter_Particle_Spacing(IPS[m]);
 
       // Now set the ith Body's material
-      Arrays[m].Set_Material(Simulation_Materials[m]);
+      Bodies[m].Set_Material(Simulation_Materials[m]);
 
       // Now set wheather or not the ith Body is damagable
-      Arrays[m].Set_Damageable(Is_Damagable[m]);
+      Bodies[m].Set_Damageable(Is_Damagable[m]);
 
       // Now set other Body members.
-      Set_Body_Members(Arrays[m]);
+      Set_Body_Members(Bodies[m]);
 
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
@@ -134,26 +136,31 @@ void Simulation::Run_Simulation(void) {
       /* If the body is a boundary, we need to designate it as such.
       note: this applies if the body is a cuboid, or from FEB file... anything
       can be a boundary! */
-      if(Is_Boundary[m] == true)
-        Arrays[m].Set_Boundary(true);
+      if(Is_Boundary[m] == true) {
+        Bodies[m].Set_Boundary(true);
+      } // if(Is_Boundary[m] == true) {
 
       // Set up body as a cuboid if it is a cuboid
       if(Is_Cuboid[m] == true) {
-        Arrays[m].Set_Cuboid_Dimensions(Dimensions[m]);
-        Setup_Cuboid(Arrays[m], m);
+        Bodies[m].Set_Cuboid_Dimensions(Dimensions[m]);
+        Setup_Cuboid(Bodies[m], m);
       } // if(Is_Cuboid[m] == true) {
 
       // if the body is from file, read it in
-      else if(From_FEB_File[m] == true)
-        Setup_FEB_Body(Arrays[m], m);
+      else if(From_FEB_File[m] == true) {
+        Setup_FEB_Body(Bodies[m], m);
+      } // else if(From_FEB_File[m] == true) {
 
-    } // for(m = 0; m < Num_Arrays; m++) {
+    } // for(m = 0; m < Num_Bodies; m++) {
   } // else if(Load_Data_From_File == 0) {
 
-  // Now that the particle array is loaded, print paramaters.
+  // Now that the body is loaded, print paramaters.
   printf(         "\nRuinning with the following paramaters....\n");
-  for(m = 0; m < Num_Arrays; m++)
-    Arrays[m].Print_Parameters();
+  for(m = 0; m < Num_Bodies; m++) {
+    Bodies[m].Print_Parameters();
+  } // for(m = 0; m < Num_Bodies; m++) {
+
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
@@ -172,21 +179,25 @@ void Simulation::Run_Simulation(void) {
   // If we are starting a new simulation (not reading one from file) then print
   // initial configuration
   if(Load_Data_From_File == false) {
-    for(m = 0; m < Num_Arrays; m++)
-      VTK_File::Export_Particle_Positions(Arrays[m]);
+    for(m = 0; m < Num_Bodies; m++) {
+      VTK_File::Export_Particle_Positions(Bodies[m]);
+    } // for(m = 0; m < Num_Bodies; m++) {
 
-    if(Print_Forces == true)
-      for(m = 0; m < Num_Arrays; m++)
-        Arrays[m].Print_Particle_Forces();
+    if(Print_Forces == true) {
+      for(m = 0; m < Num_Bodies; m++) {
+        Bodies[m].Print_Particle_Forces();
+      } // for(m = 0; m < Num_Bodies; m++) {
+    } // if(Print_Forces == true) {
   } // if(Load_Data_From_File == false) {
 
   // time step loop.
-  #pragma omp parallel default(shared) private(i, j, k, l, m) firstprivate(Num_Arrays, Num_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) private(i, j, k, l, m) firstprivate(Num_Bodies, Num_Steps, dt, TimeSteps_Between_Prints)
   {
   for(l = 0; l < Num_Steps; l++) {
+
     ////////////////////////////////////////////////////////////////////////////
     // Apply Boundary conditions
-    // Note: we only apply BC's to 0th array.
+    // Note: we only apply BC's to 0th body.
 
     #pragma omp single nowait
     {
@@ -198,7 +209,8 @@ void Simulation::Run_Simulation(void) {
     } // #pragma omp single nowait
 
     #pragma omp single
-    for(m = 0; m < Num_Arrays; m++) {
+    {
+    for(m = 0; m < Num_Bodies; m++) {
       if(m == 0 && Time_Step_Index[0] == 0) {
         ////////////////////////////////////////////////////////////////////////
         /* Boundary conditions
@@ -221,65 +233,73 @@ void Simulation::Run_Simulation(void) {
         to the 'Left' and 'Right' faces point in the -Z and +Z directions
         respectivly. */
 
-        // Establish side lengths (we assume Array[m] is a cuboid)
-        unsigned X_SIDE_LENGTH = Arrays[m].Get_X_SIDE_LENGTH();
-        unsigned Y_SIDE_LENGTH = Arrays[m].Get_Y_SIDE_LENGTH();
-        unsigned Z_SIDE_LENGTH = Arrays[m].Get_Z_SIDE_LENGTH();
+        // Establish side lengths (we assume Bodies[m] is a cuboid)
+        unsigned X_SIDE_LENGTH = Bodies[m].Get_X_SIDE_LENGTH();
+        unsigned Y_SIDE_LENGTH = Bodies[m].Get_Y_SIDE_LENGTH();
+        unsigned Z_SIDE_LENGTH = Bodies[m].Get_Z_SIDE_LENGTH();
 
         // Front face (i = 0)
         i = 0;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
-          }}
+            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+          }
+        }
 
         // Back face (i = X_SIDE_LENGTH-1)
         i = X_SIDE_LENGTH-1;
         for(j = 0; j < Y_SIDE_LENGTH; j++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
-          }}
+            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+          }
+        }
 
         // Bottom face (j = 0)
         j = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
-          }}
+            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
+            //(Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
+          }
+        }
 
         // Top face (j = y_Side_len-1)
         j = Y_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            //(Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
-          }}
+            //(Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
+          }
+        }
 
         // Left face (k = 0)
         k = 0;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
-          }}
+            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+          }
+        }
 
         // Right face (k = Z_SIDE_LENGTH-1)
         k = Z_SIDE_LENGTH-1;
         for(i = 0; i < X_SIDE_LENGTH; i++) {
           for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Arrays[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
-          }}
+            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+          }
+        }
 
       } // if(m == 0)
 
       // Needle BC's
       else if(m == 1) {
-        unsigned Array_m_Num_Particles = (Arrays[m]).Get_Num_Particles();
-        for(i = 0; i < Array_m_Num_Particles; i++)
-          if((Arrays[m])[i].Get_X()[1] > 17.)    // if y component is above threshold, press it.
-            (Arrays[m])[i].V = {0, -50, 0};
+        unsigned Array_m_Num_Particles = (Bodies[m]).Get_Num_Particles();
+        for(i = 0; i < Array_m_Num_Particles; i++) {
+          if((Bodies[m])[i].Get_X()[1] > 17.) {    // if y component is above threshold, press it.
+            (Bodies[m])[i].V = {0, -50, 0};
+          } // if((Bodies[m])[i].Get_X()[1] > 17.) {
+        } // for(i = 0; i < Array_m_Num_Particles; i++) {
       } // else if(m == 1) {
-
-    } // for(m = 0; m < Num_Arrays; m++)
+    } // for(m = 0; m < Num_Bodies; m++)
+    } // #pragma omp single
 
     #pragma omp single nowait
     {
@@ -289,6 +309,7 @@ void Simulation::Run_Simulation(void) {
         update_BC_timer += clock() - timer2;
       #endif
     } // #pragma omp single nowait
+
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -303,20 +324,23 @@ void Simulation::Run_Simulation(void) {
       #endif
     } // #pragma omp single nowait
 
-    for(m = 0; m < Num_Arrays; m++) {
+    for(m = 0; m < Num_Bodies; m++) {
       // Note: We don't update P for Bodys that are boundaries
-      if(Arrays[m].Get_Boundary() == true)
-        continue;
-      else
+      if(Bodies[m].Get_Boundary() == true) { continue; }
+
+      else {
         /* Update each Particles's P tensor.
-        We only update P when the mth Body's counter is zero. Note
-        That the Update_P method has an orphaned for loop (and takes care of
+        We only update P when the mth Body's counter is zero.
+
+        Note: the Update_P method has an orphaned for loop (and takes care of
         removing damaged particles in parallel, damaged particles are not
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
-        if(Time_Step_Index[m] == 0)
-          Arrays[m].Update_P(Steps_Per_Update[m]*dt);
-    } // for(m = 0; m < Num_Arrays; m++) {
+        if(Time_Step_Index[m] == 0) {
+          Bodies[m].Update_P(Steps_Per_Update[m]*dt);
+        } // if(Time_Step_Index[m] == 0) {
+      } // else
+    } // for(m = 0; m < Num_Bodies; m++) {
 
     #pragma omp single nowait
     {
@@ -332,11 +356,11 @@ void Simulation::Run_Simulation(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Contact
     /* Here we enable particle-particle contact. To do this, we cycle through
-    each Body. For the mth array, we check if any of its particles are
-    in contact with any of the partilces in the ith array for i > m. We only
+    each Body. For the mth body, we check if any of its particles are
+    in contact with any of the partilces in the ith body for i > m. We only
     use i > m so that we only run the contact algorythm on each part of
     Bodys once. Further, we only calculate the contact forces for the
-    mth Body if that partilce_array is being updated this time step. */
+    mth Body if that body is being updated this time step. */
 
     #pragma omp single nowait
     {
@@ -348,27 +372,30 @@ void Simulation::Run_Simulation(void) {
     } // #pragma omp single nowait
 
     /* First, we need to set each particle's contact force to zero. It should be
-    noted that we only do this for a particular Body if that array
+    noted that we only do this for a particular Body if that body
     is updating it's position this turn. Otherwise, since the force won't be
     used for anything, there's no reason to waste CPU cycles setting that
-    array's particle's contact forces to zero. */
-    for(m = 0; m < Num_Arrays; m++) {
-      unsigned Num_Particles = (Arrays[m]).Get_Num_Particles();
+    bodies's particle's contact forces to zero. */
+    for(m = 0; m < Num_Bodies; m++) {
+      unsigned Num_Particles = (Bodies[m]).Get_Num_Particles();
 
-      if(Time_Step_Index[m] == 0)
+      if(Time_Step_Index[m] == 0) {
         #pragma omp for
         for(i = 0; i < Num_Particles; i++) {
-          (Arrays[m])[i].Force_Contact = {0,0,0};
-          (Arrays[m])[i].Force_Friction = {0,0,0};
-        } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
-    } // for(m = 0; m < Num_Arrays; m++) {
+          (Bodies[m])[i].Force_Contact = {0,0,0};
+          (Bodies[m])[i].Force_Friction = {0,0,0};
+        } // for(i = 0; i < (Bodies[m]).Get_Num_Particles(); i++) {
+      } // if(Time_Step_Index[m] == 0) {
+    } // for(m = 0; m < Num_Bodies; m++) {
 
     /* Now we can apply the contact algorythm. Note that this must be applied
     every time step no matter what (so that bodies that update each step can
     are proprly updated/have the right forces applied each timestpe) */
-    for(m = 0; m < Num_Arrays; m++)
-      for(i = m + 1; i < Num_Arrays; i++)
-        Body::Contact(Arrays[i], Arrays[m]);
+    for(m = 0; m < Num_Bodies; m++) {
+      for(i = m + 1; i < Num_Bodies; i++) {
+        Body::Contact(Bodies[i], Bodies[m]);
+      } // for(i = m + 1; i < Num_Bodies; i++) {
+    } // for(m = 0; m < Num_Bodies; m++) {
 
     #pragma omp single nowait
     {
@@ -393,15 +420,15 @@ void Simulation::Run_Simulation(void) {
       #endif
     } // #pragma omp single nowait
 
-    for(m = 0; m < Num_Arrays; m++) {
+    for(m = 0; m < Num_Bodies; m++) {
       // Note: we don't update P for Bodys that are boundaries
-      if(Arrays[m].Get_Boundary() == true)
-        continue;
+      if(Bodies[m].Get_Boundary() == true) { continue; }
+
       else {
         /* We only want to update x (the traditional way) if we're on a timestep
-        where the mth Body gets updated. Suppose that the mth particle
-        array only updates once every k steps (meaning that Stpes_Between_Update[m] = k)
-        on the 0th step, the mth particle arrays's counter is zero. After
+        where the mth Body gets updated. Suppose that the mth body
+        only updates once every k steps (meaning that Stpes_Between_Update[m] = k)
+        on the 0th step, the mth Bodies's counter is zero. After
         each step it increments. On the kth step, its counter reaches k and the
         counter gets truncaed back to zero. Therefore, every k steps the mth
         Body's counter will be zero. Thus, we use a 0 counter
@@ -410,28 +437,27 @@ void Simulation::Run_Simulation(void) {
           /* First, update the 'F_Index' for the current Body. This
           controls which member of each particle's 'F' array is the 'newest'. */
           #pragma omp single
-            Arrays[m].Increment_F_Index();
+            Bodies[m].Increment_F_Index();
 
           // Now update the position of each particle in this body.
-          Arrays[m].Update_x(dt);
+          Bodies[m].Update_x(dt);
         } //         if(Time_Step_Index[m] == 0) {
         else {
           /* If we're not on an update step, then we'll let this body continue
           accelerating at whatever acceleration it attained after the last
           time step. */
-          unsigned Num_Particles = (Arrays[m]).Get_Num_Particles();
+          unsigned Num_Particles = (Bodies[m]).Get_Num_Particles();
 
           #pragma omp for
           for(i = 0; i < Num_Particles; i++) {
-            if((Arrays[m])[i].Get_D() >= 1)
-              continue;
+            if((Bodies[m])[i].Get_D() >= 1) { continue; }
 
-            (Arrays[m])[i].x += dt*(Arrays[m])[i].V;       // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
-            (Arrays[m])[i].V += dt*(Arrays[m])[i].a;      // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
-          } // for(i = 0; i < (Arrays[m]).Get_Num_Particles(); i++) {
+            (Bodies[m])[i].x += dt*(Bodies[m])[i].V;       // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
+            (Bodies[m])[i].V += dt*(Bodies[m])[i].a;       // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
+          } // for(i = 0; i < (Bodies[m]).Get_Num_Particles(); i++) {
         } // else {
       } // else {
-    } // for(m = 0; m < Num_Arrays; m++) {
+    } // for(m = 0; m < Num_Bodies; m++) {
 
     #pragma omp single nowait
     {
@@ -451,12 +477,12 @@ void Simulation::Run_Simulation(void) {
     counter to zero (reset the counter). */
 
     #pragma omp single
-    for(m = 0; m < Num_Arrays; m++) {
+    for(m = 0; m < Num_Bodies; m++) {
       Time_Step_Index[m]++;
 
       if(Time_Step_Index[m] == Steps_Per_Update[m])
         Time_Step_Index[m] = 0;
-    } // for(m = 0; m < Num_Arrays; m++) {
+    } // for(m = 0; m < Num_Bodies; m++) {
 
 
 
@@ -476,18 +502,20 @@ void Simulation::Run_Simulation(void) {
         printf(     "%d time steps complete\n",l+1);
 
       #pragma omp for nowait
-      for(m = 0; m < Num_Arrays; m++ )
-        VTK_File::Export_Particle_Positions(Arrays[m]);
+      for(m = 0; m < Num_Bodies; m++ ) {
+        VTK_File::Export_Particle_Positions(Bodies[m]);
+      } // for(m = 0; m < Num_Bodies; m++ ) {
 
       if(Print_Forces == true) {
         #pragma omp for nowait
-        for(m = 0; m < Num_Arrays; m++ )
-          Arrays[m].Print_Particle_Forces();
+        for(m = 0; m < Num_Bodies; m++ ) {
+          Bodies[m].Print_Particle_Forces();
+        } // for(m = 0; m < Num_Bodies; m++ ) {
       } // if(Print_Forces == true) {
 
       if(Print_Net_Force == true) {
         #pragma omp single nowait
-        Arrays[1].Print_Net_External_Force(l+1);
+        Bodies[1].Print_Net_External_Force(l+1);
       } // if(Print_Net_Force == true) {
     } // if((k+1)%100 == 0) {
 
@@ -509,8 +537,9 @@ void Simulation::Run_Simulation(void) {
   #endif
 
   // If saving is enabled, Dump particle data to file
-  if(Save_Data_To_File == 1)
-    Data_Dump::Save_Simulation(Arrays, Num_Arrays);
+  if(Save_Data_To_File == 1) {
+    Data_Dump::Save_Simulation(Bodies, Num_Bodies);
+  } // if(Save_Data_To_File == 1) {
 
   // Print timing data
   #if defined(_OPENMP)
@@ -544,5 +573,11 @@ void Simulation::Run_Simulation(void) {
     printf(         "%lu ms to print data to files\n", MS_Print);
   #endif
 
-  delete [] Arrays;
+  delete [] Bodies;
 } // void Simulation(void) {
+
+
+
+void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+  // Fill me in!
+} // void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
