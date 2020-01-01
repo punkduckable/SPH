@@ -17,20 +17,15 @@ void Simulation::Run_Simulation(void) {
   // Loop indicies
   unsigned i,j,k,l,m;
 
-  // Computation time measurement variables
-  #if defined(_OPENMP)
-    #define TIMER_TYPE double
-  #else
-    #define TIMER_TYPE clock_t
-  #endif
-
-  TIMER_TYPE timer1,
-             timer2,
-             update_BC_timer = 0,
-             update_P_timer = 0,
-             contact_timer = 0,
-             update_x_timer = 0,
-             Print_timer = 0;
+  // Simulation time measurement variables
+  TIME_TYPE time1,
+            time2,
+            simulation_time = 0,
+            update_BC_time = 0,
+            update_P_time = 0,
+            contact_time = 0,
+            update_x_time = 0,
+            Print_time = 0;
 
   Body * Bodies;                                 // Will point to the Bodies's for this simulation
   unsigned * Time_Step_Index;                    // Time step counters for each body
@@ -49,11 +44,7 @@ void Simulation::Run_Simulation(void) {
   printf(         "\nRunning %d time steps....\n",Num_Steps);
 
   // Cycle through time steps.
-  #if defined(_OPENMP)
-    timer1 = omp_get_wtime();
-  #else
-    timer1 = clock();
-  #endif
+  time1 = Get_Time();
 
   printf(         "0 time steps complete\n");
 
@@ -82,11 +73,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        timer2 = omp_get_wtime();
-      #else
-        timer2 = clock();
-      #endif
+      time2 = Get_Time();
     } // #pragma omp single nowait
 
     #pragma omp single
@@ -106,11 +93,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        update_BC_timer += omp_get_wtime() - timer2;
-      #else
-        update_BC_timer += clock() - timer2;
-      #endif
+      update_BC_time += Time_Since(time2);
     } // #pragma omp single nowait
 
 
@@ -120,11 +103,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        timer2 = omp_get_wtime();
-      #else
-        timer2 = clock();
-      #endif
+      time2 = Get_Time();
     } // #pragma omp single nowait
 
     for(m = 0; m < Num_Bodies; m++) {
@@ -147,11 +126,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        update_P_timer += omp_get_wtime() - timer2;
-      #else
-        update_P_timer += clock() - timer2;
-      #endif
+      update_P_time += Time_Since(time2);
     } // #pragma omp single nowait
 
 
@@ -167,11 +142,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        timer2 = omp_get_wtime();
-      #else
-        timer2 = clock();
-      #endif
+      time2 = Get_Time();
     } // #pragma omp single nowait
 
     /* First, we need to set each particle's contact force to zero. It should be
@@ -202,11 +173,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        contact_timer = omp_get_wtime() - timer2;
-      #else
-        contact_timer = clock() - timer2;
-      #endif
+      contact_time += Time_Since(time2);
     } // #pragma omp single nowait
 
 
@@ -216,11 +183,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        timer2 = omp_get_wtime();
-      #else
-        timer2 = clock();
-      #endif
+      time2 = Get_Time();
     } // #pragma omp single nowait
 
     for(m = 0; m < Num_Bodies; m++) {
@@ -264,11 +227,7 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        update_x_timer += omp_get_wtime() - timer2;
-      #else
-        update_x_timer += clock() - timer2;
-      #endif
+      update_x_time += Time_Since(time2);
     } // #pragma omp single nowait
 
 
@@ -280,24 +239,22 @@ void Simulation::Run_Simulation(void) {
     counter to zero (reset the counter). */
 
     #pragma omp single
+    {
     for(m = 0; m < Num_Bodies; m++) {
       Time_Step_Index[m]++;
 
-      if(Time_Step_Index[m] == Steps_Per_Update[m])
+      if(Time_Step_Index[m] == Steps_Per_Update[m]) {
         Time_Step_Index[m] = 0;
+      } // if(Time_Step_Index[m] == Steps_Per_Update[m]) {
     } // for(m = 0; m < Num_Bodies; m++) {
-
+    } // #pragma omp single
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Print to file
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        timer2 = omp_get_wtime();
-      #else
-        timer2 = clock();
-      #endif
+      time2 = Get_Time();
     } // #pragma omp single nowait
 
     if((l+1)%TimeSteps_Between_Prints == 0) {
@@ -324,20 +281,12 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single nowait
     {
-      #if defined(_OPENMP)
-        Print_timer += omp_get_wtime() - timer2;
-      #else
-        Print_timer += clock()-timer2;
-      #endif
+      Print_time += Time_Since(time2);
     } // #pragma omp single nowait
   } // for(l = 0; l < Num_Steps; l++) {
   } // #pragma omp parallel
   printf(         "Done!\n");
-  #if defined(_OPENMP)
-    timer1 = omp_get_wtime() - timer1;
-  #else
-    timer1 = clock()-timer1;
-  #endif
+  simulation_time = Time_Since(time1);
 
   // If saving is enabled, Dump particle data to file
   if(Save_Data_To_File == 1) {
@@ -346,12 +295,12 @@ void Simulation::Run_Simulation(void) {
 
   // Print timing data
   #if defined(_OPENMP)
-    printf(       "\nIt took %lf s to perform %u Particle time steps \n",timer1, Num_Steps);
-    printf(       "%lf s to update BC's\n", update_BC_timer);
-    printf(       "%lf s to update P\n", update_P_timer);
-    printf(       "%lf s to update Contact\n", contact_timer);
-    printf(       "%lf s to update x\n", update_x_timer);
-    printf(       "%lf s to print data to files\n", Print_timer);
+    printf(       "\nIt took %lf s to perform %u Particle time steps \n",simulation_time, Num_Steps);
+    printf(       "%lf s to update BC's\n", update_BC_time);
+    printf(       "%lf s to update P\n", update_P_time);
+    printf(       "%lf s to update Contact\n", contact_time);
+    printf(       "%lf s to update x\n", update_x_time);
+    printf(       "%lf s to print data to files\n", Print_time);
 
   #else
     unsigned long MS_Iter,                                           // These are used to store the number of miliseconds that
@@ -361,12 +310,12 @@ void Simulation::Run_Simulation(void) {
                   MS_x,
                   MS_Print;
 
-    MS_Iter = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
-    MS_BC = (unsigned long)((double)update_BC_timer / (double)CLOCKS_PER_MS);
-    MS_P = (unsigned long)((double)update_P_timer / (double)CLOCKS_PER_MS);
-    MS_Contact = (unsigned long)((double)contact_timer / (double)CLOCKS_PER_MS);
-    MS_x = (unsigned long)((double)update_x_timer / (double)CLOCKS_PER_MS);
-    MS_Print = (unsigned long)((double)Print_timer / (double)CLOCKS_PER_MS);
+    MS_Iter = (unsigned long)((double)time1 / (double)CLOCKS_PER_MS);
+    MS_BC = (unsigned long)((double)update_BC_time / (double)CLOCKS_PER_MS);
+    MS_P = (unsigned long)((double)update_P_time / (double)CLOCKS_PER_MS);
+    MS_Contact = (unsigned long)((double)contact_time / (double)CLOCKS_PER_MS);
+    MS_x = (unsigned long)((double)update_x_time / (double)CLOCKS_PER_MS);
+    MS_Print = (unsigned long)((double)Print_time / (double)CLOCKS_PER_MS);
 
     printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
     printf(         "%lu ms to update BC's\n", MS_BC);
@@ -398,11 +347,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
   // Are we running a new simulation or loading an existing one?
   if(Load_Data_From_File == 1) {
-    #if defined(_OPENMP)
-      double timer1 = omp_get_wtime();
-    #else
-      clock_t timer1 = clock();
-    #endif
+    TIME_TYPE time1 = Get_Time();
 
     // If loading an existing simulation, read in bodies from file
     printf(       "\nLoading from file....");
@@ -416,11 +361,11 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
 
     #if defined(_OPENMP)
-      timer1 = omp_get_wtime() - timer1;
-      printf(     "Done!\ntook %lf s\n", timer1);
+      time1 = omp_get_wtime() - time1;
+      printf(     "Done!\ntook %lf s\n", time1);
     #else
-      timer1 = clock() - timer1;
-      unsigned long MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
+      time1 = clock() - time1;
+      unsigned long MS_Load = (unsigned long)((double)time1 / (double)CLOCKS_PER_MS);
       printf(       "Done!\ntook %lu ms\n", MS_Load);
     #endif
   } //   if(Load_Data_From_File == 1) {

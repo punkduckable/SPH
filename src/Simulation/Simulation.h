@@ -29,6 +29,18 @@ namespace Simulation {
   void Set_Needle_Bcs(Body & Needle);
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Timing functions
+  // Defined in Timing.cc
+
+  #if defined(_OPENMP)
+    #define TIME_TYPE double
+  #else
+    #define TIME_TYPE clock_t
+  #endif
+  TIME_TYPE Get_Time(void);
+  TIME_TYPE Time_Since(TIME_TYPE time);
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation parameters

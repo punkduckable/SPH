@@ -90,11 +90,7 @@ void Simulation::Set_Body_Members(Body & Body_In) {
 
 void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
   unsigned i,j,k;
-  #if defined(_OPENMP)
-    double timer1;
-  #else
-    clock_t timer1;
-  #endif
+  TIME_TYPE time1;
 
   // Particle paramaters
   const double IPS = Body_In.Get_Inter_Particle_Spacing();                     //        : mm
@@ -114,11 +110,7 @@ void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
   printf(         "\nGenerating particles for %s...",Body_In.Get_Name().c_str());
-  #if defined(_OPENMP)
-    timer1 = omp_get_wtime();
-  #else
-    timer1 = clock();
-  #endif
+  time1 = Get_Time();
 
   // Set up Body_In
   /* Store particles in 'Vertical Column' major 'Row' semi-major order
@@ -145,11 +137,11 @@ void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
   #if defined(_OPENMP)
-    timer1 = omp_get_wtime() - timer1;
-    printf(        "Done!\ntook %lf s\n",timer1);
+    time1 = omp_get_wtime() - time1;
+    printf(        "Done!\ntook %lf s\n",time1);
   #else
-    timer1 = clock() - timer1;
-    unsigned long MS_Gen = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+    time1 = clock() - time1;
+    unsigned long MS_Gen = (unsigned long)(((float)time1)/((float)CLOCKS_PER_MS));
     printf(        "Done!\ntook %lu ms\n",MS_Gen);
   #endif
 
@@ -158,20 +150,15 @@ void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
 
   if(Body_In.Get_Boundary() == false) {
     printf(         "Generating %s's neighbor lists...", Body_In.Get_Name().c_str());
-    #if defined(_OPENMP)
-      timer1 = omp_get_wtime();
-    #else
-      timer1 = clock();
-    #endif
-
+    time1 = Get_Time();
     Body_In.Find_Neighbors_Cuboid();
 
     #if defined(_OPENMP)
-      timer1 = omp_get_wtime() - timer1;
-      printf(        "Done!\ntook %lf s\n",timer1);
+      time1 = omp_get_wtime() - time1;
+      printf(        "Done!\ntook %lf s\n",time1);
     #else
-      timer1 = clock() - timer1;
-      unsigned long MS_Neighbor = (unsigned long)(((float)timer1)/((float)CLOCKS_PER_MS));
+      time1 = clock() - time1;
+      unsigned long MS_Neighbor = (unsigned long)(((float)time1)/((float)CLOCKS_PER_MS));
       printf(       "Done!\ntook %lums\n",MS_Neighbor);
     #endif
   } //   if(Body_In.Get_Boundary() == false) {
