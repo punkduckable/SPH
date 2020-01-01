@@ -1,9 +1,9 @@
 #include "FEB_File.h"
 #include "Vector/Vector.h"
 
-int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
+int FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
   // First, we need to get the path to the Febio file. Now we can open the file
-  string File_Path = "../Files/";
+  std::string File_Path = "../Files/";
   File_Path += File_Name;                        // Add file name
   File_Path += ".feb";                           // add FEBio file extension
 
@@ -43,8 +43,7 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
         break;
     } // for(i = 0; i < Buf_Length - 5; i++) {
 
-    if(Nodes_Found == true)
-      break;
+    if(Nodes_Found == true) { break; }
   } // while(fgets(Buf, Buf_Length, File) != nullptr) {
 
   // Record current file position.
@@ -62,7 +61,7 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
     if(fgets(Buf, Buf_Length, File) == nullptr) {
       printf("Couldn't find end of FEBio file\n");
       return 1;
-    }
+    } // if(fgets(Buf, Buf_Length, File) == nullptr) {
 
     End_Of_Current_Line = ftell(File);
 
@@ -80,19 +79,19 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
         break;
       } // if( Buf = <\Nodes>)
 
-      if(Buf[i] == '\n')
-        break;
+      if(Buf[i] == '\n') { break; }
     } // for(i = 0; i < Buf_Length) {
 
     // Exit for loop if we're done.
-    if(End_Of_Nodes == true)
-      break;
+    if(End_Of_Nodes == true) { break; }
 
     // Read in Node ID.
     fseek(File, Start_Of_Current_Line, SEEK_SET);     // Move file pointer to start of line
     fscanf(File, " <node id=\"%u\">", &Num_Nodes);    // Read in ID
     fseek(File, End_Of_Current_Line, SEEK_SET);       // Move file pointer back to end of line
   } // while(End_Of_Nodes = false) {
+
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in node positions.
@@ -104,11 +103,12 @@ int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned 
   unsigned ID_Buf;
   *X_Ptr = new Vector[Num_Nodes];
 
-  for(i = 0; i < Num_Nodes; i++)
+  for(i = 0; i < Num_Nodes; i++) {
     fscanf(File, " <node id=\"%u\">%le, %le, %le</node>\n", &ID_Buf, &(*X_Ptr)[i](0), &(*X_Ptr)[i](1), &(*X_Ptr)[i](2));
+  } // for(i = 0; i < Num_Nodes; i++) {
 
   printf("Read in %u particles \n",ID_Buf);
   fclose(File);
 
   return 0;
-} // int FEB_File::Read_FEB_File(const string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
+} // int FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {

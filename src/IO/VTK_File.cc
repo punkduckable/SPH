@@ -19,8 +19,7 @@ std::string VTK_File::Get_File_Name(const std::string & Str) {
   unsigned Num_Names = Name_List.Node_Count();
   for(i = 0; i < Num_Names; i++) {
     // Compare the ith name in the Name List to the supplied string.
-    if(Name_List[i].compare(Str) == 0)
-      break;
+    if(Name_List[i].compare(Str) == 0) { break; }
   } // for(unsigned i = 0; i <= Num_Names; i++) {
 
   // If the supplied string is NOT in the list, then add Str to the end of the
@@ -54,9 +53,10 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Part
   fprintf(File,"LOOKUP_TABLE default\n");
 
   // Now print supplied data to file
-  for(unsigned i = 0; i < Num_Particles; i++)
-    fprintf(File,"\t %8.3f\n",Data[i]);
-}
+  for(unsigned i = 0; i < Num_Particles; i++) { fprintf(File,"\t %8.3f\n", Data[i]); }
+} // void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) {
+
+
 
 void VTK_File::Export_Particle_Positions(const Body & Body_In) {
   const unsigned Num_Particles = Body_In.Get_Num_Particles();

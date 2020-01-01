@@ -31,10 +31,7 @@ void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) 
     would happen if j == VTK_File::Name_List.Node_Count (if the for loop
     never broke). If this is the case, then we should set VTK_File_Number[i]
     to zero. */
-    if(j == VTK_File::Name_List.Node_Count()) {
-      VTK_File_Numbers[i] = 0;
-    } // if(j == VTK_File::Name_List.Node_Count()) {
-
+    if(j == VTK_File::Name_List.Node_Count()) { VTK_File_Numbers[i] = 0; }
 
     // Now, get the ith particle's array Force file number
     for(j = 0; j < Num_Arrays; j++) {
@@ -69,8 +66,7 @@ void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) 
   } //   for(i = 0; i < Num_Arrays; i++) {
 
   // Now print each Particle array to its own file
-  for(i = 0; i < Num_Arrays; i++)
-    Save_Body(Arrays[i]);
+  for(i = 0; i < Num_Arrays; i++) { Save_Body(Arrays[i]); }
 
   fclose(File);
 } // void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) {
@@ -201,8 +197,9 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File) {
 
   // Print neighbor IDs
   fprintf(File,   "Neighbor IDs                  ");
-  for(i = 0; i < Num_Neighbors; i++)
+  for(i = 0; i < Num_Neighbors; i++) {
     fprintf(File,"%d ",P_In.Get_Neighbor_IDs(i));
+  } // for(i = 0; i < Num_Neighbors; i++) {
 
   fprintf(File,"\n\n");
 } // void Data_Dump::Save_Particle(const Particle & P_In, FILE * File) {
@@ -380,9 +377,7 @@ int Data_Dump::Load_Body(Body & Body_In) {
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
 
   // Now read in particles.
-  for(unsigned i = 0; i < Num_Particles; i++) {
-    Load_Particle(Body_In[i], File);
-  } // for(unsigned i = 0; i < Num_Particles; i++) {
+  for(unsigned i = 0; i < Num_Particles; i++) { Load_Particle(Body_In[i], File); }
 
   //////////////////////////////////////////////////////////////////////////////
   // Now recreate each Particle's neighbor arrays.
