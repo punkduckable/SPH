@@ -25,6 +25,8 @@ namespace Simulation {
 
   void Run_Simulation(void);
   void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
+  void Set_Cuboid_BCs(Body & Cuboid);
+  void Set_Needle_Bcs(Body & Needle);
 
 
 

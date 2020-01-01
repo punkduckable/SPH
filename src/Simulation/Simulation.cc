@@ -19,146 +19,27 @@ void Simulation::Run_Simulation(void) {
 
   // Computation time measurement variables
   #if defined(_OPENMP)
-    double timer1,
-           timer2,
-           update_BC_timer = 0,
-           update_P_timer = 0,
-           contact_timer = 0,
-           update_x_timer = 0,
-           Print_timer = 0;
+    #define TIMER_TYPE double
   #else
-    clock_t timer1,
-            timer2,
-            update_BC_timer = 0,
-            update_P_timer = 0,
-            contact_timer = 0,
-            update_x_timer = 0,
-            Print_timer = 0;
+    #define TIMER_TYPE clock_t
   #endif
 
-  // Set up Bodys.
+  TIMER_TYPE timer1,
+             timer2,
+             update_BC_timer = 0,
+             update_P_timer = 0,
+             contact_timer = 0,
+             update_x_timer = 0,
+             Print_timer = 0;
+
   Body * Bodies;                                 // Will point to the Bodies's for this simulation
   unsigned * Time_Step_Index;                    // Time step counters for each body
-
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
 
-  //Display that the simulation has begun
-  printf(         "\nRunning a Simulation...\n");
-  printf(         "Load_Data_From_File =         %u\n",    Load_Data_From_File);
-  printf(         "Save_Data_To_File =           %u\n",    Save_Data_To_File);
-  printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
-  printf(         "Print_Forces =                %u\n",    Print_Forces);
-  printf(         "Parallel execution =          ");
-  #if defined(_OPENMP)
-    printf(       "1\n");
-    printf(       "Number of procs =             %u\n",omp_get_num_procs());
-  #else
-    printf(       "0\n");
-  #endif
-
-  // Are we running a new simulation or loading an existing one?
-  if(Load_Data_From_File == 1) {
-    #if defined(_OPENMP)
-      timer1 = omp_get_wtime();
-    #else
-      timer1 = clock();
-    #endif
-
-    // If loading an existing simulation, read in bodies from file
-    printf(       "\nLoading from file....");
-    Data_Dump::Load_Simulation(&Bodies, Num_Bodies);
-
-    // Now set up the time step counters
-    Time_Step_Index = new unsigned[Num_Bodies];
-    for(i = 0; i < Num_Bodies; i++) {
-      Time_Step_Index[i] = 0;
-    } // for(i = 0; i < Num_Bodies; i++) {
-
-
-    #if defined(_OPENMP)
-      timer1 = omp_get_wtime() - timer1;
-      printf(     "Done!\ntook %lf s\n", timer1);
-    #else
-      timer1 = clock() - timer1;
-      unsigned long MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
-      printf(       "Done!\ntook %lu ms\n", MS_Load);
-    #endif
-  } //   if(Load_Data_From_File == 1) {
-
-  else if(Load_Data_From_File == 0) {
-    // Use Bodies defined in Simulation.h
-    Body_Needle_Set_Up();
-
-    // First, allocate the array of Bodys, time step counters
-    Bodies = new Body[Num_Bodies];
-    Time_Step_Index = new unsigned[Num_Bodies];
-    for(i = 0; i < Num_Bodies; i++) {  Time_Step_Index[i] = 0; }
-
-    // Now set up each body using the paramaters in Simulation.h
-    for(m = 0; m < Num_Bodies; m++) {
-      // Set Partilce Body's name
-      Bodies[m].Set_Name(Names[m]);
-
-      // Set inter particle spacing
-      Bodies[m].Set_Inter_Particle_Spacing(IPS[m]);
-
-      // Now set the ith Body's material
-      Bodies[m].Set_Material(Simulation_Materials[m]);
-
-      // Now set wheather or not the ith Body is damagable
-      Bodies[m].Set_Damageable(Is_Damagable[m]);
-
-      // Now set other Body members.
-      Set_Body_Members(Bodies[m]);
-
-      //////////////////////////////////////////////////////////////////////////
-      // Check for bad inputs!
-
-      // A body can't both be a cuboid and be from an FEB file.
-      if(Is_Cuboid[m] == true && From_FEB_File[m] == true) {
-        printf("A body can't be read from a FEB file and designated as a cuboid... aborting\n");
-        return;
-      } // if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
-
-      // A body must either be a cuboid or be from file. If it's neither, then
-      // we have no way of setting it up.
-      if(Is_Cuboid[m] == false && From_FEB_File[m] == false) {
-        printf("Error! All bodies must be from a FEB file or a cuboid.  Aborting\n");
-        return;
-      } // if(Is_Cuboid[m] == false && Is_Boundary == false) {
-
-      //////////////////////////////////////////////////////////////////////////
-      // Now set up the Body's particles
-
-      /* If the body is a boundary, we need to designate it as such.
-      note: this applies if the body is a cuboid, or from FEB file... anything
-      can be a boundary! */
-      if(Is_Boundary[m] == true) {
-        Bodies[m].Set_Boundary(true);
-      } // if(Is_Boundary[m] == true) {
-
-      // Set up body as a cuboid if it is a cuboid
-      if(Is_Cuboid[m] == true) {
-        Bodies[m].Set_Cuboid_Dimensions(Dimensions[m]);
-        Setup_Cuboid(Bodies[m], m);
-      } // if(Is_Cuboid[m] == true) {
-
-      // if the body is from file, read it in
-      else if(From_FEB_File[m] == true) {
-        Setup_FEB_Body(Bodies[m], m);
-      } // else if(From_FEB_File[m] == true) {
-
-    } // for(m = 0; m < Num_Bodies; m++) {
-  } // else if(Load_Data_From_File == 0) {
-
-  // Now that the body is loaded, print paramaters.
-  printf(         "\nRuinning with the following paramaters....\n");
-  for(m = 0; m < Num_Bodies; m++) {
-    Bodies[m].Print_Parameters();
-  } // for(m = 0; m < Num_Bodies; m++) {
+  Startup_Simulation(&Bodies, &Time_Step_Index);
 
 
 
@@ -211,92 +92,14 @@ void Simulation::Run_Simulation(void) {
     #pragma omp single
     {
     for(m = 0; m < Num_Bodies; m++) {
+      // Cuboid BCs
       if(m == 0 && Time_Step_Index[0] == 0) {
-        ////////////////////////////////////////////////////////////////////////
-        /* Boundary conditions
-        Here we set the Bc's for the six sides of the cube. The faces are named
-        'Front', 'Back', 'Top', 'Bottom', 'Left' and 'Right'. We give the faces
-        these names based on the following coordinate axis layout:
+        Set_Cuboid_BCs(Bodies[m]);
+      } // if(m == 0 && Time_Step_Index[0] == 0) {
 
-                                  Y
-                                  |        X
-                                  |      /
-                                  |    /
-                                  |  /
-                              _ _ |/_ _ _ _ _ _ _ Z
-                                 /|
-                               /  |
-
-        The Normal vector to the 'Front' and 'Back' faces point in the +X and -X
-        directions respectivly. The Normal vector to the 'Top' and 'Bottom' faces
-        point in the +Y and -Y directions respectivly. Finally, the Normal vector
-        to the 'Left' and 'Right' faces point in the -Z and +Z directions
-        respectivly. */
-
-        // Establish side lengths (we assume Bodies[m] is a cuboid)
-        unsigned X_SIDE_LENGTH = Bodies[m].Get_X_SIDE_LENGTH();
-        unsigned Y_SIDE_LENGTH = Bodies[m].Get_Y_SIDE_LENGTH();
-        unsigned Z_SIDE_LENGTH = Bodies[m].Get_Z_SIDE_LENGTH();
-
-        // Front face (i = 0)
-        i = 0;
-        for(j = 0; j < Y_SIDE_LENGTH; j++) {
-          for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
-          }
-        }
-
-        // Back face (i = X_SIDE_LENGTH-1)
-        i = X_SIDE_LENGTH-1;
-        for(j = 0; j < Y_SIDE_LENGTH; j++) {
-          for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
-          }
-        }
-
-        // Bottom face (j = 0)
-        j = 0;
-        for(i = 0; i < X_SIDE_LENGTH; i++) {
-          for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
-            //(Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
-          }
-        }
-
-        // Top face (j = y_Side_len-1)
-        j = Y_SIDE_LENGTH-1;
-        for(i = 0; i < X_SIDE_LENGTH; i++) {
-          for(k = 0; k < Z_SIDE_LENGTH; k++) {
-            //(Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
-          }
-        }
-
-        // Left face (k = 0)
-        k = 0;
-        for(i = 0; i < X_SIDE_LENGTH; i++) {
-          for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
-          }
-        }
-
-        // Right face (k = Z_SIDE_LENGTH-1)
-        k = Z_SIDE_LENGTH-1;
-        for(i = 0; i < X_SIDE_LENGTH; i++) {
-          for(j = 0; j < Y_SIDE_LENGTH; j++) {
-            (Bodies[m])[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
-          }
-        }
-
-      } // if(m == 0)
-
-      // Needle BC's
+      // Needle BCs
       else if(m == 1) {
-        unsigned Array_m_Num_Particles = (Bodies[m]).Get_Num_Particles();
-        for(i = 0; i < Array_m_Num_Particles; i++) {
-          if((Bodies[m])[i].Get_X()[1] > 17.) {    // if y component is above threshold, press it.
-            (Bodies[m])[i].V = {0, -50, 0};
-          } // if((Bodies[m])[i].Get_X()[1] > 17.) {
-        } // for(i = 0; i < Array_m_Num_Particles; i++) {
+        Set_Needle_Bcs(Bodies[m]);
       } // else if(m == 1) {
     } // for(m = 0; m < Num_Bodies; m++)
     } // #pragma omp single
@@ -578,6 +381,210 @@ void Simulation::Run_Simulation(void) {
 
 
 
-void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
-  // Fill me in!
-} // void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+  //Display that the simulation has begun
+  printf(         "\nRunning a Simulation...\n");
+  printf(         "Load_Data_From_File =         %u\n",    Load_Data_From_File);
+  printf(         "Save_Data_To_File =           %u\n",    Save_Data_To_File);
+  printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
+  printf(         "Print_Forces =                %u\n",    Print_Forces);
+  printf(         "Parallel execution =          ");
+  #if defined(_OPENMP)
+    printf(       "1\n");
+    printf(       "Number of procs =             %u\n",omp_get_num_procs());
+  #else
+    printf(       "0\n");
+  #endif
+
+  // Are we running a new simulation or loading an existing one?
+  if(Load_Data_From_File == 1) {
+    #if defined(_OPENMP)
+      double timer1 = omp_get_wtime();
+    #else
+      clock_t timer1 = clock();
+    #endif
+
+    // If loading an existing simulation, read in bodies from file
+    printf(       "\nLoading from file....");
+    Data_Dump::Load_Simulation(Bodies, Num_Bodies);
+
+    // Now set up the time step counters
+    *Time_Step_Index = new unsigned[Num_Bodies];
+    for(unsigned i = 0; i < Num_Bodies; i++) {
+      (*Time_Step_Index)[i] = 0;
+    } // for(i = 0; i < Num_Bodies; i++) {
+
+
+    #if defined(_OPENMP)
+      timer1 = omp_get_wtime() - timer1;
+      printf(     "Done!\ntook %lf s\n", timer1);
+    #else
+      timer1 = clock() - timer1;
+      unsigned long MS_Load = (unsigned long)((double)timer1 / (double)CLOCKS_PER_MS);
+      printf(       "Done!\ntook %lu ms\n", MS_Load);
+    #endif
+  } //   if(Load_Data_From_File == 1) {
+
+  else if(Load_Data_From_File == 0) {
+    // Use Bodies defined in Simulation.h
+    Body_Needle_Set_Up();
+
+    // First, allocate the array of Bodys, time step counters
+    *Bodies = new Body[Num_Bodies];
+    *Time_Step_Index = new unsigned[Num_Bodies];
+    for(unsigned i = 0; i < Num_Bodies; i++) {  (*Time_Step_Index)[i] = 0; }
+
+    // Now set up each body using the paramaters in Simulation.h
+    for(unsigned i = 0; i < Num_Bodies; i++) {
+      // Set Partilce Body's name
+      (*Bodies)[i].Set_Name(Names[i]);
+
+      // Set inter particle spacing
+      (*Bodies)[i].Set_Inter_Particle_Spacing(IPS[i]);
+
+      // Now set the ith Body's material
+      (*Bodies)[i].Set_Material(Simulation_Materials[i]);
+
+      // Now set wheather or not the ith Body is damagable
+      (*Bodies)[i].Set_Damageable(Is_Damagable[i]);
+
+      // Now set other Body members.
+      Set_Body_Members((*Bodies)[i]);
+
+      //////////////////////////////////////////////////////////////////////////
+      // Check for bad inputs!
+
+      // A body can't both be a cuboid and be from an FEB file.
+      if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
+        printf("A body can't be read from a FEB file and designated as a cuboid... aborting\n");
+        return;
+      } // if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
+
+      // A body must either be a cuboid or be from file. If it's neither, then
+      // we have no way of setting it up.
+      if(Is_Cuboid[i] == false && From_FEB_File[i] == false) {
+        printf("Error! All bodies must be from a FEB file or a cuboid.  Aborting\n");
+        return;
+      } // if(Is_Cuboid[i] == false && Is_Boundary == false) {
+
+      //////////////////////////////////////////////////////////////////////////
+      // Now set up the Body's particles
+
+      /* If the body is a boundary, we need to designate it as such.
+      note: this applies if the body is a cuboid, or from FEB file... anything
+      can be a boundary! */
+      if(Is_Boundary[i] == true) {
+        (*Bodies)[i].Set_Boundary(true);
+      } // if(Is_Boundary[i] == true) {
+
+      // Set up body as a cuboid if it is a cuboid
+      if(Is_Cuboid[i] == true) {
+        (*Bodies)[i].Set_Cuboid_Dimensions(Dimensions[i]);
+        Setup_Cuboid((*Bodies)[i], i);
+      } // if(Is_Cuboid[i] == true) {
+
+      // if the body is from file, read it in
+      else if(From_FEB_File[i] == true) {
+        Setup_FEB_Body((*Bodies)[i], i);
+      } // else if(From_FEB_File[i] == true) {
+
+    } // for(m = 0; m < Num_Bodies; m++) {
+  } // else if(Load_Data_From_File == 0) {
+
+  // Now that the body is loaded, print paramaters.
+  printf(         "\nRuinning with the following paramaters....\n");
+  for(unsigned i = 0; i < Num_Bodies; i++) {
+    (*Bodies)[i].Print_Parameters();
+  } // for(unsigned i = 0; i < Num_Bodies; i++) {
+} // void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+
+
+
+void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
+  ////////////////////////////////////////////////////////////////////////
+  /* Boundary conditions
+  Here we set the Bc's for the six sides of the cube. The faces are named
+  'Front', 'Back', 'Top', 'Bottom', 'Left' and 'Right'. We give the faces
+  these names based on the following coordinate axis layout:
+
+                            Y
+                            |        X
+                            |      /
+                            |    /
+                            |  /
+                        _ _ |/_ _ _ _ _ _ _ Z
+                           /|
+                         /  |
+
+  The Normal vector to the 'Front' and 'Back' faces point in the +X and -X
+  directions respectivly. The Normal vector to the 'Top' and 'Bottom' faces
+  point in the +Y and -Y directions respectivly. Finally, the Normal vector
+  to the 'Left' and 'Right' faces point in the -Z and +Z directions
+  respectivly. */
+
+  // Establish side lengths (we assume Cuboid is a cuboid)
+  unsigned X_SIDE_LENGTH = Cuboid.Get_X_SIDE_LENGTH();
+  unsigned Y_SIDE_LENGTH = Cuboid.Get_Y_SIDE_LENGTH();
+  unsigned Z_SIDE_LENGTH = Cuboid.Get_Z_SIDE_LENGTH();
+  unsigned i,j,k;
+
+  // Front face (i = 0)
+  i = 0;
+  for(j = 0; j < Y_SIDE_LENGTH; j++) {
+    for(k = 0; k < Z_SIDE_LENGTH; k++) {
+      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+    }
+  }
+
+  // Back face (i = X_SIDE_LENGTH-1)
+  i = X_SIDE_LENGTH-1;
+  for(j = 0; j < Y_SIDE_LENGTH; j++) {
+    for(k = 0; k < Z_SIDE_LENGTH; k++) {
+      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+    }
+  }
+
+  // Bottom face (j = 0)
+  j = 0;
+  for(i = 0; i < X_SIDE_LENGTH; i++) {
+    for(k = 0; k < Z_SIDE_LENGTH; k++) {
+      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
+      //(Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
+    }
+  }
+
+  // Top face (j = y_Side_len-1)
+  j = Y_SIDE_LENGTH-1;
+  for(i = 0; i < X_SIDE_LENGTH; i++) {
+    for(k = 0; k < Z_SIDE_LENGTH; k++) {
+      //(Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
+    }
+  }
+
+  // Left face (k = 0)
+  k = 0;
+  for(i = 0; i < X_SIDE_LENGTH; i++) {
+    for(j = 0; j < Y_SIDE_LENGTH; j++) {
+      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+    }
+  }
+
+  // Right face (k = Z_SIDE_LENGTH-1)
+  k = Z_SIDE_LENGTH-1;
+  for(i = 0; i < X_SIDE_LENGTH; i++) {
+    for(j = 0; j < Y_SIDE_LENGTH; j++) {
+      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+    }
+  }
+} // void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
+
+
+
+void Simulation::Set_Needle_Bcs(Body & Needle) {
+  unsigned Array_m_Num_Particles = Needle.Get_Num_Particles();
+  for(unsigned i = 0; i < Array_m_Num_Particles; i++) {
+    if(Needle[i].Get_X()[1] > 17.) {    // if y component is above threshold, press it.
+      Needle[i].V = {0, -50, 0};
+    } // if((Needle)[i].Get_X()[1] > 17.) {
+  } // for(unsigned i = 0; i < Array_m_Num_Particles; i++) {
+} // void Simulation::Set_Needle_Bcs(Body & Needle) {

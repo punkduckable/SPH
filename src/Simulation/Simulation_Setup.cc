@@ -78,12 +78,12 @@ void Simulation::Body_Needle_Set_Up(void) {
 
 
 void Simulation::Set_Body_Members(Body & Body_In) {
-  unsigned Support_Radius = 3;                           // Support radius in units of Inter Particle spacings
+  unsigned Support_Radius = 3;                   // Support radius in units of Inter Particle spacings
 
-  Body_In.Set_Support_Radius(Support_Radius);          // Support Radius in Inter Particle Spacings      : unitless
-  Body_In.Set_mu(1e-4);                                // Viscosity                  : Mpa*s
-  Body_In.Set_alpha(.75);                              // Hg control parameter       : Unitless
-  Body_In.Set_Tau(.15);                                // Damage rate parameter      : unitless
+  Body_In.Set_Support_Radius(Support_Radius);    // Support Radius in Inter Particle Spacings      : unitless
+  Body_In.Set_mu(1e-4);                          // Viscosity                  : Mpa*s
+  Body_In.Set_alpha(.75);                        // Hg control parameter       : Unitless
+  Body_In.Set_Tau(.15);                          // Damage rate parameter      : unitless
 } // void Simulation::Set_Body_Members(Body & Body_In) {
 
 
