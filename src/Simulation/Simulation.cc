@@ -15,7 +15,7 @@ void Simulation::Run_Simulation(void) {
   // Simulation variables
 
   // Loop indicies
-  unsigned i,j,k,l,m;
+  unsigned p,b,t;
 
   // Simulation time measurement variables
   TIME_TYPE time1,
@@ -51,21 +51,21 @@ void Simulation::Run_Simulation(void) {
   // If we are starting a new simulation (not reading one from file) then print
   // initial configuration
   if(Load_Data_From_File == false) {
-    for(m = 0; m < Num_Bodies; m++) {
-      VTK_File::Export_Particle_Positions(Bodies[m]);
-    } // for(m = 0; m < Num_Bodies; m++) {
+    for(b = 0; b < Num_Bodies; b++) {
+      VTK_File::Export_Particle_Positions(Bodies[b]);
+    } // for(b = 0; b < Num_Bodies; b++) {
 
     if(Print_Forces == true) {
-      for(m = 0; m < Num_Bodies; m++) {
-        Bodies[m].Print_Particle_Forces();
-      } // for(m = 0; m < Num_Bodies; m++) {
+      for(b = 0; b < Num_Bodies; b++) {
+        Bodies[b].Print_Particle_Forces();
+      } // for(b = 0; b < Num_Bodies; b++) {
     } // if(Print_Forces == true) {
   } // if(Load_Data_From_File == false) {
 
   // time step loop.
-  #pragma omp parallel default(shared) private(i, j, k, l, m) firstprivate(Num_Bodies, Num_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) private(b, p, t) firstprivate(Num_Bodies, Num_Steps, dt, TimeSteps_Between_Prints)
   {
-  for(l = 0; l < Num_Steps; l++) {
+  for(t = 0; t < Num_Steps; t++) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Apply Boundary conditions
@@ -78,17 +78,17 @@ void Simulation::Run_Simulation(void) {
 
     #pragma omp single
     {
-    for(m = 0; m < Num_Bodies; m++) {
+    for(b = 0; b < Num_Bodies; b++) {
       // Cuboid BCs
-      if(m == 0 && Time_Step_Index[0] == 0) {
-        Set_Cuboid_BCs(Bodies[m]);
-      } // if(m == 0 && Time_Step_Index[0] == 0) {
+      if(b == 0 && Time_Step_Index[0] == 0) {
+        Set_Cuboid_BCs(Bodies[b]);
+      } // if(b == 0 && Time_Step_Index[0] == 0) {
 
       // Needle BCs
-      else if(m == 1) {
-        Set_Needle_Bcs(Bodies[m]);
-      } // else if(m == 1) {
-    } // for(m = 0; m < Num_Bodies; m++)
+      else if(b == 1) {
+        Set_Needle_Bcs(Bodies[b]);
+      } // else if(b == 1) {
+    } // for(b = 0; b < Num_Bodies; b++)
     } // #pragma omp single
 
     #pragma omp single nowait
@@ -106,23 +106,23 @@ void Simulation::Run_Simulation(void) {
       time2 = Get_Time();
     } // #pragma omp single nowait
 
-    for(m = 0; m < Num_Bodies; m++) {
+    for(b = 0; b < Num_Bodies; b++) {
       // Note: We don't update P for Bodys that are boundaries
-      if(Bodies[m].Get_Boundary() == true) { continue; }
+      if(Bodies[b].Get_Boundary() == true) { continue; }
 
       else {
         /* Update each Particles's P tensor.
-        We only update P when the mth Body's counter is zero.
+        We only update P when the bth Body's counter is zero.
 
         Note: the Update_P method has an orphaned for loop (and takes care of
         removing damaged particles in parallel, damaged particles are not
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
-        if(Time_Step_Index[m] == 0) {
-          Bodies[m].Update_P(Steps_Per_Update[m]*dt);
-        } // if(Time_Step_Index[m] == 0) {
+        if(Time_Step_Index[b] == 0) {
+          Bodies[b].Update_P(Steps_Per_Update[b]*dt);
+        } // if(Time_Step_Index[b] == 0) {
       } // else
-    } // for(m = 0; m < Num_Bodies; m++) {
+    } // for(b = 0; b < Num_Bodies; b++) {
 
     #pragma omp single nowait
     {
@@ -150,26 +150,26 @@ void Simulation::Run_Simulation(void) {
     is updating it's position this turn. Otherwise, since the force won't be
     used for anything, there's no reason to waste CPU cycles setting that
     bodies's particle's contact forces to zero. */
-    for(m = 0; m < Num_Bodies; m++) {
-      unsigned Num_Particles = (Bodies[m]).Get_Num_Particles();
+    for(b = 0; b < Num_Bodies; b++) {
+      unsigned Num_Particles = (Bodies[b]).Get_Num_Particles();
 
-      if(Time_Step_Index[m] == 0) {
+      if(Time_Step_Index[b] == 0) {
         #pragma omp for
-        for(i = 0; i < Num_Particles; i++) {
-          (Bodies[m])[i].Force_Contact = {0,0,0};
-          (Bodies[m])[i].Force_Friction = {0,0,0};
-        } // for(i = 0; i < (Bodies[m]).Get_Num_Particles(); i++) {
-      } // if(Time_Step_Index[m] == 0) {
-    } // for(m = 0; m < Num_Bodies; m++) {
+        for(p = 0; p < Num_Particles; p++) {
+          (Bodies[b])[p].Force_Contact = {0,0,0};
+          (Bodies[b])[p].Force_Friction = {0,0,0};
+        } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
+      } // if(Time_Step_Index[b] == 0) {
+    } // for(b = 0; b < Num_Bodies; b++) {
 
     /* Now we can apply the contact algorythm. Note that this must be applied
     every time step no matter what (so that bodies that update each step can
     are proprly updated/have the right forces applied each timestpe) */
-    for(m = 0; m < Num_Bodies; m++) {
-      for(i = m + 1; i < Num_Bodies; i++) {
-        Body::Contact(Bodies[i], Bodies[m]);
-      } // for(i = m + 1; i < Num_Bodies; i++) {
-    } // for(m = 0; m < Num_Bodies; m++) {
+    for(b = 0; b < Num_Bodies; b++) {
+      for(unsigned i = b + 1; i < Num_Bodies; i++) {
+        Body::Contact(Bodies[i], Bodies[b]);
+      } // for(unsigned i = b + 1; i < Num_Bodies; i++) {
+    } // for(b = 0; b < Num_Bodies; b++) {
 
     #pragma omp single nowait
     {
@@ -186,44 +186,44 @@ void Simulation::Run_Simulation(void) {
       time2 = Get_Time();
     } // #pragma omp single nowait
 
-    for(m = 0; m < Num_Bodies; m++) {
+    for(b = 0; b < Num_Bodies; b++) {
       // Note: we don't update P for Bodys that are boundaries
-      if(Bodies[m].Get_Boundary() == true) { continue; }
+      if(Bodies[b].Get_Boundary() == true) { continue; }
 
       else {
         /* We only want to update x (the traditional way) if we're on a timestep
-        where the mth Body gets updated. Suppose that the mth body
-        only updates once every k steps (meaning that Stpes_Between_Update[m] = k)
-        on the 0th step, the mth Bodies's counter is zero. After
+        where the bth Body gets updated. Suppose that the bth body
+        only updates once every k steps (meaning that Stpes_Between_Update[b] = k)
+        on the 0th step, the bth Bodies's counter is zero. After
         each step it increments. On the kth step, its counter reaches k and the
-        counter gets truncaed back to zero. Therefore, every k steps the mth
+        counter gets truncaed back to zero. Therefore, every k steps the bth
         Body's counter will be zero. Thus, we use a 0 counter
         as an indicator that we should update this Body. */
-        if(Time_Step_Index[m] == 0) {
+        if(Time_Step_Index[b] == 0) {
           /* First, update the 'F_Index' for the current Body. This
           controls which member of each particle's 'F' array is the 'newest'. */
           #pragma omp single
-            Bodies[m].Increment_F_Index();
+            Bodies[b].Increment_F_Index();
 
           // Now update the position of each particle in this body.
-          Bodies[m].Update_x(dt);
-        } //         if(Time_Step_Index[m] == 0) {
+          Bodies[b].Update_x(dt);
+        } // if(Time_Step_Index[b] == 0) {
         else {
           /* If we're not on an update step, then we'll let this body continue
           accelerating at whatever acceleration it attained after the last
           time step. */
-          unsigned Num_Particles = (Bodies[m]).Get_Num_Particles();
+          unsigned Num_Particles = (Bodies[b]).Get_Num_Particles();
 
           #pragma omp for
-          for(i = 0; i < Num_Particles; i++) {
-            if((Bodies[m])[i].Get_D() >= 1) { continue; }
+          for(p = 0; p < Num_Particles; p++) {
+            if((Bodies[b])[p].Get_D() >= 1) { continue; }
 
-            (Bodies[m])[i].x += dt*(Bodies[m])[i].V;       // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
-            (Bodies[m])[i].V += dt*(Bodies[m])[i].a;       // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
-          } // for(i = 0; i < (Bodies[m]).Get_Num_Particles(); i++) {
+            (Bodies[b])[p].x += dt*(Bodies[b])[p].V;       // x_p+1 = x_p + dt*v_(p+1/2)           : mm Vector
+            (Bodies[b])[p].V += dt*(Bodies[b])[p].a;       // V_p+3/2 = V_p+1/2 + dt*a(t_p+1)      : mm/s Vector
+          } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
         } // else {
       } // else {
-    } // for(m = 0; m < Num_Bodies; m++) {
+    } // for(b = 0; b < Num_Bodies; b++) {
 
     #pragma omp single nowait
     {
@@ -235,18 +235,18 @@ void Simulation::Run_Simulation(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Update each time step counter
     /* Here we increment each Body's counter. If a particular counter
-    reaches its limit (the value of Steps_Per_Update[m]) then we set that
+    reaches its limit (the value of Steps_Per_Update[b]) then we set that
     counter to zero (reset the counter). */
 
     #pragma omp single
     {
-    for(m = 0; m < Num_Bodies; m++) {
-      Time_Step_Index[m]++;
+    for(b = 0; b < Num_Bodies; b++) {
+      Time_Step_Index[b]++;
 
-      if(Time_Step_Index[m] == Steps_Per_Update[m]) {
-        Time_Step_Index[m] = 0;
-      } // if(Time_Step_Index[m] == Steps_Per_Update[m]) {
-    } // for(m = 0; m < Num_Bodies; m++) {
+      if(Time_Step_Index[b] == Steps_Per_Update[b]) {
+        Time_Step_Index[b] = 0;
+      } // if(Time_Step_Index[b] == Steps_Per_Update[b]) {
+    } // for(b = 0; b < Num_Bodies; b++) {
     } // #pragma omp single
 
 
@@ -257,25 +257,25 @@ void Simulation::Run_Simulation(void) {
       time2 = Get_Time();
     } // #pragma omp single nowait
 
-    if((l+1)%TimeSteps_Between_Prints == 0) {
+    if((t+1)%TimeSteps_Between_Prints == 0) {
       #pragma omp single nowait
-        printf(     "%d time steps complete\n",l+1);
+        printf(     "%d time steps complete\n",t+1);
 
       #pragma omp for nowait
-      for(m = 0; m < Num_Bodies; m++ ) {
-        VTK_File::Export_Particle_Positions(Bodies[m]);
-      } // for(m = 0; m < Num_Bodies; m++ ) {
+      for(b = 0; b < Num_Bodies; b++ ) {
+        VTK_File::Export_Particle_Positions(Bodies[b]);
+      } // for(b = 0; b < Num_Bodies; b++ ) {
 
       if(Print_Forces == true) {
         #pragma omp for nowait
-        for(m = 0; m < Num_Bodies; m++ ) {
-          Bodies[m].Print_Particle_Forces();
-        } // for(m = 0; m < Num_Bodies; m++ ) {
+        for(b = 0; b < Num_Bodies; b++ ) {
+          Bodies[b].Print_Particle_Forces();
+        } // for(b = 0; b < Num_Bodies; b++ ) {
       } // if(Print_Forces == true) {
 
       if(Print_Net_Force == true) {
         #pragma omp single nowait
-        Bodies[1].Print_Net_External_Force(l+1);
+        Bodies[1].Print_Net_External_Force(t+1);
       } // if(Print_Net_Force == true) {
     } // if((k+1)%100 == 0) {
 
@@ -283,7 +283,7 @@ void Simulation::Run_Simulation(void) {
     {
       Print_time += Time_Since(time2);
     } // #pragma omp single nowait
-  } // for(l = 0; l < Num_Steps; l++) {
+  } // for(t = 0; t < Num_Steps; t++) {
   } // #pragma omp parallel
   printf(         "Done!\n");
   simulation_time = Time_Since(time1);
@@ -357,7 +357,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
     *Time_Step_Index = new unsigned[Num_Bodies];
     for(unsigned i = 0; i < Num_Bodies; i++) {
       (*Time_Step_Index)[i] = 0;
-    } // for(i = 0; i < Num_Bodies; i++) {
+    } // for(unsigned i = 0; i < Num_Bodies; i++) {
 
 
     #if defined(_OPENMP)
@@ -433,7 +433,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
         Setup_FEB_Body((*Bodies)[i], i);
       } // else if(From_FEB_File[i] == true) {
 
-    } // for(m = 0; m < Num_Bodies; m++) {
+    } // for(unsigned i = 0; i < Num_Bodies; i++) {
   } // else if(Load_Data_From_File == 0) {
 
   // Now that the body is loaded, print paramaters.
