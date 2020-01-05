@@ -26,7 +26,8 @@ namespace Simulation {
   void Run_Simulation(void);
   void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
   void Set_Cuboid_BCs(Body & Cuboid);
-  void Set_Needle_Bcs(Body & Needle);
+  void Set_Needle_BCs(Body & Needle);
+
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -40,6 +41,7 @@ namespace Simulation {
   #endif
   TIME_TYPE Get_Time(void);
   TIME_TYPE Time_Since(TIME_TYPE time);
+
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -63,7 +65,11 @@ namespace Simulation {
   // Friction coefficient.
   const double Friction_Coefficient = .1;                                      //        : unitless
 
+
+
+  //////////////////////////////////////////////////////////////////////////////
   // Body properties (defined in Simulation_Setup.cc)
+
   extern unsigned Num_Bodies;                    // Number of bodies in simulation
   extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
   extern bool * Is_Cuboid;                       // Which bodies are cuboids

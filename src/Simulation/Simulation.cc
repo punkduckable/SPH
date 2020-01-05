@@ -69,7 +69,6 @@ void Simulation::Run_Simulation(void) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Apply Boundary conditions
-    // Note: we only apply BC's to 0th body.
 
     #pragma omp single nowait
     {
@@ -86,7 +85,7 @@ void Simulation::Run_Simulation(void) {
 
       // Needle BCs
       else if(b == 1) {
-        Set_Needle_Bcs(Bodies[b]);
+        Set_Needle_BCs(Bodies[b]);
       } // else if(b == 1) {
     } // for(b = 0; b < Num_Bodies; b++)
     } // #pragma omp single
@@ -525,11 +524,11 @@ void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
 
 
 
-void Simulation::Set_Needle_Bcs(Body & Needle) {
+void Simulation::Set_Needle_BCs(Body & Needle) {
   unsigned Array_m_Num_Particles = Needle.Get_Num_Particles();
   for(unsigned i = 0; i < Array_m_Num_Particles; i++) {
     if(Needle[i].Get_X()[1] > 17.) {    // if y component is above threshold, press it.
       Needle[i].V = {0, -50, 0};
     } // if((Needle)[i].Get_X()[1] > 17.) {
   } // for(unsigned i = 0; i < Array_m_Num_Particles; i++) {
-} // void Simulation::Set_Needle_Bcs(Body & Needle) {
+} // void Simulation::Set_Needle_BCs(Body & Needle) {
