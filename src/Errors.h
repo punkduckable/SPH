@@ -78,4 +78,23 @@ class Bad_Neighbor_Index : public Particle_Exception {
   public: Bad_Neighbor_Index(const char* Message_In) : Particle_Exception(Message_In) {}
 }; // class Bad_Neighbor_ID : public Particle_Exception {
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+/* Simulation exceptions
+Simulation_Exception: Base Simulation_Exception class.
+
+Bad_Body_Setup: This exception is thrown whenever the bodies are set up
+improperly (such as when a body is designated as both a cuboid and from file) */
+
+class Simulation_Exception : public Exception {
+  public: Simulation_Exception(const char* Message_In) : Exception(Message_In) {}
+}; // class Simulation_Exception : public Exception {
+
+
+class Bad_Body_Setup : public Simulation_Exception {
+  public: Bad_Body_Setup(const char* Message_In) : Simulation_Exception(Message_In) {}
+}; // class Bad_Body_Setup : Public Simulation_Exception {
+
+
 #endif

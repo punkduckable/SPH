@@ -5,6 +5,7 @@
 #include "Vector/Vector.h"
 #include "IO/VTK_File.h"
 #include "IO/Data_Dump.h"
+#include "Errors.h"
 #if defined(_OPENMP)
   #include <omp.h>
 #endif
@@ -371,7 +372,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
   else if(Load_Data_From_File == 0) {
     // Use Bodies defined in Simulation.h
-    Body_Needle_Set_Up();
+    Bodies_Setup();
 
     // First, allocate the array of Bodys, time step counters
     *Bodies = new Body[Num_Bodies];
@@ -400,15 +401,23 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
       // A body can't both be a cuboid and be from an FEB file.
       if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
-        printf("A body can't be read from a FEB file and designated as a cuboid... aborting\n");
-        return;
+        char Buffer[500];
+        sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
+                        "Body %d (named %s) is designated as both a cuboid and from FEB file\n"
+                        "However, each body must either be from a FEB file or a cuboid (not both)\n",
+                        i,Names[i].c_str());
+        throw Bad_Body_Setup(Buffer);
       } // if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
 
       // A body must either be a cuboid or be from file. If it's neither, then
       // we have no way of setting it up.
       if(Is_Cuboid[i] == false && From_FEB_File[i] == false) {
-        printf("Error! All bodies must be from a FEB file or a cuboid.  Aborting\n");
-        return;
+        char Buffer[500];
+        sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
+                        "Body %d (named %s) is designated neither a cuboid nor from FEB file\n"
+                        "However, each body must either be from FEB file or a cuboid (but not both)\n",
+                        i,Names[i].c_str());
+        throw Bad_Body_Setup(Buffer);
       } // if(Is_Cuboid[i] == false && Is_Boundary == false) {
 
       //////////////////////////////////////////////////////////////////////////

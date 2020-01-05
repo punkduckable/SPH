@@ -14,7 +14,7 @@ namespace Simulation {
 
   void Setup_Cuboid(Body & Body_In, const unsigned m);
   void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
-  void Body_Needle_Set_Up(void);                           // Set up Body/Needle simulation
+  void Bodies_Setup(void);                                 // Set up Body/Needle simulation
   void Set_Body_Members(Body & Body_In);                   // Set default body members
 
 
@@ -81,7 +81,6 @@ namespace Simulation {
   extern Vector * Dimensions;                    // Dimensions of cuboids (only applicable for cuboids)
   extern Vector * Offset;                        // Poisition offset (only applicable for cuboids)
   extern Vector * Initial_Velocity;              // Initial velocity condition
-  extern double * Num_Particles;                 // The number of particles in each body
   extern Materials::Material * Simulation_Materials;       // Each bodies material
 } // namespace Simulation {
 

@@ -23,7 +23,6 @@ namespace Simulation {
   Vector * Dimensions = nullptr;                 // Dimensions of cuboids (only applicable for cuboids)
   Vector * Offset = nullptr;                     // Poisition offset (only applicable for cuboids)
   Vector * Initial_Velocity = nullptr;           // Initial velocity condition
-  double * Num_Particles = nullptr;              // The number of particles in each body
   Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
 } // namespace Simulation {
 
@@ -34,20 +33,19 @@ namespace Simulation {
 ////////////////////////////////////////////////////////////////////////////////
 // Simulation set up
 
-void Simulation::Body_Needle_Set_Up(void) {
+void Simulation::Bodies_Setup(void) {
   Num_Bodies                                   = 2;
 
   Names = new std::string[Num_Bodies];
+  From_FEB_File = new bool[Num_Bodies];
   Is_Cuboid = new bool[Num_Bodies];
   Is_Boundary = new bool[Num_Bodies];
   Is_Damagable = new bool[Num_Bodies];
-  From_FEB_File = new bool[Num_Bodies];
   Steps_Per_Update = new unsigned[Num_Bodies];
   IPS = new double[Num_Bodies];
   Dimensions = new Vector[Num_Bodies];
   Offset = new Vector[Num_Bodies];
   Initial_Velocity = new Vector[Num_Bodies];
-  Num_Particles = new double[Num_Bodies];
   Simulation_Materials = new Materials::Material[Num_Bodies];
 
   Names[0]                                     = "Body";
@@ -73,7 +71,7 @@ void Simulation::Body_Needle_Set_Up(void) {
   Offset[1]                                    = {10-2, 11, 10-2};
   Initial_Velocity[1]                          = {0, -50, 0};
   Simulation_Materials[1]                      = Materials::Stainless_Steel;
-} // void Simulation::Body_Needle_Set_Up(void) {
+} // void Simulation::Bodies_Setup(void) {
 
 
 
