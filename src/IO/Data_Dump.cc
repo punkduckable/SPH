@@ -1,75 +1,59 @@
 #include "Data_Dump.h"
 #include "Body/Body.h"
 #include "Particle/Particle.h"
-#include "VTK_File.h"
 
-void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) {
+void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
   /* This Function is used to save a simulation. This function prints all the
   information that is needed to re-create the state of a simulation. This is
-  done by first printing information on the number of particle arrays, as well
-  as their names. Once this is done, each particle array gets a new file that
+  done by first printing information on the number of bodies, as well
+  as their names. Once this is done, each Body gets a new file that
   contains all the information needed to re-create that Body object.
   The intent of this is to allow the user 'save' a simulation, allowing the user
   to - at a future point - pick up where they left off.*/
 
-  unsigned i,j;
 
   // First, we need to know how many times each Body has been printed
-  unsigned * VTK_File_Numbers = new unsigned[Num_Arrays];
-  unsigned * Force_File_Numbers = new unsigned[Num_Arrays];
+  unsigned * Position_File_Numbers = new unsigned[Num_Bodies];
+  unsigned * Force_File_Numbers = new unsigned[Num_Bodies];
 
-  for(i = 0;  i < Num_Arrays; i++) {
-    // First, get the ith particle's array VTK file number
-    for(j = 0; j < VTK_File::Name_List.Node_Count(); j++) {
-      if(VTK_File::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
-        VTK_File_Numbers[i] = VTK_File::File_Number_List[j];
-        break;
-      } // if(VTK_File::Name_List[j].compare(Arrays[i].Get_Name()) == 0) {
-    } // for(j = 0; j < VTK_File::Name_List.Node_Count(); j++) {
-
-    /* Now we need to check if the ith particle array is not in the list. This
-    would happen if j == VTK_File::Name_List.Node_Count (if the for loop
-    never broke). If this is the case, then we should set VTK_File_Number[i]
-    to zero. */
-    if(j == VTK_File::Name_List.Node_Count()) { VTK_File_Numbers[i] = 0; }
-
-    // Now, get the ith particle's array Force file number
-    for(j = 0; j < Num_Arrays; j++) {
-      Force_File_Numbers[j] = Arrays[j].Times_Printed_Particle_Forces;
-    } // for(j = 0; j < Num_Arrays; j++) {
-  } // for(i = 0;  i < Num_Arrays; i++) {
+  // First, determine how many times each body has exported particle positions
+  // and Particle forces
+  for(unsigned i = 0; i < Num_Bodies; i++) {
+    Position_File_Numbers[i] = Bodies[i].Times_Printed_Particle_Positions;
+    Force_File_Numbers[i] = Bodies[i].Times_Printed_Particle_Forces;
+  } // for(unsigned i = 0; i < Num_Bodies; i++) {
 
   // Open a new file. This file will store the number of Bodys as
   // well as their names.
   FILE * File = fopen("../Files/Saves/Body_Data.txt","w");
 
-  // Print number of Arrays to this file
-  fprintf(File,   "Number of Particle Arrays:    %u\n\n", Num_Arrays);
+  // Print number of Bodies to this file
+  fprintf(File,   "Number of Bodies:    %u\n\n", Num_Bodies);
 
   // Now print each Body's name and other essential information
-  for(i = 0; i < Num_Arrays; i++) {
-    fprintf(File, "Body %3u name:      %s\n", i, Arrays[i].Get_Name().c_str());
-    fprintf(File, "     Is a Cuboid:             %u\n",    Arrays[i].Get_Cuboid());
+  for(unsigned i = 0; i < Num_Bodies; i++) {
+    fprintf(File, "Body %3u name:      %s\n", i, Bodies[i].Get_Name().c_str());
+    fprintf(File, "     Is a Cuboid:             %u\n",    Bodies[i].Get_Cuboid());
 
-    if(Arrays[i].Get_Cuboid() == true) {
-      fprintf(File, "          X_SIDE_LENGTH:      %u\n",  Arrays[i].Get_X_SIDE_LENGTH());
-      fprintf(File, "          Y_SIDE_LENGTH:      %u\n",  Arrays[i].Get_Y_SIDE_LENGTH());
-      fprintf(File, "          Z_SIDE_LENGTH:      %u\n",  Arrays[i].Get_Z_SIDE_LENGTH());
-    } // if(Arrays[i].Get_Cuboid() == true) {
+    if(Bodies[i].Get_Cuboid() == true) {
+      fprintf(File, "          X_SIDE_LENGTH:      %u\n",  Bodies[i].Get_X_SIDE_LENGTH());
+      fprintf(File, "          Y_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Y_SIDE_LENGTH());
+      fprintf(File, "          Z_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Z_SIDE_LENGTH());
+    } // if(Bodies[i].Get_Cuboid() == true) {
 
-    fprintf(File, "     Is a Boundary:           %u\n",    Arrays[i].Get_Boundary());
-    fprintf(File, "     Is Damageable:           %u\n",    Arrays[i].Get_Damagable());
-    fprintf(File, "     Number of particles:     %u\n",    Arrays[i].Get_Num_Particles());
+    fprintf(File, "     Is a Boundary:           %u\n",    Bodies[i].Get_Boundary());
+    fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Damagable());
+    fprintf(File, "     Number of particles:     %u\n",    Bodies[i].Get_Num_Particles());
 
-    fprintf(File, "     VTK_File number:         %u\n",    VTK_File_Numbers[i]);
+    fprintf(File, "     Position number:         %u\n",    Position_File_Numbers[i]);
     fprintf(File, "     Force_File number:       %u\n\n",  Force_File_Numbers[i]);
-  } //   for(i = 0; i < Num_Arrays; i++) {
+  } // for(unsigned i = 0; i < Num_Bodies; i++) {
 
-  // Now print each Particle array to its own file
-  for(i = 0; i < Num_Arrays; i++) { Save_Body(Arrays[i]); }
+  // Now print each Body to its own file
+  for(unsigned i = 0; i < Num_Bodies; i++) { Save_Body(Bodies[i]); }
 
   fclose(File);
-} // void Data_Dump::Save_Simulation(const Body * Arrays, const unsigned Num_Arrays) {
+} // void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
 
 
 
@@ -77,7 +61,7 @@ void Data_Dump::Save_Body(const Body & Body_In) {
   /* This function prints all data needed to reconstruct a particular
   Body. This information is printed to a file named after the
   Body that it's printing from. This prints the basic material
-  properties of the particles array, as well as all the information that is
+  properties of the body, as well as all the information that is
   needed to recreate all the particles in that Body. The intent of
   this is to allow the user 'save' a Body object. */
 
@@ -206,7 +190,7 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File) {
 
 
 
-int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
+int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   // First, open up the Particle_data file
   FILE * File = fopen("../Files/Saves/Body_Data.txt","r");
   fseek(File, 0, SEEK_SET);
@@ -216,21 +200,21 @@ int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
     return 1;
   } // if(File == nullptr) {
 
-  // First, read how many Particle arrays we need to make.
+  // First, read how many Bodies we need to make.
   unsigned Buf_Length = 100;
   char Buf[Buf_Length];                                 // Buffer to store text from file
   unsigned uBuf;
   std::string strBuf;
-  fread(Buf, 1, 30, File);   fscanf(File, " %u\n\n", &Num_Arrays);
+  fread(Buf, 1, 30, File);   fscanf(File, " %u\n\n", &Num_Bodies);
 
-  // Now use this information to genrate our arrays
-  *Array_Ptr = new Body[Num_Arrays];
+  // Now use this information to genrate our Bodies
+  *Bodies_Ptr = new Body[Num_Bodies];
 
   Vector Dimensions;
   unsigned Is_Cuboid;
 
-  // Now read in each array's name + Fundamental properties
-  for(unsigned i = 0; i < Num_Arrays; i++) {
+  // Now read in each Body's name + Fundamental properties
+  for(unsigned i = 0; i < Num_Bodies; i++) {
     /* We want to get each particle's name. The issue here is that there's no
     way to directly scan to a string. Instead, we can scan to a char array, Buf
     in this case. This copies over the contents of the name as well as a null
@@ -240,14 +224,14 @@ int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
     (which may not be the case if the string is too long), we manually assign
     the final element of Buf to \0 before doing this (Otherwise, we'd get a segmenetation
     fault if the name was longer than 100 characters). We then allocate a new
-    particle array and assign its name to the string. */
+    body and assign its name to the string. */
 
     fread(Buf, 1, 30, File); fscanf(File, " %s\n", Buf);
     Buf[Buf_Length-1] = '\0';
     strBuf = Buf;
 
     // Set Bodys name.
-    (*Array_Ptr)[i].Set_Name(strBuf);
+    (*Bodies_Ptr)[i].Set_Name(strBuf);
 
     // Now determine if this Body is a Cuboid
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &Is_Cuboid);
@@ -256,42 +240,40 @@ int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
       fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(0) = uBuf;
       fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(1) = uBuf;
       fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(2) = uBuf;
-      (*Array_Ptr)[i].Set_Cuboid_Dimensions(Dimensions);
+      (*Bodies_Ptr)[i].Set_Cuboid_Dimensions(Dimensions);
     } // if(uBuf == true) {
 
     // Now read in the 'Is a boundary' flag
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
-    (*Array_Ptr)[i].Set_Boundary(uBuf);
+    (*Bodies_Ptr)[i].Set_Boundary(uBuf);
 
     // Now read in the 'Is damageabl' flag
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
-    (*Array_Ptr)[i].Set_Damageable(uBuf);
+    (*Bodies_Ptr)[i].Set_Damageable(uBuf);
 
     // Now read in number of particles and use if this Body is not a cuboid
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
-    if(Is_Cuboid == false) { (*Array_Ptr)[i].Set_Num_Particles(uBuf); }
+    if(Is_Cuboid == false) { (*Bodies_Ptr)[i].Set_Num_Particles(uBuf); }
 
     // Finally read in File number information
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
-    VTK_File::Name_List.Add_Back((*Array_Ptr)[i].Get_Name());
-    VTK_File::File_Number_List.Add_Back(uBuf);
+    (*Bodies_Ptr)[i].Times_Printed_Particle_Positions = uBuf;
 
     fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
-    (*Array_Ptr)[i].Times_Printed_Particle_Forces = uBuf;
-  } // for(unsigned i = 0; i < Num_Arrays; i++) {
+    (*Bodies_Ptr)[i].Times_Printed_Particle_Forces = uBuf;
+  } // for(unsigned i = 0; i < Num_Bodiess; i++) {
 
-  // pass the newly created particle arrays to the 'load particle array' function
-  for(unsigned i = 0; i < Num_Arrays; i++) { Load_Body((*Array_Ptr)[i]); }
+  // pass the newly created body's to the 'load body' function
+  for(unsigned i = 0; i < Num_Bodies; i++) { Load_Body((*Bodies_Ptr)[i]); }
 
   fclose(File);
   return 0;
-} // int Data_Dump::Load_Simulation(Body ** Array_Ptr, unsigned & Num_Arrays) {
+} // int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
 
 int Data_Dump::Load_Body(Body & Body_In) {
-  /* This function is designed to read in particle and use it to create a
-  particles array. */
+  /* This function is designed to read in particle and use it to create a Body */
 
   // First, open up the desired file.
   unsigned Num_Particles = 0;

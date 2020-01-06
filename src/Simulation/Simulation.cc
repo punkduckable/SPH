@@ -3,7 +3,6 @@
 #include "Particle/Particle.h"
 #include "Tensor/Tensor.h"
 #include "Vector/Vector.h"
-#include "IO/VTK_File.h"
 #include "IO/Data_Dump.h"
 #include "Errors.h"
 #if defined(_OPENMP)
@@ -53,7 +52,7 @@ void Simulation::Run_Simulation(void) {
   // initial configuration
   if(Load_Data_From_File == false) {
     for(b = 0; b < Num_Bodies; b++) {
-      VTK_File::Export_Particle_Positions(Bodies[b]);
+      Bodies[b].Export_Particle_Positions();
     } // for(b = 0; b < Num_Bodies; b++) {
 
     if(Print_Forces == true) {
@@ -263,7 +262,7 @@ void Simulation::Run_Simulation(void) {
 
       #pragma omp for nowait
       for(b = 0; b < Num_Bodies; b++ ) {
-        VTK_File::Export_Particle_Positions(Bodies[b]);
+        Bodies[b].Export_Particle_Positions();
       } // for(b = 0; b < Num_Bodies; b++ ) {
 
       if(Print_Forces == true) {
@@ -274,8 +273,10 @@ void Simulation::Run_Simulation(void) {
       } // if(Print_Forces == true) {
 
       if(Print_Net_Force == true) {
-        #pragma omp single nowait
-        Bodies[1].Print_Net_External_Force(t+1);
+        #pragma omp for nowait
+        for(b = 0; b < Num_Bodies; b++) {
+          Bodies[b].Export_Net_External_Force(t+1);
+        } // for(b = 0; b < Num_Bodies; b++) {
       } // if(Print_Net_Force == true) {
     } // if((k+1)%100 == 0) {
 

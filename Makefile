@@ -12,15 +12,8 @@ OBJS :=            Main.o \
 					         Vector.o \
 	                 Tensor.o \
 									 Particle.o \
-									 Body.o \
-									 Neighbors.o \
-									 Update.o \
-									 Damage.o \
-									 Contact.o \
-									 Simulation.o \
-									 Simulation_Setup.o \
-									 Timing.o \
-									 VTK_File.o \
+									 Body.o Neighbors.o Update.o Damage.o Contact.o Body_IO.o \
+									 Simulation.o Simulation_Setup.o Timing.o \
 									 Data_Dump.o \
 									 FEB_File.o
 
@@ -97,25 +90,28 @@ obj/Particle.o: Particle.cc Particle.h Simulation.h Vector.h Tensor.h Errors.h B
 
 
 # Body class
-obj/Body.o: Body.cc Body.h Simulation.h Vector.h Tensor.h Errors.h Body.h
+obj/Body.o: Body.cc Body.h Vector.h Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Neighbors.o: Neighbors.cc obj/Body.o
+obj/Neighbors.o: Neighbors.cc Body.h Particle.h Vector.h List.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Update.o: Update.cc obj/Body.o
+obj/Update.o: Update.cc Body.h Simulation.h Particle.h Vector.h List.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Damage.o: Damage.cc obj/Body.o
+obj/Damage.o: Damage.cc Body.h Particle.h Vector.h List.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Contact.o: Contact.cc obj/Body.o
+obj/Contact.o: Contact.cc Body.h Simulation.h Particle.h Vector.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 
 # Simulation
-obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Tensor.h Vector.h VTK_File.h Data_Dump.h
+obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Tensor.h Vector.h Data_Dump.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h Particle.h Vector.h FEB_File.h
@@ -127,10 +123,7 @@ obj/Timing.o: Timing.cc Simulation.h
 
 
 # IO
-obj/Data_Dump.o: Data_Dump.cc Data_Dump.h VTK_File.h Particle.h Body.h
-	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
-
-obj/VTK_File.o: VTK_File.cc VTK_File.h Data_Dump.h Particle.h Body.h
+obj/Data_Dump.o: Data_Dump.cc Data_Dump.h Particle.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/FEB_File.o: FEB_File.cc FEB_File.h Particle.h Body.h

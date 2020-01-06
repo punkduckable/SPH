@@ -52,7 +52,7 @@ namespace Simulation {
   const unsigned char Load_Data_From_File        = 0;
   const unsigned char Save_Data_To_File          = 0;
   const unsigned char Print_Forces               = 1;
-  const unsigned char Print_Net_Force            = 0;
+  const unsigned char Print_Net_Force            = 1;
   const unsigned TimeSteps_Between_Prints        = 1000;
 
   // TimeStep paramters

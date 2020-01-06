@@ -2,6 +2,7 @@
 #define BODY_HEADER
 
 #define DAMAGE_MONITOR
+#define IO_MONITOR
 
 #include "Materials.h"
 #include "Classes.h"
@@ -73,20 +74,25 @@ class Body {
     // Printing Parameters
     unsigned Times_Printed_Net_External_Force = 0;
     unsigned Times_Printed_Particle_Forces = 0;
+    unsigned Times_Printed_Particle_Positions = 0;
 
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Private methods
-    // Defined in Body.cc
+    void Set_h(const double h_In);               // Defined in Body.cc
 
-    void Set_h(const double h_In);
+    void Add_Point_Data(FILE * File,             // Defined in Body_IO.cc
+                        char * Weight_Name,      // Helps Export_Particle_Positions.
+                        unsigned Num_Particles,
+                        double * Data);
+
+
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors, destructor
     // Defined in Body.cc
-
     Body(void);                                  // default constructor
     Body(const unsigned Num_Particles_In);       // generate array constructor
     Body(const Body & Ar_In) = delete;           // deleted copy constructor
@@ -98,7 +104,6 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Operator overloading
     // Defined in Body.cc
-
     Body & operator=(Body & Ar_In) = delete;     // deleted = operator
     Particle & operator[](const unsigned i);
     const Particle & operator[](const unsigned i) const;
@@ -108,7 +113,6 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Neighbor methods.
     // Defined in Neighbors.cc
-
     void Set_Neighbors(const unsigned i,         // Set Neighbors
                        const unsigned Num_Neighbors_In,
                        const unsigned * Neighbor_ID_Array);
@@ -124,7 +128,6 @@ class Body {
     //////////////////////////////////////////////////////////////////////////////
     // Update methods.
     // Defined in Update.cc
-
     void Update_P(const double dt);             // Update Second Piola-Kirchhoff stress tensor of each particle in a Body
     void Update_x(const double dt);             // Updates spacial position of each particle in a Body
 
@@ -133,7 +136,6 @@ class Body {
     //////////////////////////////////////////////////////////////////////////////
     // Damage methods.
     // Defined in Damage.cc
-
     void Remove_Damaged_Particle(const unsigned i);
 
 
@@ -141,7 +143,6 @@ class Body {
     //////////////////////////////////////////////////////////////////////////////
     // Contact methods.
     // Defined in Contact.cc
-
     static void Contact(Body & Body_A,
                         Body & Body_B);
 
@@ -150,7 +151,6 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Setters
     // Defined in Body.cc
-
     void Set_Num_Particles(const unsigned Num_Particles_In);
     void Set_Name(const std::string & S_In);
 
@@ -178,7 +178,6 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Getters
     // Defined in Body.cc
-
     unsigned Get_Num_Particles(void) const;
     std::string Get_Name(void) const;
 
@@ -213,12 +212,11 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Printing methods
-    // Defined in Body.cc
-
-    void Print_Net_External_Force(const unsigned time_step);
-    void Print_Parameters(void) const;
-    void Export_Particle_Forces(void);
-
+    // Defined in Body_IO.cc
+    void Print_Parameters(void) const;                               // Prints to command line
+    void Export_Net_External_Force(const unsigned time_step);        // Prints to file
+    void Export_Particle_Forces(void);                               // Prints to file
+    void Export_Particle_Positions(void);                            // Prints to file
 
 
     ////////////////////////////////////////////////////////////////////////////
