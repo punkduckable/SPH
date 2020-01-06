@@ -336,11 +336,11 @@ void Body::Print_Net_External_Force(const unsigned time_step) {
 
 
 
-void Body::Print_Particle_Forces(void) {
+void Body::Export_Particle_Forces(void) {
   // Create a file path for the new file (based on the Body's name
   // and time_step)
-  char Buf[6];
-  sprintf(Buf,"%05u",Times_Printed_Particle_Forces);
+  char Buf[10];
+  sprintf(Buf,"%05u.txt",Times_Printed_Particle_Forces);
   std::string File_Path = "./IO/Force_Files/";
   File_Path += (*this).Name.c_str();
   File_Path +=  "_Force_";
@@ -382,4 +382,4 @@ void Body::Print_Particle_Forces(void) {
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   fclose(File);
-} // void Body::Print_Particle_Forces(void) {
+} // void Body::Export_Particle_Forces(void) {

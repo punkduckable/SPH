@@ -78,11 +78,15 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Private methods
+    // Defined in Body.cc
+
     void Set_h(const double h_In);
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors, destructor
+    // Defined in Body.cc
+
     Body(void);                                  // default constructor
     Body(const unsigned Num_Particles_In);       // generate array constructor
     Body(const Body & Ar_In) = delete;           // deleted copy constructor
@@ -93,6 +97,8 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Operator overloading
+    // Defined in Body.cc
+
     Body & operator=(Body & Ar_In) = delete;     // deleted = operator
     Particle & operator[](const unsigned i);
     const Particle & operator[](const unsigned i) const;
@@ -101,7 +107,8 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Neighbor methods.
-    // These functions are defined in Neighbors.cc
+    // Defined in Neighbors.cc
+
     void Set_Neighbors(const unsigned i,         // Set Neighbors
                        const unsigned Num_Neighbors_In,
                        const unsigned * Neighbor_ID_Array);
@@ -116,7 +123,8 @@ class Body {
 
     //////////////////////////////////////////////////////////////////////////////
     // Update methods.
-    // These function are defined in Update.cc
+    // Defined in Update.cc
+
     void Update_P(const double dt);             // Update Second Piola-Kirchhoff stress tensor of each particle in a Body
     void Update_x(const double dt);             // Updates spacial position of each particle in a Body
 
@@ -124,14 +132,16 @@ class Body {
 
     //////////////////////////////////////////////////////////////////////////////
     // Damage methods.
-    // This function is defined in Damage.cc
+    // Defined in Damage.cc
+
     void Remove_Damaged_Particle(const unsigned i);
 
 
 
     //////////////////////////////////////////////////////////////////////////////
     // Contact methods.
-    // This Function is defined in Contact.cc
+    // Defined in Contact.cc
+
     static void Contact(Body & Body_A,
                         Body & Body_B);
 
@@ -139,6 +149,8 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters
+    // Defined in Body.cc
+
     void Set_Num_Particles(const unsigned Num_Particles_In);
     void Set_Name(const std::string & S_In);
 
@@ -165,6 +177,8 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Getters
+    // Defined in Body.cc
+
     unsigned Get_Num_Particles(void) const;
     std::string Get_Name(void) const;
 
@@ -199,9 +213,11 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Printing methods
+    // Defined in Body.cc
+
     void Print_Net_External_Force(const unsigned time_step);
     void Print_Parameters(void) const;
-    void Print_Particle_Forces(void);
+    void Export_Particle_Forces(void);
 
 
 

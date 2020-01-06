@@ -58,7 +58,7 @@ void Simulation::Run_Simulation(void) {
 
     if(Print_Forces == true) {
       for(b = 0; b < Num_Bodies; b++) {
-        Bodies[b].Print_Particle_Forces();
+        Bodies[b].Export_Particle_Forces();
       } // for(b = 0; b < Num_Bodies; b++) {
     } // if(Print_Forces == true) {
   } // if(Load_Data_From_File == false) {
@@ -269,7 +269,7 @@ void Simulation::Run_Simulation(void) {
       if(Print_Forces == true) {
         #pragma omp for nowait
         for(b = 0; b < Num_Bodies; b++ ) {
-          Bodies[b].Print_Particle_Forces();
+          Bodies[b].Export_Particle_Forces();
         } // for(b = 0; b < Num_Bodies; b++ ) {
       } // if(Print_Forces == true) {
 

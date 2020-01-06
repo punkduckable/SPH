@@ -59,14 +59,12 @@ void VTK_File::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Part
 
 
 void VTK_File::Export_Particle_Positions(const Body & Body_In) {
+  printf("Exporting particle positions for %s\n",Body_In.Get_Name().c_str());
+
   const unsigned Num_Particles = Body_In.Get_Num_Particles();
 
   // Set up file
-  std::string File_Name = Get_File_Name(Body_In.Get_Name());
-
-  std::string File_Path = "../Files/Position_Files/";
-  File_Path += File_Name;
-
+  std::string File_Path = "./IO/Position_Files/" + Get_File_Name(Body_In.Get_Name());
   FILE * File = fopen(File_Path.c_str(), "w");
 
   //////////////////////////////////////////////////////////////////////////////
