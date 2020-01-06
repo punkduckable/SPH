@@ -7,12 +7,12 @@
 
 void Body::Print_Parameters(void) const {
   printf(         "Name:                         %s\n",    Name.c_str());
-  printf(         "Is a cuboid:                  %u\n",    (unsigned)Is_Cuboid);
-  if(Is_Cuboid == true) {
+  printf(         "Is a Box:                     %u\n",    (unsigned)Is_Box);
+  if(Is_Box == true) {
     printf(       "X side length:                %u\n",    X_SIDE_LENGTH);
     printf(       "Y side length:                %u\n",    Y_SIDE_LENGTH);
     printf(       "Z side length:                %u\n",    Z_SIDE_LENGTH);
-  } // if(Is_Cuboid) {
+  } // if(Is_Box) {
 
   printf(         "Number of particles:          %u\n",    Num_Particles);
   printf(         "Partciles Array address:      %p\n",    Particles);

@@ -18,8 +18,8 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Body type parameters
 
-    // Cuboid parameters.
-    bool Is_Cuboid = false;
+    // Box parameters.
+    bool Is_Box = false;
     unsigned X_SIDE_LENGTH = 0;
     unsigned Y_SIDE_LENGTH = 0;
     unsigned Z_SIDE_LENGTH = 0;
@@ -117,7 +117,7 @@ class Body {
                        const unsigned Num_Neighbors_In,
                        const unsigned * Neighbor_ID_Array);
     void Find_Neighbors(void);                   // Generate neighbor list for every particle in 'Particles' array
-    void Find_Neighbors_Cuboid(void);            // Generate neighbor list for 'cuboid' geometry
+    void Find_Neighbors_Box(void);               // Generate neighbor list for 'Box' geometry
     bool Are_Neighbors(const unsigned i,         // Returns true if particles i,j are neighbors
                        const unsigned j) const;
     void Remove_Neighbor(const unsigned i,       // Removes one of particle i's neighbors
@@ -164,7 +164,7 @@ class Body {
     void Set_Tau(const double Tau_In);
     void Set_Damageable(const bool D_In);
 
-    void Set_Cuboid_Dimensions(const Vector & Dimensions);
+    void Set_Box_Dimensions(const Vector & Dimensions);
 
     void Set_Boundary(const bool Boundary_In);
 
@@ -199,7 +199,7 @@ class Body {
     double Get_Tau(void) const;
     bool Get_Damagable(void) const;
 
-    bool Get_Cuboid(void) const;
+    bool Get_Box(void) const;
     unsigned Get_X_SIDE_LENGTH(void) const;
     unsigned Get_Y_SIDE_LENGTH(void) const;
     unsigned Get_Z_SIDE_LENGTH(void) const;

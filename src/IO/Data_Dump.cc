@@ -33,13 +33,13 @@ void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) 
   // Now print each Body's name and other essential information
   for(unsigned i = 0; i < Num_Bodies; i++) {
     fprintf(File, "Body %3u name:      %s\n", i, Bodies[i].Get_Name().c_str());
-    fprintf(File, "     Is a Cuboid:             %u\n",    Bodies[i].Get_Cuboid());
+    fprintf(File, "     Is a Box:                %u\n",    Bodies[i].Get_Box());
 
-    if(Bodies[i].Get_Cuboid() == true) {
+    if(Bodies[i].Get_Box() == true) {
       fprintf(File, "          X_SIDE_LENGTH:      %u\n",  Bodies[i].Get_X_SIDE_LENGTH());
       fprintf(File, "          Y_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Y_SIDE_LENGTH());
       fprintf(File, "          Z_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Z_SIDE_LENGTH());
-    } // if(Bodies[i].Get_Cuboid() == true) {
+    } // if(Bodies[i].Get_Box() == true) {
 
     fprintf(File, "     Is a Boundary:           %u\n",    Bodies[i].Get_Boundary());
     fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Damagable());
@@ -81,12 +81,12 @@ void Data_Dump::Save_Body(const Body & Body_In) {
   // Let's begin by printing the Body paramaters
   fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
 
-  fprintf(File,   "Is a cuboid:                  %u\n",    Body_In.Get_Cuboid());
-  if(Body_In.Get_Cuboid() == true) {
+  fprintf(File,   "Is a Box:                     %u\n",    Body_In.Get_Box());
+  if(Body_In.Get_Box() == true) {
     fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Body_In.Get_X_SIDE_LENGTH());
     fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Body_In.Get_Y_SIDE_LENGTH());
     fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Body_In.Get_Z_SIDE_LENGTH());
-  } //   if(Body_In.Get_Cuboid() == true) {
+  } //   if(Body_In.Get_Box() == true) {
   fprintf(File,   "Is a Boundary:                %u\n",    Body_In.Get_Boundary());
   fprintf(File,   "Is Damageable:                %u\n\n",  Body_In.Get_Damagable());
 
@@ -111,8 +111,8 @@ void Data_Dump::Save_Body(const Body & Body_In) {
   fprintf(File,   "       -- Particles --\n");
   fprintf(File,   "Number of particles:          %u\n\n",    Body_In.Get_Num_Particles());
 
-  // Finally, let's print the cuboid paramaters (should be removed if not using
-  // a cuboid)
+  // Finally, let's print the Box paramaters (should be removed if not using
+  // a Box)
   //fprintf(File,   "X Side Length:                %u\n",    Simulation::X_SIDE_LENGTH);
   //fprintf(File,   "Y Side Length:                %u\n",    Simulation::Y_SIDE_LENGTH);
   //fprintf(File,   "Z Side Length:                %u\n\n",  Simulation::Z_SIDE_LENGTH);
@@ -211,7 +211,7 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   *Bodies_Ptr = new Body[Num_Bodies];
 
   Vector Dimensions;
-  unsigned Is_Cuboid;
+  unsigned Is_Box;
 
   // Now read in each Body's name + Fundamental properties
   for(unsigned i = 0; i < Num_Bodies; i++) {
@@ -233,14 +233,14 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     // Set Bodys name.
     (*Bodies_Ptr)[i].Set_Name(strBuf);
 
-    // Now determine if this Body is a Cuboid
-    fread(Buf, 1, 25, File); fscanf(File," %u\n", &Is_Cuboid);
+    // Now determine if this Body is a Box
+    fread(Buf, 1, 25, File); fscanf(File," %u\n", &Is_Box);
 
-    if(Is_Cuboid == true) {
+    if(Is_Box == true) {
       fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(0) = uBuf;
       fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(1) = uBuf;
       fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(2) = uBuf;
-      (*Bodies_Ptr)[i].Set_Cuboid_Dimensions(Dimensions);
+      (*Bodies_Ptr)[i].Set_Box_Dimensions(Dimensions);
     } // if(uBuf == true) {
 
     // Now read in the 'Is a boundary' flag
@@ -251,9 +251,9 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     (*Bodies_Ptr)[i].Set_Damageable(uBuf);
 
-    // Now read in number of particles and use if this Body is not a cuboid
+    // Now read in number of particles and use if this Body is not a Box
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
-    if(Is_Cuboid == false) { (*Bodies_Ptr)[i].Set_Num_Particles(uBuf); }
+    if(Is_Box == false) { (*Bodies_Ptr)[i].Set_Num_Particles(uBuf); }
 
     // Finally read in File number information
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
@@ -302,17 +302,17 @@ int Data_Dump::Load_Body(Body & Body_In) {
   fprintf(File,   "       -- Particles --\n");
   fprintf(File,   "Number of particles:          %u\n\n",    Body_In.Get_Num_Particles());
 
-  // We already have the Body's name, cuboid/boundary flags, and
-  // dimensions (if cuboid). We can therefore skip over these lines.
+  // We already have the Body's name, Box/boundary flags, and
+  // dimensions (if Box). We can therefore skip over these lines.
   fgets(Buf, 99, File);                          // Skip 'name' line.
   fgets(Buf, 99, File);                          // Skip blank line
-  fgets(Buf, 99, File);                          // Skip 'Is a cuboid' line
+  fgets(Buf, 99, File);                          // Skip 'Is a Box' line
 
-  if(Body_In.Get_Cuboid() == true) {           // if a cuboid, skip the 3 dimension lines.
+  if(Body_In.Get_Box() == true) {                // if a Box, skip the 3 dimension lines.
     fgets(Buf, 99, File);
     fgets(Buf, 99, File);
     fgets(Buf, 99, File);
-  } // if(Body_In.Get_Cuboid() == true) {
+  } // if(Body_In.Get_Box() == true) {
 
   fgets(Buf, 99, File);                          // Skip 'is a boundary' line
   fgets(Buf, 99, File);                          // Skip 'Is Damageable' line

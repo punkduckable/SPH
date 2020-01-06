@@ -16,7 +16,7 @@ Body::Body(void) {
   X_SIDE_LENGTH = 0;
   Y_SIDE_LENGTH = 0;
   Z_SIDE_LENGTH = 0;
-  Is_Cuboid = false;
+  Is_Box = false;
   Is_Boundary = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
@@ -42,7 +42,7 @@ Body::Body(const unsigned Num_Particles_In) {
   X_SIDE_LENGTH = 0;
   Y_SIDE_LENGTH = 0;
   Z_SIDE_LENGTH = 0;
-  Is_Cuboid = false;
+  Is_Box = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -97,10 +97,10 @@ void Body::Set_h(const double h_In) {
 // Public
 
 void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
-  if(Is_Cuboid == true) {
-    printf("This is a cuboid... set the x, y, and z side lengths\n");
+  if(Is_Box == true) {
+    printf("This is a Box... set the x, y, and z side lengths\n");
     return;
-  } // if(Is_Cuboid == true) {
+  } // if(Is_Box == true) {
 
   if(Num_Particles_In == 0) {
     printf("An array of particles must have AT LEAST 1 particle\n");
@@ -168,8 +168,8 @@ void Body::Set_Damageable(const bool D_In) { Damageable = D_In; }
 
 
 
-void Body::Set_Cuboid_Dimensions(const Vector & Dimensions) {
-  // Check if cuboid has already been set up
+void Body::Set_Box_Dimensions(const Vector & Dimensions) {
+  // Check if Box has already been set up
   if((*this).Particles_Set_Up == true) {
     printf("%s has already been set up! You can't change its dimensions\n", Name.c_str());
     return;
@@ -181,8 +181,8 @@ void Body::Set_Cuboid_Dimensions(const Vector & Dimensions) {
       return;
   } // if(Dimensions(0) == 0 || Dimensions(1) == 0 || Dimensions(2) == 0) {
 
-  // Now designate this Body as a Cuboid
-  Is_Cuboid = true;
+  // Now designate this Body as a Box
+  Is_Box = true;
 
   X_SIDE_LENGTH = Dimensions(0);
   Y_SIDE_LENGTH = Dimensions(1);
@@ -204,7 +204,7 @@ void Body::Set_Cuboid_Dimensions(const Vector & Dimensions) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
 
   (*this).Particles_Set_Up = true;
-} // void Body::Set_Cuboid_Dimensions(const Vector & Dimensions); {
+} // void Body::Set_Box_Dimensions(const Vector & Dimensions); {
 
 
 
@@ -252,17 +252,17 @@ unsigned char Body::Get_F_Index(void) const { return F_Index; }
 double Body::Get_Tau(void) const { return Tau; }
 bool Body::Get_Damagable(void) const { return Damageable; }
 
-bool Body::Get_Cuboid(void) const { return Is_Cuboid; }
+bool Body::Get_Box(void) const { return Is_Box; }
 unsigned Body::Get_X_SIDE_LENGTH(void) const {
-  assert( (*this).Is_Cuboid );
+  assert( (*this).Is_Box );
   return X_SIDE_LENGTH;
 } // unsigned Get_X_SIDE_LENGTH(void) const {
 unsigned Body::Get_Y_SIDE_LENGTH(void) const {
-  assert( (*this).Is_Cuboid );
+  assert( (*this).Is_Box );
   return Y_SIDE_LENGTH;
 } // unsigned Get_Y_SIDE_LENGTH(void) const {
 unsigned Body::Get_Z_SIDE_LENGTH(void) const {
-  assert( (*this).Is_Cuboid );
+  assert( (*this).Is_Box );
   return Z_SIDE_LENGTH;
 } // unsigned Get_Z_SIDE_LENGTH(void) const {
 

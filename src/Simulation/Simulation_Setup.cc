@@ -14,14 +14,14 @@
 namespace Simulation {
   unsigned Num_Bodies = 0;                       // Number of bodies in simulation
   std::string * Names = nullptr;                 // The names of each body (name must match File name if reading from FEB file)
-  bool * Is_Cuboid = nullptr;                    // Which bodies are cuboids
-  bool * Is_Boundary = nullptr;                  // Which bodies are boundaries (can be from FEB file or cuboid)
+  bool * Is_Box = nullptr;                       // Which bodies are Boxs
+  bool * Is_Boundary = nullptr;                  // Which bodies are boundaries (can be from FEB file or Box)
   bool * Is_Damagable = nullptr;                 // Which bodies can be damaged
   bool * From_FEB_File = nullptr;                // Which bodies will be read from file
   unsigned * Steps_Per_Update = nullptr;         // How many time steps pass between updating this Body's P-K tensor
   double * IPS = nullptr;                        // Inter particle spacing in mm.
-  Vector * Dimensions = nullptr;                 // Dimensions of cuboids (only applicable for cuboids)
-  Vector * Offset = nullptr;                     // Poisition offset (only applicable for cuboids)
+  Vector * Dimensions = nullptr;                 // Dimensions of Boxs (only applicable for Boxs)
+  Vector * Offset = nullptr;                     // Poisition offset (only applicable for Boxs)
   Vector * Initial_Velocity = nullptr;           // Initial velocity condition
   Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
 } // namespace Simulation {
@@ -38,7 +38,7 @@ void Simulation::Bodies_Setup(void) {
 
   Names = new std::string[Num_Bodies];
   From_FEB_File = new bool[Num_Bodies];
-  Is_Cuboid = new bool[Num_Bodies];
+  Is_Box = new bool[Num_Bodies];
   Is_Boundary = new bool[Num_Bodies];
   Is_Damagable = new bool[Num_Bodies];
   Steps_Per_Update = new unsigned[Num_Bodies];
@@ -49,7 +49,7 @@ void Simulation::Bodies_Setup(void) {
   Simulation_Materials = new Materials::Material[Num_Bodies];
 
   Names[0]                                     = "Body";
-  Is_Cuboid[0]                                 = true;
+  Is_Box[0]                                    = true;
   Is_Boundary[0]                               = false;
   Is_Damagable[0]                              = true;
   From_FEB_File[0]                             = false;
@@ -61,7 +61,7 @@ void Simulation::Bodies_Setup(void) {
   Simulation_Materials[0]                      = Materials::Default;
 
   Names[1]                                     = "Needle";
-  Is_Cuboid[1]                                 = true;
+  Is_Box[1]                                    = true;
   Is_Boundary[1]                               = false;
   Is_Damagable[1]                              = false;
   From_FEB_File[1]                             = false;
@@ -86,7 +86,7 @@ void Simulation::Set_Body_Members(Body & Body_In) {
 
 
 
-void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
+void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   unsigned i,j,k;
   TIME_TYPE time1;
 
@@ -149,7 +149,7 @@ void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
   if(Body_In.Get_Boundary() == false) {
     printf(         "Generating %s's neighbor lists...", Body_In.Get_Name().c_str());
     time1 = Get_Time();
-    Body_In.Find_Neighbors_Cuboid();
+    Body_In.Find_Neighbors_Box();
 
     #if defined(_OPENMP)
       time1 = omp_get_wtime() - time1;
@@ -170,7 +170,7 @@ void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
   */
-} // void Simulation::Setup_Cuboid(Body & Body_In, const unsigned m) {
+} // void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
 
 

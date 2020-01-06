@@ -96,9 +96,9 @@ void Simulation::Run_Simulation(void) {
     #pragma omp single
     {
     for(b = 0; b < Num_Bodies; b++) {
-      // Cuboid BCs
+      // Box BCs
       if(b == 0 && Time_Step_Index[0] == 0) {
-        Set_Cuboid_BCs(Bodies[b]);
+        Set_Box_BCs(Bodies[b]);
       } // if(b == 0 && Time_Step_Index[0] == 0) {
 
       // Needle BCs
@@ -379,42 +379,42 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
 
-      // A body can't both be a cuboid and be from an FEB file.
-      if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
+      // A body can't both be a Box and be from an FEB file.
+      if(Is_Box[i] == true && From_FEB_File[i] == true) {
         char Buffer[500];
         sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
-                        "Body %d (named %s) is designated as both a cuboid and from FEB file\n"
-                        "However, each body must either be from a FEB file or a cuboid (not both)\n",
+                        "Body %d (named %s) is designated as both a Box and from FEB file\n"
+                        "However, each body must either be from a FEB file or a Box (not both)\n",
                         i,Names[i].c_str());
         throw Bad_Body_Setup(Buffer);
-      } // if(Is_Cuboid[i] == true && From_FEB_File[i] == true) {
+      } // if(Is_Box[i] == true && From_FEB_File[i] == true) {
 
-      // A body must either be a cuboid or be from file. If it's neither, then
+      // A body must either be a Box or be from file. If it's neither, then
       // we have no way of setting it up.
-      if(Is_Cuboid[i] == false && From_FEB_File[i] == false) {
+      if(Is_Box[i] == false && From_FEB_File[i] == false) {
         char Buffer[500];
         sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
-                        "Body %d (named %s) is designated neither a cuboid nor from FEB file\n"
-                        "However, each body must either be from FEB file or a cuboid (but not both)\n",
+                        "Body %d (named %s) is designated neither a Box nor from FEB file\n"
+                        "However, each body must either be from FEB file or a Box (but not both)\n",
                         i,Names[i].c_str());
         throw Bad_Body_Setup(Buffer);
-      } // if(Is_Cuboid[i] == false && Is_Boundary == false) {
+      } // if(Is_Box[i] == false && Is_Boundary == false) {
 
       //////////////////////////////////////////////////////////////////////////
       // Now set up the Body's particles
 
       /* If the body is a boundary, we need to designate it as such.
-      note: this applies if the body is a cuboid, or from FEB file... anything
+      note: this applies if the body is a Box, or from FEB file... anything
       can be a boundary! */
       if(Is_Boundary[i] == true) {
         (*Bodies)[i].Set_Boundary(true);
       } // if(Is_Boundary[i] == true) {
 
-      // Set up body as a cuboid if it is a cuboid
-      if(Is_Cuboid[i] == true) {
-        (*Bodies)[i].Set_Cuboid_Dimensions(Dimensions[i]);
-        Setup_Cuboid((*Bodies)[i], i);
-      } // if(Is_Cuboid[i] == true) {
+      // Set up body as a Box if it is a Box
+      if(Is_Box[i] == true) {
+        (*Bodies)[i].Set_Box_Dimensions(Dimensions[i]);
+        Setup_Box((*Bodies)[i], i);
+      } // if(Is_Box[i] == true) {
 
       // if the body is from file, read it in
       else if(From_FEB_File[i] == true) {
@@ -433,7 +433,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
 
 
-void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
+void Simulation::Set_Box_BCs(Body & Box) {
   ////////////////////////////////////////////////////////////////////////
   /* Boundary conditions
   Here we set the BC's for the six sides of the cube. The faces are named
@@ -455,17 +455,17 @@ void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
   to the 'Left' and 'Right' faces point in the -Z and +Z directions
   respectivly. */
 
-  // Establish side lengths (we assume Cuboid is a cuboid)
-  unsigned X_SIDE_LENGTH = Cuboid.Get_X_SIDE_LENGTH();
-  unsigned Y_SIDE_LENGTH = Cuboid.Get_Y_SIDE_LENGTH();
-  unsigned Z_SIDE_LENGTH = Cuboid.Get_Z_SIDE_LENGTH();
+  // Establish side lengths (we assume Box is a Box)
+  unsigned X_SIDE_LENGTH = Box.Get_X_SIDE_LENGTH();
+  unsigned Y_SIDE_LENGTH = Box.Get_Y_SIDE_LENGTH();
+  unsigned Z_SIDE_LENGTH = Box.Get_Z_SIDE_LENGTH();
   unsigned i,j,k;
 
   // Front face (i = 0)
   i = 0;
   for(j = 0; j < Y_SIDE_LENGTH; j++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
     }
   }
 
@@ -473,7 +473,7 @@ void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
   i = X_SIDE_LENGTH-1;
   for(j = 0; j < Y_SIDE_LENGTH; j++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
+      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
     }
   }
 
@@ -481,8 +481,8 @@ void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
   j = 0;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
-      //(Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
+      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
+      //(Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
     }
   }
 
@@ -490,7 +490,7 @@ void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
   j = Y_SIDE_LENGTH-1;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      //(Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
+      //(Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
     }
   }
 
@@ -498,7 +498,7 @@ void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
   k = 0;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
     }
   }
 
@@ -506,10 +506,10 @@ void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
   k = Z_SIDE_LENGTH-1;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      (Cuboid)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
+      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
     }
   }
-} // void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
+} // void Simulation::Set_Box_BCs(Body & Box) {
 
 
 

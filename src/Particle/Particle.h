@@ -128,7 +128,7 @@ class Particle {
   // Friends, Printing
   friend void Particle_Tests(void);
   friend void Simulation::Run_Simulation(void);
-  friend void Simulation::Set_Cuboid_BCs(Body & Cuboid);
+  friend void Simulation::Set_Box_BCs(Body & Box);
   friend void Simulation::Set_Needle_BCs(Body & Needle);
   friend int Data_Dump::Load_Body(Body & Body_In);
   friend void Data_Dump::Load_Particle(Particle & P_In,

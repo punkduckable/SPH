@@ -139,11 +139,11 @@ void Body::Find_Neighbors(void) {
 
 
 
-void Body::Find_Neighbors_Cuboid(void) {
-  assert(Is_Cuboid == true);
+void Body::Find_Neighbors_Box(void) {
+  assert(Is_Box == true);
 
   /* This function is a modified version of the Neighbor List generating
-  function that is specialized for Cuboid particle geometries.
+  function that is specialized for Box particle geometries.
 
   Let us establish a few definitions:
   By a 'Vertical Layer' we mean a sheet of particles that all have the same x
@@ -167,7 +167,7 @@ void Body::Find_Neighbors_Cuboid(void) {
   it has no choice but to search through EVERY other particle in the Particles
   array. If the Particles array has M particles then there are a total of M*M
   neighbor tests performed in all. This is highly inefficient. However, if
-  we're working with a cuboid of particles, then the particles are stored in
+  we're working with a Box of particles, then the particles are stored in
   a regular grid pattern. Rather than searching through every particle in
   the Particles array, we can just search through the grid elements that are
   close to the current particle! This reduces the number of searches with a M
@@ -176,10 +176,10 @@ void Body::Find_Neighbors_Cuboid(void) {
 
   So how do you use this function?
   This function is used just like the Generage_Neighbor_List function. We can
-  determine the cuboid dimensions from the Body. These dimensions are
-  stored in X_SIDE_LENGTH, Y_SIDE_LENGTH, and Z_SIDE_LENGTH. If the cuboid has p
+  determine the Box dimensions from the Body. These dimensions are
+  stored in X_SIDE_LENGTH, Y_SIDE_LENGTH, and Z_SIDE_LENGTH. If the Box has p
   particles in a vertical column then Z_SIDE_LENGTH is p. For a 100x50x200
-  cuboid of particles, X_SIDE_LENGTH is 100, Y_SIDE_LENGTH is 50, and
+  Box of particles, X_SIDE_LENGTH is 100, Y_SIDE_LENGTH is 50, and
   Z_SIDE_LENGTH is 200 */
 
   for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
@@ -255,7 +255,7 @@ void Body::Find_Neighbors_Cuboid(void) {
       } // for(unsigned k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
-} // void Body::Find_Neighbors_Cuboid(void) {
+} // void Body::Find_Neighbors_Box(void) {
 
 
 

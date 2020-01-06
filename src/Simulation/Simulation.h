@@ -12,7 +12,7 @@ namespace Simulation {
   // Setup functions.
   // Defined in Simulation_Setup.cc
 
-  void Setup_Cuboid(Body & Body_In, const unsigned m);
+  void Setup_Box(Body & Body_In, const unsigned m);
   void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
   void Bodies_Setup(void);                                 // Set up Body/Needle simulation
   void Set_Body_Members(Body & Body_In);                   // Set default body members
@@ -25,7 +25,7 @@ namespace Simulation {
 
   void Run_Simulation(void);
   void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
-  void Set_Cuboid_BCs(Body & Cuboid);
+  void Set_Box_BCs(Body & Box);
   void Set_Needle_BCs(Body & Needle);
 
 
@@ -72,14 +72,14 @@ namespace Simulation {
 
   extern unsigned Num_Bodies;                    // Number of bodies in simulation
   extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
-  extern bool * Is_Cuboid;                       // Which bodies are cuboids
-  extern bool * Is_Boundary;                     // Which bodies are boundaries (can be from FEB file or cuboid)
+  extern bool * Is_Box;                          // Which bodies are Boxs
+  extern bool * Is_Boundary;                     // Which bodies are boundaries (can be from FEB file or Box)
   extern bool * Is_Damagable;                    // Which bodies can be damaged
   extern bool * From_FEB_File;                   // Which bodies will be read from file
   extern unsigned * Steps_Per_Update;            // How many time steps pass between updating this Body's P-K tensor
   extern double * IPS;                           // Inter particle spacing in mm.
-  extern Vector * Dimensions;                    // Dimensions of cuboids (only applicable for cuboids)
-  extern Vector * Offset;                        // Poisition offset (only applicable for cuboids)
+  extern Vector * Dimensions;                    // Dimensions of Boxs (only applicable for Boxs)
+  extern Vector * Offset;                        // Poisition offset (only applicable for Boxs)
   extern Vector * Initial_Velocity;              // Initial velocity condition
   extern Materials::Material * Simulation_Materials;       // Each bodies material
 } // namespace Simulation {
