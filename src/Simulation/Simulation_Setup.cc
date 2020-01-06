@@ -53,7 +53,7 @@ void Simulation::Bodies_Setup(void) {
   Is_Boundary[0]                               = false;
   Is_Damagable[0]                              = true;
   From_FEB_File[0]                             = false;
-  Steps_Per_Update[0]                          = 100;
+  Steps_Per_Update[0]                          = 10;
   IPS[0]                                       = 1;
   Dimensions[0]                                = {20, 10, 20};
   Offset[0]                                    = {0, 0, 0};
@@ -68,9 +68,9 @@ void Simulation::Bodies_Setup(void) {
   Steps_Per_Update[1]                          = 1;
   IPS[1]                                       = 1;
   Dimensions[1]                                = {4, 10, 4};
-  Offset[1]                                    = {10-2, 11, 10-2};
-  Initial_Velocity[1]                          = {0, -50, 0};
-  Simulation_Materials[1]                      = Materials::Stainless_Steel;
+  Offset[1]                                    = {10-2, 10.01, 10-2};
+  Initial_Velocity[1]                          = {0, -500, 0};
+  Simulation_Materials[1]                      = Materials::Old_Needle;
 } // void Simulation::Bodies_Setup(void) {
 
 

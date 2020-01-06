@@ -49,14 +49,14 @@ namespace Simulation {
   // (Note: const variables have internal linkage)
 
   // Simulation flags/properties. Defined
-  const unsigned char Load_Data_From_File        = 0;
-  const unsigned char Save_Data_To_File          = 0;
-  const unsigned char Print_Forces               = 1;
-  const unsigned char Print_Net_Force            = 1;
+  const bool Load_Data_From_File                 = false;
+  const bool Save_Data_To_File                   = false;
+  const bool Print_Particle_Forces               = true;
+  const bool Print_Net_Force                     = true;
   const unsigned TimeSteps_Between_Prints        = 1000;
 
   // TimeStep paramters
-  const double dt                                = 5e-9;            // Time step        : s
+  const double dt                                = .0000001;        // Time step        : s
   const unsigned Num_Steps                       = 100000;          // Number of time steps
 
   // Contact parameter

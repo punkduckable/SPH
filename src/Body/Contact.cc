@@ -22,7 +22,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   Vector x_i;                                                                  //        : mm Vector
   Vector F_Contact, F_Friction;                                                //        : N Vector
   Vector Relative_Velocity;                                                    //        : mm/s Vector
-  bool Contact_Flag = 0;
+  bool Contact_Flag = false;
 
   // Thread-local (private) force contributions to Body_B (see description below)
   Vector * Body_B_F_Contact_Local = new Vector[Num_Particles_B];               //        : N Vector
@@ -104,12 +104,12 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   add these contributions to Body_B's particles one by one (using a critical
   region) */
   #pragma omp critical
-  if(Contact_Flag) {
+  if(Contact_Flag == true) {
     for(i = 0; i < Num_Particles_B; i++) {
-      Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                      //        : N Vector
-      Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                    //        : N Vector
+      Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                    //        : N Vector
+      Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                  //        : N Vector
     } // for(i = 0; i < Num_Particles_B; i++) {
-  } // if(Contact_Flag) {
+  } // if(Contact_Flag == true) {
 
   // Now free any dynamically allocated memory.
   delete [] Body_B_x;

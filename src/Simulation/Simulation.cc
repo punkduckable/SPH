@@ -40,32 +40,50 @@ void Simulation::Run_Simulation(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
-
   printf(         "\nRunning %d time steps....\n",Num_Steps);
-
-  // Cycle through time steps.
   time1 = Get_Time();
-
-  printf(         "0 time steps complete\n");
-
-  // If we are starting a new simulation (not reading one from file) then print
-  // initial configuration
-  if(Load_Data_From_File == false) {
-    for(b = 0; b < Num_Bodies; b++) {
-      Bodies[b].Export_Particle_Positions();
-    } // for(b = 0; b < Num_Bodies; b++) {
-
-    if(Print_Forces == true) {
-      for(b = 0; b < Num_Bodies; b++) {
-        Bodies[b].Export_Particle_Forces();
-      } // for(b = 0; b < Num_Bodies; b++) {
-    } // if(Print_Forces == true) {
-  } // if(Load_Data_From_File == false) {
 
   // time step loop.
   #pragma omp parallel default(shared) private(b, p, t) firstprivate(Num_Bodies, Num_Steps, dt, TimeSteps_Between_Prints)
   {
   for(t = 0; t < Num_Steps; t++) {
+    ////////////////////////////////////////////////////////////////////////////
+    // Print to file
+    #pragma omp single nowait
+    {
+      time2 = Get_Time();
+    } // #pragma omp single nowait
+
+    if(t%TimeSteps_Between_Prints == 0) {
+      #pragma omp single nowait
+        printf("%d time steps complete\n",t);
+
+      #pragma omp for nowait
+      for(b = 0; b < Num_Bodies; b++) {
+        Bodies[b].Export_Particle_Positions();
+      } // for(b = 0; b < Num_Bodies; b++ ) {
+
+      if(Print_Particle_Forces == true) {
+        #pragma omp for nowait
+        for(b = 0; b < Num_Bodies; b++) {
+          Bodies[b].Export_Particle_Forces();
+        } // for(b = 0; b < Num_Bodies; b++ ) {
+      } // if(Print_Particle_Forces == true) {
+
+      if(Print_Net_Force == true) {
+        #pragma omp for nowait
+        for(b = 0; b < Num_Bodies; b++) {
+          Bodies[b].Export_Net_External_Force(t);
+        } // for(b = 0; b < Num_Bodies; b++) {
+      } // if(Print_Net_Force == true) {
+    } // if(t%TimeSteps_Between_Prints == 0) {
+
+    #pragma omp single nowait
+    {
+      Print_time += Time_Since(time2);
+    } // #pragma omp single nowait
+
+
 
     ////////////////////////////////////////////////////////////////////////////
     // Apply Boundary conditions
@@ -146,29 +164,27 @@ void Simulation::Run_Simulation(void) {
 
     /* First, we need to set each particle's contact force to zero. It should be
     noted that we only do this for a particular Body if that body
-    is updating it's position this turn. Otherwise, since the force won't be
+    is updating it's position this cycle. Otherwise, since the force won't be
     used for anything, there's no reason to waste CPU cycles setting that
     bodies's particle's contact forces to zero. */
     for(b = 0; b < Num_Bodies; b++) {
       unsigned Num_Particles = (Bodies[b]).Get_Num_Particles();
 
-      if(Time_Step_Index[b] == 0) {
-        #pragma omp for
-        for(p = 0; p < Num_Particles; p++) {
-          (Bodies[b])[p].Force_Contact = {0,0,0};
-          (Bodies[b])[p].Force_Friction = {0,0,0};
-        } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
-      } // if(Time_Step_Index[b] == 0) {
+      #pragma omp for
+      for(p = 0; p < Num_Particles; p++) {
+        (Bodies[b])[p].Force_Contact = {0,0,0};
+        (Bodies[b])[p].Force_Friction = {0,0,0};
+      } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
     } // for(b = 0; b < Num_Bodies; b++) {
 
     /* Now we can apply the contact algorythm. Note that this must be applied
     every time step no matter what (so that bodies that update each step can
     are proprly updated/have the right forces applied each timestpe) */
-    for(b = 0; b < Num_Bodies; b++) {
-      for(unsigned i = b + 1; i < Num_Bodies; i++) {
-        Body::Contact(Bodies[i], Bodies[b]);
-      } // for(unsigned i = b + 1; i < Num_Bodies; i++) {
-    } // for(b = 0; b < Num_Bodies; b++) {
+    for(unsigned b1 = 0; b1 < Num_Bodies - 1; b1++) {
+      for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
+        Body::Contact(Bodies[b2], Bodies[b1]);
+      } // for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
+    } // for(unsinged b1 = 0; b1 < Num_Bodies - 1; b1++) {
 
     #pragma omp single nowait
     {
@@ -186,7 +202,7 @@ void Simulation::Run_Simulation(void) {
     } // #pragma omp single nowait
 
     for(b = 0; b < Num_Bodies; b++) {
-      // Note: we don't update P for Bodys that are boundaries
+      // Note: we don't update P for Bodies that are boundaries
       if(Bodies[b].Get_Boundary() == true) { continue; }
 
       else {
@@ -247,43 +263,6 @@ void Simulation::Run_Simulation(void) {
       } // if(Time_Step_Index[b] == Steps_Per_Update[b]) {
     } // for(b = 0; b < Num_Bodies; b++) {
     } // #pragma omp single
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Print to file
-    #pragma omp single nowait
-    {
-      time2 = Get_Time();
-    } // #pragma omp single nowait
-
-    if((t+1)%TimeSteps_Between_Prints == 0) {
-      #pragma omp single nowait
-        printf(     "%d time steps complete\n",t+1);
-
-      #pragma omp for nowait
-      for(b = 0; b < Num_Bodies; b++ ) {
-        Bodies[b].Export_Particle_Positions();
-      } // for(b = 0; b < Num_Bodies; b++ ) {
-
-      if(Print_Forces == true) {
-        #pragma omp for nowait
-        for(b = 0; b < Num_Bodies; b++ ) {
-          Bodies[b].Export_Particle_Forces();
-        } // for(b = 0; b < Num_Bodies; b++ ) {
-      } // if(Print_Forces == true) {
-
-      if(Print_Net_Force == true) {
-        #pragma omp for nowait
-        for(b = 0; b < Num_Bodies; b++) {
-          Bodies[b].Export_Net_External_Force(t+1);
-        } // for(b = 0; b < Num_Bodies; b++) {
-      } // if(Print_Net_Force == true) {
-    } // if((k+1)%100 == 0) {
-
-    #pragma omp single nowait
-    {
-      Print_time += Time_Since(time2);
-    } // #pragma omp single nowait
   } // for(t = 0; t < Num_Steps; t++) {
   } // #pragma omp parallel
   printf(         "Done!\n");
@@ -297,11 +276,11 @@ void Simulation::Run_Simulation(void) {
   // Print timing data
   #if defined(_OPENMP)
     printf(       "\nIt took %lf s to perform %u Particle time steps \n",simulation_time, Num_Steps);
-    printf(       "%lf s to update BC's\n", update_BC_time);
-    printf(       "%lf s to update P\n", update_P_time);
-    printf(       "%lf s to update Contact\n", contact_time);
-    printf(       "%lf s to update x\n", update_x_time);
-    printf(       "%lf s to print data to files\n", Print_time);
+    printf(       "%lfs to update BC's\n", update_BC_time);
+    printf(       "%lfs to update P\n", update_P_time);
+    printf(       "%lfs for Contact\n", contact_time);
+    printf(       "%lfs to update x\n", update_x_time);
+    printf(       "%lfs to print data to files\n", Print_time);
 
   #else
     unsigned long MS_Iter,                                           // These are used to store the number of miliseconds that
@@ -319,11 +298,11 @@ void Simulation::Run_Simulation(void) {
     MS_Print = (unsigned long)((double)Print_time / (double)CLOCKS_PER_MS);
 
     printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
-    printf(         "%lu ms to update BC's\n", MS_BC);
-    printf(         "%lu ms to update P\n", MS_P);
-    printf(         "%lu ms to update Contact\n", MS_Contact);
-    printf(         "%lu ms to update x\n", MS_x);
-    printf(         "%lu ms to print data to files\n", MS_Print);
+    printf(         "%lums to update BC's\n", MS_BC);
+    printf(         "%lums to update P\n", MS_P);
+    printf(         "%lums for Contact\n", MS_Contact);
+    printf(         "%lums to update x\n", MS_x);
+    printf(         "%lums to print data to files\n", MS_Print);
   #endif
 
   delete [] Bodies;
@@ -337,7 +316,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
   printf(         "Load_Data_From_File =         %u\n",    Load_Data_From_File);
   printf(         "Save_Data_To_File =           %u\n",    Save_Data_To_File);
   printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
-  printf(         "Print_Forces =                %u\n",    Print_Forces);
+  printf(         "Print_Particle_Forces =       %u\n",    Print_Particle_Forces);
   printf(         "Parallel execution =          ");
   #if defined(_OPENMP)
     printf(       "1\n");
@@ -457,7 +436,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 void Simulation::Set_Cuboid_BCs(Body & Cuboid) {
   ////////////////////////////////////////////////////////////////////////
   /* Boundary conditions
-  Here we set the Bc's for the six sides of the cube. The faces are named
+  Here we set the BC's for the six sides of the cube. The faces are named
   'Front', 'Back', 'Top', 'Bottom', 'Left' and 'Right'. We give the faces
   these names based on the following coordinate axis layout:
 
