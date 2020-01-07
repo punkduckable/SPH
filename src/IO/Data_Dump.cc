@@ -33,13 +33,13 @@ void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) 
   // Now print each Body's name and other essential information
   for(unsigned i = 0; i < Num_Bodies; i++) {
     fprintf(File, "Body %3u name:      %s\n", i, Bodies[i].Get_Name().c_str());
-    fprintf(File, "     Is a Box:                %u\n",    Bodies[i].Get_Box());
+    fprintf(File, "     Is a Box:                %u\n",    Bodies[i].Get_Is_Box());
 
-    if(Bodies[i].Get_Box() == true) {
+    if(Bodies[i].Get_Is_Box() == true) {
       fprintf(File, "          X_SIDE_LENGTH:      %u\n",  Bodies[i].Get_X_SIDE_LENGTH());
       fprintf(File, "          Y_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Y_SIDE_LENGTH());
       fprintf(File, "          Z_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Z_SIDE_LENGTH());
-    } // if(Bodies[i].Get_Box() == true) {
+    } // if(Bodies[i].Get_Is_Box() == true) {
 
     fprintf(File, "     Is a Boundary:           %u\n",    Bodies[i].Get_Boundary());
     fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Damagable());
@@ -81,12 +81,12 @@ void Data_Dump::Save_Body(const Body & Body_In) {
   // Let's begin by printing the Body paramaters
   fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
 
-  fprintf(File,   "Is a Box:                     %u\n",    Body_In.Get_Box());
-  if(Body_In.Get_Box() == true) {
+  fprintf(File,   "Is a Box:                     %u\n",    Body_In.Get_Is_Box());
+  if(Body_In.Get_Is_Box() == true) {
     fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Body_In.Get_X_SIDE_LENGTH());
     fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Body_In.Get_Y_SIDE_LENGTH());
     fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Body_In.Get_Z_SIDE_LENGTH());
-  } //   if(Body_In.Get_Box() == true) {
+  } //   if(Body_In.Get_Is_Box() == true) {
   fprintf(File,   "Is a Boundary:                %u\n",    Body_In.Get_Boundary());
   fprintf(File,   "Is Damageable:                %u\n\n",  Body_In.Get_Damagable());
 
@@ -308,11 +308,11 @@ int Data_Dump::Load_Body(Body & Body_In) {
   fgets(Buf, 99, File);                          // Skip blank line
   fgets(Buf, 99, File);                          // Skip 'Is a Box' line
 
-  if(Body_In.Get_Box() == true) {                // if a Box, skip the 3 dimension lines.
+  if(Body_In.Get_Is_Box() == true) {                // if a Box, skip the 3 dimension lines.
     fgets(Buf, 99, File);
     fgets(Buf, 99, File);
     fgets(Buf, 99, File);
-  } // if(Body_In.Get_Box() == true) {
+  } // if(Body_In.Get_Is_Box() == true) {
 
   fgets(Buf, 99, File);                          // Skip 'is a boundary' line
   fgets(Buf, 99, File);                          // Skip 'Is Damageable' line

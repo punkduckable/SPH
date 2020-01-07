@@ -13,7 +13,7 @@ OBJS :=            Main.o \
 	                 Tensor.o \
 									 Particle.o \
 									 Body.o Neighbors.o Update.o Damage.o Contact.o Body_IO.o \
-									 Simulation.o Simulation_Setup.o Timing.o \
+									 Simulation.o Simulation_Setup.o Timing.o Boundary_Conditions.o \
 									 Data_Dump.o \
 									 FEB_File.o
 
@@ -120,6 +120,8 @@ obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h Particle.h Vecto
 obj/Timing.o: Timing.cc Simulation.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
+obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h Vector.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 # IO

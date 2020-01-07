@@ -199,7 +199,7 @@ class Body {
     double Get_Tau(void) const;
     bool Get_Damagable(void) const;
 
-    bool Get_Box(void) const;
+    bool Get_Is_Box(void) const;
     unsigned Get_X_SIDE_LENGTH(void) const;
     unsigned Get_Y_SIDE_LENGTH(void) const;
     unsigned Get_Z_SIDE_LENGTH(void) const;

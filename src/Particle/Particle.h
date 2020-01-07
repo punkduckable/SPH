@@ -128,8 +128,8 @@ class Particle {
   // Friends, Printing
   friend void Particle_Tests(void);
   friend void Simulation::Run_Simulation(void);
-  friend void Simulation::Set_Box_BCs(Body & Box);
-  friend void Simulation::Set_Needle_BCs(Body & Needle);
+  friend void Simulation::Set_Box_Particle_BC(Particle & P_In, Vector BC);
+  friend void Simulation::Apply_BC(Body & Body_In, Boundary_Condition & BC_In);
   friend int Data_Dump::Load_Body(Body & Body_In);
   friend void Data_Dump::Load_Particle(Particle & P_In,
                                        FILE * File);

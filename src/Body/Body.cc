@@ -252,7 +252,7 @@ unsigned char Body::Get_F_Index(void) const { return F_Index; }
 double Body::Get_Tau(void) const { return Tau; }
 bool Body::Get_Damagable(void) const { return Damageable; }
 
-bool Body::Get_Box(void) const { return Is_Box; }
+bool Body::Get_Is_Box(void) const { return Is_Box; }
 unsigned Body::Get_X_SIDE_LENGTH(void) const {
   assert( (*this).Is_Box );
   return X_SIDE_LENGTH;

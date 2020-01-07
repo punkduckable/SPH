@@ -20,8 +20,7 @@ namespace Simulation {
   bool * From_FEB_File = nullptr;                // Which bodies will be read from file
   unsigned * Steps_Per_Update = nullptr;         // How many time steps pass between updating this Body's P-K tensor
   double * IPS = nullptr;                        // Inter particle spacing in mm.
-  Vector * Dimensions = nullptr;                 // Dimensions of Boxs (only applicable for Boxs)
-  Vector * Offset = nullptr;                     // Poisition offset (only applicable for Boxs)
+  Box_Properties * Box_Parameters = nullptr;     // Specifies the dimensions, offset, and BCs of the box bodies.
   Vector * Initial_Velocity = nullptr;           // Initial velocity condition
   Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
 } // namespace Simulation {
@@ -43,8 +42,7 @@ void Simulation::Bodies_Setup(void) {
   Is_Damagable = new bool[Num_Bodies];
   Steps_Per_Update = new unsigned[Num_Bodies];
   IPS = new double[Num_Bodies];
-  Dimensions = new Vector[Num_Bodies];
-  Offset = new Vector[Num_Bodies];
+  Box_Parameters = new Box_Properties[Num_Bodies];
   Initial_Velocity = new Vector[Num_Bodies];
   Simulation_Materials = new Materials::Material[Num_Bodies];
 
@@ -55,8 +53,14 @@ void Simulation::Bodies_Setup(void) {
   From_FEB_File[0]                             = false;
   Steps_Per_Update[0]                          = 10;
   IPS[0]                                       = 1;
-  Dimensions[0]                                = {20, 10, 20};
-  Offset[0]                                    = {0, 0, 0};
+  Box_Parameters[0].Dimensions                 = {20, 10, 20};
+  Box_Parameters[0].Offset                     = {0,0,0};
+  Box_Parameters[0].x_plus_BC                  = {0, Free_BC_Box, Free_BC_Box};
+  Box_Parameters[0].x_minus_BC                 = {0, Free_BC_Box, Free_BC_Box};
+  Box_Parameters[0].y_plus_BC                  = {Free_BC_Box, 0, Free_BC_Box};
+  Box_Parameters[0].y_minus_BC                 = {Free_BC_Box, 0, Free_BC_Box};
+  Box_Parameters[0].z_plus_BC                  = {Free_BC_Box, Free_BC_Box, 0};
+  Box_Parameters[0].z_minus_BC                 = {Free_BC_Box, Free_BC_Box, 0};
   Initial_Velocity[0]                          = {0, 0, 0};
   Simulation_Materials[0]                      = Materials::Default;
 
@@ -67,8 +71,14 @@ void Simulation::Bodies_Setup(void) {
   From_FEB_File[1]                             = false;
   Steps_Per_Update[1]                          = 1;
   IPS[1]                                       = 1;
-  Dimensions[1]                                = {4, 10, 4};
-  Offset[1]                                    = {10-2, 10.01, 10-2};
+  Box_Parameters[1].Dimensions                 = {4, 10, 4};
+  Box_Parameters[1].Offset                     = {10-2, 10.01, 10-2};
+  Box_Parameters[1].x_plus_BC                  = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
+  Box_Parameters[1].x_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
+  Box_Parameters[1].y_plus_BC                  = {0, -50, 0};
+  Box_Parameters[1].y_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
+  Box_Parameters[1].z_plus_BC                  = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
+  Box_Parameters[1].z_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
   Initial_Velocity[1]                          = {0, -500, 0};
   Simulation_Materials[1]                      = Materials::Old_Needle;
 } // void Simulation::Bodies_Setup(void) {
@@ -121,7 +131,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
         unsigned index = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
 
         X = {i*IPS, j*IPS, k*IPS};
-        X += Offset[m];
+        X += Box_Parameters[m].Offset;
         x = X;                                                                 //        : mm
 
         Body_In[index].Set_Mass(Particle_Mass);                                //        : g

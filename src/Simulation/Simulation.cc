@@ -96,15 +96,7 @@ void Simulation::Run_Simulation(void) {
     #pragma omp single
     {
     for(b = 0; b < Num_Bodies; b++) {
-      // Box BCs
-      if(b == 0 && Time_Step_Index[0] == 0) {
-        Set_Box_BCs(Bodies[b]);
-      } // if(b == 0 && Time_Step_Index[0] == 0) {
-
-      // Needle BCs
-      else if(b == 1) {
-        Set_Needle_BCs(Bodies[b]);
-      } // else if(b == 1) {
+      if(Bodies[b].Get_Is_Box() == true) { Set_Box_BCs(Bodies[b], Box_Parameters[b]); }
     } // for(b = 0; b < Num_Bodies; b++)
     } // #pragma omp single
 
@@ -416,7 +408,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
       // Set up body as a Box if it is a Box
       if(Is_Box[i] == true) {
-        (*Bodies)[i].Set_Box_Dimensions(Dimensions[i]);
+        (*Bodies)[i].Set_Box_Dimensions(Box_Parameters[i].Dimensions);
         Setup_Box((*Bodies)[i], i);
       } // if(Is_Box[i] == true) {
 
@@ -434,94 +426,3 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
     (*Bodies)[i].Print_Parameters();
   } // for(unsigned i = 0; i < Num_Bodies; i++) {
 } // void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
-
-
-
-void Simulation::Set_Box_BCs(Body & Box) {
-  ////////////////////////////////////////////////////////////////////////
-  /* Boundary conditions
-  Here we set the BC's for the six sides of the cube. The faces are named
-  'Front', 'Back', 'Top', 'Bottom', 'Left' and 'Right'. We give the faces
-  these names based on the following coordinate axis layout:
-
-                            Y
-                            |        X
-                            |      /
-                            |    /
-                            |  /
-                        _ _ |/_ _ _ _ _ _ _ Z
-                           /|
-                         /  |
-
-  The Normal vector to the 'Front' and 'Back' faces point in the +X and -X
-  directions respectivly. The Normal vector to the 'Top' and 'Bottom' faces
-  point in the +Y and -Y directions respectivly. Finally, the Normal vector
-  to the 'Left' and 'Right' faces point in the -Z and +Z directions
-  respectivly. */
-
-  // Establish side lengths (we assume Box is a Box)
-  unsigned X_SIDE_LENGTH = Box.Get_X_SIDE_LENGTH();
-  unsigned Y_SIDE_LENGTH = Box.Get_Y_SIDE_LENGTH();
-  unsigned Z_SIDE_LENGTH = Box.Get_Z_SIDE_LENGTH();
-  unsigned i,j,k;
-
-  // Front face (i = 0)
-  i = 0;
-  for(j = 0; j < Y_SIDE_LENGTH; j++) {
-    for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
-    }
-  }
-
-  // Back face (i = X_SIDE_LENGTH-1)
-  i = X_SIDE_LENGTH-1;
-  for(j = 0; j < Y_SIDE_LENGTH; j++) {
-    for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[0] = 0;
-    }
-  }
-
-  // Bottom face (j = 0)
-  j = 0;
-  for(i = 0; i < X_SIDE_LENGTH; i++) {
-    for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[1] = 0;
-      //(Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,-30,0};
-    }
-  }
-
-  // Top face (j = y_Side_len-1)
-  j = Y_SIDE_LENGTH-1;
-  for(i = 0; i < X_SIDE_LENGTH; i++) {
-    for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      //(Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V = {0,30,0};
-    }
-  }
-
-  // Left face (k = 0)
-  k = 0;
-  for(i = 0; i < X_SIDE_LENGTH; i++) {
-    for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
-    }
-  }
-
-  // Right face (k = Z_SIDE_LENGTH-1)
-  k = Z_SIDE_LENGTH-1;
-  for(i = 0; i < X_SIDE_LENGTH; i++) {
-    for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      (Box)[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j].V[2] = 0;
-    }
-  }
-} // void Simulation::Set_Box_BCs(Body & Box) {
-
-
-
-void Simulation::Set_Needle_BCs(Body & Needle) {
-  unsigned Array_m_Num_Particles = Needle.Get_Num_Particles();
-  for(unsigned i = 0; i < Array_m_Num_Particles; i++) {
-    if(Needle[i].Get_X()[1] > 17.) {    // if y component is above threshold, press it.
-      Needle[i].V = {0, -50, 0};
-    } // if((Needle)[i].Get_X()[1] > 17.) {
-  } // for(unsigned i = 0; i < Array_m_Num_Particles; i++) {
-} // void Simulation::Set_Needle_BCs(Body & Needle) {
