@@ -180,7 +180,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
       if( Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
         // If not positive, then Ri and Rj must be neighbors, add P_j to P_i's
         // new neighbor list.
-        Pi_New_Neighbor_List.Add_Front(Pj_ID);
+        Pi_New_Neighbor_List.Push_Front(Pj_ID);
         continue;
       } // if( Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
 
@@ -197,7 +197,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
       if(RIn_Ri_Dot_RIn_Ri >= Rj_Ri_Dot_Rj_Ri) {
         // if |RIn_Ri| > |Rj_Ri| then P_j is NOT in the shadow region of
         // Particles[i]. thus, P_j is still a neighbor of P_i.
-        Pi_New_Neighbor_List.Add_Front(Pj_ID);
+        Pi_New_Neighbor_List.Push_Front(Pj_ID);
         continue;
       } // if(RIn_Ri_Dot_RIn_Ri >= Rj_Ri_Dot_Rj_Ri) {
 
@@ -230,7 +230,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
 
       else {
         // otherwise, P_i and P_j are neighbors.
-        Pi_New_Neighbor_List.Add_Front(Pj_ID);
+        Pi_New_Neighbor_List.Push_Front(Pj_ID);
         continue;
       } // else {
     } // for(j = 0; j < Particles[Pi_ID].Num_Neighbors; j++) {
@@ -244,7 +244,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
     Pi_New_Neighbors = new unsigned[Pi_New_Num_Neighbors];
 
     for(unsigned k = 0; k < Pi_New_Num_Neighbors; k++) {
-      Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Remove_Front();
+      Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Pop_Front();
     } // for(k = 0; k < Pi_New_Num_Neighbors; k++) {
 
     /* When we set new neighbors, the Set_Neighbors function will allocate

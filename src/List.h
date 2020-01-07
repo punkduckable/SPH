@@ -10,66 +10,44 @@ class List {
       Type Value;
       Node *Next_Node;
       Node *Previous_Node;
-    };
+    }; // struct Node {
 
-    Node* Beginning;                             // Start of the list
+    Node* Start;                                // Start of the list
     Node* End;                                   // End of the list
-    unsigned int Num_Nodes;                      // Number of nodes in the list
+    unsigned Num_Nodes;                          // Number of nodes in the list
 
   public:
     // Constructors, destructor
     List();                                      // Default constructor
-    List(const List & L_In);                     // Copy constructor (to prevent inadvertent shallow copying)
+    List(const List & L_In) = delete;            // Copy constructor (to prevent inadvertent shallow copying)
     ~List();                                     // Destructor
 
     // Operator overloading
-    List & operator=(const List & L_In);         // Explicit = operator overload (to prevent inadvertent shallow copying)
-    Type & operator[](const unsigned int i);     // Acces a particular element of the list.
-    const Type operator[](const unsigned int i) const;
+    List & operator=(const List &) = delete;     // Explicit = operator overload (to prevent inadvertent shallow copying)
 
-
-    // Method to add or remove items from the list
-    void Add_Back(const Type ID_In);             // Add an item to the start of the list
-    void Add_Front(const Type ID_In);            // Add an item to the end of the list
-    Type Remove_Back(void);                      // Remove an item from the end of the list
-    Type Remove_Front(void);                     // Add an item to the start of the list
+    // Methods to modify the list.
+    void Push_Back(const Type ID_In);            // Add an item to the start of the list
+    void Push_Front(const Type ID_In);           // Add an item to the end of the list
+    Type Pop_Back(void);                         // Remove an item from the end of the list
+    Type Pop_Front(void);                        // Add an item to the start of the list
+    Type & Front(void);                          // Returns a reference to the value of the first item of the list.
+    Type & Back(void);                           // Returns a reference to the value of the last item of the list.
 
     // Methods to get list info
-    unsigned int Node_Count(void) const;         // Returns number of nodes
+    unsigned Node_Count(void) const;             // Returns number of nodes
     void Print_Node_Info(void) const;            // For testing
 };
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors, destructor
 template <typename Type>
 List<Type>::List(void) {
   Num_Nodes = 0;
-  Beginning = nullptr;
+  Start = nullptr;
   End = nullptr;
 } // List<Type>::List() {
-
-
-
-template <typename Type>
-List<Type>::List(const List & L_In) {
-  /* Since list type objects dynamically allocate memory, we need to perform a
-  deep copy. To do this, we cycle throught the nodes of L_In. For each node,
-  we acquire its value and then add a new node with the same value to the
-  end of our list. */
-  Node* Node_Ptr = L_In.Beginning;
-  Type value;
-
-  Beginning = Node_Ptr;
-  End = Beginning = nullptr;
-  Num_Nodes = 0;
-
-  while(Node_Ptr != nullptr) {
-    value = Node_Ptr->Value;                         // Get latest node's value
-    Add_Back(value);                                        // Append a new node onto our list
-    Num_Nodes++;                                           // Increment number of nodes
-    Node_Ptr = Node_Ptr->Next_Node;                        // Point to next node in the list
-  } //   while(Node_Ptr != nullptr) {
-} // List<Type>::List(const List & L_In) {
 
 
 
@@ -79,87 +57,25 @@ List<Type>::~List(void) {
   our list. To do this, we need to delete our nodes one by one. */
 
   Node * temp;
-  while(Beginning != nullptr) {
-    temp = Beginning;                  // Store current Beginning in temp (so we can free it!)
-    Beginning = Beginning->Next_Node;  // Move Beginning forward one node
-    delete temp;                       // free the old Beginning node
+  while(Start != nullptr) {
+    temp = Start;                                // Store current Start in temp (so we can free it!)
+    Start = Start->Next_Node;                    // Move Start forward one node
+    delete temp;                                 // free the old Start node
 
     Num_Nodes--;
     //printf("%d nodes remaining\n",Num_Nodes);
-  } // while(Beginning != nullptr) {
+  } // while(Start != nullptr) {
 } // List<Type>::~List(void) {
 
-////////////////////////////////////////////////////////////////////////////////
-// Operator overloading
-
-// List equality: Deep copy
-template <typename Type>
-List<Type> & List<Type>::operator=(const List<Type> & L_In) {
-  /* Since list type objects dynamically allocate memory, we need to perform a
-  deep copy. To do this, we cycle throught the nodes of L_In. For each node,
-  we acquire its value and then add a new node with the same value to the
-  end of our list. */
-  Node* Node_Ptr = L_In.Beginning;
-  Type value;
-
-  Beginning = End = nullptr;
-  Num_Nodes = 0;
-
-  while(Node_Ptr != nullptr) {
-    value = Node_Ptr->Value;                         // Get latest node's value
-    Add_Back(value);                                        // Append a new node onto our list
-    Num_Nodes++;                                           // Increment number of nodes
-    Node_Ptr = Node_Ptr->Next_Node;                        // Point to next node in the list
-  } //   while(Node_Ptr != nullptr) {
-
-  return *this;
-} // List & List<Type>::operator=(const List & L_In) {
 
 
 
-template <typename Type>
-Type & List<Type>::operator[](const unsigned int i) {
-  // Check that the requested index is in the bounds of our list
-  if(i >= Num_Nodes) {
-    printf("Error! requested list index is out of bounds! Returning value of last node.\n");
-    return End->Value;
-  } // if(i >= Num_Nodes) {
-
-  // Traverse the list until we get to the requested node.
-  Node * Current_Node = Beginning;
-
-  for(unsigned int j = 0; j < i; j++)
-    Current_Node = Current_Node->Next_Node;
-
-  // Now return the value of the requested node.
-  return Current_Node->Value;
-} // Type & List<Type>::operator[](const unsigned int i) {
-
-
-
-template <typename Type>
-const Type List<Type>::operator[](const unsigned int i) const {
-  // Check that the requested index is in the bounds of our list
-  if(i >= Num_Nodes) {
-    printf("Error! requested list index is out of bounds! Returning value of last node.\n");
-    return End->Value;
-  } // if(i >= Num_Nodes) {
-
-  // Traverse the list until we get to the requested node.
-  Node * Current_Node = Beginning;
-
-  for(unsigned int j = 0; j < i; j++)
-    Current_Node = Current_Node->Next_Node;
-
-  // Now return the value of the requested node.
-  return Current_Node->Value;
-} // const Type List<Type>::operator[](const unsigned int i) const
 
 ////////////////////////////////////////////////////////////////////////////////
-// Method to add or remove items from the list
+// Method that modify the list.
 
 template <typename Type>
-void List<Type>::Add_Back(const Type ID_In) {
+void List<Type>::Push_Back(const Type ID_In) {
   /* This method is used to add a node onto the end of our list. We do this by
   dynamically allocating a node, adding it into our list (old End, if there is
   one, points to the new node, make End point to new node). */
@@ -170,66 +86,65 @@ void List<Type>::Add_Back(const Type ID_In) {
   /* Check if there are any nodes in our list.
 
   If the list is empty (no nodes), then the added element will be both the
-  Beginning and the End. However, this means that there is no previous node.
+  Start and the End. However, this means that there is no previous node.
 
   If our list already has elements, then add is the new End. The old End
   is the Previous_Node for add.*/
   if(Num_Nodes == 0) {
-    Beginning = add;
-    add->Previous_Node = nullptr;                 // Add is new Beginning (and End), so there is no previous node.
-  }
+    Start = add;
+    add->Previous_Node = nullptr;                // Add is new Start (and End), so there is no previous node.
+  } // if(Num_Nodes == 0) {
   else {
-    add->Previous_Node = End;                  // add is new End. Previous node previous node for add (new end)
-    End->Next_Node = add;                      // old end's new node is add (new end)
-  }
+    add->Previous_Node = End;                    // add is new End. Previous node previous node for add (new end)
+    End->Next_Node = add;                        // old end's new node is add (new end)
+  } // else {
 
-  End = add;                                   // add is new End
-  Num_Nodes++;                                 // We added a new node, incremenet number of nodes
-} // void List<Type>::Add_Back(const Type ID_In) {
+  End = add;                                     // add is new End
+  Num_Nodes++;                                   // We added a new node, incremenet number of nodes
+} // void List<Type>::Push_Back(const Type ID_In) {
 
 
 
 template <typename Type>
-void List<Type>::Add_Front(const Type ID_In) {
-  /* this method adds a node onto the Beginning of our list. We do this by
-  dynamically allocating a node and adding it to the Beginning of our list (this
-  new node will become the new Beginning/will point to the old Beginning) */
+void List<Type>::Push_Front(const Type ID_In) {
+  /* this method adds a node onto the Start of our list. We do this by
+  dynamically allocating a node and adding it to the Start of our list (this
+  new node will become the new Start/will point to the old Start) */
 
-  Node *add = new Node;                        // Dynamically allocate new node
-  add->Value = ID_In;                    // The new node's value is the input ID
-  add->Previous_Node = nullptr;                   // add will be new Beginning, so there is no node before add.
+  Node *add = new Node;                          // Dynamically allocate new node
+  add->Value = ID_In;                            // The new node's value is the input ID
+  add->Previous_Node = nullptr;                  // add will be new Start, so there is no node before add.
 
   /* Check if there are any nodes in our list:
 
-  If the list is empty, then add is both the Beginning and the End. This means that
+  If the list is empty, then add is both the Start and the End. This means that
   there is no next node to point to.
 
-  If the list is not empty, then add is the new Beginning. The old Beginning is the
+  If the list is not empty, then add is the new Start. The old Start is the
   Next_Node for add */
   if(Num_Nodes == 0) {
     End = add;
     add->Next_Node = nullptr;
-  }
+  } // if(Num_Nodes == 0) {
   else {
-    add->Next_Node = Beginning;                  // Old Beginning is next_node for add (new Beginning).
-    Beginning->Previous_Node = add;              // add (new Beginning) is previous node of old Beginning.
-  }
+    add->Next_Node = Start;                      // Old Start is next_node for add (new Start).
+    Start->Previous_Node = add;                  // add (new Start) is previous node of old Start.
+  } // else {
 
-  Beginning = add;                               // add is new Beginning
+  Start = add;                                   // add is new Start
   Num_Nodes++;                                   // Increment number of nodes
-} // void List<Type>::Add_Front(const Type ID_In) {
+} // void List<Type>::Push_Front(const Type ID_In) {
 
 
 
 template <typename Type>
-Type List<Type>::Remove_Back(void) {
+Type List<Type>::Pop_Back(void) {
   /* This method removes the last node on our list (if there is one). This is
   done by having End point to the Old End's Previous node and then freeing the
   old End. */
 
   // Check if there is a node to remove.
-  if(End == nullptr)
-    return -1;
+  if(End == nullptr) { return -1; }
 
   Type ID_Out = End->Value;
 
@@ -241,41 +156,57 @@ Type List<Type>::Remove_Back(void) {
   //printf("Node removed from end. %d nodes remaining\n",Num_Nodes);      // For testing
 
   /* check if there are any nodes left in the list. If there are none, then
-  Beginning should point to nullptr */
-  if(Num_Nodes == 0)
-    Beginning = nullptr;
+  Start should point to nullptr */
+  if(Num_Nodes == 0) { Start = nullptr; }
 
   return ID_Out;
-} // Type List<Type>::Remove_Back(void) {
+} // Type List<Type>::Pop_Back(void) {
 
 
 
 template <typename Type>
-Type List<Type>::Remove_Front(void) {
+Type List<Type>::Pop_Front(void) {
   /* This method removes the first node on our list (if there is one). This is
-  done by having Beginning point to the Old Beginning's Next_Node, and then freeing the
-  old Beginning. */
+  done by having Start point to the Old Start's Next_Node, and then freeing the
+  old Start. */
 
   // Check if there is a noe to remove
-  if(Beginning == nullptr)
-    return -1;
+  if(Start == nullptr) { return -1; }
 
-  Type ID_Out = Beginning->Value;
+  Type ID_Out = Start->Value;
 
-  Node * temp = Beginning;                       // temp points to old Beginning.
-  Beginning = temp->Next_Node;                   // Move Beginning forward
-  delete temp;                                   // free memory allocated by old Beginning
+  Node * temp = Start;                           // temp points to old Start.
+  Start = temp->Next_Node;                       // Move Start forward
+  delete temp;                                   // free memory allocated by old Start
 
   Num_Nodes--;                                   // decrement number of nodes
-  //printf("Node remove from Beginning. %d nodes remaining\n",Num_Nodes);       // For testing
+  //printf("Node remove from Start. %d nodes remaining\n",Num_Nodes);       // For testing
 
   /* Check if there are any nodes left in the list. If there are none, then End
   should point to nullptr. */
-  if(Num_Nodes == 0)
-    End = nullptr;
+  if(Num_Nodes == 0) { End = nullptr; }
 
   return ID_Out;
-} // Type List<Type>::Remove_Front(void) {
+} // Type List<Type>::Pop_Front(void) {
+
+
+
+template <typename Type>
+Type &  List<Type>::Front(void) {
+  return Start->Value;
+} // Type & List<Type>::Front(void) {
+
+
+
+template <typename Type>
+Type & List<Type>::Back(void) {
+  return End->Value;
+} // Type & List<Type>::Back(void) {
+
+
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Methods to get list info
@@ -285,14 +216,16 @@ unsigned int List<Type>::Node_Count(void) const {
   return Num_Nodes;
 } // void List<Type>::Node_Count(void) const {
 
+
+
 template <typename Type>
 void List<Type>::Print_Node_Info(void) const {
-  Node * Current_Node = Beginning;
+  Node * Current_Node = Start;
   int Node_Num = 0;
 
   // Print info on list
   printf("Num Nodes: %d\n",Num_Nodes);
-  printf("Beginning: %p\n",Beginning);
+  printf("Start:     %p\n",Start);
   printf("End:       %p\n\n",End);
 
   while(Current_Node != nullptr) {

@@ -235,27 +235,27 @@ void List_Tests(void) {
   printf("Newly created node. \n");
   L1.Print_Node_Info();
 
-  L1.Add_Back(1);
+  L1.Push_Back(1);
   printf("Added '1' to end of list\n");
   L1.Print_Node_Info();
 
-  int returned_value = L1.Remove_Back();
+  int returned_value = L1.Pop_Back();
   printf("Removed rear, got %d\n",returned_value);
   L1.Print_Node_Info();
 
-  L1.Add_Front(2);
+  L1.Push_Front(2);
   printf("Added '2' to front of list\n");
   L1.Print_Node_Info();
 
-  returned_value = L1.Remove_Front();
+  returned_value = L1.Pop_Front();
   printf("Removed Front, got %d\n",returned_value);
   L1.Print_Node_Info();
 
-  L1.Add_Back(2);
-  L1.Add_Front(1);
-  L1.Add_Back(3);
-  L1.Add_Front(0);
-  L1.Add_Back(4);
+  L1.Push_Back(2);
+  L1.Push_Front(1);
+  L1.Push_Back(3);
+  L1.Push_Front(0);
+  L1.Push_Back(4);
   printf("Added {0,1,2,3,4} in strange order \n");
   L1.Print_Node_Info();
 

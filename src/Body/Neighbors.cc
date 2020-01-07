@@ -117,7 +117,7 @@ void Body::Find_Neighbors(void) {
 
       // Test if jth particle is inside support radius of ith particle. If so,
       // add P_j to P_i's neighbor list.
-      if(Are_Neighbors(i, j)) { Particle_Neighbor_List.Add_Back(j); }
+      if(Are_Neighbors(i, j)) { Particle_Neighbor_List.Push_Back(j); }
     } // for(unsigned j = 0; j < Num_Particles; j++) {
 
     /* Now that we have the neighbor list, we can make it into an array. To do
@@ -127,7 +127,7 @@ void Body::Find_Neighbors(void) {
     unsigned Num_Neighbors = Particle_Neighbor_List.Node_Count();
     Neighbor_IDs = new unsigned[Num_Neighbors];
 
-    for(j = 0; j < Num_Neighbors; j++) { Neighbor_IDs[j] = Particle_Neighbor_List.Remove_Front(); }
+    for(j = 0; j < Num_Neighbors; j++) { Neighbor_IDs[j] = Particle_Neighbor_List.Pop_Front(); }
 
     // Now sent the Neighbor list to the particle
     Set_Neighbors(i, Num_Neighbors, Neighbor_IDs);
@@ -233,7 +233,7 @@ void Body::Find_Neighbors_Box(void) {
 
               if(Are_Neighbors(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j,
                                p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q))
-                Particle_Neighbor_List.Add_Back(p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q);
+                Particle_Neighbor_List.Push_Back(p*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + r*(Y_SIDE_LENGTH) + q);
             } // for(q = q_min; q <= q_max; q++) {
           } // for(r = r_min; r <= r_max; r++) {
         } // for(p = p_min; p <= p_max; p++) {
@@ -245,7 +245,7 @@ void Body::Find_Neighbors_Box(void) {
         Num_Neighbors = Particle_Neighbor_List.Node_Count();
         Neighbor_IDs = new unsigned[Num_Neighbors];
 
-        for(p = 0; p < Num_Neighbors; p++) { Neighbor_IDs[p] = Particle_Neighbor_List.Remove_Front(); }
+        for(p = 0; p < Num_Neighbors; p++) { Neighbor_IDs[p] = Particle_Neighbor_List.Pop_Front(); }
 
         // Now sent the Neighbor list to the particle
         Set_Neighbors(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, Num_Neighbors, Neighbor_IDs);

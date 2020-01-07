@@ -102,7 +102,7 @@ void Body::Update_P(const double dt) {
       // If particle is fully damaged, add this particle to the damaged list
       // and move on (we'll remove it later)
       if(Particles[i].D >= 1) {
-        Damaged_Particle_List.Add_Back(Particles[i].ID);
+        Damaged_Particle_List.Push_Back(Particles[i].ID);
         continue;
       } // if(Particles[i].D >= 1) {
     } // if((*this).Damageable == true) {
@@ -129,7 +129,7 @@ void Body::Update_P(const double dt) {
 
       // Now we add the bad particles to the Damaged_Particle list (we'll remove
       // it once we have cycled through all partilces)
-      Damaged_Particle_List.Add_Back(Particles[i].ID);
+      Damaged_Particle_List.Push_Back(Particles[i].ID);
       continue;
     } // if(J < 0) {
 
@@ -185,7 +185,7 @@ void Body::Update_P(const double dt) {
   // have each thread remove its damaged particles
   #pragma omp critical
   while(Damaged_Particle_List.Node_Count() != 0) {
-    Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
+    Remove_Damaged_Particle(Damaged_Particle_List.Pop_Back());
   } // while(Damaged_Particle_List.Node_Count() != 0) {
 
   // Explicit barrier to ensure that all broken particles have been removed
@@ -378,7 +378,7 @@ void Body::Update_x(const double dt) {
     if(std::isnan(a[0]) || std::isnan(a[1]) || std::isnan(a[2])) {
       printf("Particle %d in %s has a nan acceleration :(\n",Particles[i].ID, Name.c_str());
       Particles[i].D = 1;
-      Damaged_Particle_List.Add_Back(Particles[i].ID);
+      Damaged_Particle_List.Push_Back(Particles[i].ID);
       continue;
     } //  if(std::isnan(a[0]) || std::isnan(a[1]) || std::isnan(a[2])) {
 
@@ -400,7 +400,7 @@ void Body::Update_x(const double dt) {
   // have each thread remove its damaged particles
   #pragma omp critical
   while(Damaged_Particle_List.Node_Count() != 0) {
-    Remove_Damaged_Particle(Damaged_Particle_List.Remove_Back());
+    Remove_Damaged_Particle(Damaged_Particle_List.Pop_Back());
   } // while(Damaged_Particle_List.Node_Count() != 0) {
 
   /* Note, there is no explicit barrier here because the next kernel, which

@@ -376,6 +376,8 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
       // Now set other Body members.
       Set_Body_Members((*Bodies)[i]);
 
+
+
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
 
@@ -399,6 +401,8 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
                         i,Names[i].c_str());
         throw Bad_Body_Setup(Buffer);
       } // if(Is_Box[i] == false && Is_Boundary == false) {
+
+
 
       //////////////////////////////////////////////////////////////////////////
       // Now set up the Body's particles
