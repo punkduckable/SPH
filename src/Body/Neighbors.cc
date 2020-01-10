@@ -124,7 +124,7 @@ void Body::Find_Neighbors(void) {
     this, we allocate an array whose length is equal to the length of the
     neighbor list. We then populate this array with the elements of the list
     and finally send this off to the particle (whose neighbors we found) */
-    unsigned Num_Neighbors = Particle_Neighbor_List.Node_Count();
+    unsigned Num_Neighbors = Particle_Neighbor_List.Get_Num_Nodes();
     Neighbor_IDs = new unsigned[Num_Neighbors];
 
     for(j = 0; j < Num_Neighbors; j++) { Neighbor_IDs[j] = Particle_Neighbor_List.Pop_Front(); }
@@ -242,7 +242,7 @@ void Body::Find_Neighbors_Box(void) {
         this, we allocate an array whose length is equal to the length of the
         neighbor list. We then populate this array with the elements of the list
         and finally send this off to the particle (whose neighbors we found) */
-        Num_Neighbors = Particle_Neighbor_List.Node_Count();
+        Num_Neighbors = Particle_Neighbor_List.Get_Num_Nodes();
         Neighbor_IDs = new unsigned[Num_Neighbors];
 
         for(p = 0; p < Num_Neighbors; p++) { Neighbor_IDs[p] = Particle_Neighbor_List.Pop_Front(); }

@@ -40,6 +40,32 @@ class Divide_By_Zero : public Exception {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/* Array exceptions
+Array_Exception: Base Array exception class
+
+Array_Length_Not_Set: This is thrown whenever the user attempts to access array
+information before the array length has been set set up.
+
+Array_Length_Already_Set: This is thrown whenever the user attemtps to set the
+Length of an Array that already has a Length. */
+
+class Array_Exception : public Exception {
+  public: Array_Exception(const char* Message_In) : Exception(Message_In) {}
+}; // class Array_Exception : public Exception {
+
+
+class Array_Length_Not_Set : public Array_Exception {
+  public: Array_Length_Not_Set(const char* Message_In) : Array_Exception(Message_In) {}
+}; // class Array_Length_Not_Set : public Exception {
+
+
+class Array_Length_Already_Set : public Array_Exception {
+  public: Array_Length_Already_Set(const char* Message_In) : Array_Exception(Message_In) {}
+}; // class Array_Length_Already_Set : public Exception {
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 /* Tensor exceptions
 Tensor_Exception: Base Tensor exception class.
 

@@ -240,7 +240,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
     /* We now have a complete new neighbor list for P_i (with Particles[i] and the
     shadow region particles removed). We can now begin the process of redoing
     P_i's member variables. */
-    Pi_New_Num_Neighbors = Pi_New_Neighbor_List.Node_Count();
+    Pi_New_Num_Neighbors = Pi_New_Neighbor_List.Get_Num_Nodes();
     Pi_New_Neighbors = new unsigned[Pi_New_Num_Neighbors];
 
     for(unsigned k = 0; k < Pi_New_Num_Neighbors; k++) {

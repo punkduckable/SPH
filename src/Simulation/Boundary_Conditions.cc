@@ -4,41 +4,46 @@
 #include "Particle/Particle.h"
 #include <assert.h>
 
-void Simulation::Apply_General_BCs(Body & Body_In, Boundary_Condition & BC_In) {
-  /* Cycle through the particles in Body_In. If a particle satisifies the
-  condition then apply the effect. */
-
+void Simulation::Apply_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In) {
+  /* Cycle through the components of the BC array */
+  unsigned Num_BCs = BCs_In.Get_Length();
   Vector Position;
   unsigned Num_Particles = Body_In.Get_Num_Particles();
-  double Mag_Normal_Vector = Magnitude(BC_In.Condition_Plane_Normal_Vector);
 
-  for(unsigned i = 0; i < Num_Particles; i++) {
-    // Find distance from ith particle to the BC plane.
-    if(BC_In.Condition_Position_Type == Position_Type::Reference) {
-      Position = Body_In[i].Get_X();
-    } // if(BC_In.Condition_Position_Type == Position_Type::Reference) {
-    else {
-      Position = Body_In[i].Get_x();
-    } // else {
-    double Distance_To_Plane = Dot_Product(Position, BC_In.Condition_Plane_Normal_Vector)/Mag_Normal_Vector;
+  for(unsigned i = 0; i < Num_BCs; i++) {
+    /* Cycle through the particles in Body_In. If a particle satisifies the
+    condition then apply the effect. */
+
+    double Mag_Normal_Vector = Magnitude(BCs_In[i].Condition_Plane_Normal_Vector);
+
+    for(unsigned j = 0; j < Num_Particles; j++) {
+      // Find distance from ith particle to the BC plane.
+      if(BCs_In[i].Condition_Position_Type == Position_Type::Reference) {
+        Position = Body_In[j].Get_X();
+      } // if(BCs_In[i].Condition_Position_Type == Position_Type::Reference) {
+      else {
+        Position = Body_In[j].Get_x();
+      } // else {
+      double Distance_To_Plane = Dot_Product(Position, BCs_In[i].Condition_Plane_Normal_Vector)/Mag_Normal_Vector;
 
 
-    // Now check if the distance satisifies the condition
-    if( ((BC_In.Condition_Inequality == Inequality::GE) &&
-         (Distance_To_Plane >= BC_In.Condition_Plane_Distance))
+      // Now check if the distance satisifies the condition
+      if( ((BCs_In[i].Condition_Inequality == Inequality::GE) &&
+           (Distance_To_Plane >= BCs_In[i].Condition_Plane_Distance))
 
-        ||
+          ||
 
-        ((BC_In.Condition_Inequality == Inequality::LE) &&
-         (Distance_To_Plane <= BC_In.Condition_Plane_Distance)) ) {
+          ((BCs_In[i].Condition_Inequality == Inequality::LE) &&
+           (Distance_To_Plane <= BCs_In[i].Condition_Plane_Distance)) ) {
 
-      // If so, apply the effect to the ith particle.
-      if(BC_In.Effect_x == true) { Body_In[i].V[0] = BC_In.Effect_Vector[0]; }
-      if(BC_In.Effect_y == true) { Body_In[i].V[1] = BC_In.Effect_Vector[1];  }
-      if(BC_In.Effect_z == true) { Body_In[i].V[2] = BC_In.Effect_Vector[2];  }
-    } // if (Condition == True)
-  } // for(unsigned i = 0; i < Num_Particles; i++) {
-} // void Simulation::Apply_General_BCs(Body & Body_In, Boundary_Condition & BC_In) {
+        // If so, apply the effect to the ith particle.
+        if(BCs_In[i].Effect_x == true) { Body_In[j].V[0] = BCs_In[i].Effect_Vector[0]; }
+        if(BCs_In[i].Effect_y == true) { Body_In[j].V[1] = BCs_In[i].Effect_Vector[1];  }
+        if(BCs_In[i].Effect_z == true) { Body_In[j].V[2] = BCs_In[i].Effect_Vector[2];  }
+      } // if (Condition == True)
+    } // for(unsigned j = 0; j < Num_Particles; j++) {
+  } // for(unsigned i = 0; i < Num_BCs; i++) {
+} // void Simulation::Apply_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In[i]) {
 
 
 

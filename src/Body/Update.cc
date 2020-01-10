@@ -184,9 +184,9 @@ void Body::Update_P(const double dt) {
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
   #pragma omp critical
-  while(Damaged_Particle_List.Node_Count() != 0) {
+  while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
     Remove_Damaged_Particle(Damaged_Particle_List.Pop_Back());
-  } // while(Damaged_Particle_List.Node_Count() != 0) {
+  } // while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
 
   // Explicit barrier to ensure that all broken particles have been removed
   // before any thread is allowed to move on.
@@ -399,9 +399,9 @@ void Body::Update_x(const double dt) {
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
   #pragma omp critical
-  while(Damaged_Particle_List.Node_Count() != 0) {
+  while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
     Remove_Damaged_Particle(Damaged_Particle_List.Pop_Back());
-  } // while(Damaged_Particle_List.Node_Count() != 0) {
+  } // while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
 
   /* Note, there is no explicit barrier here because the next kernel, which
   updates each particle's timestep counter, does not use any data being

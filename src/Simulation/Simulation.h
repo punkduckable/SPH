@@ -4,6 +4,7 @@
 #include "Classes.h"
 #include "Vector/Vector.h"
 #include "Materials.h"
+#include "Array.h"
 #include <string>
 
 // Simulation napespace (stores the variables and functions that are needed to
@@ -166,7 +167,7 @@ namespace Simulation {
   }; // struct Boundary_Condition {
 
   void Apply_General_BCs(Body & Body_In,                   // The body we're applying the BC to
-                         Boundary_Condition & BC_In);      // The BC that's being applied
+                         Array<Boundary_Condition> & BCs_In);        // The BCs being applied
   void Apply_Box_BCs(Body & Box,                           // Reference to the box body
                      Box_Properties & Box_Parameters);     // Box's parameters
   void Apply_Box_Particle_BCs(Particle & P_In,             // Particle that we're applying the BC to
