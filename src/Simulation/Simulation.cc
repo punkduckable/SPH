@@ -96,7 +96,7 @@ void Simulation::Run_Simulation(void) {
     #pragma omp single
     {
     for(b = 0; b < Num_Bodies; b++) {
-      if(Bodies[b].Get_Is_Box() == true) { Set_Box_BCs(Bodies[b], Box_Parameters[b]); }
+      if(Bodies[b].Get_Is_Box() == true) { Apply_Box_BCs(Bodies[b], Box_Parameters[b]); }
     } // for(b = 0; b < Num_Bodies; b++)
     } // #pragma omp single
 

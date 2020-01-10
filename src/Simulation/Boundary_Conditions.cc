@@ -4,7 +4,7 @@
 #include "Particle/Particle.h"
 #include <assert.h>
 
-void Simulation::Apply_BC(Body & Body_In, Boundary_Condition & BC_In) {
+void Simulation::Apply_General_BCs(Body & Body_In, Boundary_Condition & BC_In) {
   /* Cycle through the particles in Body_In. If a particle satisifies the
   condition then apply the effect. */
 
@@ -14,9 +14,9 @@ void Simulation::Apply_BC(Body & Body_In, Boundary_Condition & BC_In) {
 
   for(unsigned i = 0; i < Num_Particles; i++) {
     // Find distance from ith particle to the BC plane.
-    if(BC_In.Condition_Position_Type == BC_Position_Type::Reference) {
+    if(BC_In.Condition_Position_Type == Position_Type::Reference) {
       Position = Body_In[i].Get_X();
-    } // if(BC_In.Condition_Position_Type == BC_Position_Type::Reference) {
+    } // if(BC_In.Condition_Position_Type == Position_Type::Reference) {
     else {
       Position = Body_In[i].Get_x();
     } // else {
@@ -24,12 +24,12 @@ void Simulation::Apply_BC(Body & Body_In, Boundary_Condition & BC_In) {
 
 
     // Now check if the distance satisifies the condition
-    if( ((BC_In.Condition_Inequality == BC_Condition_Inequality::GE) &&
+    if( ((BC_In.Condition_Inequality == Inequality::GE) &&
          (Distance_To_Plane >= BC_In.Condition_Plane_Distance))
 
         ||
 
-        ((BC_In.Condition_Inequality == BC_Condition_Inequality::LE) &&
+        ((BC_In.Condition_Inequality == Inequality::LE) &&
          (Distance_To_Plane <= BC_In.Condition_Plane_Distance)) ) {
 
       // If so, apply the effect to the ith particle.
@@ -38,14 +38,12 @@ void Simulation::Apply_BC(Body & Body_In, Boundary_Condition & BC_In) {
       if(BC_In.Effect_z == true) { Body_In[i].V[2] = BC_In.Effect_Vector[2];  }
     } // if (Condition == True)
   } // for(unsigned i = 0; i < Num_Particles; i++) {
-} // void Simulation::Apply_BC(Body & Body_In, Boundary_Condition & BC_In) {
+} // void Simulation::Apply_General_BCs(Body & Body_In, Boundary_Condition & BC_In) {
 
 
 
-void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
-  ////////////////////////////////////////////////////////////////////////
-  /* Boundary conditions
-  Here we set the BC's for the six sides of the cube. The faces are
+void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
+  /* This function sets the BC's for the six sides of the cube. The faces are
   x_plus, x_minus, y_plus, y_minus, z_plus, and z_minus. These faces are named
   based on the direction that the normal vector to that face points.
 
@@ -77,7 +75,7 @@ void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   i = X_SIDE_LENGTH-1;
   for(j = 0; j < Y_SIDE_LENGTH; j++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Set_Box_Particle_BC(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_plus_BC);
+      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_plus_BC);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
 
@@ -85,7 +83,7 @@ void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   i = 0;
   for(j = 0; j < Y_SIDE_LENGTH; j++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Set_Box_Particle_BC(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_minus_BC);
+      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_minus_BC);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
 
@@ -95,7 +93,7 @@ void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   j = Y_SIDE_LENGTH-1;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Set_Box_Particle_BC(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_plus_BC);
+      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_plus_BC);
     } //for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
@@ -103,7 +101,7 @@ void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   j = 0;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Set_Box_Particle_BC(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_minus_BC);
+      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_minus_BC);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
@@ -113,7 +111,7 @@ void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   k = Z_SIDE_LENGTH-1;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      Set_Box_Particle_BC(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_plus_BC);
+      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_plus_BC);
     } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
@@ -121,16 +119,16 @@ void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   k = 0;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      Set_Box_Particle_BC(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_minus_BC);
+      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_minus_BC);
     } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
-} // void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
+} // void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
 
 
 
-void Simulation::Set_Box_Particle_BC(Particle & P_In, Vector BC) {
+void Simulation::Apply_Box_Particle_BCs(Particle & P_In, Vector BC) {
   for(unsigned i = 0; i < 3; i++) {
     if(BC[i] == Free_BC_Box) { continue; }
     else { P_In.V[i] = BC[i]; }
   } // for(unsigned i = 0; i < 3; i++) {
-} // void Simulation::Set_Box_Particle_BC(Particle & P_In, Vector BC) {
+} // void Simulation::Apply_Box_Particle_BCs(Particle & P_In, Vector BC) {

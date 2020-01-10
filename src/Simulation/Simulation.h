@@ -105,8 +105,8 @@ namespace Simulation {
   // Boundary Conditions
   // Defined in Boundary_Conditions.cc
 
-  enum class BC_Position_Type{Reference = 0, Spatial = 1};
-  enum class BC_Condition_Inequality{LE = -1, GE = 1};
+  enum class Position_Type{Reference = 0, Spatial = 1};
+  enum class Inequality{LE = -1, GE = 1};
 
   struct Boundary_Condition {
     /* This structure is used to define a Boundary condition. BCs affect
@@ -153,10 +153,10 @@ namespace Simulation {
         Those whose corresponding Effect_x/y/z variable is false are ignored. */
 
     // Condition
-    BC_Position_Type         Condition_Position_Type;
+    Position_Type            Condition_Position_Type;
     Vector                   Condition_Plane_Normal_Vector;
     double                   Condition_Plane_Distance;
-    BC_Condition_Inequality  Condition_Inequality;
+    Inequality               Condition_Inequality;
 
     // Effect
     bool                     Effect_x,
@@ -165,12 +165,12 @@ namespace Simulation {
     Vector                   Effect_Vector;
   }; // struct Boundary_Condition {
 
-  void Apply_BC(Body & Body_In,                   // The body we're applying the BC to
-                Boundary_Condition & BC_In);      // The BC that's being applied
-  void Set_Box_BCs(Body & Box,                    // Reference to the box body
-                   Box_Properties & Box_Parameters);  // Box's parameters
-  void Set_Box_Particle_BC(Particle & P_In,       // Particle that we're applying the BC to
-                           Vector BC);            // The BC that's being applied
+  void Apply_General_BCs(Body & Body_In,                   // The body we're applying the BC to
+                         Boundary_Condition & BC_In);      // The BC that's being applied
+  void Apply_Box_BCs(Body & Box,                           // Reference to the box body
+                     Box_Properties & Box_Parameters);     // Box's parameters
+  void Apply_Box_Particle_BCs(Particle & P_In,             // Particle that we're applying the BC to
+                              Vector BC);                  // The BC that's being applied
 } // namespace Simulation {
 
 #endif
