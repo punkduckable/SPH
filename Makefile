@@ -93,13 +93,13 @@ obj/Particle.o: Particle.cc Particle.h Simulation.h Vector.h Tensor.h Errors.h B
 obj/Body.o: Body.cc Body.h Vector.h Particle.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Neighbors.o: Neighbors.cc Body.h Particle.h Vector.h List.h
+obj/Neighbors.o: Neighbors.cc Body.h Particle.h Vector.h List.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Update.o: Update.cc Body.h Simulation.h Particle.h Vector.h List.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Damage.o: Damage.cc Body.h Particle.h Vector.h List.h
+obj/Damage.o: Damage.cc Body.h Particle.h Vector.h List.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Contact.o: Contact.cc Body.h Simulation.h Particle.h Vector.h
@@ -120,7 +120,7 @@ obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h Particle.h Vecto
 obj/Timing.o: Timing.cc Simulation.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h Vector.h
+obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h Vector.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 

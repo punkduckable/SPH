@@ -2,12 +2,13 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "List.h"
+#include "Array.h"
 #include <assert.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Neighbor methods!
 
-void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, const unsigned * Neighbor_ID_Array) {
+void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_In) {
   /* First check if this particle already has neighbors. This function should
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
@@ -15,11 +16,12 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
   assert(Particles[i].Neighbors_Are_Set == false);
 
   // Set Num_Neighbors using input
+  unsigned Num_Neighbors_In = Neighbor_IDs_In.Get_Length();
   Particles[i].Num_Neighbors = Num_Neighbors_In;
 
   /* Next, check that Num_Neighbors_In > 0. if Num_Neighbors_In = 0, then there are no neighbors. */
   if(Num_Neighbors_In == 0) {
-    printf("You didn't supply any neighbors for particle %u! I'm damaging this particle.\n", i);
+    printf("You didn't supply any neighbors for particle %u! Particle %u is being damaged.\n", i, i);
     Particles[i].D = 1;
     return;
   } // if(Num_Neighbors_In == 0) {
@@ -48,7 +50,7 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
 
   // Loop through each neighbor, determine relevant information
   for(unsigned j = 0; j < Num_Neighbors_In; j++) {
-    Neighbor_ID = Neighbor_ID_Array[j];          // Get Neighbor ID (index in Particles array)
+    Neighbor_ID = Neighbor_IDs_In[j];            // Get Neighbor ID (index in Particles array)
     Neighbor_IDs[j] = Neighbor_ID;               // Set jth element of Neighbor_IDs member
 
     // Calculate displacement vectors
@@ -82,7 +84,7 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
 
   // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
   Particles[i].Neighbors_Are_Set = true;
-} // void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors, const unsigned * Neighbor_ID_Array) {
+} // void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_In) {
 
 
 
@@ -105,7 +107,6 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 void Body::Find_Neighbors(void) {
   unsigned i,j;                              // Loop index variables
   List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
-  unsigned *Neighbor_IDs;                    // Array that holds final list of neighbors
 
   // Cycle through the particles
   for(i = 0; i < Num_Particles; i++) {
@@ -120,20 +121,12 @@ void Body::Find_Neighbors(void) {
       if(Are_Neighbors(i, j)) { Particle_Neighbor_List.Push_Back(j); }
     } // for(unsigned j = 0; j < Num_Particles; j++) {
 
-    /* Now that we have the neighbor list, we can make it into an array. To do
-    this, we allocate an array whose length is equal to the length of the
-    neighbor list. We then populate this array with the elements of the list
-    and finally send this off to the particle (whose neighbors we found) */
-    unsigned Num_Neighbors = Particle_Neighbor_List.Get_Num_Nodes();
-    Neighbor_IDs = new unsigned[Num_Neighbors];
-
-    for(j = 0; j < Num_Neighbors; j++) { Neighbor_IDs[j] = Particle_Neighbor_List.Pop_Front(); }
+    /* Now that we have the neighbor ID list, we can make it into an array.
+    This is done using the Array class' list constructor. See Array.h */
+    Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
 
     // Now sent the Neighbor list to the particle
-    Set_Neighbors(i, Num_Neighbors, Neighbor_IDs);
-
-    /* Now free Neighbor_IDs array for next particle! */
-    delete [] Neighbor_IDs;
+    Set_Neighbors(i, Neighbor_IDs);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 } // void Body::Find_Neighbors(void) {
 
@@ -188,8 +181,6 @@ void Body::Find_Neighbors_Box(void) {
         unsigned p,q,r;                             // Loop index variables
         unsigned p_min, p_max, q_min, q_max, r_min, r_max;
         List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
-        unsigned Num_Neighbors;                    // Number of neighbors found
-        unsigned *Neighbor_IDs;                    // Array that holds final list of neighbors
 
         /* If we are near the edge of the cube then we need to adjust which
         particles we search through
@@ -239,19 +230,11 @@ void Body::Find_Neighbors_Box(void) {
         } // for(p = p_min; p <= p_max; p++) {
 
         /* Now that we have the neighbor list, we can make it into an array. To do
-        this, we allocate an array whose length is equal to the length of the
-        neighbor list. We then populate this array with the elements of the list
-        and finally send this off to the particle (whose neighbors we found) */
-        Num_Neighbors = Particle_Neighbor_List.Get_Num_Nodes();
-        Neighbor_IDs = new unsigned[Num_Neighbors];
-
-        for(p = 0; p < Num_Neighbors; p++) { Neighbor_IDs[p] = Particle_Neighbor_List.Pop_Front(); }
+        this, I use the Array class' list constructor. See Array.h */
+        Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
 
         // Now sent the Neighbor list to the particle
-        Set_Neighbors(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, Num_Neighbors, Neighbor_IDs);
-
-        /* Now free Neighbor_IDs array for next particle! */
-        delete [] Neighbor_IDs;
+        Set_Neighbors(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, Neighbor_IDs);
       } // for(unsigned k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {

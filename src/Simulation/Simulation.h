@@ -4,7 +4,6 @@
 #include "Classes.h"
 #include "Vector/Vector.h"
 #include "Materials.h"
-#include "Array.h"
 #include <string>
 
 // Simulation napespace (stores the variables and functions that are needed to

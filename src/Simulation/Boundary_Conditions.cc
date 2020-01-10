@@ -2,6 +2,7 @@
 #include "Body/Body.h"
 #include "Vector/Vector.h"
 #include "Particle/Particle.h"
+#include "Array.h"
 #include <assert.h>
 
 void Simulation::Apply_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In) {

@@ -114,8 +114,7 @@ class Body {
     // Neighbor methods.
     // Defined in Neighbors.cc
     void Set_Neighbors(const unsigned i,         // Set Neighbors
-                       const unsigned Num_Neighbors_In,
-                       const unsigned * Neighbor_ID_Array);
+                       const Array<unsigned> & Neighbor_IDs_In);
     void Find_Neighbors(void);                   // Generate neighbor list for every particle in 'Particles' array
     void Find_Neighbors_Box(void);               // Generate neighbor list for 'Box' geometry
     bool Are_Neighbors(const unsigned i,         // Returns true if particles i,j are neighbors

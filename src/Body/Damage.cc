@@ -2,6 +2,7 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "List.h"
+#include "Array.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods
@@ -123,9 +124,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
 
   // Particle i (P_j) paramaters
   unsigned Pi_ID;                            // ID of P_i
-  unsigned Pi_New_Num_Neighbors;             // Number of neighbors of P_i
   List<unsigned> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in Particles[p]'s shadow region
-  unsigned * Pi_New_Neighbors;               // Stores P_i's new neighbors.
 
   // Particle j (P_j) paramaters
   unsigned Pj_ID;                            // ID of P_j
@@ -240,12 +239,10 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
     /* We now have a complete new neighbor list for P_i (with Particles[i] and the
     shadow region particles removed). We can now begin the process of redoing
     P_i's member variables. */
-    Pi_New_Num_Neighbors = Pi_New_Neighbor_List.Get_Num_Nodes();
-    Pi_New_Neighbors = new unsigned[Pi_New_Num_Neighbors];
 
-    for(unsigned k = 0; k < Pi_New_Num_Neighbors; k++) {
-      Pi_New_Neighbors[k] = Pi_New_Neighbor_List.Pop_Front();
-    } // for(k = 0; k < Pi_New_Num_Neighbors; k++) {
+    // To begin, convert the New Neirghbor List to an Array
+    Array<unsigned> Pi_New_Neighbors(Pi_New_Neighbor_List);
+
 
     /* When we set new neighbors, the Set_Neighbors function will allocate
     new dynamic arrays for the Particle's members (for the W, Grad_W, etc..
@@ -262,11 +259,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
     Particles[Pi_ID].Neighbors_Are_Set = false;
 
     // Now we can reset the neighbors
-    Set_Neighbors(Pi_ID, Pi_New_Num_Neighbors, Pi_New_Neighbors);
-
-    // Now we can free the New_Neighbors array (it will be reallocated in the
-    // next loop cycle, we free it to prevent a memory leak)
-    delete [] Pi_New_Neighbors;
+    Set_Neighbors(Pi_ID, Pi_New_Neighbors);
   } // for(i = 0; i < Particles[i].Num_Neighbors; i++) {
 
   /* Now that we've causally removed the damaged particle from the particles

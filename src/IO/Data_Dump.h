@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 namespace Data_Dump {
-  void Save_Simulation(const Body * Arrays,
-                       const unsigned Num_Arrays);
+  void Save_Simulation(const Body * Bodies,
+                       const unsigned Num_Bodies);
 
   void Save_Body(const Body & Body_In);
 

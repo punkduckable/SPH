@@ -1,6 +1,7 @@
 #if !defined(LIST_HEADER)
 #define LIST_HEADER
 
+#include "classes.h"
 #include <stdio.h>
 
 template <typename T>
