@@ -11,21 +11,9 @@ void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) 
   The intent of this is to allow the user 'save' a simulation, allowing the user
   to - at a future point - pick up where they left off.*/
 
-
-  // First, we need to know how many times each Body has been printed
-  unsigned * Position_File_Numbers = new unsigned[Num_Bodies];
-  unsigned * Force_File_Numbers = new unsigned[Num_Bodies];
-
-  // First, determine how many times each body has exported particle positions
-  // and Particle forces
-  for(unsigned i = 0; i < Num_Bodies; i++) {
-    Position_File_Numbers[i] = Bodies[i].Times_Printed_Particle_Positions;
-    Force_File_Numbers[i] = Bodies[i].Times_Printed_Particle_Forces;
-  } // for(unsigned i = 0; i < Num_Bodies; i++) {
-
   // Open a new file. This file will store the number of Bodys as
   // well as their names.
-  FILE * File = fopen("../Files/Saves/Body_Data.txt","w");
+  FILE * File = fopen("./IO/Saves/Simulation_Data.txt","w");
 
   // Print number of Bodies to this file
   fprintf(File,   "Number of Bodies:    %u\n\n", Num_Bodies);
@@ -45,8 +33,9 @@ void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) 
     fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Damagable());
     fprintf(File, "     Number of particles:     %u\n",    Bodies[i].Get_Num_Particles());
 
-    fprintf(File, "     Position number:         %u\n",    Position_File_Numbers[i]);
-    fprintf(File, "     Force_File number:       %u\n\n",  Force_File_Numbers[i]);
+    fprintf(File, "     # times printed net external forces:         %u\n",    Bodies[i].Times_Printed_Net_External_Force);
+    fprintf(File, "     # times printed particle forces:             %u\n",    Bodies[i].Times_Printed_Particle_Forces);
+    fprintf(File, "     # times printed particle positions:          %u\n\n",  Bodies[i].Times_Printed_Particle_Positions);
   } // for(unsigned i = 0; i < Num_Bodies; i++) {
 
   // Now print each Body to its own file
@@ -70,7 +59,7 @@ void Data_Dump::Save_Body(const Body & Body_In) {
   const unsigned Num_Particles = Body_In.Get_Num_Particles();
 
   // Now make a file path for this Particle's file
-  std::string File_Path = "../Files/Saves/";
+  std::string File_Path = "./IO/Saves/";
   File_Path += Name;
   File_Path += ".txt";
 
@@ -192,13 +181,13 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File) {
 
 int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   // First, open up the Particle_data file
-  FILE * File = fopen("../Files/Saves/Body_Data.txt","r");
+  FILE * File = fopen("./IO/Saves/Simulation_Data.txt","r");
   fseek(File, 0, SEEK_SET);
 
-  if(File == nullptr) {
-    printf("Couldn't find Body_Data.txt   :(\n");
+  if(File == 0) {
+    printf("Couldn't find Simulation_Data.txt   :(\n");
     return 1;
-  } // if(File == nullptr) {
+  } // if(File == 0) {
 
   // First, read how many Bodies we need to make.
   unsigned Buf_Length = 100;
@@ -230,8 +219,10 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     Buf[Buf_Length-1] = '\0';
     strBuf = Buf;
 
+
     // Set Bodys name.
     (*Bodies_Ptr)[i].Set_Name(strBuf);
+
 
     // Now determine if this Body is a Box
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &Is_Box);
@@ -243,24 +234,31 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
       (*Bodies_Ptr)[i].Set_Box_Dimensions(Dimensions);
     } // if(uBuf == true) {
 
+
     // Now read in the 'Is a boundary' flag
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     (*Bodies_Ptr)[i].Set_Boundary(uBuf);
 
-    // Now read in the 'Is damageabl' flag
+
+    // Now read in the 'Is damageable' flag
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     (*Bodies_Ptr)[i].Set_Damageable(uBuf);
+
 
     // Now read in number of particles and use if this Body is not a Box
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
     if(Is_Box == false) { (*Bodies_Ptr)[i].Set_Num_Particles(uBuf); }
 
+
     // Finally read in File number information
     fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
-    (*Bodies_Ptr)[i].Times_Printed_Particle_Positions = uBuf;
+    (*Bodies_Ptr)[i].Times_Printed_Net_External_Force = uBuf;
 
     fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Forces = uBuf;
+
+    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    (*Bodies_Ptr)[i].Times_Printed_Particle_Positions = uBuf;
   } // for(unsigned i = 0; i < Num_Bodiess; i++) {
 
   // pass the newly created body's to the 'load body' function
@@ -285,10 +283,10 @@ int Data_Dump::Load_Body(Body & Body_In) {
 
   FILE * File = fopen(File_Path.c_str(), "r");
 
-  if(File == nullptr) {
+  if(File == 0) {
     printf("Could not open Particle data file\n");
     return 1;
-  } // if(File == nullptr) {
+  } // if(File == 0) {
 
   // Buffers to hold variables that we read in (we need to do this b/c the
   // Body's varialbes are hidden/seed to be set with setters)

@@ -1,4 +1,4 @@
 
 *.vtk
 *.txt
-
+!IO/Setup.txt

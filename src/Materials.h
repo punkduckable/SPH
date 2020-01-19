@@ -9,7 +9,7 @@ namespace Materials {
     std::string Name;
     double Lame;                                           // Lame parameter             : Mpa
     double mu0;                                            // Shear modulus              : Mpa
-    double E;                                              // Hourglass stiffness        : Mpa
+    double E;                                              // Young's Modulus            : Mpa
     double density;                                        // Material density           : g/(mm^3)
   }; // struct Material {
 

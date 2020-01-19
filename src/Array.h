@@ -61,6 +61,8 @@ class Array {
       return Internal_Array[index];
     } // T operator[](const unsigned index) const {
 
+
+
     T & operator[](const unsigned index) {
       if((*this).Length_Set == false) {
         throw Array_Length_Not_Set("Array Length Not Set Exception: Thrown by Array::operator[] (modify)\n"

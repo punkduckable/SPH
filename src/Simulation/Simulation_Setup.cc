@@ -15,12 +15,13 @@ namespace Simulation {
   unsigned Num_Bodies = 0;                       // Number of bodies in simulation
   std::string * Names = nullptr;                 // The names of each body (name must match File name if reading from FEB file)
   bool * Is_Box = nullptr;                       // Which bodies are Boxs
+  Box_Properties * Box_Parameters = nullptr;     // Specifies the dimensions, and BCs of the box bodies.
   bool * Is_Boundary = nullptr;                  // Which bodies are boundaries (can be from FEB file or Box)
   bool * Is_Damagable = nullptr;                 // Which bodies can be damaged
   bool * From_FEB_File = nullptr;                // Which bodies will be read from file
   unsigned * Steps_Per_Update = nullptr;         // How many time steps pass between updating this Body's P-K tensor
   double * IPS = nullptr;                        // Inter particle spacing in mm.
-  Box_Properties * Box_Parameters = nullptr;     // Specifies the dimensions, offset, and BCs of the box bodies.
+  Vector * Position_Offset = nullptr;            // Position offset for particles in body
   Vector * Initial_Velocity = nullptr;           // Initial velocity condition
   Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
 } // namespace Simulation {
@@ -38,11 +39,12 @@ void Simulation::Bodies_Setup(void) {
   Names = new std::string[Num_Bodies];
   From_FEB_File = new bool[Num_Bodies];
   Is_Box = new bool[Num_Bodies];
+  Box_Parameters = new Box_Properties[Num_Bodies];
   Is_Boundary = new bool[Num_Bodies];
   Is_Damagable = new bool[Num_Bodies];
   Steps_Per_Update = new unsigned[Num_Bodies];
   IPS = new double[Num_Bodies];
-  Box_Parameters = new Box_Properties[Num_Bodies];
+  Offset = new Vector[Num_Bodies];
   Initial_Velocity = new Vector[Num_Bodies];
   Simulation_Materials = new Materials::Material[Num_Bodies];
 
@@ -54,13 +56,13 @@ void Simulation::Bodies_Setup(void) {
   Steps_Per_Update[0]                          = 10;
   IPS[0]                                       = 1;
   Box_Parameters[0].Dimensions                 = {20, 10, 20};
-  Box_Parameters[0].Offset                     = {0,0,0};
   Box_Parameters[0].x_plus_BC                  = {0, Free_BC_Box, Free_BC_Box};
   Box_Parameters[0].x_minus_BC                 = {0, Free_BC_Box, Free_BC_Box};
   Box_Parameters[0].y_plus_BC                  = {Free_BC_Box, 0, Free_BC_Box};
   Box_Parameters[0].y_minus_BC                 = {Free_BC_Box, 0, Free_BC_Box};
   Box_Parameters[0].z_plus_BC                  = {Free_BC_Box, Free_BC_Box, 0};
   Box_Parameters[0].z_minus_BC                 = {Free_BC_Box, Free_BC_Box, 0};
+  Offset[0]                                    = {0,0,0};
   Initial_Velocity[0]                          = {0, 0, 0};
   Simulation_Materials[0]                      = Materials::Default;
 
@@ -72,13 +74,13 @@ void Simulation::Bodies_Setup(void) {
   Steps_Per_Update[1]                          = 1;
   IPS[1]                                       = 1;
   Box_Parameters[1].Dimensions                 = {4, 10, 4};
-  Box_Parameters[1].Offset                     = {10-2, 10.01, 10-2};
   Box_Parameters[1].x_plus_BC                  = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
   Box_Parameters[1].x_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
   Box_Parameters[1].y_plus_BC                  = {0, -50, 0};
   Box_Parameters[1].y_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
   Box_Parameters[1].z_plus_BC                  = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
   Box_Parameters[1].z_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
+  Offset[1]                                    = {10-2, 10.01, 10-2};
   Initial_Velocity[1]                          = {0, -500, 0};
   Simulation_Materials[1]                      = Materials::Old_Needle;
 } // void Simulation::Bodies_Setup(void) {
@@ -131,7 +133,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
         unsigned index = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
 
         X = {i*IPS, j*IPS, k*IPS};
-        X += Box_Parameters[m].Offset;
+        X += Offset[m];
         x = X;                                                                 //        : mm
 
         Body_In[index].Set_Mass(Particle_Mass);                                //        : g

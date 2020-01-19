@@ -47,15 +47,15 @@ namespace Simulation {
   // (Note: const variables have internal linkage)
 
   // Simulation flags/properties. Defined
-  const bool Load_Data_From_File                 = false;
-  const bool Save_Data_To_File                   = false;
-  const bool Print_Particle_Forces               = true;
-  const bool Print_Net_Force                     = true;
+  const bool Load_Simulation_From_Save           = false;
+  const bool Save_Simulation                     = true;
+  const bool Print_Particle_Forces               = false;
+  const bool Print_Net_External_Forces           = false;
   const unsigned TimeSteps_Between_Prints        = 1000;
 
   // TimeStep paramters
   const double dt                                = .0000001;        // Time step        : s
-  const unsigned Num_Steps                       = 100000;          // Number of time steps
+  const unsigned Num_Time_Steps                  = 10000;           // Number of time steps
 
   // Contact parameter
   const double Contact_Distance = 1;             // Distance at which bodies begin contacting one another.   : mm
@@ -76,7 +76,6 @@ namespace Simulation {
 
   struct Box_Properties {
     Vector Dimensions;
-    Vector Offset;
 
     // BCs
     Vector x_plus_BC;
@@ -95,7 +94,7 @@ namespace Simulation {
   extern bool * From_FEB_File;                   // Which bodies will be read from file
   extern unsigned * Steps_Per_Update;            // How many time steps pass between updating this Body's P-K tensor
   extern double * IPS;                           // Inter particle spacing in mm.
-  extern Box_Properties * Box_Parameters;        // Specifies the dimensions, offset, and BCs of the box bodies.
+  extern Box_Properties * Box_Parameters;        // Specifies the dimensions, and BCs of the box bodies.
   extern Vector * Initial_Velocity;              // Initial velocity condition
   extern Materials::Material * Simulation_Materials;       // Each bodies material
 

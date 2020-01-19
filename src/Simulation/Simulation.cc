@@ -40,13 +40,13 @@ void Simulation::Run_Simulation(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
-  printf(         "\nRunning %d time steps....\n",Num_Steps);
+  printf(         "\nRunning %d time steps....\n",Num_Time_Steps);
   time1 = Get_Time();
 
   // time step loop.
-  #pragma omp parallel default(shared) private(b, p, t) firstprivate(Num_Bodies, Num_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) private(b, p, t) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
-  for(t = 0; t < Num_Steps; t++) {
+  for(t = 0; t < Num_Time_Steps; t++) {
     ////////////////////////////////////////////////////////////////////////////
     // Print to file
     #pragma omp single nowait
@@ -70,12 +70,12 @@ void Simulation::Run_Simulation(void) {
         } // for(b = 0; b < Num_Bodies; b++ ) {
       } // if(Print_Particle_Forces == true) {
 
-      if(Print_Net_Force == true) {
+      if(Print_Net_External_Forces == true) {
         #pragma omp for nowait
         for(b = 0; b < Num_Bodies; b++) {
           Bodies[b].Export_Net_External_Force(t);
         } // for(b = 0; b < Num_Bodies; b++) {
-      } // if(Print_Net_Force == true) {
+      } // if(Print_Net_External_Forces == true) {
     } // if(t%TimeSteps_Between_Prints == 0) {
 
     #pragma omp single nowait
@@ -255,19 +255,19 @@ void Simulation::Run_Simulation(void) {
       } // if(Time_Step_Index[b] == Steps_Per_Update[b]) {
     } // for(b = 0; b < Num_Bodies; b++) {
     } // #pragma omp single
-  } // for(t = 0; t < Num_Steps; t++) {
+  } // for(t = 0; t < Num_Time_Steps; t++) {
   } // #pragma omp parallel
   printf(         "Done!\n");
   simulation_time = Time_Since(time1);
 
   // If saving is enabled, Dump particle data to file
-  if(Save_Data_To_File == 1) {
+  if(Save_Simulation == 1) {
     Data_Dump::Save_Simulation(Bodies, Num_Bodies);
-  } // if(Save_Data_To_File == 1) {
+  } // if(Save_Simulation == 1) {
 
   // Print timing data
   #if defined(_OPENMP)
-    printf(       "\nIt took %lf s to perform %u Particle time steps \n",simulation_time, Num_Steps);
+    printf(       "\nIt took %lf s to perform %u Particle time steps \n",simulation_time, Num_Time_Steps);
     printf(       "%lfs to update BC's\n", update_BC_time);
     printf(       "%lfs to update P\n", update_P_time);
     printf(       "%lfs for Contact\n", contact_time);
@@ -289,7 +289,7 @@ void Simulation::Run_Simulation(void) {
     MS_x = (unsigned long)((double)update_x_time / (double)CLOCKS_PER_MS);
     MS_Print = (unsigned long)((double)Print_time / (double)CLOCKS_PER_MS);
 
-    printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Steps);
+    printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Time_Steps);
     printf(         "%lums to update BC's\n", MS_BC);
     printf(         "%lums to update P\n", MS_P);
     printf(         "%lums for Contact\n", MS_Contact);
@@ -305,8 +305,8 @@ void Simulation::Run_Simulation(void) {
 void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   //Display that the simulation has begun
   printf(         "\nRunning a Simulation...\n");
-  printf(         "Load_Data_From_File =         %u\n",    Load_Data_From_File);
-  printf(         "Save_Data_To_File =           %u\n",    Save_Data_To_File);
+  printf(         "Load_Simulation_From_Save =   %u\n",    Load_Simulation_From_Save);
+  printf(         "Save_Simulation =             %u\n",    Save_Simulation);
   printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
   printf(         "Print_Particle_Forces =       %u\n",    Print_Particle_Forces);
   printf(         "Parallel execution =          ");
@@ -318,7 +318,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
   #endif
 
   // Are we running a new simulation or loading an existing one?
-  if(Load_Data_From_File == 1) {
+  if(Load_Simulation_From_Save == 1) {
     TIME_TYPE time1 = Get_Time();
 
     // If loading an existing simulation, read in bodies from file
@@ -340,9 +340,9 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
       unsigned long MS_Load = (unsigned long)((double)time1 / (double)CLOCKS_PER_MS);
       printf(       "Done!\ntook %lu ms\n", MS_Load);
     #endif
-  } //   if(Load_Data_From_File == 1) {
+  } //   if(Load_Simulation_From_Save == 1) {
 
-  else if(Load_Data_From_File == 0) {
+  else if(Load_Simulation_From_Save == 0) {
     // Use Bodies defined in Simulation.h
     Bodies_Setup();
 
@@ -418,7 +418,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
       } // else if(From_FEB_File[i] == true) {
 
     } // for(unsigned i = 0; i < Num_Bodies; i++) {
-  } // else if(Load_Data_From_File == 0) {
+  } // else if(Load_Simulation_From_Save == 0) {
 
   // Now that the body is loaded, print paramaters.
   printf(         "\nRuinning with the following paramaters....\n");
