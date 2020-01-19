@@ -2,24 +2,24 @@
 # Simulation Parameters
 
 # IO
-Load Simulation from Save                        = false
-Save Data To File                                = false
-Print Particle Forces                            = true
-Print Net External Forces                        = true
-Time Steps Between Prints                        = 1000
+Load Simulation from Save:                       false
+Save Data To File:                               false
+Print Particle Forces:                           true
+Print Net External Forces:                       true
+Time Steps Between Prints:                       1000
 
 # Time Step
-dt                                               = .0000001
-Num Time Steps                                   = 100000
+dt:                                              .0000001
+Num Time Steps:                                  100000
 
 # Contact
-Contact Distance                                = 1
-Friction Coefficient                            = .1
+Contact Distance:                                1.0
+Friction Coefficient:                            .1
 
 # Body stuff
-Number of Bodies                               = 2
-Mu (Viscosity)                                 = .0001
-Alpha (Hg Control parameter)                   = .75
+Number of Bodies:                                2
+Mu (Viscosity):                                  .0001
+Alpha (Hg Control parameter):                    .75
 
 
 
@@ -27,30 +27,30 @@ Alpha (Hg Control parameter)                   = .75
 # Body 0
 
 # General
-Name                                           = Body
-From FEB File                                  = false
-Is Box                                         = true
-    Dimensions                                 = {20, 10, 20}
-    x_plus_BC                                  = {0, Free, Free}
-    x_minus_BC                                 = {0, Free, Free}
-    y_plus_BC                                  = {Free, 0, Free}
-    y_minus_BC                                 = {Free, 0, Free}
-    z_plus_BC                                  = {Free, Free, 0}
-    z_minus_BC                                 = {Free, Free, 0}
-Is Boundary                                    = false
-Is Damageable                                  = true
-    Tau (Damage rate)                          = .15
+Name:                                            Body
+From FEB File:                                   false
+Is Box:                                          true
+    Dimensions:                                  {20, 10, 20}
+    x_plus_BC:                                   {0, Free, Free}
+    x_minus_BC:                                  {0, Free, Free}
+    y_plus_BC:                                   {Free, 0, Free}
+    y_minus_BC:                                  {Free, 0, Free}
+    z_plus_BC:                                   {Free, Free, 0}
+    z_minus_BC:                                  {Free, Free, 0}
+Is Boundary:                                     false
+Is Damageable:                                   true
+    Tau (Damage rate):                           .15
 
 # Material
-Lame Parameter (Mpa)                           = 1.125
-mu0 (Shear Modulus) (Mpa)                      = .275
-Density (g/mm^3)                               = .01
+Lame Parameter (Mpa):                            1.125
+mu0 (Shear Modulus) (Mpa):                       .275
+Density (g/mm^3):                                .01
 
 # Initial conditions
-Offset                                         = {0,0,0}
-Initial Velocity                               = {0, 0, 0}
+Offset:                                          {0,0,0}
+Initial Velocity:                                {0, 0, 0}
 
 # Other
-Support Radius                                 = 3
-Inter Particle Spacing                         = 1
-Steps Per Update                               = 10
+Support Radius:                                  3
+Inter Particle Spacing:                          1
+Steps Per Update:                                10

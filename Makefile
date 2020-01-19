@@ -14,8 +14,7 @@ OBJS :=            Main.o \
 									 Particle.o \
 									 Body.o Neighbors.o Update.o Damage.o Contact.o Body_IO.o \
 									 Simulation.o Simulation_Setup.o Timing.o Boundary_Conditions.o \
-									 Data_Dump.o \
-									 FEB_File.o
+									 Data_Dump.o FEB_File.o IO_Ops.o
 
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 
@@ -125,10 +124,13 @@ obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h
 
 
 # IO
-obj/Data_Dump.o: Data_Dump.cc Data_Dump.h Particle.h Body.h
+obj/Data_Dump.o: Data_Dump.cc Data_Dump.h IO_Ops.h Particle.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/FEB_File.o: FEB_File.cc FEB_File.h Particle.h Body.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/IO_Ops.o: IO_Ops.cc IO_Ops.h Vector.h Simulation.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 

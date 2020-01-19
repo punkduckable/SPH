@@ -59,8 +59,9 @@ class Body {
     double Tau;                                            // Damage rate parameter (see eq 26)
     bool Damageable = 1;                                   // If true, allows this Body to take damage.
 
-    // First time step?
+    // Time step information
     bool First_Time_Step = true;
+    unsigned Time_Steps_Between_Updates;                   // The number of time steps between when P and F are updated
 
 
 
@@ -163,11 +164,14 @@ class Body {
     void Set_Tau(const double Tau_In);
     void Set_Damageable(const bool D_In);
 
-    void Set_Box_Dimensions(const Vector & Dimensions);
+    void Set_Box_Dimensions(const unsigned Dim_x,
+                            const unsigned Dim_y,
+                            const unsigned Dim_z);
 
     void Set_Boundary(const bool Boundary_In);
 
     void Set_First_Time_Step(const bool First_In);
+    void Set_Time_Steps_Between_Updates(const unsigned Steps_In);
 
     void Set_F_Index(const unsigned char i);
     void Increment_F_Index(void);
@@ -206,6 +210,7 @@ class Body {
     bool Get_Boundary(void) const;
 
     bool Get_First_Time_Step(void) const;
+    unsigned Get_Time_Steps_Between_Updates(void) const;
 
 
 

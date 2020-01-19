@@ -47,8 +47,8 @@ namespace Simulation {
   // (Note: const variables have internal linkage)
 
   // Simulation flags/properties. Defined
-  const bool Load_Simulation_From_Save           = false;
-  const bool Save_Simulation                     = true;
+  const bool Load_Simulation_From_Save           = true;
+  const bool Save_Simulation                     = false;
   const bool Print_Particle_Forces               = false;
   const bool Print_Net_External_Forces           = false;
   const unsigned TimeSteps_Between_Prints        = 1000;
@@ -71,8 +71,8 @@ namespace Simulation {
   /* To simplify implementation, I choose a random value to designate as "free".
   If a particular BC component has this value, then that BC component is treated
   as if it were "free" (had no BC applied to it). This means that it is impossible
-  to set a box BC of exactly -.293103918 mm/s */
-  const double Free_BC_Box = -.293103918;
+  to set a box BC of exactly -293103918 mm/s */
+  const double Free_BC_Box = -293103918;
 
   struct Box_Properties {
     Vector Dimensions;
@@ -92,7 +92,7 @@ namespace Simulation {
   extern bool * Is_Boundary;                     // Which bodies are boundaries (can be from FEB file or Box)
   extern bool * Is_Damagable;                    // Which bodies can be damaged
   extern bool * From_FEB_File;                   // Which bodies will be read from file
-  extern unsigned * Steps_Per_Update;            // How many time steps pass between updating this Body's P-K tensor
+  extern unsigned * Time_Steps_Between_Updates;  // How many time steps pass between updating this Body's P-K tensor
   extern double * IPS;                           // Inter particle spacing in mm.
   extern Box_Properties * Box_Parameters;        // Specifies the dimensions, and BCs of the box bodies.
   extern Vector * Initial_Velocity;              // Initial velocity condition

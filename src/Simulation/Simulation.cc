@@ -128,7 +128,8 @@ void Simulation::Run_Simulation(void) {
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
         if(Time_Step_Index[b] == 0) {
-          Bodies[b].Update_P(Steps_Per_Update[b]*dt);
+          unsigned time_update = dt*Bodies[b].Get_Time_Steps_Between_Updates();
+          Bodies[b].Update_P(time_update);
         } // if(Time_Step_Index[b] == 0) {
       } // else
     } // for(b = 0; b < Num_Bodies; b++) {
@@ -160,7 +161,7 @@ void Simulation::Run_Simulation(void) {
     used for anything, there's no reason to waste CPU cycles setting that
     bodies's particle's contact forces to zero. */
     for(b = 0; b < Num_Bodies; b++) {
-      unsigned Num_Particles = (Bodies[b]).Get_Num_Particles();
+      unsigned Num_Particles = Bodies[b].Get_Num_Particles();
 
       #pragma omp for
       for(p = 0; p < Num_Particles; p++) {
@@ -242,7 +243,7 @@ void Simulation::Run_Simulation(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Update each time step counter
     /* Here we increment each Body's counter. If a particular counter
-    reaches its limit (the value of Steps_Per_Update[b]) then we set that
+    reaches its limit (the value of Bodies[b].Time_Steps_Between_Updates) then we set that
     counter to zero (reset the counter). */
 
     #pragma omp single
@@ -250,9 +251,9 @@ void Simulation::Run_Simulation(void) {
     for(b = 0; b < Num_Bodies; b++) {
       Time_Step_Index[b]++;
 
-      if(Time_Step_Index[b] == Steps_Per_Update[b]) {
+      if(Time_Step_Index[b] == Bodies[b].Get_Time_Steps_Between_Updates()) {
         Time_Step_Index[b] = 0;
-      } // if(Time_Step_Index[b] == Steps_Per_Update[b]) {
+      } // if(Time_Step_Index[b] == Time_Setps_Between_Updates[b]) {
     } // for(b = 0; b < Num_Bodies; b++) {
     } // #pragma omp single
   } // for(t = 0; t < Num_Time_Steps; t++) {
@@ -365,6 +366,9 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
       // Now set wheather or not the ith Body is damagable
       (*Bodies)[i].Set_Damageable(Is_Damagable[i]);
 
+      // Set Time Steps Per Update
+      (*Bodies)[i].Set_Time_Steps_Between_Updates(Time_Steps_Between_Updates[i]);
+
       // Now set other Body members.
       Set_Body_Members((*Bodies)[i]);
 
@@ -408,7 +412,9 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
       // Set up body as a Box if it is a Box
       if(Is_Box[i] == true) {
-        (*Bodies)[i].Set_Box_Dimensions(Box_Parameters[i].Dimensions);
+        (*Bodies)[i].Set_Box_Dimensions(Box_Parameters[i].Dimensions[0],
+                                        Box_Parameters[i].Dimensions[1],
+                                        Box_Parameters[i].Dimensions[2]);
         Setup_Box((*Bodies)[i], i);
       } // if(Is_Box[i] == true) {
 

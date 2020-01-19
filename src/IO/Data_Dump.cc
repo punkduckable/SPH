@@ -1,6 +1,7 @@
 #include "Data_Dump.h"
 #include "Body/Body.h"
 #include "Particle/Particle.h"
+#include "IO_Ops.h"
 
 void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
   /* This Function is used to save a simulation. This function prints all the
@@ -18,7 +19,7 @@ void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) 
   // Print number of Bodies to this file
   fprintf(File,   "Number of Bodies:    %u\n\n", Num_Bodies);
 
-  // Now print each Body's name and other essential information
+  // Now print each Body's name and essential information
   for(unsigned i = 0; i < Num_Bodies; i++) {
     fprintf(File, "Body %3u name:      %s\n", i, Bodies[i].Get_Name().c_str());
     fprintf(File, "     Is a Box:                %u\n",    Bodies[i].Get_Is_Box());
@@ -27,11 +28,13 @@ void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) 
       fprintf(File, "          X_SIDE_LENGTH:      %u\n",  Bodies[i].Get_X_SIDE_LENGTH());
       fprintf(File, "          Y_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Y_SIDE_LENGTH());
       fprintf(File, "          Z_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Z_SIDE_LENGTH());
+      fprintf(File, "          plus_x_BC:          ");
     } // if(Bodies[i].Get_Is_Box() == true) {
 
     fprintf(File, "     Is a Boundary:           %u\n",    Bodies[i].Get_Boundary());
     fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Damagable());
     fprintf(File, "     Number of particles:     %u\n",    Bodies[i].Get_Num_Particles());
+    fprintf(File, "     Time steps per update:   %u\n",    Bodies[i].Get_Time_Steps_Between_Updates());
 
     fprintf(File, "     # times printed net external forces:         %u\n",    Bodies[i].Times_Printed_Net_External_Force);
     fprintf(File, "     # times printed particle forces:             %u\n",    Bodies[i].Times_Printed_Particle_Forces);
@@ -189,20 +192,21 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     return 1;
   } // if(File == 0) {
 
-  // First, read how many Bodies we need to make.
+  // Buffers
   unsigned Buf_Length = 100;
   char Buf[Buf_Length];                                 // Buffer to store text from file
   unsigned uBuf;
   std::string strBuf;
-  fread(Buf, 1, 30, File);   fscanf(File, " %u\n\n", &Num_Bodies);
 
-  // Now use this information to genrate our Bodies
+  // First, read how many Bodies we need to make.
+  strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str(), " %u \n \n", &Num_Bodies);
+
+  // Now use this information to make the Bodies array
   *Bodies_Ptr = new Body[Num_Bodies];
 
-  Vector Dimensions;
+  // Now read in each Body's name and Fundamental properties
+  unsigned Dimensions[3];
   unsigned Is_Box;
-
-  // Now read in each Body's name + Fundamental properties
   for(unsigned i = 0; i < Num_Bodies; i++) {
     /* We want to get each particle's name. The issue here is that there's no
     way to directly scan to a string. Instead, we can scan to a char array, Buf
@@ -215,9 +219,12 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     fault if the name was longer than 100 characters). We then allocate a new
     body and assign its name to the string. */
 
-    fread(Buf, 1, 30, File); fscanf(File, " %s\n", Buf);
-    Buf[Buf_Length-1] = '\0';
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str(), " %s \n", Buf);
+    Buf[Buf_Length-1] = '\0';          // Incase sscanf filled Buf
     strBuf = Buf;
+    #if defined(LOAD_MONITOR)
+      printf("\nRead Body %u's name as                  %s\n", i, Buf);
+    #endif
 
 
     // Set Bodys name.
@@ -225,39 +232,65 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Now determine if this Body is a Box
-    fread(Buf, 1, 25, File); fscanf(File," %u\n", &Is_Box);
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Is_Box);
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's Is_Box as                %u\n", i, Is_Box);
+    #endif
+
 
     if(Is_Box == true) {
-      fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(0) = uBuf;
-      fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(1) = uBuf;
-      fread(Buf, 1, 20, File); fscanf(File," %u\n", &uBuf);   Dimensions(2) = uBuf;
-      (*Bodies_Ptr)[i].Set_Box_Dimensions(Dimensions);
+      strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Dimensions[0]);
+      strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Dimensions[1]);
+      strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Dimensions[2]);
+      (*Bodies_Ptr)[i].Set_Box_Dimensions(Dimensions[0], Dimensions[1], Dimensions[2]);
+
+      #if defined(LOAD_MONITOR)
+        printf("Read Body %u's dimensions as            <%u %u %u>\n", i, Dimensions[0], Dimensions[1], Dimensions[2]);
+      #endif
     } // if(uBuf == true) {
 
 
     // Now read in the 'Is a boundary' flag
-    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Set_Boundary(uBuf);
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's Is_Boundary as           %u\n", i, uBuf);
+    #endif
 
 
     // Now read in the 'Is damageable' flag
-    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Set_Damageable(uBuf);
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's Is_Damageable as         %u\n", i, uBuf);
+    #endif
 
 
     // Now read in number of particles and use if this Body is not a Box
-    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
     if(Is_Box == false) { (*Bodies_Ptr)[i].Set_Num_Particles(uBuf); }
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's Num Particles as         %u\n", i, uBuf);
+    #endif
+
+
+    // Now read in time steps between updates
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
+    if(Is_Box == false) { (*Bodies_Ptr)[i].Set_Time_Steps_Between_Updates(uBuf); }
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's time steps per update as %u\n", i, uBuf);
+    #endif
+
 
 
     // Finally read in File number information
-    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Net_External_Force = uBuf;
 
-    fread(Buf, 1, 25, File); fscanf(File," %u\n\n", &uBuf);
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Forces = uBuf;
 
-    fread(Buf, 1, 25, File); fscanf(File," %u\n", &uBuf);
+    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Positions = uBuf;
   } // for(unsigned i = 0; i < Num_Bodiess; i++) {
 
@@ -277,7 +310,7 @@ int Data_Dump::Load_Body(Body & Body_In) {
   unsigned Num_Particles = 0;
 
   // First, get a path to the file
-  std::string File_Path = "../Files/Saves/";
+  std::string File_Path = "./IO/Saves/";
   File_Path += Body_In.Get_Name();
   File_Path += ".txt";
 
@@ -296,12 +329,9 @@ int Data_Dump::Load_Body(Body & Body_In) {
   double lfBuf;
   Materials::Material Mat;
 
-  // Now let's print the number of particles
-  fprintf(File,   "       -- Particles --\n");
-  fprintf(File,   "Number of particles:          %u\n\n",    Body_In.Get_Num_Particles());
 
   // We already have the Body's name, Box/boundary flags, and
-  // dimensions (if Box). We can therefore skip over these lines.
+  // dimensions (if Box). We can, therefore, skip over these lines.
   fgets(Buf, 99, File);                          // Skip 'name' line.
   fgets(Buf, 99, File);                          // Skip blank line
   fgets(Buf, 99, File);                          // Skip 'Is a Box' line

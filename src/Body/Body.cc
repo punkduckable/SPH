@@ -168,7 +168,7 @@ void Body::Set_Damageable(const bool D_In) { Damageable = D_In; }
 
 
 
-void Body::Set_Box_Dimensions(const Vector & Dimensions) {
+void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const unsigned Dim_z) {
   // Check if Box has already been set up
   if((*this).Particles_Set_Up == true) {
     printf("%s has already been set up! You can't change its dimensions\n", Name.c_str());
@@ -176,17 +176,17 @@ void Body::Set_Box_Dimensions(const Vector & Dimensions) {
   } // if(Num_Particles != 0) {
 
   // Check for non-sensical input
-  if(Dimensions(0) == 0 || Dimensions(1) == 0 || Dimensions(2) == 0) {
+  if(Dim_x == 0 || Dim_y == 0 || Dim_z == 0) {
       printf("%s can't have a side length of zero...\n", Name.c_str());
       return;
-  } // if(Dimensions(0) == 0 || Dimensions(1) == 0 || Dimensions(2) == 0) {
+  } // if(Dim_x == 0 || Dim_y == 0 || Dim_z == 0) {
 
   // Now designate this Body as a Box
   Is_Box = true;
 
-  X_SIDE_LENGTH = Dimensions(0);
-  Y_SIDE_LENGTH = Dimensions(1);
-  Z_SIDE_LENGTH = Dimensions(2);
+  X_SIDE_LENGTH = Dim_x;
+  Y_SIDE_LENGTH = Dim_y;
+  Z_SIDE_LENGTH = Dim_z;
 
   // Set up particles array.
   Num_Particles = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
@@ -204,13 +204,14 @@ void Body::Set_Box_Dimensions(const Vector & Dimensions) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
 
   (*this).Particles_Set_Up = true;
-} // void Body::Set_Box_Dimensions(const Vector & Dimensions); {
+} // void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const unsigned Dim_z) {
 
 
 
 void Body::Set_Boundary(const bool Boundary_In) { Is_Boundary = Boundary_In; }
 
 void Body::Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
+void Body::Set_Time_Steps_Between_Updates(const unsigned Steps_In) { Time_Steps_Between_Updates = Steps_In; }
 
 void Body::Set_F_Index(const unsigned char i) {
   assert(i <= 1);
@@ -269,3 +270,4 @@ unsigned Body::Get_Z_SIDE_LENGTH(void) const {
 bool Body::Get_Boundary(void) const { return Is_Boundary; }
 
 bool Body::Get_First_Time_Step(void) const { return First_Time_Step; }
+unsigned Body::Get_Time_Steps_Between_Updates(void) const { return Time_Steps_Between_Updates; }

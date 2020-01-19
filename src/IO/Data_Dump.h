@@ -1,6 +1,8 @@
 #if !defined(DATA_DUMP_HEADER)
 #define DATA_DUMP_HEADER
 
+#define LOAD_MONITOR
+
 #include "Classes.h"
 #include <stdio.h>
 
