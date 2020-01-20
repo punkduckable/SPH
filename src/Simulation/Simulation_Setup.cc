@@ -56,13 +56,13 @@ void Simulation::Bodies_Setup(void) {
   From_FEB_File[0]                             = false;
   Time_Steps_Between_Updates[0]                = 10;
   IPS[0]                                       = 1;
-  Box_Parameters[0].Dimensions                 = {20, 10, 20};
-  Box_Parameters[0].x_plus_BC                  = {0, Free_BC_Box, Free_BC_Box};
-  Box_Parameters[0].x_minus_BC                 = {0, Free_BC_Box, Free_BC_Box};
-  Box_Parameters[0].y_plus_BC                  = {Free_BC_Box, 0, Free_BC_Box};
-  Box_Parameters[0].y_minus_BC                 = {Free_BC_Box, 0, Free_BC_Box};
-  Box_Parameters[0].z_plus_BC                  = {Free_BC_Box, Free_BC_Box, 0};
-  Box_Parameters[0].z_minus_BC                 = {Free_BC_Box, Free_BC_Box, 0};
+  Box_Parameters[0].Dimensions                 = {10, 5, 10};
+  Box_Parameters[0].x_plus_BC                  = {0, FREE, FREE};
+  Box_Parameters[0].x_minus_BC                 = {0, FREE, FREE};
+  Box_Parameters[0].y_plus_BC                  = {FREE, 0, FREE};
+  Box_Parameters[0].y_minus_BC                 = {FREE, 0, FREE};
+  Box_Parameters[0].z_plus_BC                  = {FREE, FREE, 0};
+  Box_Parameters[0].z_minus_BC                 = {FREE, FREE, 0};
   Position_Offset[0]                           = {0,0,0};
   Initial_Velocity[0]                          = {0, 0, 0};
   Simulation_Materials[0]                      = Materials::Default;
@@ -75,13 +75,13 @@ void Simulation::Bodies_Setup(void) {
   Time_Steps_Between_Updates[1]                = 1;
   IPS[1]                                       = 1;
   Box_Parameters[1].Dimensions                 = {4, 10, 4};
-  Box_Parameters[1].x_plus_BC                  = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
-  Box_Parameters[1].x_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
+  Box_Parameters[1].x_plus_BC                  = {FREE, FREE, FREE};
+  Box_Parameters[1].x_minus_BC                 = {FREE, FREE, FREE};
   Box_Parameters[1].y_plus_BC                  = {0, -50, 0};
-  Box_Parameters[1].y_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
-  Box_Parameters[1].z_plus_BC                  = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
-  Box_Parameters[1].z_minus_BC                 = {Free_BC_Box, Free_BC_Box, Free_BC_Box};
-  Position_Offset[1]                           = {10-2, 10.01, 10-2};
+  Box_Parameters[1].y_minus_BC                 = {FREE, FREE, FREE};
+  Box_Parameters[1].z_plus_BC                  = {FREE, FREE, FREE};
+  Box_Parameters[1].z_minus_BC                 = {FREE, FREE, FREE};
+  Position_Offset[1]                           = {5-2, 5.1, 5-2};
   Initial_Velocity[1]                          = {0, -500, 0};
   Simulation_Materials[1]                      = Materials::Old_Needle;
 } // void Simulation::Bodies_Setup(void) {
@@ -100,6 +100,10 @@ void Simulation::Set_Body_Members(Body & Body_In) {
 
 
 void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
+  /* This function sets up Body_In as a box using the parameters corresponding
+  to body m in Bodies_Setup. This function should NOT be used if you're loading
+  from a save. */
+
   unsigned i,j,k;
   TIME_TYPE time1;
 
@@ -156,9 +160,15 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
     printf(        "Done!\ntook %lu ms\n",MS_Gen);
   #endif
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Set up Neighbors (if the body is not fixed im place)
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Set up BCs
+  Set_Box_BCs(Body_In, Box_Parameters[m]);
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Set up Neighbors (if the body is not fixed in place)
   if(Body_In.Get_Is_Fixed() == false) {
     printf(         "Generating %s's neighbor lists...", Body_In.Get_Name().c_str());
     time1 = Get_Time();
@@ -227,7 +237,7 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
 
 
 
-void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   //Display that the simulation has begun
   printf(         "\nRunning a Simulation...\n");
   printf(         "Load_Simulation_From_Save =   %u\n",    Load_Simulation_From_Save);
@@ -256,6 +266,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
       (*Time_Step_Index)[i] = 0;
     } // for(unsigned i = 0; i < Num_Bodies; i++) {
 
+    //abort();
 
     #if defined(_OPENMP)
       time1 = omp_get_wtime() - time1;
@@ -325,7 +336,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
 
       //////////////////////////////////////////////////////////////////////////
-      // Now set up the Body's particles
+      // Set up the Body's particles
 
       /* If the body is fixed in place, we need to designate it as such.
       note: this applies if the body is a Box, or from FEB file... anything
@@ -346,7 +357,6 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
       else if(From_FEB_File[i] == true) {
         Setup_FEB_Body((*Bodies)[i], i);
       } // else if(From_FEB_File[i] == true) {
-
     } // for(unsigned i = 0; i < Num_Bodies; i++) {
   } // else if(Load_Simulation_From_Save == 0) {
 
@@ -355,4 +365,4 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
   for(unsigned i = 0; i < Num_Bodies; i++) {
     (*Bodies)[i].Print_Parameters();
   } // for(unsigned i = 0; i < Num_Bodies; i++) {
-} // void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+} // void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {

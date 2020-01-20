@@ -1,6 +1,8 @@
 #if !defined(SUMULATION_HEADER)
 #define SUMULATION_HEADER
 
+//#define SIMULATION_DEBUG
+
 #include "Classes.h"
 #include "Vector/Vector.h"
 #include "Materials.h"
@@ -17,7 +19,7 @@ namespace Simulation {
   void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
   void Bodies_Setup(void);                                 // Set up Body/Needle simulation
   void Set_Body_Members(Body & Body_In);                   // Set default body members
-  void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
+  void Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -45,8 +47,8 @@ namespace Simulation {
   // (Note: const variables have internal linkage)
 
   // Simulation flags/properties. Defined
-  const bool Load_Simulation_From_Save           = false;
-  const bool Save_Simulation                     = false;
+  const bool Load_Simulation_From_Save           = true;
+  const bool Save_Simulation                     = true;
   const bool Print_Particle_Forces               = false;
   const bool Print_Net_External_Forces           = true;
   const unsigned TimeSteps_Between_Prints        = 1000;
@@ -70,7 +72,7 @@ namespace Simulation {
   If a particular BC component has this value, then that BC component is treated
   as if it were "free" (had no BC applied to it). This means that it is impossible
   to set a box BC of exactly -293103918 mm/s */
-  const double Free_BC_Box = -293103918;
+  const double FREE = -293103918;
 
   struct Box_Properties {
     Vector Dimensions;
@@ -162,12 +164,12 @@ namespace Simulation {
     Vector                   Effect_Vector;
   }; // struct Boundary_Condition {
 
-  void Apply_General_BCs(Body & Body_In,                   // The body we're applying the BC to
-                         Array<Boundary_Condition> & BCs_In);        // The BCs being applied
-  void Apply_Box_BCs(Body & Box,                           // Reference to the box body
-                     Box_Properties & Box_Parameters);     // Box's parameters
-  void Apply_Box_Particle_BCs(Particle & P_In,             // Particle that we're applying the BC to
-                              Vector BC);                  // The BC that's being applied
+  void Set_General_BCs(Body & Body_In,                     // The body we're applying the BC to
+                       Array<Boundary_Condition> & BCs_In);        // The BCs being applied
+  void Set_Box_BCs(Body & Box,                             // Reference to the box body
+                   Box_Properties & Box_Parameters);       // Box's parameters
+  void Set_Box_Particle_BCs(Particle & P_In,               // Particle that we're applying the BC to
+                            Vector BC);                    // The BC that's being applied
 } // namespace Simulation {
 
 #endif

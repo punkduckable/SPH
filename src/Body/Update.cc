@@ -376,6 +376,7 @@ void Body::Update_x(const double dt) {
     vector are 'nan'. If they are, then we damage and remove this Particle.
     It should be noted that this is sort of a last resort mechanism. */
     if(std::isnan(a[0]) || std::isnan(a[1]) || std::isnan(a[2])) {
+      Particles[i].Print();
       printf("Particle %d in %s has a nan acceleration :(\n",Particles[i].ID, Name.c_str());
       Particles[i].D = 1;
       Damaged_Particle_List.Push_Back(Particles[i].ID);

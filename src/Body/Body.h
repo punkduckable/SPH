@@ -113,6 +113,14 @@ class Body {
 
 
     ////////////////////////////////////////////////////////////////////////////
+    // Boundary Conditions
+    // Defined in Body.cc
+
+    void Apply_BCs(void);                        // Applies BCs for each particle in the Body 
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
     // Neighbor methods.
     // Defined in Neighbors.cc
     void Set_Neighbors(const unsigned i,         // Set Neighbors

@@ -102,7 +102,7 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
     // Now read in time steps between updates
     strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
-    if(Is_Box == false) { (*Bodies_Ptr)[i].Set_Time_Steps_Between_Updates(uBuf); }
+    (*Bodies_Ptr)[i].Set_Time_Steps_Between_Updates(uBuf);
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's time steps per update as %u\n", i, uBuf);
     #endif
@@ -315,7 +315,7 @@ void IO::Load_Particle(Particle & P_In, FILE * File) {
 
   // Read in "Has_BC", write it to P_In
   strBuf = read_line_after_char(File, ':');      // Skip the title ("Has BC: ");
-  sscanf(strBuf.c_str(), strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
+  sscanf(strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
   for(unsigned i = 0; i < 3; i++) {
     if(String_Ops::Contains(Buffers[i], "true")) { P_In.Has_BC[i] = true; }
     else { P_In.Has_BC[i] = false; }
@@ -323,11 +323,10 @@ void IO::Load_Particle(Particle & P_In, FILE * File) {
 
   // Read in "BC", write to P_In
   strBuf = read_line_after_char(File, ':');
-  sscanf(strBuf.c_str(), strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
+  sscanf(strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
   for(unsigned i = 0; i < 3; i++) {
     if(P_In.Has_BC[i] == true ) { sscanf(Buffers[i]," %lf ", &P_In.BC[i]); }
   } // for(unsigned i = 0; i < 3; i++) {
-
 
   //////////////////////////////////////////////////////////////////////////////
   // Neighbor paramaters

@@ -34,7 +34,7 @@ void Simulation::Run_Simulation(void) {
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
 
-  Startup_Simulation(&Bodies, &Time_Step_Index);
+  Setup_Simulation(&Bodies, &Time_Step_Index);
 
 
 
@@ -105,12 +105,8 @@ void Simulation::Run_Simulation(void) {
       time2 = Get_Time();
     } // #pragma omp single nowait
 
-    #pragma omp single
-    {
-    for(b = 0; b < Num_Bodies; b++) {
-      if(Bodies[b].Get_Is_Box() == true) { Apply_Box_BCs(Bodies[b], Box_Parameters[b]); }
-    } // for(b = 0; b < Num_Bodies; b++)
-    } // #pragma omp single
+    // Note: apply BCs uses a parallel for loop
+    for(b = 0; b < Num_Bodies; b++) { Bodies[b].Apply_BCs();  }
 
     #pragma omp single nowait
     {
@@ -140,7 +136,14 @@ void Simulation::Run_Simulation(void) {
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
         if(Time_Step_Index[b] == 0) {
-          unsigned time_update = dt*Bodies[b].Get_Time_Steps_Between_Updates();
+          double time_update = dt*Bodies[b].Get_Time_Steps_Between_Updates();
+
+          #if defined(SIMULATION_DEBUG)
+            printf("time update: %e\n", time_update);
+            printf("dt: %e\n", dt);
+            printf("Bodies[b].Get_Time_Steps_Between_Updates(): %u\n", Bodies[b].Get_Time_Steps_Between_Updates());
+          #endif
+
           Bodies[b].Update_P(time_update);
         } // if(Time_Step_Index[b] == 0) {
       } // else

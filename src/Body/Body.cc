@@ -3,6 +3,9 @@
 #include "Vector/Vector.h"
 #include <assert.h>
 #include <math.h>
+#if defined(_OPENMP)
+  #include <omp.h>
+#endif
 
 // Set K (static member of Body class)
 double Body::K = 400;
@@ -77,6 +80,22 @@ const Particle & Body::operator[](const unsigned i) const {
 
   return (*this).Particles[i];
 } // const Particle & Body::operator[](const unsigned i) const {
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Boundary Conditions
+
+void Body::Apply_BCs(void) {
+  // Using this function only makes sense if the particles array has been set up.
+  assert(Particles_Set_Up);
+
+  // For each particle in this body, apply its BCs.
+  #pragma omp for
+  for(unsigned i = 0; i < (*this).Num_Particles; i++) { Particles[i].Apply_BCs(); }
+} // void Body::Apply_BCs(void) {
 
 
 

@@ -5,7 +5,7 @@
 #include "Array.h"
 #include <assert.h>
 
-void Simulation::Apply_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In) {
+void Simulation::Set_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In) {
   /* Cycle through the components of the BC array */
   unsigned Num_BCs = BCs_In.Get_Length();
   Vector Position;
@@ -37,18 +37,18 @@ void Simulation::Apply_General_BCs(Body & Body_In, Array<Boundary_Condition> & B
           ((BCs_In[i].Condition_Inequality == Inequality::LE) &&
            (Distance_To_Plane <= BCs_In[i].Condition_Plane_Distance)) ) {
 
-        // If so, apply the effect to the ith particle.
-        if(BCs_In[i].Effect_x == true) { Body_In[j].V[0] = BCs_In[i].Effect_Vector[0]; }
-        if(BCs_In[i].Effect_y == true) { Body_In[j].V[1] = BCs_In[i].Effect_Vector[1];  }
-        if(BCs_In[i].Effect_z == true) { Body_In[j].V[2] = BCs_In[i].Effect_Vector[2];  }
+        // If so, set the ith Particle's BCs to the effect vector.
+        if(BCs_In[i].Effect_x == true) { Body_In[j].Set_BC(0,BCs_In[i].Effect_Vector[0]); }
+        if(BCs_In[i].Effect_y == true) { Body_In[j].Set_BC(1,BCs_In[i].Effect_Vector[1]);  }
+        if(BCs_In[i].Effect_z == true) { Body_In[j].Set_BC(2,BCs_In[i].Effect_Vector[2]);  }
       } // if (Condition == True)
     } // for(unsigned j = 0; j < Num_Particles; j++) {
   } // for(unsigned i = 0; i < Num_BCs; i++) {
-} // void Simulation::Apply_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In[i]) {
+} // void Simulation::Set_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In[i]) {
 
 
 
-void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
+void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   /* This function sets the BC's for the six sides of the cube. The faces are
   x_plus, x_minus, y_plus, y_minus, z_plus, and z_minus. These faces are named
   based on the direction that the normal vector to that face points.
@@ -81,7 +81,7 @@ void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   i = X_SIDE_LENGTH-1;
   for(j = 0; j < Y_SIDE_LENGTH; j++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_plus_BC);
+      Set_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_plus_BC);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
 
@@ -89,7 +89,7 @@ void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   i = 0;
   for(j = 0; j < Y_SIDE_LENGTH; j++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_minus_BC);
+      Set_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.x_minus_BC);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
 
@@ -99,7 +99,7 @@ void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   j = Y_SIDE_LENGTH-1;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_plus_BC);
+      Set_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_plus_BC);
     } //for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
@@ -107,7 +107,7 @@ void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   j = 0;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
-      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_minus_BC);
+      Set_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.y_minus_BC);
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
@@ -117,7 +117,7 @@ void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   k = Z_SIDE_LENGTH-1;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_plus_BC);
+      Set_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_plus_BC);
     } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
 
@@ -125,16 +125,16 @@ void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
   k = 0;
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(j = 0; j < Y_SIDE_LENGTH; j++) {
-      Apply_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_minus_BC);
+      Set_Box_Particle_BCs(Box[i*Y_SIDE_LENGTH*Z_SIDE_LENGTH + k*Y_SIDE_LENGTH + j], Box_Parameters.z_minus_BC);
     } // for(j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(i = 0; i < X_SIDE_LENGTH; i++) {
-} // void Simulation::Apply_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
+} // void Simulation::Set_Box_BCs(Body & Box, Box_Properties & Box_Parameters) {
 
 
 
-void Simulation::Apply_Box_Particle_BCs(Particle & P_In, Vector BC) {
+void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC) {
   for(unsigned i = 0; i < 3; i++) {
-    if(BC[i] == Free_BC_Box) { continue; }
-    else { P_In.V[i] = BC[i]; }
+    if(BC[i] == Simulation::FREE) { continue; }
+    else { P_In.Set_BC(i, BC[i]); }
   } // for(unsigned i = 0; i < 3; i++) {
-} // void Simulation::Apply_Box_Particle_BCs(Particle & P_In, Vector BC) {
+} // void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC) {

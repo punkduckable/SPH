@@ -41,7 +41,7 @@ void Body::Export_Net_External_Force(const unsigned time_step) {
   #endif
 
   // First, open the file.
-  std::string File_Path = "./IIO/Force_Files/";
+  std::string File_Path = "./IO/Force_Files/";
   File_Path += (*this).Name.c_str();
   File_Path +=  "_Net_External_Forces.txt";
 

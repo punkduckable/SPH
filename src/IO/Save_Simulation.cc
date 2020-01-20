@@ -34,7 +34,6 @@ void IO::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
       fprintf(File, "          X_SIDE_LENGTH:      %u\n",  Bodies[i].Get_X_SIDE_LENGTH());
       fprintf(File, "          Y_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Y_SIDE_LENGTH());
       fprintf(File, "          Z_SIDE_LENGTH:      %u\n",  Bodies[i].Get_Z_SIDE_LENGTH());
-      fprintf(File, "          plus_x_BC:          ");
     } // if(Bodies[i].Get_Is_Box() == true) {
 
     fprintf(File, "     Is fixed in place:       %u\n",    Bodies[i].Get_Is_Fixed());
@@ -184,8 +183,8 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
   // BC information
   fprintf(File,   "Has Boundary Conditions:      <");
   for(unsigned i = 0; i < 3; i++) {
-    if(P_In.Get_Has_BC(i) == true) { fprintf(File, "true  "); }
-    else { fprintf(File, "false "); }
+    if(P_In.Get_Has_BC(i) == true) { fprintf(File, "true   "); }
+    else { fprintf(File, "false  "); }
   } // for(unsigned i = 0; i < 3; i++) {
   fprintf(File, ">\n");
 
