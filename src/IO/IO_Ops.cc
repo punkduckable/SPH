@@ -1,5 +1,6 @@
 #include "IO_OPS.h"
 #include "Simulation/Simulation.h"
+#include "Vector/Vector.h"
 #include "Errors.h"
 
 std::string read_line_after_char(FILE * File, const char delim) {

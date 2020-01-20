@@ -14,7 +14,7 @@ OBJS :=            Main.o \
 									 Particle.o \
 									 Body.o Neighbors.o Update.o Damage.o Contact.o Body_IO.o \
 									 Simulation.o Simulation_Setup.o Timing.o Boundary_Conditions.o \
-									 Data_Dump.o FEB_File.o IO_Ops.o
+									 Save_Simulation.o Load_Simulation.o FEB_File.o IO_Ops.o
 
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 
@@ -83,13 +83,13 @@ obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
 
 
 # Particle Class
-obj/Particle.o: Particle.cc Particle.h Simulation.h Vector.h Tensor.h Errors.h Body.h
+obj/Particle.o: Particle.cc Particle.h Simulation.h Vector.h Tensor.h Errors.h Body.h Load_Simulation.h Save_Simulation.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 
 # Body class
-obj/Body.o: Body.cc Body.h Vector.h Particle.h
+obj/Body.o: Body.cc Body.h Vector.h Particle.h Load_Simulation.h Save_Simulation.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Neighbors.o: Neighbors.cc Body.h Particle.h Vector.h List.h Array.h
@@ -110,7 +110,7 @@ obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h Errors.h
 
 
 # Simulation
-obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Tensor.h Vector.h Data_Dump.h
+obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Tensor.h Vector.h Load_Simulation.h Save_Simulation.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h Particle.h Vector.h FEB_File.h
@@ -124,7 +124,10 @@ obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h
 
 
 # IO
-obj/Data_Dump.o: Data_Dump.cc Data_Dump.h IO_Ops.h Particle.h Body.h Errors.h
+obj/Save_Simulation.o: Save_Simulation.cc Save_Simulation.h Body.h Particle.h Tensor.h Vector.h IO_Ops.h Errors.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Load_Simulation.o: Load_Simulation.cc Load_Simulation.h Body.h Particle.h Tensor.h Vector.h IO_Ops.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/FEB_File.o: FEB_File.cc FEB_File.h Particle.h Body.h

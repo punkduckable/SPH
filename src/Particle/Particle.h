@@ -5,7 +5,9 @@
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
 #include "Simulation/Simulation.h"
-#include "IO/Data_Dump.h"
+#include "IO/Save_Simulation.h"
+#include "IO/Load_Simulation.h"
+
 
 class Particle {
   friend Body;
@@ -130,9 +132,9 @@ class Particle {
   friend void Simulation::Run_Simulation(void);
   friend void Simulation::Apply_Box_Particle_BCs(Particle & P_In, Vector BC);
   friend void Simulation::Apply_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In);
-  friend void Data_Dump::Load_Body(Body & Body_In);
-  friend void Data_Dump::Load_Particle(Particle & P_In,
-                                       FILE * File);
+  friend void IO::Load_Body(Body & Body_In);
+  friend void IO::Load_Particle(Particle & P_In,
+                                  FILE * File);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

@@ -3,7 +3,8 @@
 #include "Particle/Particle.h"
 #include "Tensor/Tensor.h"
 #include "Vector/Vector.h"
-#include "IO/Data_Dump.h"
+#include "IO/Save_Simulation.h"
+#include "IO/Load_Simulation.h"
 #include "Errors.h"
 #if defined(_OPENMP)
   #include <omp.h>
@@ -275,7 +276,7 @@ void Simulation::Run_Simulation(void) {
 
   // If saving is enabled, Dump particle data to file
   if(Save_Simulation == 1) {
-    Data_Dump::Save_Simulation(Bodies, Num_Bodies);
+    IO::Save_Simulation(Bodies, Num_Bodies);
   } // if(Save_Simulation == 1) {
 
   // Print timing data
@@ -336,7 +337,7 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
 
     // If loading an existing simulation, read in bodies from file
     printf(       "\nLoading from file....");
-    Data_Dump::Load_Simulation(Bodies, Num_Bodies);
+    IO::Load_Simulation(Bodies, Num_Bodies);
 
     // Now set up the time step counters
     *Time_Step_Index = new unsigned[Num_Bodies];

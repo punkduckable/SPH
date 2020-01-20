@@ -6,7 +6,8 @@
 
 #include "Materials.h"
 #include "Classes.h"
-#include "IO/Data_Dump.h"
+#include "IO/Save_Simulation.h"
+#include "IO/Load_Simulation.h"
 #include <string>
 
 #if !defined(PI)
@@ -225,10 +226,10 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Friends
-    friend void Data_Dump::Save_Simulation(const Body * Arrays,
-                                           const unsigned Num_Arrays);
-    friend void Data_Dump::Load_Simulation(Body ** Array_Ptr,
-                                           unsigned & Num_Bodies);
+    friend void IO::Save_Simulation(const Body * Arrays,
+                                    const unsigned Num_Arrays);
+    friend void IO::Load_Simulation(Body ** Array_Ptr,
+                                    unsigned & Num_Bodies);
 }; // class Body {
 
 #endif
