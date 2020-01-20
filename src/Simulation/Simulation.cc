@@ -60,20 +60,32 @@ void Simulation::Run_Simulation(void) {
 
       #pragma omp for nowait
       for(b = 0; b < Num_Bodies; b++) {
-        Bodies[b].Export_Particle_Positions();
+        try { Bodies[b].Export_Particle_Positions(); }
+        catch(Exception & Error_In) {
+          printf("%s\n", Error_In.what());
+          abort();
+        } // catch(Exception & Error_In) {
       } // for(b = 0; b < Num_Bodies; b++ ) {
 
       if(Print_Particle_Forces == true) {
         #pragma omp for nowait
         for(b = 0; b < Num_Bodies; b++) {
-          Bodies[b].Export_Particle_Forces();
-        } // for(b = 0; b < Num_Bodies; b++ ) {
+          try { Bodies[b].Export_Particle_Forces(); }
+          catch(Exception & Error_In) {
+            printf("%s\n", Error_In.what());
+            abort();
+          } // catch(Exception & Error_In) {
+        } // for(b = 0; b < Num_Bodies; b++) {
       } // if(Print_Particle_Forces == true) {
 
       if(Print_Net_External_Forces == true) {
         #pragma omp for nowait
         for(b = 0; b < Num_Bodies; b++) {
-          Bodies[b].Export_Net_External_Force(t);
+          try { Bodies[b].Export_Net_External_Force(t); }
+          catch(Exception & Error_In) {
+            printf("%s\n", Error_In.what());
+            abort();
+          } // catch(Exception & Error_In) {
         } // for(b = 0; b < Num_Bodies; b++) {
       } // if(Print_Net_External_Forces == true) {
     } // if(t%TimeSteps_Between_Prints == 0) {

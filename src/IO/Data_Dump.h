@@ -15,10 +15,10 @@ namespace Data_Dump {
   void Save_Particle(const Particle & P_In,
                      FILE * File);
 
-  int Load_Simulation(Body ** Array_Ptr,
+  void Load_Simulation(Body ** Array_Ptr,
                       unsigned & Num_Bodies);
 
-  int Load_Body(Body & Body_In);
+  void Load_Body(Body & Body_In);
 
   void Load_Particle(Particle & P_In,
                      FILE * File);

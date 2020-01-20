@@ -47,10 +47,10 @@ namespace Simulation {
   // (Note: const variables have internal linkage)
 
   // Simulation flags/properties. Defined
-  const bool Load_Simulation_From_Save           = true;
+  const bool Load_Simulation_From_Save           = false;
   const bool Save_Simulation                     = false;
   const bool Print_Particle_Forces               = false;
-  const bool Print_Net_External_Forces           = false;
+  const bool Print_Net_External_Forces           = true;
   const unsigned TimeSteps_Between_Prints        = 1000;
 
   // TimeStep paramters

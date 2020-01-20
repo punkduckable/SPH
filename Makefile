@@ -104,7 +104,7 @@ obj/Damage.o: Damage.cc Body.h Particle.h Vector.h List.h Array.h
 obj/Contact.o: Contact.cc Body.h Simulation.h Particle.h Vector.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h
+obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
@@ -124,13 +124,13 @@ obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h
 
 
 # IO
-obj/Data_Dump.o: Data_Dump.cc Data_Dump.h IO_Ops.h Particle.h Body.h
+obj/Data_Dump.o: Data_Dump.cc Data_Dump.h IO_Ops.h Particle.h Body.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/FEB_File.o: FEB_File.cc FEB_File.h Particle.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/IO_Ops.o: IO_Ops.cc IO_Ops.h Vector.h Simulation.h
+obj/IO_Ops.o: IO_Ops.cc IO_Ops.h Vector.h Simulation.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 

@@ -227,8 +227,8 @@ class Body {
     // Friends
     friend void Data_Dump::Save_Simulation(const Body * Arrays,
                                            const unsigned Num_Arrays);
-    friend int Data_Dump::Load_Simulation(Body ** Array_Ptr,
-                                          unsigned & Num_Bodies);
+    friend void Data_Dump::Load_Simulation(Body ** Array_Ptr,
+                                           unsigned & Num_Bodies);
 }; // class Body {
 
 #endif

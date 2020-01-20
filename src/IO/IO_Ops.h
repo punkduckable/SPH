@@ -11,6 +11,8 @@ This file houses several functions that make reading and writing from a file
 easier. */
 
 std::string read_line_after_char(FILE * File, const char delim);
+Vector read_box_BC(std::string BC_Str);
+//void write_box_BC(FILE * File, const Vector & BC_In);
 
 namespace String_Ops {
   bool Contains(const char* Buffer,                                            // Intent: Read
@@ -22,8 +24,5 @@ namespace String_Ops {
   std::vector<std::string> Split(const char* S,                                // Intent: Read
                                  const char Delim = ',');                      // Intent: Read
 } // namespace String_Ops {
-
-Vector read_box_BC(std::string BC_Str);
-void write_box_BC(File * File, const Vector & BC_In);
 
 #endif

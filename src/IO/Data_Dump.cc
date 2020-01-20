@@ -2,6 +2,7 @@
 #include "Body/Body.h"
 #include "Particle/Particle.h"
 #include "IO_Ops.h"
+#include "Errors.h"
 
 void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
   /* This Function is used to save a simulation. This function prints all the
@@ -12,9 +13,14 @@ void Data_Dump::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) 
   The intent of this is to allow the user 'save' a simulation, allowing the user
   to - at a future point - pick up where they left off.*/
 
-  // Open a new file. This file will store the number of Bodys as
-  // well as their names.
+  /* Open a new file. This file will store the number of Bodys as
+  well as their names. */
   FILE * File = fopen("./IO/Saves/Simulation_Data.txt","w");
+  if(File == nullptr) {
+    throw Cant_Open_File("Can't Open File Exception: Thrown by Save_Simulation\n"
+                         "For some reason, /IO/Saves/Simulation_Data.txt could not be opened\n");
+  } // if(File == nullptr) {
+
 
   // Print number of Bodies to this file
   fprintf(File,   "Number of Bodies:    %u\n\n", Num_Bodies);
@@ -69,6 +75,15 @@ void Data_Dump::Save_Body(const Body & Body_In) {
   /* Now let's make a file for this Body. Note, if there is already
   a save file for this Body it will be overwritten by this new file */
   FILE * File = fopen(File_Path.c_str(), "w");
+  if(File == nullptr) {
+    char Buf[500];
+    sprintf(Buf,
+            "Can't Open File Exception: Thrown by Save_Body\n"
+            "For some reason, /IO/Saves/%s.txt couldn't be opened.\n",
+            Name.c_str());
+    throw Cant_Open_File(Buf);
+  } // if(File == nullptr) {
+
 
   // Let's begin by printing the Body paramaters
   fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
@@ -182,15 +197,15 @@ void Data_Dump::Save_Particle(const Particle & P_In, FILE * File) {
 
 
 
-int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
+void Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   // First, open up the Particle_data file
   FILE * File = fopen("./IO/Saves/Simulation_Data.txt","r");
-  fseek(File, 0, SEEK_SET);
+  if(File == nullptr) {
+    throw Cant_Open_File("Can't Open File Exception: Thrown by Load_Simulation\n"
+                         "For some reason, /IO/Saves/Simulation_Data.txt could not be opened :(\n");
+  } // if(File == nullptr) {
 
-  if(File == 0) {
-    printf("Couldn't find Simulation_Data.txt   :(\n");
-    return 1;
-  } // if(File == 0) {
+  fseek(File, 0, SEEK_SET);
 
   // Buffers
   unsigned Buf_Length = 100;
@@ -298,12 +313,11 @@ int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   for(unsigned i = 0; i < Num_Bodies; i++) { Load_Body((*Bodies_Ptr)[i]); }
 
   fclose(File);
-  return 0;
-} // int Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
+} // void Data_Dump::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
 
-int Data_Dump::Load_Body(Body & Body_In) {
+void Data_Dump::Load_Body(Body & Body_In) {
   /* This function is designed to read in particle and use it to create a Body */
 
   // First, open up the desired file.
@@ -315,11 +329,14 @@ int Data_Dump::Load_Body(Body & Body_In) {
   File_Path += ".txt";
 
   FILE * File = fopen(File_Path.c_str(), "r");
-
-  if(File == 0) {
-    printf("Could not open Particle data file\n");
-    return 1;
-  } // if(File == 0) {
+  if(File == nullptr) {
+    char Buf[500];
+    sprintf(Buf,
+            "Can't Open File Exception: Thrown by Load_Simulation\n"
+            "For some reason, /IO/Saves/%s.txt could not be opened :(\n",
+            Body_In.Get_Name().c_str());
+    throw Cant_Open_File(Buf);
+  } // if(File == nullptr) {
 
   // Buffers to hold variables that we read in (we need to do this b/c the
   // Body's varialbes are hidden/seed to be set with setters)
@@ -439,9 +456,7 @@ int Data_Dump::Load_Body(Body & Body_In) {
 
   // All done, close the file.
   fclose(File);
-
-  return 0;
-} // int Data_Dump::Load_Data_From_File(unsigned & Num_Particles, Body Body_In) {
+} // void Data_Dump::Load_Data_From_File(unsigned & Num_Particles, Body Body_In) {
 
 
 

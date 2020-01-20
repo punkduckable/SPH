@@ -1,5 +1,6 @@
 #include "IO_OPS.h"
-#include "Simulation.h"
+#include "Simulation/Simulation.h"
+#include "Errors.h"
 
 std::string read_line_after_char(FILE * File, const char delim) {
   /* This function scans through the File until the character 'delim' is found
@@ -23,6 +24,51 @@ std::string read_line_after_char(FILE * File, const char delim) {
 
   return s;
 } // std::string read_line_after_char(FILE * File, const char c) {
+
+
+
+Vector read_box_BC(std::string BC_Str) {
+  /* The BC string should be of the form "<BC_x, BC_y, BC_z>" where each of
+  C_x/y/z are either doubles or the keyword "Free". This function reads in
+  those values and parses them as a boundary condition, which is then returned
+  as a vector. */
+
+  /* First, let's trim the string. By trim, I mean remove everything except for
+  what's between < and > */
+
+  unsigned num_chars = BC_Str.length();
+  std::string trimed_BC_Str;
+  bool start = false;
+  for(unsigned i = 0; i < num_chars; i++) {
+    if(BC_Str[i] == '<') { start = true; }
+    if(BC_Str[i] == '>') { break; }
+
+    if(start == true) { trimed_BC_Str += BC_Str[i]; }
+  } // for(unsigned i = 0; i < num_chars; i++) {
+
+  /* Now, split the trimmed_Bc_Str at commas */
+  std::vector<std::string> Split_BC_Str = String_Ops::Split(trimed_BC_Str, ',');
+
+  /* If there are not three strings in the Split_BC_Str then complain */
+  if(Split_BC_Str.size() != 3) {
+    char Buf[500];
+    sprintf(Buf,
+            "Bad Read Exception: Thrown by read_box_BC\n"
+            "The string, %s, which was passed to read_Box_BC, should have been split (using\n"
+            "commas as a delimieter) into 3 sub-strings. However, the string split into %lu sub-strings.\n",
+            BC_Str.c_str(),
+            Split_BC_Str.size());
+    throw Bad_Read(Buf);
+  } // if(Split_BC_Str.size() != 3) {
+
+  Vector BC;
+  for(unsigned i = 0; i < 3; i++) {
+    if(String_Ops::Contains(Split_BC_Str[i].c_str(), "Free") == true) { BC[i] = Simulation::Free_BC_Box; }
+    else { sscanf(Split_BC_Str[i].c_str(), " %lf ", &BC[i]); }
+  } // for(unsigned i = 0; i < 3; i++) {
+
+  return BC;
+} // Vector read_box_BC(std::string BC_Str) {
 
 
 
@@ -129,42 +175,3 @@ std::vector<std::string> String_Ops::Split(const char* S, const char delim) {
 
   return Sub_Strings;
 } // std::vector<std::string> String_Ops:Split(const char* S, const char delim) {
-
-
-
-Vector read_box_BC(std::string BC_Str) {
-  /* The BC string should be of the form "<BC_x, BC_y, BC_z>" where each of
-  C_x/y/z are either doubles or the keyword "Free". This function reads in
-  those values and parses them as a boundary condition, which is then returned
-  as a vector. */
-
-  /* First, let's trim the string. By trim, I mean remove everything except for
-  what's between < and > */
-
-  unsigned num_chars = BC_Str.length();
-  std::string trimmed_BC_Str;
-  bool start = false;
-  for(unsigned i = 0; i < num_chars; i++) {
-    if(BC_Str[i] == '<') { start = true; }
-    if(BC_Str[i] == '>') { break; }
-
-    if(start == true) { trimed_BC_Str += BC_Str[i]; }
-  } // for(unsigned i = 0; i < num_chars; i++) {
-
-  /* Now, split the trimmed_Bc_Str at commas */
-  std::vector<std::string> Split_BC_Str = String_Ops::split(trimed_BC_Str, ',');
-
-  /* If there are not three strings in the Split_BC_Str then complain */
-  if(Split_BC_Str.length() != 3) {
-    printf("Bad BC Read. Thrown by read_box_BC\n");
-    abort();
-  } // if(Split_BC_Str.length() != 3) {
-
-  Vector BC;
-  for(unsigned i = 0; i < 3; i++) {
-    if(Str_Ops::Contains(Split_BC_Str[i], "Free")) { BC[i] = Simulation::Free_BC_Box; }
-    else { sscanf(Split_Bc_Str[i], " %lf ", &BC[i]); }
-  } // for(unsigned i = 0; i < 3; i++) {
-
-  return BC;
-} // Vector read_box_BC(std::string BC_Str) {
