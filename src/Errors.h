@@ -121,6 +121,11 @@ class Bad_Neighbor_Index : public Particle_Exception {
 }; // class Bad_Neighbor_ID : public Particle_Exception {
 
 
+class No_BC : public Particle_Exception {
+  public:
+    No_BC(const char* Message_In) : Particle_Exception(Message_In) {}
+}; // class No_BC : publci Particle_Exception {
+
 
 
 

@@ -9,10 +9,11 @@
 
 Particle::Particle(void) {
   //printf("Particle default constructor \n");
-  Neighbors_Are_Set = false;
-  Num_Neighbors = 0;
-  Vol = 0;                                                                     //        : mm^3
-  Mass = 0;                                                                    //        : g
+  (*this).Neighbors_Are_Set = false;
+  (*this).Num_Neighbors = 0;
+  (*this).Vol = 0;                                                             //        : mm^3
+  (*this).Mass = 0;                                                            //        : g
+  for(unsigned i = 0; i < 3; i++) { (*this).Has_BC[i] = false; }
 
   // Now randomly set critical stress
   unsigned seed = std::rand();
@@ -41,7 +42,22 @@ Particle::~Particle(void) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Getters
+// Constructors and destructor
+
+void Particle::Apply_BCs(void) {
+  // This function applies the BCs as specified in the BC Vector.
+  for(unsigned i = 0; i < 3; i++) {
+    if((*this).Has_BC[i] == true) { (*this).V[i] = BC[i]; }
+  } // for(unsigned i = 0; i < 3; i++) {
+} // void Particle::Apply_BCs(void) {
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Setters
 
 void Particle::Set_ID(const unsigned ID_In) { ID = ID_In; }
 void Particle::Set_Mass(const double Mass_In) { Mass = Mass_In; }
@@ -52,9 +68,16 @@ void Particle::Set_X(const Vector & X_In) { X = X_In; }
 void Particle::Set_x(const Vector & x_In) { x = x_In; }
 void Particle::Set_V(const Vector & V_In) { V = V_In; }
 void Particle::Set_a(const Vector & a_In) { a = a_In; }
+
 void Particle::Set_D(const double D_In) { D = D_In; }
 
+void Particle::Set_BC(const unsigned Component, const double Value) {
+  assert(Component < 3);
 
+  // Now set the BC
+  BC[Component] = Value;
+  Has_BC[Component] = true;
+} // void Particle::Set_BC(const unsigned Component, const double Value) {
 
 
 
@@ -96,6 +119,30 @@ unsigned Particle::Get_Neighbor_IDs(unsigned i) const {
     throw Bad_Neighbor_Index(Error_Message_Buffer);
   } // else
 } // unsigned Particle::Get_Neighbor_IDs(unsigned i) const {
+
+bool Particle::Get_Has_BC(unsigned Component) const {
+  assert(Component < 3);
+  return Has_BC[Component];
+} // bool Particle::Get_Has_BC(unsigned Component) const {
+
+double Particle::Get_BC(unsigned Component) const {
+  assert(Component < 3);
+
+  if(Has_BC[Component] == false) {
+    char Buf[500];
+    sprintf(Buf,
+            "No BC Exception: Thrown by Particle::Get_BC\n"
+            "You requested the %u component of the particle with ID %u. However, the\n"
+            "Particle with ID %u has no BC in the %u component direction\n",
+            Component,
+            (*this).ID,
+            (*this).ID,
+            Component);
+    throw No_BC(Buf);
+  } // if(Has_BC[Component] == false) {
+
+  return BC[Component];
+} // double Particle::Get_BC(unsigned Component) const {
 
 
 

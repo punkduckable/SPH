@@ -180,6 +180,23 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
   fprintf(File,   "Stretch_Critical:             %5lf\n",  P_In.Get_Stretch_Critical());
   fprintf(File,   "D:                            %5lf\n",  P_In.Get_D());
 
+
+  // BC information
+  fprintf(File,   "Has Boundary Conditions:      <");
+  for(unsigned i = 0; i < 3; i++) {
+    if(P_In.Get_Has_BC(i) == true) { fprintf(File, "true  "); }
+    else { fprintf(File, "false "); }
+  } // for(unsigned i = 0; i < 3; i++) {
+  fprintf(File, ">\n");
+
+  fprintf(File,   "Boundary Conditions:          <");
+  for(unsigned i = 0; i < 3; i++) {
+    if(P_In.Get_Has_BC(i) == true) { fprintf(File, "%6.3lf ", P_In.Get_BC(i)); }
+    else { fprintf(File, "FREE   "); }
+  } // for(unsigned i = 0; i < 3; i++) {
+  fprintf(File, ">\n");
+
+
   // Now, let's figure out how many neighbors this particle has.
   unsigned Num_Neighbors = P_In.Get_Num_Neighbors();
 

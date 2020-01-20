@@ -276,7 +276,9 @@ void IO::Load_Particle(Particle & P_In, FILE * File) {
   data is transfered from the File to P_In. */
 
   char Buf[100];                                 // Buffer to store text from file (discarded)
+  std::string strBuf;                            // Another buffer to store text
 
+  //////////////////////////////////////////////////////////////////////////////
   // First, read in the particle's ID and dimensions
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &P_In.ID);
 
@@ -284,6 +286,8 @@ void IO::Load_Particle(Particle & P_In, FILE * File) {
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Vol);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Radius);
 
+
+  //////////////////////////////////////////////////////////////////////////////
   // Now read in particle dynamic properties
   fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.X(0), &P_In.X(1), &P_In.X(2));
   fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.x(0), &P_In.x(1), &P_In.x(2));
@@ -295,15 +299,41 @@ void IO::Load_Particle(Particle & P_In, FILE * File) {
                            fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](1,0), &P_In.F[1](1,1), &P_In.F[1](1,2));
                            fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](2,0), &P_In.F[1](2,1), &P_In.F[1](2,2));
 
+  //////////////////////////////////////////////////////////////////////////////
   // Damage parameters
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Stretch_H);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Stretch_M);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Stretch_Critical);
   fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.D);
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  // BC Information
+
+  // We need more buffers for this part.
+  char Buffers[3][10];
+
+  // Read in "Has_BC", write it to P_In
+  strBuf = read_line_after_char(File, ':');      // Skip the title ("Has BC: ");
+  sscanf(strBuf.c_str(), strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
+  for(unsigned i = 0; i < 3; i++) {
+    if(String_Ops::Contains(Buffers[i], "true")) { P_In.Has_BC[i] = true; }
+    else { P_In.Has_BC[i] = false; }
+  } // for(unsigned i = 0; i < 3; i++) {
+
+  // Read in "BC", write to P_In
+  strBuf = read_line_after_char(File, ':');
+  sscanf(strBuf.c_str(), strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
+  for(unsigned i = 0; i < 3; i++) {
+    if(P_In.Has_BC[i] == true ) { sscanf(Buffers[i]," %lf ", &P_In.BC[i]); }
+  } // for(unsigned i = 0; i < 3; i++) {
+
+
+  //////////////////////////////////////////////////////////////////////////////
   // Neighbor paramaters
   P_In.Neighbors_Are_Set = false;
   fread(Buf, 1, 30, File); fscanf(File, " %u\n", &P_In.Num_Neighbors);
+
 
   // Now allocate memory for P_In's neighbor arrays
   P_In.Neighbor_IDs = new unsigned[P_In.Num_Neighbors];

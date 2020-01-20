@@ -66,6 +66,10 @@ class Particle {
     Vector *Grad_W;                                        // Dynamic array. Stores Gradient of the Shape function at each neighbor        : 1/(mm^4)
     Tensor A_Inv;                                          // Inverse of shape tensor                                                      : unitless
 
+    // BC variables.
+    bool Has_BC[3];                                        // ith component is true if this particle has a BC in the ith direction.
+    double BC[3];                                          // velocity BC       : mm/s Vector
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors, destructor
@@ -84,6 +88,14 @@ class Particle {
 
 
     ////////////////////////////////////////////////////////////////////////////
+    // Other functions
+
+    void Apply_BCs(void);                                  // Applies boundary conditions
+
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
     // Setters
     void Set_ID(const unsigned ID_In);
     void Set_Mass(const double Mass_In);                                       //        : g
@@ -97,6 +109,8 @@ class Particle {
 
     void Set_D(const double D_In);                         // Set Damage parameter       : unitless
 
+    void Set_BC(const unsigned Component,                  // Set a component of the particles BC
+                const double Value);
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -123,6 +137,9 @@ class Particle {
 
     unsigned Get_Num_Neighbors(void) const;
     unsigned Get_Neighbor_IDs(unsigned i) const;
+
+    bool Get_Has_BC(unsigned Component) const;             // true if particle has a BC in the direction of specified Component
+    double Get_BC(unsigned Component) const;               // returns BC in the Component direction (if the particle has one)
 
 
 
