@@ -192,7 +192,7 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
   // position of each of the particles.
   Vector * X = nullptr;
   unsigned Num_Particles;
-  FEB_File::Read_FEB_File(Names[m], &X, Num_Particles);    // Names in Simulation.h
+  IO::Read_FEB_File(Names[m], &X, Num_Particles);    // Names in Simulation.h
 
   printf("\nReading in Particles for %s from FEB file...\n", FEB_Body.Get_Name().c_str());
 

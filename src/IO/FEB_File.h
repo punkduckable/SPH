@@ -4,8 +4,8 @@
 #include "Classes.h"
 #include <string>
 
-namespace FEB_File {
+namespace IO {
   void Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes);
-} // namespace FEB_File {
+} // namespace IO {
 
 #endif

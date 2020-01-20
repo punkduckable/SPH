@@ -3,7 +3,7 @@
 #include "Vector/Vector.h"
 #include "Errors.h"
 
-std::string read_line_after_char(FILE * File, const char delim) {
+std::string IO::read_line_after_char(FILE * File, const char delim) {
   /* This function scans through the File until the character 'delim' is found
   (or the end of file is reached). Once the char has been found, this function
   reads the contents of the File until the end of the current line. */
@@ -27,7 +27,7 @@ std::string read_line_after_char(FILE * File, const char delim) {
 } // std::string read_line_after_char(FILE * File, const char c) {
 
 
-bool String_Ops::Contains(const char* Buffer, const char* Word, unsigned Start_At) {
+bool IO::String_Ops::Contains(const char* Buffer, const char* Word, unsigned Start_At) {
   /* Function description:
   This function determines if Word is contained in Buffer. The optional Start_At
   argument can be used to only search through part of the string. If, for

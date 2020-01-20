@@ -2,7 +2,7 @@
 #include "Vector/Vector.h"
 #include "Errors.h"
 
-void FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
+void IO::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
   // First, we need to get the path to the Febio file. Now we can open the file
   std::string File_Path = "./IO/Files/";
   File_Path += File_Name;                        // Add file name
@@ -64,7 +64,7 @@ void FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, uns
 
     // Read in a line and check if we're at the end of the nodes section
     if(fgets(Buf, Buf_Length, File) == nullptr) {
-      throw Bad_Read("Bad Read Exception: Thrown by Feb_File::Read_FEB_File\n"
+      throw Bad_Read("Bad Read Exception: Thrown by IO::Read_FEB_File\n"
                      "The program could not find the end of the FEBio file :(\n");
     } // if(fgets(Buf, Buf_Length, File) == nullptr) {
 
@@ -114,4 +114,4 @@ void FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, uns
 
   printf("Read in %u particles \n",ID_Buf);
   fclose(File);
-} // void FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
+} // void IO::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
