@@ -17,7 +17,7 @@ namespace Simulation {
   std::string * Names = nullptr;                 // The names of each body (name must match File name if reading from FEB file)
   bool * Is_Box = nullptr;                       // Which bodies are Boxs
   Box_Properties * Box_Parameters = nullptr;     // Specifies the dimensions, and BCs of the box bodies.
-  bool * Is_Boundary = nullptr;                  // Which bodies are boundaries (can be from FEB file or Box)
+  bool * Is_Fixed = nullptr;                     // Which bodies are fixed in place (can be from FEB file or Box)
   bool * Is_Damagable = nullptr;                 // Which bodies can be damaged
   bool * From_FEB_File = nullptr;                // Which bodies will be read from file
   unsigned * Time_Steps_Between_Updates=nullptr; // How many time steps pass between updating this Body's P-K tensor
@@ -41,7 +41,7 @@ void Simulation::Bodies_Setup(void) {
   From_FEB_File = new bool[Num_Bodies];
   Is_Box = new bool[Num_Bodies];
   Box_Parameters = new Box_Properties[Num_Bodies];
-  Is_Boundary = new bool[Num_Bodies];
+  Is_Fixed = new bool[Num_Bodies];
   Is_Damagable = new bool[Num_Bodies];
   Time_Steps_Between_Updates = new unsigned[Num_Bodies];
   IPS = new double[Num_Bodies];
@@ -51,7 +51,7 @@ void Simulation::Bodies_Setup(void) {
 
   Names[0]                                     = "Body";
   Is_Box[0]                                    = true;
-  Is_Boundary[0]                               = false;
+  Is_Fixed[0]                                  = false;
   Is_Damagable[0]                              = true;
   From_FEB_File[0]                             = false;
   Time_Steps_Between_Updates[0]                = 10;
@@ -69,7 +69,7 @@ void Simulation::Bodies_Setup(void) {
 
   Names[1]                                     = "Needle";
   Is_Box[1]                                    = true;
-  Is_Boundary[1]                               = false;
+  Is_Fixed[1]                                  = false;
   Is_Damagable[1]                              = false;
   From_FEB_File[1]                             = false;
   Time_Steps_Between_Updates[1]                = 1;
@@ -157,9 +157,9 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   #endif
 
   //////////////////////////////////////////////////////////////////////////////
-  // Set up Neighbors (if the body is not a boundary)
+  // Set up Neighbors (if the body is not fixed im place)
 
-  if(Body_In.Get_Boundary() == false) {
+  if(Body_In.Get_Is_Fixed() == false) {
     printf(         "Generating %s's neighbor lists...", Body_In.Get_Name().c_str());
     time1 = Get_Time();
     Body_In.Find_Neighbors_Box();
@@ -172,7 +172,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
       unsigned long MS_Neighbor = (unsigned long)(((float)time1)/((float)CLOCKS_PER_MS));
       printf(       "Done!\ntook %lums\n",MS_Neighbor);
     #endif
-  } //   if(Body_In.Get_Boundary() == false) {
+  } //   if(Body_In.Get_Is_Fixed() == false) {
 
   /*
   // Damage the 'cut'
@@ -217,12 +217,12 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
     FEB_Body[i].Set_V(V);
   } //   for(unsigned i = 0; i < Num_Particles; i++) {
 
-  // Now set up neighbors. (if the body is not a boundary)
-  if(FEB_Body.Get_Boundary() == false) {
+  // Now set up neighbors. (if the body is not fixed in place)
+  if(FEB_Body.Get_Is_Fixed() == false) {
     printf("Setting up neighbors for %s...\n",FEB_Body.Get_Name().c_str());
     FEB_Body.Find_Neighbors();
     printf("Done!\n");
-  } // if(FEB_Body.Get_Boundary() == false) {
+  } // if(FEB_Body.Get_Is_Fixed() == false) {
 } // void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
 
 
@@ -320,19 +320,19 @@ void Simulation::Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index)
                         "However, each body must either be from FEB file or a Box (but not both)\n",
                         i,Names[i].c_str());
         throw Bad_Body_Setup(Buffer);
-      } // if(Is_Box[i] == false && Is_Boundary == false) {
+      } // if(Is_Box[i] == false && From_FEB_File[i] == false) {
 
 
 
       //////////////////////////////////////////////////////////////////////////
       // Now set up the Body's particles
 
-      /* If the body is a boundary, we need to designate it as such.
+      /* If the body is fixed in place, we need to designate it as such.
       note: this applies if the body is a Box, or from FEB file... anything
-      can be a boundary! */
-      if(Is_Boundary[i] == true) {
-        (*Bodies)[i].Set_Boundary(true);
-      } // if(Is_Boundary[i] == true) {
+      can be fixed im place! */
+      if(Is_Fixed[i] == true) {
+        (*Bodies)[i].Set_Is_Fixed(true);
+      } // if(Is_Fixed[i] == true) {
 
       // Set up body as a Box if it is a Box
       if(Is_Box[i] == true) {

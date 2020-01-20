@@ -1,7 +1,6 @@
 #include "Simulation.h"
 #include "Body/Body.h"
 #include "Particle/Particle.h"
-#include "Tensor/Tensor.h"
 #include "Vector/Vector.h"
 #include "IO/Save_Simulation.h"
 #include "IO/Load_Simulation.h"
@@ -129,8 +128,8 @@ void Simulation::Run_Simulation(void) {
     } // #pragma omp single nowait
 
     for(b = 0; b < Num_Bodies; b++) {
-      // Note: We don't update P for Bodys that are boundaries
-      if(Bodies[b].Get_Boundary() == true) { continue; }
+      // Note: We don't update P for Bodys that are fixed in place
+      if(Bodies[b].Get_Is_Fixed() == true) { continue; }
 
       else {
         /* Update each Particles's P tensor.
@@ -208,8 +207,8 @@ void Simulation::Run_Simulation(void) {
     } // #pragma omp single nowait
 
     for(b = 0; b < Num_Bodies; b++) {
-      // Note: we don't update P for Bodies that are boundaries
-      if(Bodies[b].Get_Boundary() == true) { continue; }
+      // Note: we don't update P for Bodies that are fixed in place
+      if(Bodies[b].Get_Is_Fixed() == true) { continue; }
 
       else {
         /* We only want to update x (the traditional way) if we're on a timestep

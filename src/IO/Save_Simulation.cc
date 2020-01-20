@@ -37,7 +37,7 @@ void IO::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
       fprintf(File, "          plus_x_BC:          ");
     } // if(Bodies[i].Get_Is_Box() == true) {
 
-    fprintf(File, "     Is a Boundary:           %u\n",    Bodies[i].Get_Boundary());
+    fprintf(File, "     Is fixed in place:       %u\n",    Bodies[i].Get_Is_Fixed());
     fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Damagable());
     fprintf(File, "     Number of particles:     %u\n",    Bodies[i].Get_Num_Particles());
     fprintf(File, "     Time steps per update:   %u\n",    Bodies[i].Get_Time_Steps_Between_Updates());
@@ -94,7 +94,7 @@ void IO::Save_Body(const Body & Body_In) {
     fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Body_In.Get_Y_SIDE_LENGTH());
     fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Body_In.Get_Z_SIDE_LENGTH());
   } //   if(Body_In.Get_Is_Box() == true) {
-  fprintf(File,   "Is a Boundary:                %u\n",    Body_In.Get_Boundary());
+  fprintf(File,   "Is Fixed in place:            %u\n",    Body_In.Get_Is_Fixed());
   fprintf(File,   "Is Damageable:                %u\n\n",  Body_In.Get_Damagable());
 
   fprintf(File,   "       -- Kernel Parameters --\n");

@@ -87,7 +87,7 @@ namespace Simulation {
   extern unsigned Num_Bodies;                    // Number of bodies in simulation
   extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
   extern bool * Is_Box;                          // Which bodies are Boxs
-  extern bool * Is_Boundary;                     // Which bodies are boundaries (can be from FEB file or Box)
+  extern bool * Is_Fixed;                        // Which bodies are fixed in place (can be from FEB file or Box)
   extern bool * Is_Damagable;                    // Which bodies can be damaged
   extern bool * From_FEB_File;                   // Which bodies will be read from file
   extern unsigned * Time_Steps_Between_Updates;  // How many time steps pass between updating this Body's P-K tensor

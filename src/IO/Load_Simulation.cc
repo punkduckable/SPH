@@ -76,11 +76,11 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     } // if(uBuf == true) {
 
 
-    // Now read in the 'Is a boundary' flag
+    // Now read in the 'Is fixed in place' flag
     strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
-    (*Bodies_Ptr)[i].Set_Boundary(uBuf);
+    (*Bodies_Ptr)[i].Set_Is_Fixed(uBuf);
     #if defined(LOAD_MONITOR)
-      printf("Read Body %u's Is_Boundary as           %u\n", i, uBuf);
+      printf("Read Body %u's Is_Fixed as              %u\n", i, uBuf);
     #endif
 
 
@@ -158,7 +158,7 @@ void IO::Load_Body(Body & Body_In) {
   Materials::Material Mat;
 
 
-  // We already have the Body's name, Box/boundary flags, and
+  // We already have the Body's name, Box/Fixed flags, and
   // dimensions (if Box). We can, therefore, skip over these lines.
   fgets(Buf, 99, File);                          // Skip 'name' line.
   fgets(Buf, 99, File);                          // Skip blank line
@@ -170,7 +170,7 @@ void IO::Load_Body(Body & Body_In) {
     fgets(Buf, 99, File);
   } // if(Body_In.Get_Is_Box() == true) {
 
-  fgets(Buf, 99, File);                          // Skip 'is a boundary' line
+  fgets(Buf, 99, File);                          // Skip 'is fixed in place' line
   fgets(Buf, 99, File);                          // Skip 'Is Damageable' line
   fgets(Buf, 99, File);                          // Skip blank line
   fgets(Buf, 99, File);                          // Skip 'Kerenel-Parameters' line

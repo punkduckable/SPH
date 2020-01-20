@@ -17,7 +17,7 @@ Body::Body(void) {
   Y_SIDE_LENGTH = 0;
   Z_SIDE_LENGTH = 0;
   Is_Box = false;
-  Is_Boundary = false;
+  Is_Fixed = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -208,7 +208,7 @@ void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const 
 
 
 
-void Body::Set_Boundary(const bool Boundary_In) { Is_Boundary = Boundary_In; }
+void Body::Set_Is_Fixed(const bool Is_Fixed_In) { Is_Fixed = Is_Fixed_In; }
 
 void Body::Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
 void Body::Set_Time_Steps_Between_Updates(const unsigned Steps_In) { Time_Steps_Between_Updates = Steps_In; }
@@ -267,7 +267,7 @@ unsigned Body::Get_Z_SIDE_LENGTH(void) const {
   return Z_SIDE_LENGTH;
 } // unsigned Get_Z_SIDE_LENGTH(void) const {
 
-bool Body::Get_Boundary(void) const { return Is_Boundary; }
+bool Body::Get_Is_Fixed(void) const { return Is_Fixed; }
 
 bool Body::Get_First_Time_Step(void) const { return First_Time_Step; }
 unsigned Body::Get_Time_Steps_Between_Updates(void) const { return Time_Steps_Between_Updates; }
