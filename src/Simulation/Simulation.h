@@ -17,16 +17,14 @@ namespace Simulation {
   void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
   void Bodies_Setup(void);                                 // Set up Body/Needle simulation
   void Set_Body_Members(Body & Body_In);                   // Set default body members
-
+  void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
 
 
   //////////////////////////////////////////////////////////////////////////////
-  // Run the simulation.
+  // Functions that run simulations
   // Defined in Simulation.cc
 
   void Run_Simulation(void);
-  void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
-
 
 
   //////////////////////////////////////////////////////////////////////////////
