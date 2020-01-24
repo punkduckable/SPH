@@ -48,7 +48,7 @@ namespace Simulation {
 
   // Simulation flags/properties. Defined
   const bool Load_Simulation_From_Save           = true;
-  const bool Save_Simulation                     = true;
+  const bool Save_Simulation                     = false;
   const bool Print_Particle_Forces               = false;
   const bool Print_Net_External_Forces           = true;
   const unsigned TimeSteps_Between_Prints        = 1000;

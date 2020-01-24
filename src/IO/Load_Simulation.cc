@@ -6,26 +6,25 @@
 #include "IO_Ops.h"
 #include "Errors.h"
 #include <string>
+#include <fstream>
 #include <stdio.h>
 
 void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   // First, open up the Particle_data file
-  FILE * File = fopen("./IO/Saves/Simulation_Data.txt","r");
-  if(File == nullptr) {
+  std::ifstream File;
+  File.open("./IO/Saves/Simulation_Data.txt");
+  if(File.is_open() == false) {
     throw Cant_Open_File("Can't Open File Exception: Thrown by IO::Load_Simulation\n"
                          "For some reason, /IO/Saves/Simulation_Data.txt could not be opened :(\n");
-  } // if(File == nullptr) {
-
-  fseek(File, 0, SEEK_SET);
+  }
 
   // Buffers
-  unsigned Buf_Length = 100;
-  char Buf[Buf_Length];                                 // Buffer to store text from file
   unsigned uBuf;
   std::string strBuf;
 
   // First, read how many Bodies we need to make.
-  strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str(), " %u \n \n", &Num_Bodies);
+  strBuf = read_line_after(File, "Number of Bodies:");
+  sscanf(strBuf.c_str(), " %u \n \n", &Num_Bodies);
 
   // Now use this information to make the Bodies array
   *Bodies_Ptr = new Body[Num_Bodies];
@@ -45,8 +44,11 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     fault if the name was longer than 100 characters). We then allocate a new
     body and assign its name to the string. */
 
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str(), " %s \n", Buf);
-    Buf[Buf_Length-1] = '\0';          // Incase sscanf filled Buf
+    strBuf = read_line_after(File, "name:");
+    unsigned Buf_Length = 256;
+    char Buf[Buf_Length];
+    sscanf(strBuf.c_str(), " %s \n", Buf);
+    Buf[Buf_Length-1] = '\0';          // In case sscanf filled Buf
     strBuf = Buf;
     #if defined(LOAD_MONITOR)
       printf("\nRead Body %u's name as                  %s\n", i, Buf);
@@ -58,16 +60,17 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Now determine if this Body is a Box
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Is_Box);
+    strBuf = read_line_after(File, "Is a Box:");
+    sscanf(strBuf.c_str()," %u \n", &Is_Box);
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's Is_Box as                %u\n", i, Is_Box);
     #endif
 
 
     if(Is_Box == true) {
-      strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Dimensions[0]);
-      strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Dimensions[1]);
-      strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &Dimensions[2]);
+      strBuf = read_line_after(File, "X_SIDE_LENGTH:"); sscanf(strBuf.c_str()," %u \n", &Dimensions[0]);
+      strBuf = read_line_after(File, "Y_SIDE_LENGTH:"); sscanf(strBuf.c_str()," %u \n", &Dimensions[1]);
+      strBuf = read_line_after(File, "Z_SIDE_LENGTH:"); sscanf(strBuf.c_str()," %u \n", &Dimensions[2]);
       (*Bodies_Ptr)[i].Set_Box_Dimensions(Dimensions[0], Dimensions[1], Dimensions[2]);
 
       #if defined(LOAD_MONITOR)
@@ -77,7 +80,8 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Now read in the 'Is fixed in place' flag
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
+    strBuf = read_line_after(File, "Is fixed in place:");
+    sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Set_Is_Fixed(uBuf);
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's Is_Fixed as              %u\n", i, uBuf);
@@ -85,7 +89,8 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Now read in the 'Is damageable' flag
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
+    strBuf = read_line_after(File, "Is Damageable:");
+    sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Set_Damageable(uBuf);
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's Is_Damageable as         %u\n", i, uBuf);
@@ -93,7 +98,8 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Now read in number of particles and use if this Body is not a Box
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
+    strBuf = read_line_after(File, "Number of particles:");
+    sscanf(strBuf.c_str()," %u \n", &uBuf);
     if(Is_Box == false) { (*Bodies_Ptr)[i].Set_Num_Particles(uBuf); }
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's Num Particles as         %u\n", i, uBuf);
@@ -101,7 +107,8 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Now read in time steps between updates
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
+    strBuf = read_line_after(File, "Time steps per update:");
+    sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Set_Time_Steps_Between_Updates(uBuf);
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's time steps per update as %u\n", i, uBuf);
@@ -110,20 +117,32 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Finally read in File number information
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
+    strBuf = read_line_after(File, "# times printed net external forces:");
+    sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Net_External_Force = uBuf;
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's # times printed net external forces as %u\n", i, uBuf);
+    #endif
 
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n \n", &uBuf);
+    strBuf = read_line_after(File, "# times printed particle forces:");
+    sscanf(strBuf.c_str()," %u \n \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Forces = uBuf;
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's # times printed particle forces as %u\n", i, uBuf);
+    #endif
 
-    strBuf = read_line_after_char(File, ':'); sscanf(strBuf.c_str()," %u \n", &uBuf);
+    strBuf = read_line_after(File, "# times printed particle positions:");
+    sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Positions = uBuf;
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's # times printed particle positions as %u\n", i, uBuf);
+    #endif
   } // for(unsigned i = 0; i < Num_Bodiess; i++) {
 
   // pass the newly created body's to the 'load body' function
   for(unsigned i = 0; i < Num_Bodies; i++) { IO::Load_Body((*Bodies_Ptr)[i]); }
 
-  fclose(File);
+  File.close();
 } // void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
