@@ -13,8 +13,6 @@ namespace IO {
 
   void Load_Particle(Particle & P_In,
                      std::ifstream & File);
-
-  void Setup_Loaded_Body(Body & Body_In);
 } // namespace IO {
 
 #endif

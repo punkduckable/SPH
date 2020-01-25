@@ -4,30 +4,6 @@
 #include "assert.h"
 #include "Errors.h"
 
-std::string IO::read_line_after_char(FILE * File, const char delim) {
-  /* This function scans through the File until the character 'delim' is found
-  (or the end of file is reached). Once the char has been found, this function
-  reads the contents of the File until the end of the current line. */
-
-  // First, read until we find the delim character (or reach the end of file)
-  char c;
-  do {
-    c = fgetc(File);
-  } while(c != delim && c != EOF);
-
-  // Now read the rest until we encounter a newline character (or eof)
-  std::string s;
-  c = fgetc(File);
-  while(c != EOF) {
-    s += c;
-    if(c == '\n') { break; }
-    else { c = fgetc(File); }
-  } // while(c != EOF) {
-
-  return s;
-} // std::string read_line_after_char(FILE * File, const char c) {
-
-
 
 std::string IO::read_line_after(std::ifstream & File, const char* Word) {
   /* Read in the file line by line until one is found that contains the

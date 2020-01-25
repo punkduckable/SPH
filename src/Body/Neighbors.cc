@@ -29,17 +29,35 @@ void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /* Now that we know our neighbors IDs, we can figure out everything that we
-  want to know about them. We an set the Neighbor_IDs, r, R, W, and Grad_W
-  members. These can be used to calculate the shape matrix (and its inverse)! */
+  /* Now that we know our neighbors IDs, we can set Particle[i]'s neighbor list.
+  After that has been set, we can call Set_Neighbor_Dependent_Members to set up
+  the members of particles[i] that can not be set until the neighbors are
+  known (such as r, R, W, and Grad_W, etc...) */
 
+  unsigned * Neighbor_IDs = new unsigned[Num_Neighbors_In];
+  for(unsigned j = 0; j < Num_Neighbors_In; j++) { Neighbor_IDs[j] = Neighbor_IDs_In[j]; }
+  Particles[i].Neighbor_IDs = Neighbor_IDs;
+
+  Set_Neighbor_Dependent_Members(i);
+} // void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_In) {
+
+
+
+void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
+  /* Function description:
+  This function is designed to set up the members of a particle that can not be
+  defined until the particle's members are known (such as R, Mag_R, W, A_Inv,
+  etc...).
+
+  This function should NOT be called until the ith particle's neighbor list
+  has been set! */
+  unsigned Num_Neighbors = Particles[i].Get_Num_Neighbors();
 
   // Allocate memory for the Dynamic arrays
-  unsigned * Neighbor_IDs = new unsigned[Num_Neighbors_In];
-  Vector * R = new Vector[Num_Neighbors_In];                                   //        : mm Vector
-  double * Mag_R = new double[Num_Neighbors_In];                               //        : mm
-  double * W = new double[Num_Neighbors_In];                                   //        : unitless
-  Vector * Grad_W = new Vector[Num_Neighbors_In];                              //        : 1/mm Vector
+  Vector * R = new Vector[Num_Neighbors];                                      //        : mm Vector
+  double * Mag_R = new double[Num_Neighbors];                                  //        : mm
+  double * W = new double[Num_Neighbors];                                      //        : unitless
+  Vector * Grad_W = new Vector[Num_Neighbors];                                 //        : 1/mm Vector
 
   // Allocate some variables
   int Neighbor_ID;                               // Keep track of current particle
@@ -49,9 +67,8 @@ void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_
            0,0,0};
 
   // Loop through each neighbor, determine relevant information
-  for(unsigned j = 0; j < Num_Neighbors_In; j++) {
-    Neighbor_ID = Neighbor_IDs_In[j];            // Get Neighbor ID (index in Particles array)
-    Neighbor_IDs[j] = Neighbor_ID;               // Set jth element of Neighbor_IDs member
+  for(unsigned j = 0; j < Num_Neighbors; j++) {
+    Neighbor_ID = Particles[i].Get_Neighbor_IDs(j);          // Get Neighbor ID of the jth neighbor of particle i
 
     // Calculate displacement vectors
     R[j] = Particles[Neighbor_ID].X - Particles[i].X;      // Reference displacement vector        : mm Vector
@@ -74,18 +91,15 @@ void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_
 
   //////////////////////////////////////////////////////////////////////////////
   // Now set the ith particle's members
-  Particles[i].Neighbor_IDs = Neighbor_IDs;
   Particles[i].R = R;                                                          //        : mm Vector
   Particles[i].Mag_R = Mag_R;                                                  //        : mm
   Particles[i].W = W;                                                          //        : unitless
   Particles[i].Grad_W = Grad_W;                                                //        : 1/mm Vector
   Particles[i].A_Inv = A^(-1);                                                 //        : unitless Tensor
 
-
   // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
   Particles[i].Neighbors_Are_Set = true;
-} // void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_In) {
-
+} // void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 
 
 bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {

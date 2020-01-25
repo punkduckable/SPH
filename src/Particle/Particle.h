@@ -152,8 +152,7 @@ class Particle {
   friend void Simulation::Run_Simulation(void);
   friend void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC);
   friend void Simulation::Set_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In);
-  friend void IO::Setup_Loaded_Body(Body & Body_In);
-  friend void IO::Load_Particle(Particle & P_In,
+  friend void IO::Load_Particle(Particle & P_In, 
                                 std::ifstream & File);
 
   // Printing function

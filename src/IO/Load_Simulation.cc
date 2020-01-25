@@ -16,7 +16,7 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   if(File.is_open() == false) {
     throw Cant_Open_File("Can't Open File Exception: Thrown by IO::Load_Simulation\n"
                          "For some reason, /IO/Saves/Simulation_Data.txt could not be opened :(\n");
-  }
+  } // if(File.is_open() == false) {
 
   // Buffers
   unsigned uBuf;
@@ -304,11 +304,16 @@ void IO::Load_Body(Body & Body_In) {
     printf("Read %s's Number of particles as:       %u\n", Body_In.Get_Name().c_str(), Num_Particles);
   #endif
 
-  // Now read in particles.
+  /* Now read in particles. For each particle, this sets the particles members
+  that do not depend on the particles neighbors. The neighbor dependnet
+  members are set up later. The reason for this is that the particles are
+  read in one-by-one, meaning that neighbor information will not be available
+  until every particle has been read in. */
   for(unsigned i = 0; i < Num_Particles; i++) { IO::Load_Particle(Body_In[i], File); }
 
-  // Now set up those particles
-  IO::Setup_Loaded_Body(Body_In);
+  /* Now, for each particle in the Body, set the particles neighbor dependent
+  members. */
+  for(unsigned i = 0; i < Num_Particles; i++) { Body_In.Set_Neighbor_Dependent_Members(i); }
 
   // All done, close the file.
   File.close();
@@ -383,79 +388,19 @@ void IO::Load_Particle(Particle & P_In, std::ifstream & File) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Neighbor paramaters
+
+  // Read in number of neighbors
   P_In.Neighbors_Are_Set = false;
-  strBuf = read_line_after(File, "Number of neighbors:");  sscanf(strBuf.c_str(), " %u \n", &P_In.Num_Neighbors);
+  unsigned Num_Neighbors;
+  strBuf = read_line_after(File, "Number of neighbors:");  sscanf(strBuf.c_str(), " %u \n", &Num_Neighbors);
 
-  // Now allocate memory for P_In's neighbor arrays
-  P_In.Neighbor_IDs = new unsigned[P_In.Num_Neighbors];
-  P_In.R = new Vector[P_In.Num_Neighbors];                                     //        : mm Vector
-  P_In.Mag_R = new double[P_In.Num_Neighbors];                                 //        : mm
-  P_In.W = new double[P_In.Num_Neighbors];                                     //        : unitless
-  P_In.Grad_W = new Vector[P_In.Num_Neighbors];                                //        : 1/mm Vector
-
-  // Now read in neighbor IDs. Before we can do that, however, we need to move
-  // the file pointer ahead, past 'Neighbor IDs: '
+  // Now read in neighbor IDs into a list. Before we can do that, however,
+  // we need to move the file pointer ahead, past 'Neighbor IDs: '
   File.get(Buf, 30);
-  for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
-    File >> P_In.Neighbor_IDs[i];
-  } // for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
+  P_In.Num_Neighbors = Num_Neighbors;
+
+  // Set Particle's Neighbor IDs
+  unsigned * Neighbor_IDs = new unsigned[Num_Neighbors];
+  for(unsigned j = 0; j < Num_Neighbors; j++) { File >> Neighbor_IDs[j]; }
+  P_In.Neighbor_IDs = Neighbor_IDs;
 } // void IO::Load_Particle(Particle & P_In, std::ifstream & File) {
-
-
-
-void IO::Setup_Loaded_Body(Body & Body_In) {
-  /* Function description:
-  This function is designed to set up the neighbor specific members of
-  the particles in a Body that has just been loaded. When a simulation is saved,
-  each particle's neighbor specific members such as W, R, Grad_W, etc... are
-  not saved. These members must be recreated before the simulation can procede.
-  sThat is the purpose of this function. This function should only be called
-  once Body_In as well as each particle in Body_In has been loaded. */
-
-  unsigned Num_Particles = Body_In.Get_Num_Particles();
-  unsigned Neighbor_ID;
-  double V_j;                                    // Volume of jth neighbor               : mm^3
-  Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
-           0,0,0,
-           0,0,0};
-  const double Shape_Function_Amp = Body_In.Get_Shape_Function_Amplitude();
-  const double h = Body_In.Get_h();
-
-  for(unsigned i = 0; i < Num_Particles; i++) {
-    // Check that the current particle has Neighbors
-
-    if(Body_In[i].Num_Neighbors != 0) {
-      // If so, then set up this particle's neighbor arrays.
-      A = Tensor(0,0,0,
-                 0,0,0,
-                 0,0,0);
-
-      for(unsigned j = 0; j < Body_In[i].Num_Neighbors; j++) {
-        Neighbor_ID = Body_In[i].Neighbor_IDs[j];
-
-        // Calculate displacement vectors
-        Body_In[i].R[j] = Body_In[Neighbor_ID].X - Body_In[i].X;
-        Body_In[i].Mag_R[j] = Body_In[i].R[j].Magnitude();
-
-        // Calculate shape function, shape function gradient for jth neighbor
-        Body_In[i].W[j] = Shape_Function_Amp*(h - Body_In[i].Mag_R[j])
-                            *(h - Body_In[i].Mag_R[j])
-                            *(h - Body_In[i].Mag_R[j]);
-
-        Body_In[i].Grad_W[j] = (-3*Shape_Function_Amp
-                                 *((h - Body_In[i].Mag_R[j])*(h - Body_In[i].Mag_R[j]))/ Body_In[i].Mag_R[j])
-                                 *Body_In[i].R[j];
-
-        // Add in the Current Neighbor's contribution to the Shape tensor
-        V_j = Body_In[Neighbor_ID].Volume;
-        A += Dyadic_Product((V_j*Body_In[i].Grad_W[j]), Body_In[i].R[j]);
-      } // for(unsigned j = 0; j < Body_In[i].Num_Neighbors; i++) {
-
-      // Now we can calculate A^(-1) from A.
-      Body_In[i].A_Inv = A^(-1);
-
-      // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
-      Body_In[i].Neighbors_Are_Set = true;
-    } // if(Body_In[i].Num_Neighbors != 0) {
-  } // for(unsigned i = 0; i < Body_In; i++) {
-} // void IO::Setup_Loaded_Body(Body & Body_In) {

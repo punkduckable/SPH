@@ -152,7 +152,7 @@ void Body::Export_Particle_Positions(void) {
 
   // Set up file
   char Buf[10];
-  sprintf(Buf,"%05u.txt",Times_Printed_Particle_Positions);
+  sprintf(Buf,"%05u.vtk",Times_Printed_Particle_Positions);
   std::string File_Path = "./IO/Position_Files/";
   File_Path += (*this).Name;
   File_Path += "_positions_";

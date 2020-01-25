@@ -116,15 +116,16 @@ class Body {
     // Boundary Conditions
     // Defined in Body.cc
 
-    void Apply_BCs(void);                        // Applies BCs for each particle in the Body 
+    void Apply_BCs(void);                        // Applies BCs for each particle in the Body
 
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Neighbor methods.
     // Defined in Neighbors.cc
-    void Set_Neighbors(const unsigned i,         // Set Neighbors
+    void Set_Neighbors(const unsigned i,         // Set Neighbors + Neighbor dependent members (using Set_Neighbor_Dependent_Members)
                        const Array<unsigned> & Neighbor_IDs_In);
+    void Set_Neighbor_Dependent_Members(const unsigned i); // Sets Particle[i]'s members that can't be set up without a Neighbor_List
     void Find_Neighbors(void);                   // Generate neighbor list for every particle in 'Particles' array
     void Find_Neighbors_Box(void);               // Generate neighbor list for 'Box' geometry
     bool Are_Neighbors(const unsigned i,         // Returns true if particles i,j are neighbors

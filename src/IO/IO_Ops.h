@@ -12,7 +12,6 @@ This file houses several functions that make reading and writing from a file
 easier. */
 
 namespace IO  {
-  std::string read_line_after_char(FILE * File, const char delim);
   std::string read_line_after(std::ifstream & File, const char* Word);
 
   namespace String_Ops {
