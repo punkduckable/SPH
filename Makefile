@@ -22,6 +22,7 @@ OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 # Object files for tests + their paths
 TEST_OBJS :=       Vector.o \
                    Tensor.o \
+									 IO_Ops.o \
 									 Tests.o
 TEST_OBJ_PATHS := $(patsubst %,obj/%,$(TEST_OBJS))
 
@@ -61,7 +62,7 @@ test: bin/Test
 bin/Test: $(TEST_OBJ_PATHS)
 	$(COMPILER) $(TEST_OBJ_PATHS) -o $@
 
-obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc
+obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
