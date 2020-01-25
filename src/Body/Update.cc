@@ -61,7 +61,7 @@ void Body::Update_P(const double dt) {
     for(unsigned j = 0; j < Num_Neighbors; j++) {
       // Get neighbor ID and volume of jth particle
       unsigned Neighbor_ID = Particles[i].Neighbor_IDs[j]; // Index of jth neighbor.
-      double V_j = Particles[Neighbor_ID].Vol;             // Volume of jth neighbor     : mm^3
+      double V_j = Particles[Neighbor_ID].Volume;          // Volume of jth neighbor     : mm^3
 
       // Now find spatial distnace to jth particle
       rj = Particles[Neighbor_ID].x - Particles[i].x;                          //        : mm Vector
@@ -248,7 +248,7 @@ void Body::Update_x(const double dt) {
     #endif
 
     // Set up current particle properties
-    double V_i = Particles[i].Get_Vol();         // volume of current particle           : mm^3
+    double V_i = Particles[i].Get_Volume();      // volume of current particle           : mm^3
     F_i = Particles[i].Get_F(F_Index);
     P_i = Particles[i].Get_P();
     Vector * R = Particles[i].R;                 // Reference displacement array         : mm Vector
@@ -273,7 +273,7 @@ void Body::Update_x(const double dt) {
       speeding up the program. */
 
 
-      double V_j = Particles[Neighbor_ID].Vol;   // Volume of jth particle               : mm^3
+      double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
       Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                              //        : N Vector
 

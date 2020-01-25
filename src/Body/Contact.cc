@@ -42,7 +42,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     // Skip broken particles
     if(Body_A[i].Get_D() >= 1) { continue; }
 
-    double V_i = Body_A[i].Get_Vol();                                          //        : mm^3
+    double V_i = Body_A[i].Get_Volume();                                       //        : mm^3
     const double KV_i = K*V_i;                                                 //        : N*mm
     x_i = Body_A[i].Get_x();                                                   //        : mm Vector
 
@@ -63,7 +63,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
         Contact_Flag = true;
 
         // Calculate the contact force
-        double V_j = Body_B[j].Get_Vol();                                      //        : mm^3
+        double V_j = Body_B[j].Get_Volume();                                   //        : mm^3
         double Mag_r_ij = Magnitude(r_ij);                                     //        : mm
         double h_minus_Mag_r_ij = h - Mag_r_ij;                                //        : mm
         Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector

@@ -12,7 +12,9 @@ namespace IO {
   void Load_Body(Body & Body_In);
 
   void Load_Particle(Particle & P_In,
-                     FILE * File);
+                     std::ifstream & File);
+
+  void Setup_Loaded_Body(Body & Body_In);
 } // namespace IO {
 
 #endif

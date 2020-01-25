@@ -142,7 +142,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
         x = X;                                                                 //        : mm
 
         Body_In[index].Set_Mass(Particle_Mass);                                //        : g
-        Body_In[index].Set_Vol(Particle_Volume);                               //        : mm^3
+        Body_In[index].Set_Volume(Particle_Volume);                            //        : mm^3
         Body_In[index].Set_Radius(Particle_Radius);                            //        : mm
         Body_In[index].Set_X(X);                                               //        : mm
         Body_In[index].Set_x(x);                                               //        : mm
@@ -220,7 +220,7 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
 
   for(unsigned i = 0; i < Num_Particles; i++) {
     FEB_Body[i].Set_Mass(Particle_Mass);
-    FEB_Body[i].Set_Vol(Particle_Volume);
+    FEB_Body[i].Set_Volume(Particle_Volume);
     FEB_Body[i].Set_Radius(Particle_Radius);
     FEB_Body[i].Set_X(X[i]);
     FEB_Body[i].Set_x(X[i]);

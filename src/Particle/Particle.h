@@ -9,6 +9,7 @@
 #include "Simulation/Simulation.h"
 #include "IO/Save_Simulation.h"
 #include "IO/Load_Simulation.h"
+#include <fstream>
 
 
 class Particle {
@@ -19,7 +20,7 @@ class Particle {
 
     // Particle dimensions (Mass, Vol, etc...)
     double Mass;                                           // Particle Mass              : g
-    double Vol;                                            // Particle volume            : mm^3
+    double Volume;                                         // Particle volume            : mm^3
     double Radius;                                         // Particle radius            : mm
 
     // Particle dynamics variables
@@ -101,7 +102,7 @@ class Particle {
     // Setters
     void Set_ID(const unsigned ID_In);
     void Set_Mass(const double Mass_In);                                       //        : g
-    void Set_Vol(const double Vol_In);                                         //        : mm^3
+    void Set_Volume(const double Volume_In);                                   //        : mm^3
     void Set_Radius(const double Radius_In);                                   //        : mm
 
     void Set_X(const Vector & X_In);                       // Set ref position           : mm Vector
@@ -119,7 +120,7 @@ class Particle {
     // Getters
     unsigned Get_ID(void) const;                                               //
     double Get_Mass(void) const;                                               //        : g
-    double Get_Vol(void) const;                                                //        : mm^3
+    double Get_Volume(void) const;                                             //        : mm^3
     double Get_Radius(void) const;                                             //        : mm
 
     const Vector & Get_X(void) const;                                          //        : mm Vector
@@ -151,9 +152,9 @@ class Particle {
   friend void Simulation::Run_Simulation(void);
   friend void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC);
   friend void Simulation::Set_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In);
-  friend void IO::Load_Body(Body & Body_In);
+  friend void IO::Setup_Loaded_Body(Body & Body_In);
   friend void IO::Load_Particle(Particle & P_In,
-                                  FILE * File);
+                                std::ifstream & File);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

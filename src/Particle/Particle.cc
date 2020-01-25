@@ -10,7 +10,7 @@
 Particle::Particle(void) {
   (*this).Neighbors_Are_Set = false;
   (*this).Num_Neighbors = 0;
-  (*this).Vol = 0;                                                             //        : mm^3
+  (*this).Volume = 0;                                                          //        : mm^3
   (*this).Mass = 0;                                                            //        : g
   for(unsigned i = 0; i < 3; i++) { (*this).Has_BC[i] = false; }
 
@@ -59,7 +59,7 @@ void Particle::Apply_BCs(void) {
 
 void Particle::Set_ID(const unsigned ID_In) { ID = ID_In; }
 void Particle::Set_Mass(const double Mass_In) { Mass = Mass_In; }
-void Particle::Set_Vol(const double Vol_In) { Vol = Vol_In; }
+void Particle::Set_Volume(const double Volume_In) { Volume = Volume_In; }
 void Particle::Set_Radius(const double Radius_In) { Radius = Radius_In; }
 
 void Particle::Set_X(const Vector & X_In) { X = X_In; }
@@ -84,7 +84,7 @@ void Particle::Set_BC(const unsigned Component, const double Value) {
 
 unsigned Particle::Get_ID(void) const { return ID; }
 double Particle::Get_Mass(void) const { return Mass; }
-double Particle::Get_Vol(void) const { return Vol; }
+double Particle::Get_Volume(void) const { return Volume; }
 double Particle::Get_Radius(void) const { return Radius; }
 
 const Vector & Particle::Get_X(void) const { return X; }
@@ -151,16 +151,23 @@ double Particle::Get_BC(unsigned Component) const {
 
 void Particle::Print(void) const {
   // Print basic particle parameters.
+  printf("ID:       %u\n",(*this).ID);
+  printf("Mass:     %lf\n",(*this).Mass);
+  printf("Volume:   %lf\n",(*this).Volume);
+  printf("Radius:   %lf\n",(*this).Radius);
+
+
   printf("X:   "); (*this).X.Print();
   printf("x:   "); (*this).x.Print();
-  printf("vel: "); (*this).V.Print();
+  printf("V:   "); (*this).V.Print();
+  printf("a:   "); (*this).a.Print();
 
-  printf("F[0]:   \n");
-  (*this).F[0].Print();
-  printf("F[1]:   \n");
-  (*this).F[1].Print();
   printf("P:   \n");
   (*this).P.Print();
+  printf("F[0]:   \n");
+(*this).F[0].Print();
+  printf("F[1]:   \n");
+  (*this).F[1].Print();
   printf("A^(-1)\n");
   (*this).A_Inv.Print();
 
@@ -169,6 +176,11 @@ void Particle::Print(void) const {
   printf("F_Contact = "); (*this).Force_Contact.Print();
   printf("F_Friction = "); (*this).Force_Friction.Print();
   printf("\n");
+
+  printf("Stretch_M:        %lf\n",(*this).Stretch_M);
+  printf("Stretch_H:        %lf\n",(*this).Stretch_H);
+  printf("Stretch_Critical: %lf\n",(*this).Stretch_Critical);
+  printf("D:                %lf\n",(*this).D);
 
   #if defined(PARTICLE_DEBUG)
     printf("F_Visc = "); (*this).Force_Visc.Print();
@@ -195,6 +207,9 @@ void Particle::Print(void) const {
     } // for(unsigned i = 0; i < Num_Neighbors-1; i++) {
     printf("%5.3f } \n", Magnitude((*this).Grad_W[Num_Neighbors-1])); // */
   } // if(Neighbors_Are_Set == true) {
+
+  printf("Has BC:    <%u %u %u>\n", (*this).Has_BC[0], (*this).Has_BC[1], (*this).Has_BC[2]);
+  printf("BC:        <%6.3lf %6.3lf %6.3lf>\n", (*this).BC[0], (*this).BC[1], (*this).BC[2]);
 } // void Particle::Print(void) const {
 
 

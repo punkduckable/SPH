@@ -158,7 +158,7 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
   // Print particle ID, dimensions
   fprintf(File,   "ID:                           %u\n",    P_In.Get_ID());
   fprintf(File,   "Mass:                         %5e\n",   P_In.Get_Mass());
-  fprintf(File,   "Volume:                       %5e\n",   P_In.Get_Vol());
+  fprintf(File,   "Volume:                       %5e\n",   P_In.Get_Volume());
   fprintf(File,   "Radius:                       %5lf\n",  P_In.Get_Radius());
 
   // Print Particle dynamic properties

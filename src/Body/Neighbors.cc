@@ -66,7 +66,7 @@ void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_
                   *(R[j] / Mag_R[j]);
 
     // Add in the Current Neighbor's contribution to the Shape tensor
-    V_j = Particles[Neighbor_ID].Vol;            // Neighbor Volume                      : mm^3
+    V_j = Particles[Neighbor_ID].Volume;         // Neighbor Volume                      : mm^3
     A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless Tensor
   } // for(unsigned j = 0; j < Num_Neighbors_In; j++) {
 
@@ -299,7 +299,7 @@ void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) 
     New_Grad_W[p]       = Particles[i].Grad_W[j];                              //        : 1/(mm^4) Vector
 
     // Calculate New shape tensor.
-    Vol_p = Particles[Particles[i].Neighbor_IDs[p]].Vol;                       //        : mm^3
+    Vol_p = Particles[Particles[i].Neighbor_IDs[p]].Volume;                    //        : mm^3
     New_A += Dyadic_Product((Vol_p*New_Grad_W[p]), New_R[p]);                  // New shape tensor : unitless Tensor
   } // for(j = 0; j < Num_Neighbors; j++) {
 

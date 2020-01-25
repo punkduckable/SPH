@@ -151,93 +151,268 @@ void IO::Load_Body(Body & Body_In) {
   /* This function is designed to read in particle and use it to create a Body */
 
   // First, open up the desired file.
-  unsigned Num_Particles = 0;
-
-  // First, get a path to the file
   std::string File_Path = "./IO/Saves/";
   File_Path += Body_In.Get_Name();
   File_Path += ".txt";
 
-  FILE * File = fopen(File_Path.c_str(), "r");
-  if(File == nullptr) {
+  std::ifstream File;
+  File.open(File_Path);
+
+  if(File.is_open() == false) {
     char Buf[500];
     sprintf(Buf,
             "Can't Open File Exception: Thrown by IO::Load_Simulation\n"
-            "For some reason, /IO/Saves/%s.txt could not be opened :(\n",
-            Body_In.Get_Name().c_str());
+            "For some reason, %s could not be opened :(\n",
+            File_Path.c_str());
     throw Cant_Open_File(Buf);
-  } // if(File == nullptr) {
+  } // if(File.is_open() == false) {
 
-  // Buffers to hold variables that we read in (we need to do this b/c the
-  // Body's varialbes are hidden/seed to be set with setters)
-  unsigned Buf_Length = 100;
-  char Buf[Buf_Length];                          // Buffer to store text from file
+
+  // Buffers
+  std::string strBuf;
   unsigned uBuf;
   double lfBuf;
-  Materials::Material Mat;
+
+  /* We already know the Body's name, Box/Fixed flaes, and dimensions (if
+  the body is a box). These values were read in by IO::Load_Simulation.
+  Therefore, we can skip over these lines. */
+  IO::read_line_after(File, "Name: ");
+  IO::read_line_after(File, "Is a Box: ");
+  if(Body_In.Get_Is_Box() == true) {
+    IO::read_line_after(File, "X_SIDE_LENGTH: ");
+    IO::read_line_after(File, "Y_SIDE_LENGTH: ");
+    IO::read_line_after(File, "Z_SIDE_LENGTH: ");
+  }
+  IO::read_line_after(File, "Is Fixed in place: ");
+  IO::read_line_after(File, "Is Damageable: ");
 
 
-  // We already have the Body's name, Box/Fixed flags, and
-  // dimensions (if Box). We can, therefore, skip over these lines.
-  fgets(Buf, 99, File);                          // Skip 'name' line.
-  fgets(Buf, 99, File);                          // Skip blank line
-  fgets(Buf, 99, File);                          // Skip 'Is a Box' line
-
-  if(Body_In.Get_Is_Box() == true) {                // if a Box, skip the 3 dimension lines.
-    fgets(Buf, 99, File);
-    fgets(Buf, 99, File);
-    fgets(Buf, 99, File);
-  } // if(Body_In.Get_Is_Box() == true) {
-
-  fgets(Buf, 99, File);                          // Skip 'is fixed in place' line
-  fgets(Buf, 99, File);                          // Skip 'Is Damageable' line
-  fgets(Buf, 99, File);                          // Skip blank line
-  fgets(Buf, 99, File);                          // Skip 'Kerenel-Parameters' line
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Kernel parameters.
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Body_In.Set_Inter_Particle_Spacing(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Body_In.Set_Support_Radius(uBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);         // Skip 'Support radius (mm)' line
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);       // Skip 'Shape Function Amplitude' line
+  strBuf = IO::read_line_after(File, "Inter Particle Spacing:");
+  sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
+  Body_In.Set_Inter_Particle_Spacing(lfBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's IPS as:                       %lf\n",Body_In.Get_Name().c_str(), lfBuf);
+  #endif
 
-  fgets(Buf, 99, File);                          // Skip 'Material-Parameters' line.
+  strBuf = IO::read_line_after(File, "Support Radius (IPS):");
+  sscanf(strBuf.c_str(), " %u \n", &uBuf);
+  Body_In.Set_Support_Radius(uBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Support Radius as:            %u\n",Body_In.Get_Name().c_str(), uBuf);
+  #endif
+
+  // Skip these lines (they're redundant)
+  IO::read_line_after(File, "Support Radius (mm) aka h:");
+  IO::read_line_after(File, "Shape Function Amplitude:");
+
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Material parameters.
 
-  // Read in material name
-  fread(Buf, 1, 30, File); fscanf(File, " %s\n", Buf);
-  Buf[Buf_Length-1] = '\0';
-  Mat.Name = Buf;
+  unsigned Buf_Length = 256;
+  char Buf[Buf_Length];
+  Materials::Material Mat;
 
-  // Read in other material properties
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.Lame = lfBuf;
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.mu0 = lfBuf;
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Body_In.Set_mu(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %u\n", &uBuf);      Body_In.Set_F_Index(uBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.E = lfBuf;
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Mat.density = lfBuf;
+  // Read in material name
+  strBuf = IO::read_line_after(File, "Material:");
+  sscanf(strBuf.c_str()," %s \n", Buf);
+  Buf[Buf_Length-1] = '\0';                      // This ensures that Buf is a null-terminated string
+  Mat.Name = Buf;
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Material name as:             %s\n", Body_In.Get_Name().c_str(), Buf);
+  #endif
+
+  // Read in Lame parameter
+  strBuf = IO::read_line_after(File, "Lame parameter:");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Mat.Lame = lfBuf;
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Lame parameter as:            %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
+
+  // Read in Shear modulus (mu0)
+  strBuf = IO::read_line_after(File, "Shear modulus (mu0):");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Mat.mu0 = lfBuf;
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Shear modulus (mu0) as:       %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
+
+  // Read in Viscosity (mu)
+  strBuf = IO::read_line_after(File, "Viscosity (mu):");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Body_In.Set_mu(lfBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Viscosity (mu) as:            %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
+
+  // Read in F_Index
+  strBuf = IO::read_line_after(File, "F_Index:");
+  sscanf(strBuf.c_str()," %u \n", &uBuf);
+  Body_In.Set_F_Index(uBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's F_Index as %u\n", Body_In.Get_Name().c_str(), uBuf);
+  #endif
+
+  // Read in Hourglass Stiffness (E)
+  strBuf = IO::read_line_after(File, "Hourglass Stiffness (E):");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Mat.E = lfBuf;
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Hourglass Stuffness (E) as:   %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
+
+  // Read in Material density
+  strBuf = IO::read_line_after(File, "Material density:");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Mat.density = lfBuf;
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's density as:                   %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
 
   // Our material is now fully characterized, we can set Particle's material
   Body_In.Set_Material(Mat);
 
-  // Read other material properties.
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n", &lfBuf);    Body_In.Set_alpha(lfBuf);
-  fread(Buf, 1, 30, File);   fscanf(File, " %lf\n\n", &lfBuf);  Body_In.Set_Tau(lfBuf);
+  // Read in alpha (HG parameter)
+  strBuf = IO::read_line_after(File, "alpha (HG parameter):");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Body_In.Set_alpha(lfBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's alpha (HG parameter) as:      %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
+
+  // Read in Tau (damage parameter)
+  strBuf = IO::read_line_after(File, "Tau (damage parameter):");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Body_In.Set_Tau(lfBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Tau (damage parameter) as:    %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Particle properties.
 
-  // Now read in number of particles
-  fgets(Buf, 99, File);                          // Skip 'Particles' line.
-  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &Num_Particles);
+  // read in number of particles
+  unsigned Num_Particles;
+  strBuf = IO::read_line_after(File, "Number of particles:");
+  sscanf(strBuf.c_str(), " %u \n", &Num_Particles);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Number of particles as:       %u\n", Body_In.Get_Name().c_str(), Num_Particles);
+  #endif
 
   // Now read in particles.
   for(unsigned i = 0; i < Num_Particles; i++) { IO::Load_Particle(Body_In[i], File); }
 
+  // Now set up those particles
+  IO::Setup_Loaded_Body(Body_In);
+
+  // All done, close the file.
+  File.close();
+} // void IO::Load_Body(Body & Body_In) {
+
+
+
+void IO::Load_Particle(Particle & P_In, std::ifstream & File) {
+  /* This function reads in the particle data for a specific particle. This
+  data is transfered from the File to P_In. */
+
+  char Buf[100];                                 // Buffer to store text from file (discarded)
+  std::string strBuf;                            // Another buffer to store text
+
+
   //////////////////////////////////////////////////////////////////////////////
-  // Now recreate each Particle's neighbor arrays.
+  // Particle's ID and dimensions
+
+  strBuf = read_line_after(File, "ID:");         sscanf(strBuf.c_str(), " %u \n", &P_In.ID);
+
+  strBuf = read_line_after(File, "Mass:");       sscanf(strBuf.c_str(), " %lf \n", &P_In.Mass);
+  strBuf = read_line_after(File, "Volume:");     sscanf(strBuf.c_str(), " %lf \n", &P_In.Volume);
+  strBuf = read_line_after(File, "Radius:");     sscanf(strBuf.c_str(), " %lf \n", &P_In.Radius);
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Particle dynamic properties
+
+  strBuf = read_line_after(File, "X:");         sscanf(strBuf.c_str(), " <%lf %lf %lf> \n", &P_In.X(0), &P_In.X(1), &P_In.X(2));
+  strBuf = read_line_after(File, "x:");         sscanf(strBuf.c_str(), " <%lf %lf %lf> \n", &P_In.x(0), &P_In.x(1), &P_In.x(2));
+  strBuf = read_line_after(File, "V:");         sscanf(strBuf.c_str(), " <%lf %lf %lf> \n", &P_In.V(0), &P_In.V(1), &P_In.V(2));
+
+  strBuf = read_line_after(File, "F[0]:");      sscanf(strBuf.c_str(), " |%lf %lf %lf| \n", &P_In.F[0](0,0), &P_In.F[0](0,1), &P_In.F[0](0,2));
+  strBuf = read_line_after(File, " ");          sscanf(strBuf.c_str(), " |%lf %lf %lf| \n", &P_In.F[0](1,0), &P_In.F[0](1,1), &P_In.F[0](1,2));
+  strBuf = read_line_after(File, " ");          sscanf(strBuf.c_str(), " |%lf %lf %lf| \n", &P_In.F[0](2,0), &P_In.F[0](2,1), &P_In.F[0](2,2));
+
+  strBuf = read_line_after(File, "F[1]:");      sscanf(strBuf.c_str(), " |%lf %lf %lf| \n", &P_In.F[1](0,0), &P_In.F[1](0,1), &P_In.F[1](0,2));
+  strBuf = read_line_after(File, " ");          sscanf(strBuf.c_str(), " |%lf %lf %lf| \n", &P_In.F[1](1,0), &P_In.F[1](1,1), &P_In.F[1](1,2));
+  strBuf = read_line_after(File, " ");          sscanf(strBuf.c_str(), " |%lf %lf %lf| \n", &P_In.F[1](2,0), &P_In.F[1](2,1), &P_In.F[1](2,2));
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Damage parameters
+
+  strBuf = read_line_after(File, "Stretch_H:");  sscanf(strBuf.c_str(), " %lf \n", &P_In.Stretch_H);
+  strBuf = read_line_after(File, "Stretch_M:");  sscanf(strBuf.c_str(), " %lf \n", &P_In.Stretch_M);
+  strBuf = read_line_after(File, "Stretch_Critical:");     sscanf(strBuf.c_str(), " %lf \n", &P_In.Stretch_Critical);
+  strBuf = read_line_after(File, "D:");          sscanf(strBuf.c_str(), " %lf \n", &P_In.D);
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // BC Information
+
+  // We need more buffers to read in BCs
+  char Buffers[3][10];
+
+  // Read in "Has_BC", write it to P_In
+  strBuf = read_line_after(File, "Has Boundary Conditions:");
+  sscanf(strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
+  for(unsigned i = 0; i < 3; i++) {
+    if(String_Ops::Contains(Buffers[i], "true")) { P_In.Has_BC[i] = true; }
+    else { P_In.Has_BC[i] = false; }
+  } // for(unsigned i = 0; i < 3; i++) {
+
+  // Read in "BC", write to P_In
+  strBuf = read_line_after(File, "Boundary Conditions:");
+  sscanf(strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
+  for(unsigned i = 0; i < 3; i++) {
+    if(P_In.Has_BC[i] == true ) { sscanf(Buffers[i]," %lf ", &P_In.BC[i]); }
+  } // for(unsigned i = 0; i < 3; i++) {
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Neighbor paramaters
+  P_In.Neighbors_Are_Set = false;
+  strBuf = read_line_after(File, "Number of neighbors:");  sscanf(strBuf.c_str(), " %u \n", &P_In.Num_Neighbors);
+
+  // Now allocate memory for P_In's neighbor arrays
+  P_In.Neighbor_IDs = new unsigned[P_In.Num_Neighbors];
+  P_In.R = new Vector[P_In.Num_Neighbors];                                     //        : mm Vector
+  P_In.Mag_R = new double[P_In.Num_Neighbors];                                 //        : mm
+  P_In.W = new double[P_In.Num_Neighbors];                                     //        : unitless
+  P_In.Grad_W = new Vector[P_In.Num_Neighbors];                                //        : 1/mm Vector
+
+  // Now read in neighbor IDs. Before we can do that, however, we need to move
+  // the file pointer ahead, past 'Neighbor IDs: '
+  File.get(Buf, 30);
+  for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
+    File >> P_In.Neighbor_IDs[i];
+  } // for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
+} // void IO::Load_Particle(Particle & P_In, std::ifstream & File) {
+
+
+
+void IO::Setup_Loaded_Body(Body & Body_In) {
+  /* Function description:
+  This function is designed to set up the neighbor specific members of
+  the particles in a Body that has just been loaded. When a simulation is saved,
+  each particle's neighbor specific members such as W, R, Grad_W, etc... are
+  not saved. These members must be recreated before the simulation can procede.
+  sThat is the purpose of this function. This function should only be called
+  once Body_In as well as each particle in Body_In has been loaded. */
+
+  unsigned Num_Particles = Body_In.Get_Num_Particles();
   unsigned Neighbor_ID;
   double V_j;                                    // Volume of jth neighbor               : mm^3
   Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
@@ -272,7 +447,7 @@ void IO::Load_Body(Body & Body_In) {
                                  *Body_In[i].R[j];
 
         // Add in the Current Neighbor's contribution to the Shape tensor
-        V_j = Body_In[Neighbor_ID].Vol;
+        V_j = Body_In[Neighbor_ID].Volume;
         A += Dyadic_Product((V_j*Body_In[i].Grad_W[j]), Body_In[i].R[j]);
       } // for(unsigned j = 0; j < Body_In[i].Num_Neighbors; i++) {
 
@@ -283,87 +458,4 @@ void IO::Load_Body(Body & Body_In) {
       Body_In[i].Neighbors_Are_Set = true;
     } // if(Body_In[i].Num_Neighbors != 0) {
   } // for(unsigned i = 0; i < Body_In; i++) {
-
-  // All done, close the file.
-  fclose(File);
-} // void IO::Load_Body(Body & Body_In) {
-
-
-
-void IO::Load_Particle(Particle & P_In, FILE * File) {
-  /* This function reads in the particle data for a specific particle. This
-  data is transfered from the File to P_In. */
-
-  char Buf[100];                                 // Buffer to store text from file (discarded)
-  std::string strBuf;                            // Another buffer to store text
-
-  //////////////////////////////////////////////////////////////////////////////
-  // First, read in the particle's ID and dimensions
-  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &P_In.ID);
-
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Mass);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Vol);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Radius);
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Now read in particle dynamic properties
-  fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.X(0), &P_In.X(1), &P_In.X(2));
-  fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.x(0), &P_In.x(1), &P_In.x(2));
-  fread(Buf, 1, 30, File); fscanf(File, " <%lf %lf %lf>\n", &P_In.V(0), &P_In.V(1), &P_In.V(2));
-  fread(Buf, 1, 30, File); fscanf(File, " |%lf %lf %lf|\n", &P_In.F[0](0,0), &P_In.F[0](0,1), &P_In.F[0](0,2));
-                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[0](1,0), &P_In.F[0](1,1), &P_In.F[0](1,2));
-                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[0](2,0), &P_In.F[0](2,1), &P_In.F[0](2,2));
-  fread(Buf, 1, 30, File); fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](0,0), &P_In.F[1](0,1), &P_In.F[1](0,2));
-                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](1,0), &P_In.F[1](1,1), &P_In.F[1](1,2));
-                           fscanf(File, " |%lf %lf %lf|\n", &P_In.F[1](2,0), &P_In.F[1](2,1), &P_In.F[1](2,2));
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Damage parameters
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Stretch_H);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Stretch_M);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.Stretch_Critical);
-  fread(Buf, 1, 30, File); fscanf(File, " %lf\n", &P_In.D);
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  // BC Information
-
-  // We need more buffers for this part.
-  char Buffers[3][10];
-
-  // Read in "Has_BC", write it to P_In
-  strBuf = read_line_after_char(File, ':');      // Skip the title ("Has BC: ");
-  sscanf(strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
-  for(unsigned i = 0; i < 3; i++) {
-    if(String_Ops::Contains(Buffers[i], "true")) { P_In.Has_BC[i] = true; }
-    else { P_In.Has_BC[i] = false; }
-  } // for(unsigned i = 0; i < 3; i++) {
-
-  // Read in "BC", write to P_In
-  strBuf = read_line_after_char(File, ':');
-  sscanf(strBuf.c_str(), " < %s %s %s > \n", Buffers[0], Buffers[1], Buffers[2]);
-  for(unsigned i = 0; i < 3; i++) {
-    if(P_In.Has_BC[i] == true ) { sscanf(Buffers[i]," %lf ", &P_In.BC[i]); }
-  } // for(unsigned i = 0; i < 3; i++) {
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Neighbor paramaters
-  P_In.Neighbors_Are_Set = false;
-  fread(Buf, 1, 30, File); fscanf(File, " %u\n", &P_In.Num_Neighbors);
-
-
-  // Now allocate memory for P_In's neighbor arrays
-  P_In.Neighbor_IDs = new unsigned[P_In.Num_Neighbors];
-  P_In.R = new Vector[P_In.Num_Neighbors];                                     //        : mm Vector
-  P_In.Mag_R = new double[P_In.Num_Neighbors];                                 //        : mm
-  P_In.W = new double[P_In.Num_Neighbors];                                     //        : unitless
-  P_In.Grad_W = new Vector[P_In.Num_Neighbors];                                //        : 1/mm Vector
-
-  // Now read in neighbor IDs. Before we can do that, however, we need to move
-  // the file pointer ahead, past 'Neighbor IDs: '
-  fread(Buf, 1, 30, File);
-  for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
-    fscanf(File, " %u", &P_In.Neighbor_IDs[i]);
-  } // for(unsigned i = 0; i < P_In.Num_Neighbors; i++) {
-} // void IO::Load_Particle(Particle & P_In, FILE * File) {
+} // void IO::Setup_Loaded_Body(Body & Body_In) {
