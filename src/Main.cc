@@ -4,9 +4,9 @@
 
 int main(void) {
   try {
-    Simulation::Run_Simulation();
+    Simulation::Load_Setup_File();
   } // try {
-  catch(const Cant_Open_File & Error_In) {
+  catch(const Exception & Error_In) {
     printf("%s\n", Error_In.what());
   } // catch(Exception & Error_In) {
 

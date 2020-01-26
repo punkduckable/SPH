@@ -228,7 +228,7 @@ void Body::Update_x(const double dt) {
   Vector rj;                                     // Displacement vector                  : mm Vector
 
   // Material parameters
-  const double E = (*this).Body_Material.E;      // Hourglass stiffness                  : Mpa
+  const double E = (*this).Body_Material.E;      // Hourglass stiffness/Youngs Modulus   : Mpa
 
   // Damage variables
   List<unsigned> Damaged_Particle_List;      // Keeps track of which particles have broken

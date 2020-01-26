@@ -8,27 +8,6 @@
   #include <omp.h>
 #endif
 
-////////////////////////////////////////////////////////////////////////////////
-// Define external simulation.h variables
-
-// Body properties
-namespace Simulation {
-  unsigned Num_Bodies = 0;                       // Number of bodies in simulation
-  std::string * Names = nullptr;                 // The names of each body (name must match File name if reading from FEB file)
-  bool * Is_Box = nullptr;                       // Which bodies are Boxs
-  Box_Properties * Box_Parameters = nullptr;     // Specifies the dimensions, and BCs of the box bodies.
-  bool * Is_Fixed = nullptr;                     // Which bodies are fixed in place (can be from FEB file or Box)
-  bool * Is_Damagable = nullptr;                 // Which bodies can be damaged
-  bool * From_FEB_File = nullptr;                // Which bodies will be read from file
-  unsigned * Time_Steps_Between_Updates=nullptr; // How many time steps pass between updating this Body's P-K tensor
-  double * IPS = nullptr;                        // Inter particle spacing in mm.
-  Vector * Position_Offset = nullptr;            // Position offset for particles in body
-  Vector * Initial_Velocity = nullptr;           // Initial velocity condition
-  Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
-} // namespace Simulation {
-
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +22,7 @@ void Simulation::Bodies_Setup(void) {
   Box_Parameters = new Box_Properties[Num_Bodies];
   Is_Fixed = new bool[Num_Bodies];
   Is_Damagable = new bool[Num_Bodies];
-  Time_Steps_Between_Updates = new unsigned[Num_Bodies];
+  Time_Steps_Per_Update = new unsigned[Num_Bodies];
   IPS = new double[Num_Bodies];
   Position_Offset = new Vector[Num_Bodies];
   Initial_Velocity = new Vector[Num_Bodies];
@@ -54,7 +33,7 @@ void Simulation::Bodies_Setup(void) {
   Is_Fixed[0]                                  = false;
   Is_Damagable[0]                              = true;
   From_FEB_File[0]                             = false;
-  Time_Steps_Between_Updates[0]                = 10;
+  Time_Steps_Per_Update[0]                     = 10;
   IPS[0]                                       = 1;
   Box_Parameters[0].Dimensions                 = {10, 5, 10};
   Box_Parameters[0].x_plus_BC                  = {0, FREE, FREE};
@@ -72,7 +51,7 @@ void Simulation::Bodies_Setup(void) {
   Is_Fixed[1]                                  = false;
   Is_Damagable[1]                              = false;
   From_FEB_File[1]                             = false;
-  Time_Steps_Between_Updates[1]                = 1;
+  Time_Steps_Per_Update[1]                     = 1;
   IPS[1]                                       = 1;
   Box_Parameters[1].Dimensions                 = {4, 10, 4};
   Box_Parameters[1].x_plus_BC                  = {FREE, FREE, FREE};
@@ -241,7 +220,6 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   //Display that the simulation has begun
   printf(         "\nRunning a Simulation...\n");
   printf(         "Load_Simulation_From_Save =   %u\n",    Load_Simulation_From_Save);
-  printf(         "Save_Simulation =             %u\n",    Save_Simulation);
   printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
   printf(         "Print_Particle_Forces =       %u\n",    Print_Particle_Forces);
   printf(         "Parallel execution =          ");
@@ -302,7 +280,7 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
       (*Bodies)[i].Set_Damageable(Is_Damagable[i]);
 
       // Set Time Steps Per Update
-      (*Bodies)[i].Set_Time_Steps_Between_Updates(Time_Steps_Between_Updates[i]);
+      (*Bodies)[i].Set_Time_Steps_Per_Update(Time_Steps_Per_Update[i]);
 
       // Now set other Body members.
       Set_Body_Members((*Bodies)[i]);

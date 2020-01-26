@@ -136,12 +136,12 @@ void Simulation::Run_Simulation(void) {
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
         if(Time_Step_Index[b] == 0) {
-          double time_update = dt*Bodies[b].Get_Time_Steps_Between_Updates();
+          double time_update = dt*Bodies[b].Get_Time_Steps_Per_Update();
 
           #if defined(SIMULATION_DEBUG)
             printf("time update: %e\n", time_update);
             printf("dt: %e\n", dt);
-            printf("Bodies[b].Get_Time_Steps_Between_Updates(): %u\n", Bodies[b].Get_Time_Steps_Between_Updates());
+            printf("Bodies[b].Get_Time_Steps_Per_Update(): %u\n", Bodies[b].Get_Time_Steps_Per_Update());
           #endif
 
           Bodies[b].Update_P(time_update);
@@ -258,7 +258,7 @@ void Simulation::Run_Simulation(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Update each time step counter
     /* Here we increment each Body's counter. If a particular counter
-    reaches its limit (the value of Bodies[b].Time_Steps_Between_Updates) then we set that
+    reaches its limit (the value of Bodies[b].Time_Steps_Per_Update) then we set that
     counter to zero (reset the counter). */
 
     #pragma omp single
@@ -266,7 +266,7 @@ void Simulation::Run_Simulation(void) {
     for(b = 0; b < Num_Bodies; b++) {
       Time_Step_Index[b]++;
 
-      if(Time_Step_Index[b] == Bodies[b].Get_Time_Steps_Between_Updates()) {
+      if(Time_Step_Index[b] == Bodies[b].Get_Time_Steps_Per_Update()) {
         Time_Step_Index[b] = 0;
       } // if(Time_Step_Index[b] == Time_Setps_Between_Updates[b]) {
     } // for(b = 0; b < Num_Bodies; b++) {
@@ -277,9 +277,9 @@ void Simulation::Run_Simulation(void) {
   simulation_time = Time_Since(time1);
 
   // If saving is enabled, Dump particle data to file
-  if(Save_Simulation == 1) {
+  if(Save_Simulation_To_File == 1) {
     IO::Save_Simulation(Bodies, Num_Bodies);
-  } // if(Save_Simulation == 1) {
+  } // if(Save_Simulation_To_File == 1) {
 
   // Print timing data
   #if defined(_OPENMP)

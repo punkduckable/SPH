@@ -2,6 +2,7 @@
 #define SUMULATION_HEADER
 
 //#define SIMULATION_DEBUG
+#define SIMULATION_MONITOR
 
 #include "Classes.h"
 #include "Vector/Vector.h"
@@ -43,30 +44,38 @@ namespace Simulation {
 
 
   //////////////////////////////////////////////////////////////////////////////
+  // Setup file function
+  // Defined in Setup_File.cc
+
+  void Load_Setup_File(void);
+  void Load_Body_From_Setup_File(const unsigned i);
+
+
+  //////////////////////////////////////////////////////////////////////////////
   // Simulation parameters
-  // (Note: const variables have internal linkage)
+  // Declared in Setup_File.cc (defined by Load_Setup_File.cc and Setup.txt)
 
   // Simulation flags/properties. Defined
-  const bool Load_Simulation_From_Save           = true;
-  const bool Save_Simulation                     = false;
-  const bool Print_Particle_Forces               = false;
-  const bool Print_Net_External_Forces           = true;
-  const unsigned TimeSteps_Between_Prints        = 1000;
+  extern bool Load_Simulation_From_Save;
+  extern bool Save_Simulation_To_File;
+  extern bool Print_Particle_Forces;
+  extern bool Print_Net_External_Forces;
+  extern unsigned TimeSteps_Between_Prints;
 
   // TimeStep paramters
-  const double dt                                = .0000001;        // Time step        : s
-  const unsigned Num_Time_Steps                  = 10000;           // Number of time steps
+  extern double dt;                              // Time step                   : s
+  extern unsigned Num_Time_Steps;                // Number of time steps
 
-  // Contact parameter
-  const double Contact_Distance = 1;             // Distance at which bodies begin contacting one another.   : mm
-
-  // Friction coefficient.
-  const double Friction_Coefficient = .1;                                      //        : unitless
+  // Contact
+  extern double Contact_Distance;                // Distance at which bodies begin contacting one another.   : mm
+  extern double Friction_Coefficient;                                          // unitless
 
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Body properties (defined in Simulation_Setup.cc)
+
+  extern unsigned Num_Bodies;                    // Number of bodies in simulation
 
   /* To simplify implementation, I choose a random value to designate as "free".
   If a particular BC component has this value, then that BC component is treated
@@ -86,15 +95,15 @@ namespace Simulation {
     Vector z_minus_BC;
   }; // struct Box_Properties {
 
-  extern unsigned Num_Bodies;                    // Number of bodies in simulation
   extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
   extern bool * Is_Box;                          // Which bodies are Boxs
   extern bool * Is_Fixed;                        // Which bodies are fixed in place (can be from FEB file or Box)
   extern bool * Is_Damagable;                    // Which bodies can be damaged
   extern bool * From_FEB_File;                   // Which bodies will be read from file
-  extern unsigned * Time_Steps_Between_Updates;  // How many time steps pass between updating this Body's P-K tensor
+  extern unsigned * Time_Steps_Per_Update;       // How many time steps pass between updating this Body's P-K tensor
   extern double * IPS;                           // Inter particle spacing in mm.
   extern Box_Properties * Box_Parameters;        // Specifies the dimensions, and BCs of the box bodies.
+  extern Vector * Position_Offset;               // Position offset for particles in body
   extern Vector * Initial_Velocity;              // Initial velocity condition
   extern Materials::Material * Simulation_Materials;       // Each bodies material
 

@@ -109,7 +109,7 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     // Now read in time steps between updates
     strBuf = read_line_after(File, "Time steps per update:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
-    (*Bodies_Ptr)[i].Set_Time_Steps_Between_Updates(uBuf);
+    (*Bodies_Ptr)[i].Set_Time_Steps_Per_Update(uBuf);
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's time steps per update as %u\n", i, uBuf);
     #endif

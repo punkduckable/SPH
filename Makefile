@@ -13,7 +13,7 @@ OBJS :=            Main.o \
 	                 Tensor.o \
 									 Particle.o \
 									 Body.o Neighbors.o Update.o Damage.o Contact.o Body_IO.o \
-									 Simulation.o Simulation_Setup.o Timing.o Boundary_Conditions.o \
+									 Simulation.o Simulation_Setup.o Timing.o Boundary_Conditions.o Setup_File.o \
 									 Save_Simulation.o Load_Simulation.o FEB_File.o IO_Ops.o
 
 OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
@@ -122,6 +122,10 @@ obj/Timing.o: Timing.cc Simulation.h
 
 obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h Vector.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+obj/Setup_File.o: Setup_File.cc Simulation.h IO_Ops.h Errors.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
 
 
 # IO

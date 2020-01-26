@@ -177,7 +177,17 @@ void Body::Set_Support_Radius(const unsigned SR_In) {
 
 
 
-void Body::Set_Material(const Materials::Material & Mat_In) { Body_Material = Mat_In; }
+void Body::Set_Material(const Materials::Material & Mat_In) {
+  Body_Material = Mat_In;
+
+  /* Note: In general, E may or may not be set in Mat_In. The Lame parameter
+  and shear modulus should be set, however, and E can be calculated from
+  these parameters. Thus, to allow bodies to be set up without directly setting
+  E, we calculuate E using the following equation:
+            E = mu0*(3*Lame + 2*mu0)/(Lame + mu0)
+  */
+  Body_Material.E = (Mat_In.mu0)*(3*Mat_In.Lame + 2*Mat_In.mu0)/(Mat_In.Lame + Mat_In.mu0);
+} // void Body::Set_Material(const Materials::Material & Mat_In) {
 void Body::Set_mu(const double mu_In) { mu = mu_In; }
 void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }
 
@@ -230,7 +240,7 @@ void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const 
 void Body::Set_Is_Fixed(const bool Is_Fixed_In) { Is_Fixed = Is_Fixed_In; }
 
 void Body::Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
-void Body::Set_Time_Steps_Between_Updates(const unsigned Steps_In) { Time_Steps_Between_Updates = Steps_In; }
+void Body::Set_Time_Steps_Per_Update(const unsigned Steps_In) { Time_Steps_Per_Update = Steps_In; }
 
 void Body::Set_F_Index(const unsigned char i) {
   assert(i <= 1);
@@ -289,4 +299,4 @@ unsigned Body::Get_Z_SIDE_LENGTH(void) const {
 bool Body::Get_Is_Fixed(void) const { return Is_Fixed; }
 
 bool Body::Get_First_Time_Step(void) const { return First_Time_Step; }
-unsigned Body::Get_Time_Steps_Between_Updates(void) const { return Time_Steps_Between_Updates; }
+unsigned Body::Get_Time_Steps_Per_Update(void) const { return Time_Steps_Per_Update; }
