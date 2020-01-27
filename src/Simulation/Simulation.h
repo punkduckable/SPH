@@ -16,10 +16,6 @@ namespace Simulation {
   // Setup functions.
   // Defined in Simulation_Setup.cc
 
-  void Setup_Box(Body & Body_In, const unsigned m);
-  void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
-  void Bodies_Setup(void);                                 // Set up Body/Needle simulation
-  void Set_Body_Members(Body & Body_In);                   // Set default body members
   void Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
 
 

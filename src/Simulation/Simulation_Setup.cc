@@ -8,6 +8,146 @@
   #include <omp.h>
 #endif
 
+// Prototypes for functions that are local to this file
+namespace Simulation {
+  void Setup_Box(Body & Body_In, const unsigned m);
+  void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
+  void Bodies_Setup(void);                                 // Set up Body/Needle simulation
+  void Set_Body_Members(Body & Body_In);                   // Set default body members
+} // namespace Simulation {
+
+
+
+void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+  //Display that the simulation has begun
+  printf(         "\nRunning a Simulation...\n");
+  printf(         "Load_Simulation_From_Save =   %u\n",    Load_Simulation_From_Save);
+  printf(         "Save_Simulation_To_File =     %u\n",    Save_Simulation_To_File);
+  printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
+  printf(         "Print_Particle_Forces =       %u\n",    Print_Particle_Forces);
+  printf(         "Parallel execution =          ");
+  #if defined(_OPENMP)
+    printf(       "1\n");
+    printf(       "Number of procs =             %u\n",omp_get_num_procs());
+  #else
+    printf(       "0\n");
+  #endif
+
+  // Are we running a new simulation or loading an existing one?
+  if(Load_Simulation_From_Save == 1) {
+    TIME_TYPE time1 = Get_Time();
+
+    // If loading an existing simulation, read in bodies from file
+    printf(       "\nLoading from file....");
+    IO::Load_Simulation(Bodies, Num_Bodies);
+
+    // Now set up the time step counters
+    *Time_Step_Index = new unsigned[Num_Bodies];
+    for(unsigned i = 0; i < Num_Bodies; i++) {
+      (*Time_Step_Index)[i] = 0;
+    } // for(unsigned i = 0; i < Num_Bodies; i++) {
+
+    //abort();
+
+    #if defined(_OPENMP)
+      time1 = omp_get_wtime() - time1;
+      printf(     "Done!\ntook %lf s\n", time1);
+    #else
+      time1 = clock() - time1;
+      unsigned long MS_Load = (unsigned long)((double)time1 / (double)CLOCKS_PER_MS);
+      printf(       "Done!\ntook %lu ms\n", MS_Load);
+    #endif
+  } //   if(Load_Simulation_From_Save == 1) {
+
+  else if(Load_Simulation_From_Save == 0) {
+    // Use Bodies defined in Bodies_Setup.h
+    Bodies_Setup();
+
+    // First, allocate the array of Bodys, time step counters
+    *Bodies = new Body[Num_Bodies];
+    *Time_Step_Index = new unsigned[Num_Bodies];
+    for(unsigned i = 0; i < Num_Bodies; i++) {  (*Time_Step_Index)[i] = 0; }
+
+    // Now set up each body using the paramaters in Bodies_Setup.h
+    for(unsigned i = 0; i < Num_Bodies; i++) {
+      // Set Partilce Body's name
+      (*Bodies)[i].Set_Name(Names[i]);
+
+      // Set inter particle spacing
+      (*Bodies)[i].Set_Inter_Particle_Spacing(IPS[i]);
+
+      // Now set the ith Body's material
+      (*Bodies)[i].Set_Material(Simulation_Materials[i]);
+
+      // Now set wheather or not the ith Body is damagable
+      (*Bodies)[i].Set_Is_Damageable(Is_Damagable[i]);
+
+      // Set Time Steps Per Update
+      (*Bodies)[i].Set_Time_Steps_Per_Update(Time_Steps_Per_Update[i]);
+
+      // Now set other Body members.
+      Set_Body_Members((*Bodies)[i]);
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Check for bad inputs!
+
+      // A body can't both be a Box and be from an FEB file.
+      if(Is_Box[i] == true && From_FEB_File[i] == true) {
+        char Buffer[500];
+        sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
+                        "Body %d (named %s) is designated as both a Box and from FEB file\n"
+                        "However, each body must either be from a FEB file or a Box (not both)\n",
+                        i,Names[i].c_str());
+        throw Bad_Body_Setup(Buffer);
+      } // if(Is_Box[i] == true && From_FEB_File[i] == true) {
+
+      // A body must either be a Box or be from file. If it's neither, then
+      // we have no way of setting it up.
+      if(Is_Box[i] == false && From_FEB_File[i] == false) {
+        char Buffer[500];
+        sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
+                        "Body %d (named %s) is designated neither a Box nor from FEB file\n"
+                        "However, each body must either be from FEB file or a Box (but not both)\n",
+                        i,Names[i].c_str());
+        throw Bad_Body_Setup(Buffer);
+      } // if(Is_Box[i] == false && From_FEB_File[i] == false) {
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Set up the Body's particles
+
+      /* If the body is fixed in place, we need to designate it as such.
+      note: this applies if the body is a Box, or from FEB file... anything
+      can be fixed im place! */
+      if(Is_Fixed[i] == true) {
+        (*Bodies)[i].Set_Is_Fixed(true);
+      } // if(Is_Fixed[i] == true) {
+
+      // Set up body as a Box if it is a Box
+      if(Is_Box[i] == true) {
+        (*Bodies)[i].Set_Box_Dimensions(Box_Parameters[i].Dimensions[0],
+                                        Box_Parameters[i].Dimensions[1],
+                                        Box_Parameters[i].Dimensions[2]);
+        Setup_Box((*Bodies)[i], i);
+      } // if(Is_Box[i] == true) {
+
+      // if the body is from file, read it in
+      else if(From_FEB_File[i] == true) {
+        Setup_FEB_Body((*Bodies)[i], i);
+      } // else if(From_FEB_File[i] == true) {
+    } // for(unsigned i = 0; i < Num_Bodies; i++) {
+  } // else if(Load_Simulation_From_Save == 0) {
+
+  // Now that the body is loaded, print paramaters.
+  printf(         "\nRuinning with the following paramaters....\n");
+  for(unsigned i = 0; i < Num_Bodies; i++) {
+    (*Bodies)[i].Print_Parameters();
+  } // for(unsigned i = 0; i < Num_Bodies; i++) {
+} // void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,135 +353,3 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
     printf("Done!\n");
   } // if(FEB_Body.Get_Is_Fixed() == false) {
 } // void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
-
-
-
-void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
-  //Display that the simulation has begun
-  printf(         "\nRunning a Simulation...\n");
-  printf(         "Load_Simulation_From_Save =   %u\n",    Load_Simulation_From_Save);
-  printf(         "Save_Simulation_To_File =     %u\n",    Save_Simulation_To_File);
-  printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
-  printf(         "Print_Particle_Forces =       %u\n",    Print_Particle_Forces);
-  printf(         "Parallel execution =          ");
-  #if defined(_OPENMP)
-    printf(       "1\n");
-    printf(       "Number of procs =             %u\n",omp_get_num_procs());
-  #else
-    printf(       "0\n");
-  #endif
-
-  // Are we running a new simulation or loading an existing one?
-  if(Load_Simulation_From_Save == 1) {
-    TIME_TYPE time1 = Get_Time();
-
-    // If loading an existing simulation, read in bodies from file
-    printf(       "\nLoading from file....");
-    IO::Load_Simulation(Bodies, Num_Bodies);
-
-    // Now set up the time step counters
-    *Time_Step_Index = new unsigned[Num_Bodies];
-    for(unsigned i = 0; i < Num_Bodies; i++) {
-      (*Time_Step_Index)[i] = 0;
-    } // for(unsigned i = 0; i < Num_Bodies; i++) {
-
-    //abort();
-
-    #if defined(_OPENMP)
-      time1 = omp_get_wtime() - time1;
-      printf(     "Done!\ntook %lf s\n", time1);
-    #else
-      time1 = clock() - time1;
-      unsigned long MS_Load = (unsigned long)((double)time1 / (double)CLOCKS_PER_MS);
-      printf(       "Done!\ntook %lu ms\n", MS_Load);
-    #endif
-  } //   if(Load_Simulation_From_Save == 1) {
-
-  else if(Load_Simulation_From_Save == 0) {
-    // Use Bodies defined in Bodies_Setup.h
-    Bodies_Setup();
-
-    // First, allocate the array of Bodys, time step counters
-    *Bodies = new Body[Num_Bodies];
-    *Time_Step_Index = new unsigned[Num_Bodies];
-    for(unsigned i = 0; i < Num_Bodies; i++) {  (*Time_Step_Index)[i] = 0; }
-
-    // Now set up each body using the paramaters in Bodies_Setup.h
-    for(unsigned i = 0; i < Num_Bodies; i++) {
-      // Set Partilce Body's name
-      (*Bodies)[i].Set_Name(Names[i]);
-
-      // Set inter particle spacing
-      (*Bodies)[i].Set_Inter_Particle_Spacing(IPS[i]);
-
-      // Now set the ith Body's material
-      (*Bodies)[i].Set_Material(Simulation_Materials[i]);
-
-      // Now set wheather or not the ith Body is damagable
-      (*Bodies)[i].Set_Is_Damageable(Is_Damagable[i]);
-
-      // Set Time Steps Per Update
-      (*Bodies)[i].Set_Time_Steps_Per_Update(Time_Steps_Per_Update[i]);
-
-      // Now set other Body members.
-      Set_Body_Members((*Bodies)[i]);
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-      // Check for bad inputs!
-
-      // A body can't both be a Box and be from an FEB file.
-      if(Is_Box[i] == true && From_FEB_File[i] == true) {
-        char Buffer[500];
-        sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
-                        "Body %d (named %s) is designated as both a Box and from FEB file\n"
-                        "However, each body must either be from a FEB file or a Box (not both)\n",
-                        i,Names[i].c_str());
-        throw Bad_Body_Setup(Buffer);
-      } // if(Is_Box[i] == true && From_FEB_File[i] == true) {
-
-      // A body must either be a Box or be from file. If it's neither, then
-      // we have no way of setting it up.
-      if(Is_Box[i] == false && From_FEB_File[i] == false) {
-        char Buffer[500];
-        sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
-                        "Body %d (named %s) is designated neither a Box nor from FEB file\n"
-                        "However, each body must either be from FEB file or a Box (but not both)\n",
-                        i,Names[i].c_str());
-        throw Bad_Body_Setup(Buffer);
-      } // if(Is_Box[i] == false && From_FEB_File[i] == false) {
-
-
-
-      //////////////////////////////////////////////////////////////////////////
-      // Set up the Body's particles
-
-      /* If the body is fixed in place, we need to designate it as such.
-      note: this applies if the body is a Box, or from FEB file... anything
-      can be fixed im place! */
-      if(Is_Fixed[i] == true) {
-        (*Bodies)[i].Set_Is_Fixed(true);
-      } // if(Is_Fixed[i] == true) {
-
-      // Set up body as a Box if it is a Box
-      if(Is_Box[i] == true) {
-        (*Bodies)[i].Set_Box_Dimensions(Box_Parameters[i].Dimensions[0],
-                                        Box_Parameters[i].Dimensions[1],
-                                        Box_Parameters[i].Dimensions[2]);
-        Setup_Box((*Bodies)[i], i);
-      } // if(Is_Box[i] == true) {
-
-      // if the body is from file, read it in
-      else if(From_FEB_File[i] == true) {
-        Setup_FEB_Body((*Bodies)[i], i);
-      } // else if(From_FEB_File[i] == true) {
-    } // for(unsigned i = 0; i < Num_Bodies; i++) {
-  } // else if(Load_Simulation_From_Save == 0) {
-
-  // Now that the body is loaded, print paramaters.
-  printf(         "\nRuinning with the following paramaters....\n");
-  for(unsigned i = 0; i < Num_Bodies; i++) {
-    (*Bodies)[i].Print_Parameters();
-  } // for(unsigned i = 0; i < Num_Bodies; i++) {
-} // void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
