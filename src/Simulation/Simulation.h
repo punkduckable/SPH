@@ -50,14 +50,14 @@ namespace Simulation {
   // Simulation parameters
   // Declared in Setup_File.cc (defined by Load_Setup_File.cc and Setup.txt)
 
-  // Simulation flags/properties. Defined
+  // IO parMaters
   extern bool Load_Simulation_From_Save;
   extern bool Save_Simulation_To_File;
   extern bool Print_Particle_Forces;
   extern bool Print_Net_External_Forces;
   extern unsigned TimeSteps_Between_Prints;
 
-  // TimeStep paramters
+  // Time Step
   extern double dt;                              // Time step                   : s
   extern unsigned Num_Time_Steps;                // Number of time steps
 
@@ -65,12 +65,14 @@ namespace Simulation {
   extern double Contact_Distance;                // Distance at which bodies begin contacting one another.   : mm
   extern double Friction_Coefficient;                                          // unitless
 
+  // Number of bodies
+  extern unsigned Num_Bodies;                    // Number of bodies in simulation
 
 
   //////////////////////////////////////////////////////////////////////////////
-  // Body properties (defined in Simulation_Setup.cc)
-
-  extern unsigned Num_Bodies;                    // Number of bodies in simulation
+  // Simulation Setup Parameters
+  // These variables are used to set up the simulation. They are defined in
+  // Setup_File.cc and used in Simulation_Setup.cc
 
   /* To simplify implementation, I choose a random value to designate as "free".
   If a particular BC component has this value, then that BC component is treated
@@ -90,28 +92,7 @@ namespace Simulation {
   extern bool * From_FEB_File;                   // Which bodies will be read from file
   extern Box_BCs * Box_Boundary_Conditions;      // Specifies the 6 BCs for a box body
   extern Vector * Position_Offset;               // Position offset for particles in body
-  extern Vector * Initial_Velocity;              // Initial velocity condition
-
-  struct Box_Properties {
-    Vector Dimensions;
-
-    // BCs
-    Vector x_plus_BC;
-    Vector x_minus_BC;
-    Vector y_plus_BC;
-    Vector y_minus_BC;
-    Vector z_plus_BC;
-    Vector z_minus_BC;
-  }; // struct Box_Properties {
-
-  extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
-  extern bool * Is_Box;                          // Which bodies are Boxs
-  extern bool * Is_Fixed;                        // Which bodies are fixed in place (can be from FEB file or Box)
-  extern bool * Is_Damagable;                    // Which bodies can be damaged
-  extern unsigned * Time_Steps_Per_Update;       // How many time steps pass between updating this Body's P-K tensor
-  extern double * IPS;                           // Inter particle spacing in mm.
-  extern Box_Properties * Box_Parameters;        // Specifies the dimensions, and BCs of the box bodies.
-  extern Materials::Material * Simulation_Materials;       // Each bodies material
+  extern Vector * Initial_Velocity;              // Initial velocity condition for each body
 
 
 

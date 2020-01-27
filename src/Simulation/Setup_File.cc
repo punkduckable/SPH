@@ -16,41 +16,33 @@ namespace Simulation {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Define external simulation.h variables
+// Declare external simulation.h variables
 
 // Body properties
 namespace Simulation {
-  bool Load_Simulation_From_Save           = true;
-  bool Save_Simulation_To_File             = false;
-  bool Print_Particle_Forces               = false;
-  bool Print_Net_External_Forces           = true;
-  unsigned TimeSteps_Between_Prints        = 1000;
-
+  // IO paramaters
+  bool Load_Simulation_From_Save;
+  bool Save_Simulation_To_File;
+  bool Print_Particle_Forces;
+  bool Print_Net_External_Forces;
+  unsigned TimeSteps_Between_Prints;
 
   // TimeStep paramters
-  double dt                                = .0000001;        // Time step        : s
-  unsigned Num_Time_Steps                  = 10000;           // Number of time steps
+  double dt;                                     // Time step        : s
+  unsigned Num_Time_Steps;                       // Number of time steps
 
   // Contact
-  double Contact_Distance = 1;                  // Distance at which bodies begin contacting one another.   : mm
-  double Friction_Coefficient = .1;                                            //        : unitless
+  double Contact_Distance;                       // Distance at which bodies begin contacting one another.   : mm
+  double Friction_Coefficient ;                                                //        : unitless
 
-  unsigned Num_Bodies = 0;                       // Number of bodies in simulation
+  // Number of bodies
+  unsigned Num_Bodies;                          // Number of bodies in simulation
 
+  // Simulation setup parameters
   bool * From_FEB_File = nullptr;                // Which bodies will be read from file
   Box_BCs * Box_Boundary_Conditions = nullptr;   // Specifies the 6 BCs for a box body
   Vector * Position_Offset = nullptr;            // Position offset for particles in body
   Vector * Initial_Velocity = nullptr;           // Initial velocity condition
-
-
-  std::string * Names = nullptr;                 // The names of each body (name must match File name if reading from FEB file)
-  bool * Is_Box = nullptr;                       // Which bodies are Boxs
-  Box_Properties * Box_Parameters = nullptr;     // Specifies the dimensions, and BCs of the box bodies.
-  bool * Is_Fixed = nullptr;                     // Which bodies are fixed in place (can be from FEB file or Box)
-  bool * Is_Damagable = nullptr;                 // Which bodies can be damaged
-  unsigned * Time_Steps_Per_Update = nullptr;    // How many time steps pass between updating this Body's P-K tensor
-  double * IPS = nullptr;                        // Inter particle spacing in mm.
-  Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
 } // namespace Simulation {
 
 
@@ -127,9 +119,9 @@ Body* Simulation::Load_Setup_File(void) {
 
 
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read TimeSteps_Between_Prints as:       %u\n", Simulation::TimeSteps_Between_Prints);
+    printf("Read TimeSteps_Between_Prints as:       %u\n",  Simulation::TimeSteps_Between_Prints);
     printf("Read dt as:                             %lf\n", Simulation::dt);
-    printf("Read Num_Time_Steps as:                 %u\n", Simulation::Num_Time_Steps);
+    printf("Read Num_Time_Steps as:                 %u\n",  Simulation::Num_Time_Steps);
     printf("Read Contact_Distance as:               %lf\n", Simulation::Contact_Distance);
     printf("Read Friction_Coefficient as:           %lf\n", Simulation::Friction_Coefficient);
   #endif
@@ -152,7 +144,7 @@ Body* Simulation::Load_Setup_File(void) {
   strBuf = IO::read_line_after(File, "Number of Bodies:");
   sscanf(strBuf.c_str(), " %u \n", &Simulation::Num_Bodies);
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Load_Simulation_From_Save as:      %u\n", Simulation::Num_Bodies);
+    printf("Read Number of Bodies as:      %u\n", Simulation::Num_Bodies);
   #endif
 
   // We're done reading in the Simulation parameters. We can close the setup file.

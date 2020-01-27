@@ -2,7 +2,7 @@
 # Simulation Parameters
 
 # IO
-Load Simulation from Save:                       false
+Load Simulation from Save:                       true
 Save Data To File:                               false
 Print Particle Forces:                           true
 Print Net External Forces:                       true
