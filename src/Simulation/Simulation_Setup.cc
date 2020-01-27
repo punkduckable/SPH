@@ -4,6 +4,7 @@
 #include "Vector/Vector.h"
 #include "IO/FEB_File.h"
 #include "Errors.h"
+#include <assert.h>
 #if defined(_OPENMP)
   #include <omp.h>
 #endif
@@ -19,133 +20,104 @@ namespace Simulation {
 
 
 void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
-  //Display that the simulation has begun
-  printf(         "\nRunning a Simulation...\n");
-  printf(         "Load_Simulation_From_Save =   %u\n",    Load_Simulation_From_Save);
-  printf(         "Save_Simulation_To_File =     %u\n",    Save_Simulation_To_File);
-  printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
-  printf(         "Print_Particle_Forces =       %u\n",    Print_Particle_Forces);
-  printf(         "Parallel execution =          ");
-  #if defined(_OPENMP)
-    printf(       "1\n");
-    printf(       "Number of procs =             %u\n",omp_get_num_procs());
-  #else
-    printf(       "0\n");
-  #endif
+  /* Function description:
+  This function, as the name implies, Sets up a Simulation. This means setting
+  all simulation parameters, the Bodies, and the Time_Step_Index array.
+  Most of this is actually handeled by Load_Setup_File.
 
-  // Are we running a new simulation or loading an existing one?
-  if(Load_Simulation_From_Save == 1) {
-    TIME_TYPE time1 = Get_Time();
+  In general, Run_Simulation is the only thing that should call this function */
 
-    // If loading an existing simulation, read in bodies from file
-    printf(       "\nLoading from file....");
-    IO::Load_Simulation(Bodies, Num_Bodies);
-
-    // Now set up the time step counters
-    *Time_Step_Index = new unsigned[Num_Bodies];
-    for(unsigned i = 0; i < Num_Bodies; i++) {
-      (*Time_Step_Index)[i] = 0;
-    } // for(unsigned i = 0; i < Num_Bodies; i++) {
-
-    //abort();
-
-    #if defined(_OPENMP)
-      time1 = omp_get_wtime() - time1;
-      printf(     "Done!\ntook %lf s\n", time1);
-    #else
-      time1 = clock() - time1;
-      unsigned long MS_Load = (unsigned long)((double)time1 / (double)CLOCKS_PER_MS);
-      printf(       "Done!\ntook %lu ms\n", MS_Load);
-    #endif
-  } //   if(Load_Simulation_From_Save == 1) {
-
-  else if(Load_Simulation_From_Save == 0) {
-    // Use Bodies defined in Bodies_Setup.h
-    Bodies_Setup();
-
-    // First, allocate the array of Bodys, time step counters
-    *Bodies = new Body[Num_Bodies];
-    *Time_Step_Index = new unsigned[Num_Bodies];
-    for(unsigned i = 0; i < Num_Bodies; i++) {  (*Time_Step_Index)[i] = 0; }
-
-    // Now set up each body using the paramaters in Bodies_Setup.h
-    for(unsigned i = 0; i < Num_Bodies; i++) {
-      // Set Partilce Body's name
-      (*Bodies)[i].Set_Name(Names[i]);
-
-      // Set inter particle spacing
-      (*Bodies)[i].Set_Inter_Particle_Spacing(IPS[i]);
-
-      // Now set the ith Body's material
-      (*Bodies)[i].Set_Material(Simulation_Materials[i]);
-
-      // Now set wheather or not the ith Body is damagable
-      (*Bodies)[i].Set_Is_Damageable(Is_Damagable[i]);
-
-      // Set Time Steps Per Update
-      (*Bodies)[i].Set_Time_Steps_Per_Update(Time_Steps_Per_Update[i]);
-
-      // Now set other Body members.
-      Set_Body_Members((*Bodies)[i]);
+  TIME_TYPE time_load = Get_Time();
+  printf("Setting up simulation...\n");
 
 
+  // First, read in from the Setup file.
+  *Bodies = Simulation::Load_Setup_File();
 
+  /* Load Setup_File set "Load_Simulation_From_Save". If this parameter is true,
+  then we should run Load_Simulation. Otherwise, we should finish setting up
+  the bodies. */
+  if(Load_Simulation_From_Save == true) { IO::Load_Simulation(Bodies, Simulation::Num_Bodies); }
+
+  else {
+    for(unsigned i = 0; i < Simulation::Num_Bodies; i++) {
       //////////////////////////////////////////////////////////////////////////
       // Check for bad inputs!
 
       // A body can't both be a Box and be from an FEB file.
-      if(Is_Box[i] == true && From_FEB_File[i] == true) {
+      if((*Bodies)[i].Get_Is_Box() == true && Simulation::From_FEB_File[i] == true) {
         char Buffer[500];
         sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
                         "Body %d (named %s) is designated as both a Box and from FEB file\n"
                         "However, each body must either be from a FEB file or a Box (not both)\n",
                         i,Names[i].c_str());
         throw Bad_Body_Setup(Buffer);
-      } // if(Is_Box[i] == true && From_FEB_File[i] == true) {
+      } // if((*Bodies)[i].Get_Is_Box() == true && Simulation::From_FEB_File[i] == true) {
 
       // A body must either be a Box or be from file. If it's neither, then
       // we have no way of setting it up.
-      if(Is_Box[i] == false && From_FEB_File[i] == false) {
+      if((*Bodies)[i].Get_Is_Box() == false && Simulation::From_FEB_File[i] == false) {
         char Buffer[500];
         sprintf(Buffer, "Bad Body Setup Exception: Thrown by Startup_Simulation\n"
                         "Body %d (named %s) is designated neither a Box nor from FEB file\n"
                         "However, each body must either be from FEB file or a Box (but not both)\n",
                         i,Names[i].c_str());
         throw Bad_Body_Setup(Buffer);
-      } // if(Is_Box[i] == false && From_FEB_File[i] == false) {
+      } //   if((*Bodies)[i].Get_Is_Box() == false && Simulation::From_FEB_File[i] == false) {
 
 
 
       //////////////////////////////////////////////////////////////////////////
-      // Set up the Body's particles
+      // Set up (*Bodies)[i]'s particles
 
-      /* If the body is fixed in place, we need to designate it as such.
-      note: this applies if the body is a Box, or from FEB file... anything
-      can be fixed im place! */
-      if(Is_Fixed[i] == true) {
-        (*Bodies)[i].Set_Is_Fixed(true);
-      } // if(Is_Fixed[i] == true) {
+      /* If the ith Body is a Box then set it up as a Box. Otherwise, if the ith
+      both is from a FEB file, then read it in. */
+      if((*Bodies)[i].Get_Is_Box() == true) { Setup_Box((*Bodies)[i], i); }
+      else { Setup_FEB_Body((*Bodies)[i], i); }
+    } // for(unsigned i = 0; i < Simulation::Num_Bodies; i++) {
+  } // else {
 
-      // Set up body as a Box if it is a Box
-      if(Is_Box[i] == true) {
-        (*Bodies)[i].Set_Box_Dimensions(Box_Parameters[i].Dimensions[0],
-                                        Box_Parameters[i].Dimensions[1],
-                                        Box_Parameters[i].Dimensions[2]);
-        Setup_Box((*Bodies)[i], i);
-      } // if(Is_Box[i] == true) {
 
-      // if the body is from file, read it in
-      else if(From_FEB_File[i] == true) {
-        Setup_FEB_Body((*Bodies)[i], i);
-      } // else if(From_FEB_File[i] == true) {
-    } // for(unsigned i = 0; i < Num_Bodies; i++) {
-  } // else if(Load_Simulation_From_Save == 0) {
+  /* Set up the Time_Step_Index array (Note: if Load_Simulation_From_Save = true
+  then the number of bodies is not known until Load_Simulation is done) */
+  *Time_Step_Index = new unsigned[Num_Bodies];
+  for(unsigned i = 0; i < Num_Bodies; i++) {  (*Time_Step_Index)[i] = 0; }
 
-  // Now that the body is loaded, print paramaters.
-  printf(         "\nRuinning with the following paramaters....\n");
-  for(unsigned i = 0; i < Num_Bodies; i++) {
-    (*Bodies)[i].Print_Parameters();
-  } // for(unsigned i = 0; i < Num_Bodies; i++) {
+
+  // Report setup time.
+  time_load = Time_Since(time_load);
+  #if defined(_OPENMP)
+    printf(     "\nDone! Setting up the simulation took %lf s\n", time_load);
+  #else
+    unsigned long MS_Load = (unsigned long)((double)time_load / (double)CLOCKS_PER_MS);
+    printf(       "\nDone! Setting up the simulation took %lu ms\n", MS_Load);
+  #endif
+
+
+  // Display that the simulation has begun
+  printf(         "\nRunning a Simulation...\n");
+  printf(         "Load_Simulation_From_Save =   %u\n",    Simulation::Load_Simulation_From_Save);
+  printf(         "Save_Simulation_To_File =     %u\n",    Simulation::Save_Simulation_To_File);
+  printf(         "Print_Particle_Forces =       %u\n",    Simulation::Print_Particle_Forces);
+  printf(         "Print_Net_External_Forces =   %u\n",    Simulation::Print_Net_External_Forces);
+  printf(         "TimeSteps_Between_Prints =    %u\n",    Simulation::TimeSteps_Between_Prints);
+  printf(         "Parallel execution =          ");
+  #if defined(_OPENMP)
+    printf(       "true\n");
+    printf(       "Number of procs =             %u\n",omp_get_num_procs());
+  #else
+    printf(       "false\n");
+  #endif
+
+  printf(         "\nRunning a simulation with the following %d bodies:\n", Simulation::Num_Bodies);
+  for(unsigned i = 0; i < Num_Bodies; i++) { (*Bodies)[i].Print_Parameters(); }
+
+  // Now that the simulation has been set up, we can free the Simulation
+  // parameters
+  delete [] From_FEB_File;
+  delete [] Box_Boundary_Conditions;
+  delete [] Position_Offset;
+  delete [] Initial_Velocity;
 } // void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
 
 
@@ -219,9 +191,13 @@ void Simulation::Set_Body_Members(Body & Body_In) {
 
 
 void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
-  /* This function sets up Body_In as a box using the parameters corresponding
+  /* Function Description:
+
+  This function sets up Body_In as a box using the parameters corresponding
   to body m in Bodies_Setup. This function should NOT be used if you're loading
-  from a save. */
+  from a save.
+
+  In general, Setup_Simulation is the only thing that should call this function. */
 
   unsigned i,j,k;
   TIME_TYPE time1;
@@ -239,7 +215,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
   // Vectors to hold onto Parameters
   Vector X, x;
-  Vector V = Initial_Velocity[m];                          // Initial_Velocity set in Simulation.h           : mm/s
+  Vector V = Simulation::Initial_Velocity[m];              // Initial_Velocity set in Simulation.h           : mm/s
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
@@ -257,7 +233,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
         unsigned index = i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*Y_SIDE_LENGTH + j;
 
         X = {i*IPS, j*IPS, k*IPS};
-        X += Position_Offset[m];
+        X += Simulation::Position_Offset[m];
         x = X;                                                                 //        : mm
 
         Body_In[index].Set_Mass(Particle_Mass);                                //        : g
@@ -282,7 +258,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up BCs
-  Set_Box_BCs(Body_In, Box_Parameters[m]);
+  Set_Box_BCs(Body_In, Simulation::Box_Boundary_Conditions[m]);
 
 
 
@@ -293,11 +269,10 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
     time1 = Get_Time();
     Body_In.Find_Neighbors_Box();
 
+    time1 = Time_Since(time1);
     #if defined(_OPENMP)
-      time1 = omp_get_wtime() - time1;
       printf(        "Done!\ntook %lf s\n",time1);
     #else
-      time1 = clock() - time1;
       unsigned long MS_Neighbor = (unsigned long)(((float)time1)/((float)CLOCKS_PER_MS));
       printf(       "Done!\ntook %lums\n",MS_Neighbor);
     #endif
@@ -317,34 +292,43 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
 
 void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
+  /* Function description:
+  This function sets up a Body by reading in information from a FEB file.
+
+  In general, Setup_Simulation is the only thing that should call this function */
+
+  printf("\nReading in Particles for %s from FEB file...\n", FEB_Body.Get_Name().c_str());
+  assert(Simulation::From_FEB_File[m] == true);
+
+
   // First, we need to know how many particles we have, and the reference
   // position of each of the particles.
   Vector * X = nullptr;
   unsigned Num_Particles;
-  IO::Read_FEB_File(Names[m], &X, Num_Particles);    // Names in Simulation.h
+  IO::Read_FEB_File(FEB_Body.Get_Name(), &X, Num_Particles);    // Names in Simulation.h
 
-  printf("\nReading in Particles for %s from FEB file...\n", FEB_Body.Get_Name().c_str());
 
   // Now we can set up the body
   FEB_Body.Set_Num_Particles(Num_Particles);
+
 
   // Now we can cycle through the particles, setting up each particle.
   const double IPS = FEB_Body.Get_Inter_Particle_Spacing();                    //        : mm
   double Particle_Volume = IPS*IPS*IPS;                                        //        : mm^3
   double Particle_Radius = IPS*.578;                                           //        : mm
   double Particle_Mass = Particle_Volume*FEB_Body.Get_density();               //        : g
-
-  Vector V = Initial_Velocity[m];                          // Initial_Velocity set in Simulation.h
+  Vector V = Simulation::Initial_Velocity[m];              // Initial_Velocity set in Simulation.h
 
 
   for(unsigned i = 0; i < Num_Particles; i++) {
     FEB_Body[i].Set_Mass(Particle_Mass);
     FEB_Body[i].Set_Volume(Particle_Volume);
     FEB_Body[i].Set_Radius(Particle_Radius);
-    FEB_Body[i].Set_X(X[i] + Position_Offset[m]);
-    FEB_Body[i].Set_x(X[i] + Position_Offset[m]);
+    FEB_Body[i].Set_X(X[i] + Simulation::Position_Offset[m]);
+    FEB_Body[i].Set_x(X[i] + Simulation::Position_Offset[m]);
     FEB_Body[i].Set_V(V);
   } //   for(unsigned i = 0; i < Num_Particles; i++) {
+
 
   // Now set up neighbors. (if the body is not fixed in place)
   if(FEB_Body.Get_Is_Fixed() == false) {
@@ -352,4 +336,7 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
     FEB_Body.Find_Neighbors();
     printf("Done!\n");
   } // if(FEB_Body.Get_Is_Fixed() == false) {
+
+  // Now free X.
+  delete [] X;
 } // void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {

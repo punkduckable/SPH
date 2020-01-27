@@ -37,16 +37,19 @@ namespace Simulation {
 
   unsigned Num_Bodies = 0;                       // Number of bodies in simulation
 
+  bool * From_FEB_File = nullptr;                // Which bodies will be read from file
+  Box_BCs * Box_Boundary_Conditions = nullptr;   // Specifies the 6 BCs for a box body
+  Vector * Position_Offset = nullptr;            // Position offset for particles in body
+  Vector * Initial_Velocity = nullptr;           // Initial velocity condition
+
+
   std::string * Names = nullptr;                 // The names of each body (name must match File name if reading from FEB file)
   bool * Is_Box = nullptr;                       // Which bodies are Boxs
   Box_Properties * Box_Parameters = nullptr;     // Specifies the dimensions, and BCs of the box bodies.
   bool * Is_Fixed = nullptr;                     // Which bodies are fixed in place (can be from FEB file or Box)
   bool * Is_Damagable = nullptr;                 // Which bodies can be damaged
-  bool * From_FEB_File = nullptr;                // Which bodies will be read from file
-  unsigned * Time_Steps_Per_Update=nullptr;      // How many time steps pass between updating this Body's P-K tensor
+  unsigned * Time_Steps_Per_Update = nullptr;    // How many time steps pass between updating this Body's P-K tensor
   double * IPS = nullptr;                        // Inter particle spacing in mm.
-  Vector * Position_Offset = nullptr;            // Position offset for particles in body
-  Vector * Initial_Velocity = nullptr;           // Initial velocity condition
   Materials::Material * Simulation_Materials = nullptr;    // Each bodies material
 } // namespace Simulation {
 
@@ -156,18 +159,19 @@ Body* Simulation::Load_Setup_File(void) {
   File.close();
 
   // Allocate the bodies
-  Body * Bodies = new Body[Simulation::Num_Bodies];
+  Body* Bodies = new Body[Simulation::Num_Bodies];
 
   // Now allocate Body-specific members.
-  From_FEB_File = new bool[Num_Bodies];
-  Box_Parameters = new Box_Properties[Num_Bodies];
-  Position_Offset = new Vector[Num_Bodies];
-  Initial_Velocity = new Vector[Num_Bodies];
+  Simulation::From_FEB_File            = new bool[Num_Bodies];
+  Simulation::Box_Boundary_Conditions  = new Box_BCs[Num_Bodies];
+  Simulation::Position_Offset          = new Vector[Num_Bodies];
+  Simulation::Initial_Velocity         = new Vector[Num_Bodies];
 
 
   // Load the bodies from the setup file.
   for(unsigned i = 0; i < Simulation::Num_Bodies; i++) { Load_Body_From_Setup_File(Bodies[i], i); }
 
+  // All done!
   return Bodies;
 } // Body* Simulation::Load_Setup_File(void) {
 
@@ -224,22 +228,22 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
     Body_In.Set_Box_Dimensions(uBuf1, uBuf2, uBuf3);
 
     strBuf = IO::read_line_after(File, "x plus BC:");
-    Simulation::Box_Parameters[i].x_plus_BC = Parse_BC(strBuf);
+    Simulation::Box_Boundary_Conditions[i].x_plus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "x minus BC:");
-    Simulation::Box_Parameters[i].x_minus_BC = Parse_BC(strBuf);
+    Simulation::Box_Boundary_Conditions[i].x_minus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "y plus BC:");
-    Simulation::Box_Parameters[i].y_plus_BC = Parse_BC(strBuf);
+    Simulation::Box_Boundary_Conditions[i].y_plus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "y minus BC:");
-    Simulation::Box_Parameters[i].y_minus_BC = Parse_BC(strBuf);
+    Simulation::Box_Boundary_Conditions[i].y_minus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "z plus BC:");
-    Simulation::Box_Parameters[i].z_plus_BC = Parse_BC(strBuf);
+    Simulation::Box_Boundary_Conditions[i].z_plus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "z minus BC:");
-    Simulation::Box_Parameters[i].z_minus_BC = Parse_BC(strBuf);
+    Simulation::Box_Boundary_Conditions[i].z_minus_BC = Parse_BC(strBuf);
   } // if(Is_Box[i] == true) {
 
   strBuf = IO::read_line_after(File, "Is Fixed In Place:");
@@ -264,6 +268,8 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
   Materials::Material Mat;
 
+
+  // Read in the material parameters
   strBuf = IO::read_line_after(File, "Lame Parameter (Mpa):");
   sscanf(strBuf.c_str(), " %lf \n", &Mat.Lame);
 
@@ -272,6 +278,10 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
   strBuf = IO::read_line_after(File, "Density (g/mm^3):");
   sscanf(strBuf.c_str(), " %lf \n", &Mat.density);
+
+
+  // Now set the Body Material.
+  Body_In.Set_Material(Mat);
 
 
 
@@ -321,12 +331,12 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
     printf("Read Body[%3u].Is_Damageable as:        %u\n", i, Body_In.Get_Is_Damageable());
     if(Body_In.Get_Is_Damageable() == true) {
       printf("Read Body[%3u].Tau as:                  %lf\n", i, Body_In.Get_Tau());
-      printf("Read Body[%3u].x_plus_BC as:            ", i); Print_BC(Simulation::Box_Parameters[i].x_plus_BC);
-      printf("Read Body[%3u].x_minus_BC as:           ", i); Print_BC(Simulation::Box_Parameters[i].x_minus_BC);
-      printf("Read Body[%3u].y_plus_BC as:            ", i); Print_BC(Simulation::Box_Parameters[i].y_plus_BC);
-      printf("Read Body[%3u].y_minus_BC as:           ", i); Print_BC(Simulation::Box_Parameters[i].y_minus_BC);
-      printf("Read Body[%3u].z_plus_BC as:            ", i); Print_BC(Simulation::Box_Parameters[i].z_plus_BC);
-      printf("Read Body[%3u].z_minus_BC as:           ", i); Print_BC(Simulation::Box_Parameters[i].z_minus_BC);
+      printf("Read Body[%3u].x_plus_BC as:            ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].x_plus_BC);
+      printf("Read Body[%3u].x_minus_BC as:           ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].x_minus_BC);
+      printf("Read Body[%3u].y_plus_BC as:            ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].y_plus_BC);
+      printf("Read Body[%3u].y_minus_BC as:           ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].y_minus_BC);
+      printf("Read Body[%3u].z_plus_BC as:            ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].z_plus_BC);
+      printf("Read Body[%3u].z_minus_BC as:           ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].z_minus_BC);
     } // if(Body_In.Get_Is_Damageable() == true) {
 
     printf("Read Body[%3u].Material.Lame as:        %lf\n", i, Mat.Lame);

@@ -314,4 +314,5 @@ void Simulation::Run_Simulation(void) {
   #endif
 
   delete [] Bodies;
+  delete [] Time_Step_Index;
 } // void Simulation(void) {

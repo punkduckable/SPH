@@ -78,6 +78,20 @@ namespace Simulation {
   to set a box BC of exactly -293103918 mm/s */
   const double FREE = -293103918;
 
+  struct Box_BCs {
+    Vector x_plus_BC;
+    Vector x_minus_BC;
+    Vector y_plus_BC;
+    Vector y_minus_BC;
+    Vector z_plus_BC;
+    Vector z_minus_BC;
+  }; // struct Box_BCs {
+
+  extern bool * From_FEB_File;                   // Which bodies will be read from file
+  extern Box_BCs * Box_Boundary_Conditions;      // Specifies the 6 BCs for a box body
+  extern Vector * Position_Offset;               // Position offset for particles in body
+  extern Vector * Initial_Velocity;              // Initial velocity condition
+
   struct Box_Properties {
     Vector Dimensions;
 
@@ -90,25 +104,13 @@ namespace Simulation {
     Vector z_minus_BC;
   }; // struct Box_Properties {
 
-  struct Box_BCs {
-    Vector x_plus_BC;
-    Vector x_minus_BC;
-    Vector y_plus_BC;
-    Vector y_minus_BC;
-    Vector z_plus_BC;
-    Vector z_minus_BC;
-  }; // struct Box_BCs {
-
   extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
   extern bool * Is_Box;                          // Which bodies are Boxs
   extern bool * Is_Fixed;                        // Which bodies are fixed in place (can be from FEB file or Box)
   extern bool * Is_Damagable;                    // Which bodies can be damaged
-  extern bool * From_FEB_File;                   // Which bodies will be read from file
   extern unsigned * Time_Steps_Per_Update;       // How many time steps pass between updating this Body's P-K tensor
   extern double * IPS;                           // Inter particle spacing in mm.
   extern Box_Properties * Box_Parameters;        // Specifies the dimensions, and BCs of the box bodies.
-  extern Vector * Position_Offset;               // Position offset for particles in body
-  extern Vector * Initial_Velocity;              // Initial velocity condition
   extern Materials::Material * Simulation_Materials;       // Each bodies material
 
 
@@ -180,7 +182,7 @@ namespace Simulation {
   void Set_General_BCs(Body & Body_In,                     // The body we're applying the BC to
                        Array<Boundary_Condition> & BCs_In);        // The BCs being applied
   void Set_Box_BCs(Body & Box,                             // Reference to the box body
-                   Box_Properties & Box_Parameters);       // Box's parameters
+                   Box_BCs & Boundary_Conditions);         // Box's parameters
   void Set_Box_Particle_BCs(Particle & P_In,               // Particle that we're applying the BC to
                             Vector BC);                    // The BC that's being applied
 } // namespace Simulation {

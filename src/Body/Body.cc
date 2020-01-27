@@ -56,7 +56,9 @@ Body::Body(const unsigned Num_Particles_In) {
 
 
 
-Body::~Body(void) { }
+Body::~Body(void) {
+  delete [] Particles;
+}
 
 
 

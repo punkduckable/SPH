@@ -4,7 +4,7 @@
 
 int main(void) {
   try {
-    Simulation::Load_Setup_File();
+    Simulation::Run_Simulation();
   } // try {
   catch(const Exception & Error_In) {
     printf("%s\n", Error_In.what());
