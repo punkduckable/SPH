@@ -94,7 +94,7 @@ void Body::Update_P(const double dt) {
     } // if(Stretch_Max_Principle > Particles[i].Stretch_H) {
 
     // if damage is enabled and Max is greater than crticial then start adding damage
-    if((*this).Damageable == true) {
+    if((*this).Is_Damageable == true) {
       if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
         Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1;
       } // if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
@@ -105,7 +105,7 @@ void Body::Update_P(const double dt) {
         Damaged_Particle_List.Push_Back(Particles[i].ID);
         continue;
       } // if(Particles[i].D >= 1) {
-    } // if((*this).Damageable == true) {
+    } // if((*this).Is_Damageable == true) {
 
 
     ////////////////////////////////////////////////////////////////////////////

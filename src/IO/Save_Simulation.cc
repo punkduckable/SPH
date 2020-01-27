@@ -37,7 +37,7 @@ void IO::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
     } // if(Bodies[i].Get_Is_Box() == true) {
 
     fprintf(File, "     Is fixed in place:       %u\n",    Bodies[i].Get_Is_Fixed());
-    fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Damagable());
+    fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Is_Damageable());
     fprintf(File, "     Number of particles:     %u\n",    Bodies[i].Get_Num_Particles());
     fprintf(File, "     Time steps per update:   %u\n",    Bodies[i].Get_Time_Steps_Per_Update());
 
@@ -94,7 +94,7 @@ void IO::Save_Body(const Body & Body_In) {
     fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Body_In.Get_Z_SIDE_LENGTH());
   } //   if(Body_In.Get_Is_Box() == true) {
   fprintf(File,   "Is Fixed in place:            %u\n",    Body_In.Get_Is_Fixed());
-  fprintf(File,   "Is Damageable:                %u\n\n",  Body_In.Get_Damagable());
+  fprintf(File,   "Is Damageable:                %u\n\n",  Body_In.Get_Is_Damageable());
 
   fprintf(File,   "       -- Kernel Parameters --\n");
   fprintf(File,   "Inter Particle Spacing:       %5lf\n",  Body_In.Get_Inter_Particle_Spacing());

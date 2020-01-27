@@ -58,7 +58,7 @@ class Body {
 
     // Damage paramaters
     double Tau;                                            // Damage rate parameter (see eq 26)
-    bool Damageable = 1;                                   // If true, allows this Body to take damage.
+    bool Is_Damageable = 1;                                // If true, allows this Body to take damage.
 
     // Time step information
     bool First_Time_Step = true;
@@ -172,7 +172,7 @@ class Body {
     void Set_alpha(const double alpha_In);
 
     void Set_Tau(const double Tau_In);
-    void Set_Damageable(const bool D_In);
+    void Set_Is_Damageable(const bool D_In);
 
     void Set_Box_Dimensions(const unsigned Dim_x,
                             const unsigned Dim_y,
@@ -210,7 +210,7 @@ class Body {
     unsigned char Get_F_Index(void) const;
 
     double Get_Tau(void) const;
-    bool Get_Damagable(void) const;
+    bool Get_Is_Damageable(void) const;
 
     bool Get_Is_Box(void) const;
     unsigned Get_X_SIDE_LENGTH(void) const;

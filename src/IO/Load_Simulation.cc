@@ -91,7 +91,7 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     // Now read in the 'Is damageable' flag
     strBuf = read_line_after(File, "Is Damageable:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
-    (*Bodies_Ptr)[i].Set_Damageable(uBuf);
+    (*Bodies_Ptr)[i].Set_Is_Damageable(uBuf);
     #if defined(LOAD_MONITOR)
       printf("Read Body %u's Is_Damageable as         %u\n", i, uBuf);
     #endif

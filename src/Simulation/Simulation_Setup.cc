@@ -201,8 +201,8 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
     FEB_Body[i].Set_Mass(Particle_Mass);
     FEB_Body[i].Set_Volume(Particle_Volume);
     FEB_Body[i].Set_Radius(Particle_Radius);
-    FEB_Body[i].Set_X(X[i]);
-    FEB_Body[i].Set_x(X[i]);
+    FEB_Body[i].Set_X(X[i] + Position_Offset[m]);
+    FEB_Body[i].Set_x(X[i] + Position_Offset[m]);
     FEB_Body[i].Set_V(V);
   } //   for(unsigned i = 0; i < Num_Particles; i++) {
 
@@ -220,6 +220,7 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   //Display that the simulation has begun
   printf(         "\nRunning a Simulation...\n");
   printf(         "Load_Simulation_From_Save =   %u\n",    Load_Simulation_From_Save);
+  printf(         "Save_Simulation_To_File =     %u\n",    Save_Simulation_To_File);
   printf(         "TimeSteps_Between_Prints =    %u\n",    TimeSteps_Between_Prints);
   printf(         "Print_Particle_Forces =       %u\n",    Print_Particle_Forces);
   printf(         "Parallel execution =          ");
@@ -257,7 +258,7 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   } //   if(Load_Simulation_From_Save == 1) {
 
   else if(Load_Simulation_From_Save == 0) {
-    // Use Bodies defined in Simulation.h
+    // Use Bodies defined in Bodies_Setup.h
     Bodies_Setup();
 
     // First, allocate the array of Bodys, time step counters
@@ -265,7 +266,7 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
     *Time_Step_Index = new unsigned[Num_Bodies];
     for(unsigned i = 0; i < Num_Bodies; i++) {  (*Time_Step_Index)[i] = 0; }
 
-    // Now set up each body using the paramaters in Simulation.h
+    // Now set up each body using the paramaters in Bodies_Setup.h
     for(unsigned i = 0; i < Num_Bodies; i++) {
       // Set Partilce Body's name
       (*Bodies)[i].Set_Name(Names[i]);
@@ -277,7 +278,7 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
       (*Bodies)[i].Set_Material(Simulation_Materials[i]);
 
       // Now set wheather or not the ith Body is damagable
-      (*Bodies)[i].Set_Damageable(Is_Damagable[i]);
+      (*Bodies)[i].Set_Is_Damageable(Is_Damagable[i]);
 
       // Set Time Steps Per Update
       (*Bodies)[i].Set_Time_Steps_Per_Update(Time_Steps_Per_Update[i]);

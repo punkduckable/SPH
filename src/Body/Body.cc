@@ -192,7 +192,7 @@ void Body::Set_mu(const double mu_In) { mu = mu_In; }
 void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }
 
 void Body::Set_Tau(const double Tau_In) { Tau = Tau_In; }
-void Body::Set_Damageable(const bool D_In) { Damageable = D_In; }
+void Body::Set_Is_Damageable(const bool D_In) { Is_Damageable = D_In; }
 
 
 
@@ -280,7 +280,7 @@ double Body::Get_alpha(void) const { return alpha; }
 unsigned char Body::Get_F_Index(void) const { return F_Index; }
 
 double Body::Get_Tau(void) const { return Tau; }
-bool Body::Get_Damagable(void) const { return Damageable; }
+bool Body::Get_Is_Damageable(void) const { return Is_Damageable; }
 
 bool Body::Get_Is_Box(void) const { return Is_Box; }
 unsigned Body::Get_X_SIDE_LENGTH(void) const {

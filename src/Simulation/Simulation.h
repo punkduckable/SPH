@@ -47,8 +47,8 @@ namespace Simulation {
   // Setup file function
   // Defined in Setup_File.cc
 
-  void Load_Setup_File(void);
-  void Load_Body_From_Setup_File(const unsigned i);
+  Body* Load_Setup_File(void);
+  void Load_Body_From_Setup_File(Body & Body_In, const unsigned i);
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -94,6 +94,15 @@ namespace Simulation {
     Vector z_plus_BC;
     Vector z_minus_BC;
   }; // struct Box_Properties {
+
+  struct Box_BCs {
+    Vector x_plus_BC;
+    Vector x_minus_BC;
+    Vector y_plus_BC;
+    Vector y_minus_BC;
+    Vector z_plus_BC;
+    Vector z_minus_BC;
+  }; // struct Box_BCs {
 
   extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
   extern bool * Is_Box;                          // Which bodies are Boxs
