@@ -2,18 +2,18 @@
 # Simulation Parameters
 
 # IO
-Load Simulation from Save:                       true
-Save Data To File:                               false
+Load Simulation from Save:                       false
+Save Data To File:                               true
 Print Particle Forces:                           true
 Print Net External Forces:                       true
 Time Steps Between Prints:                       1000
 
 # Time Step
-dt:                                              .0000001
+dt [s]:                                          .0000001
 Num Time Steps:                                  10000
 
 # Contact
-Contact Distance:                                1.0
+Contact Distance [mm]:                           1.0
 Friction Coefficient:                            .1
 
 # Note: The information below this line will not be read if
@@ -35,31 +35,31 @@ Number of Bodies:                                2
 Name:                                            Body
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions:                                  {10, 5, 10}
-    x plus BC:                                   {0, Free, Free}
-    x minus BC:                                  {0, Free, Free}
-    y plus BC:                                   {Free, 0, Free}
-    y minus BC:                                  {Free, 0, Free}
-    z plus BC:                                   {Free, Free, 0}
-    z minus BC:                                  {Free, Free, 0}
+    Dimensions [# Particles]:                    {10, 5, 10}
+    x plus BC [mm/s]:                            {0, Free, Free}
+    x minus BC [mm/s]:                           {0, Free, Free}
+    y plus BC [mm/s]:                            {Free, 0, Free}
+    y minus BC [mm/s]:                           {Free, 0, Free}
+    z plus BC [mm/s]:                            {Free, Free, 0}
+    z minus BC [mm/s]:                           {Free, Free, 0}
 Is Fixed In Place:                               false
 Is Damageable:                                   true
     Tau (Damage rate):                           .15
 
 # Material
-Lame Parameter (Mpa):                            1.125
-mu0 (Shear Modulus) (Mpa):                       .275
-Density (g/mm^3):                                .01
+Lame Parameter [Mpa]:                            1.125
+mu0 (Shear Modulus) [Mpa]:                       .275
+Density [g/mm^3]:                                .01
 
 # Initial conditions
-Offset:                                          {0, 0, 0}
-Initial Velocity:                                {0, 0, 0}
+Offset [mm]:                                     {0, 0, 0}
+Initial Velocity [mm/s]:                         {0, 0, 0}
 
 # Other
-Mu (Viscosity):                                  .0001
+Mu (Viscosity) [Mpa*s]:                          .0001
 Alpha (Hg Control parameter):                    .75
-Support Radius:                                  3
-Inter Particle Spacing:                          1
+Inter Particle Spacing (IPS) [mm]:               1
+Support Radius [# IPS]:                          3
 Time Steps Per Update:                           10
 
 
@@ -71,29 +71,29 @@ Time Steps Per Update:                           10
 Name:                                            Needle
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions:                                  {4, 10, 4}
-    x plus BC:                                   {Free, Free, Free}
-    x minus BC:                                  {Free, Free, Free}
-    y plus BC:                                   {0, -50, 0}
-    y minus BC:                                  {Free, Free, Free}
-    z plus BC:                                   {Free, Free, Free}
-    z minus BC:                                  {Free, Free, Free}
+    Dimensions [# Particles]:                    {4, 10, 4}
+    x plus BC [mm/s]:                            {Free, Free, Free}
+    x minus BC [mm/s]:                           {Free, Free, Free}
+    y plus BC [mm/s]:                            {0, -50, 0}
+    y minus BC [mm/s]:                           {Free, Free, Free}
+    z plus BC [mm/s]:                            {Free, Free, Free}
+    z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
 Is Damageable:                                   true
     Tau (Damage rate):                           .15
 
 # Material
-Lame Parameter (Mpa):                            104.374
-mu0 (Shear Modulus) (Mpa):                       75.5814
-Density (g/mm^3):                                .08
+Lame Parameter [Mpa]:                            104.374
+mu0 (Shear Modulus) [Mpa]:                       75.5814
+Density [g/mm^3]:                                .08
 
 # Initial conditions
-Offset:                                          {3, 5.1, 3}
-Initial Velocity:                                {0, -500, 0}
+Offset [mm]:                                     {3, 5.1, 3}
+Initial Velocity [mm/s]:                         {0, -500, 0}
 
 # Other
-Mu (Viscosity):                                  .0001
+Mu (Viscosity) [Mpa*s]:                          .0001
 Alpha (Hg Control parameter):                    .75
-Support Radius:                                  3
-Inter Particle Spacing:                          1
+Inter Particle Spacing (IPS) [mm]:               1
+Support Radius [# IPS]:                          3
 Time Steps Per Update:                           1

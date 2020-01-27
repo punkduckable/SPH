@@ -7,7 +7,7 @@
 #include <string>
 #include <stdio.h>
 
-// Prototypes for functions that are local to this file. 
+// Prototypes for functions that are local to this file.
 namespace Simulation {
   void Load_Body_From_Setup_File(Body & Body_In, const unsigned i);
   Vector Parse_BC(std::string & Line);
@@ -70,7 +70,7 @@ Body* Simulation::Load_Setup_File(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Time Step
-  strBuf = IO::read_line_after(File, "dt:");
+  strBuf = IO::read_line_after(File, "dt [s]:");
   sscanf(strBuf.c_str(), " %lf \n", &Simulation::dt);
 
   strBuf = IO::read_line_after(File, "Num Time Steps:");
@@ -80,7 +80,7 @@ Body* Simulation::Load_Setup_File(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Contact
-  strBuf = IO::read_line_after(File, "Contact Distance:");
+  strBuf = IO::read_line_after(File, "Contact Distance [mm]:");
   sscanf(strBuf.c_str(), " %lf \n", &Simulation::Contact_Distance);
 
   strBuf = IO::read_line_after(File, "Friction Coefficient:");
@@ -89,9 +89,9 @@ Body* Simulation::Load_Setup_File(void) {
 
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("Read TimeSteps_Between_Prints as:       %u\n",  Simulation::TimeSteps_Between_Prints);
-    printf("Read dt as:                             %lf\n", Simulation::dt);
+    printf("Read dt as:                             %lf (s)\n", Simulation::dt);
     printf("Read Num_Time_Steps as:                 %u\n",  Simulation::Num_Time_Steps);
-    printf("Read Contact_Distance as:               %lf\n", Simulation::Contact_Distance);
+    printf("Read Contact_Distance as:               %lf (mm)\n", Simulation::Contact_Distance);
     printf("Read Friction_Coefficient as:           %lf\n", Simulation::Friction_Coefficient);
   #endif
 
@@ -184,26 +184,26 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
   // Box specific junk
   if(Is_Box == true) {
-    strBuf = IO::read_line_after(File, "Dimensions:");
+    strBuf = IO::read_line_after(File, "Dimensions [# Particles]:");
     sscanf(strBuf.c_str(), " {%u, %u, %u} \n", &uBuf1, &uBuf2, &uBuf3);
     Body_In.Set_Box_Dimensions(uBuf1, uBuf2, uBuf3);
 
-    strBuf = IO::read_line_after(File, "x plus BC:");
+    strBuf = IO::read_line_after(File, "x plus BC [mm/s]:");
     Simulation::Box_Boundary_Conditions[i].x_plus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "x minus BC:");
+    strBuf = IO::read_line_after(File, "x minus BC [mm/s]:");
     Simulation::Box_Boundary_Conditions[i].x_minus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "y plus BC:");
+    strBuf = IO::read_line_after(File, "y plus BC [mm/s]:");
     Simulation::Box_Boundary_Conditions[i].y_plus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "y minus BC:");
+    strBuf = IO::read_line_after(File, "y minus BC [mm/s]:");
     Simulation::Box_Boundary_Conditions[i].y_minus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "z plus BC:");
+    strBuf = IO::read_line_after(File, "z plus BC [mm/s]:");
     Simulation::Box_Boundary_Conditions[i].z_plus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "z minus BC:");
+    strBuf = IO::read_line_after(File, "z minus BC [mm/s]:");
     Simulation::Box_Boundary_Conditions[i].z_minus_BC = Parse_BC(strBuf);
   } // if(Is_Box[i] == true) {
 
@@ -231,13 +231,13 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
 
   // Read in the material parameters
-  strBuf = IO::read_line_after(File, "Lame Parameter (Mpa):");
+  strBuf = IO::read_line_after(File, "Lame Parameter [Mpa]:");
   sscanf(strBuf.c_str(), " %lf \n", &Mat.Lame);
 
-  strBuf = IO::read_line_after(File, "mu0 (Shear Modulus) (Mpa):");
+  strBuf = IO::read_line_after(File, "mu0 (Shear Modulus) [Mpa]:");
   sscanf(strBuf.c_str(), " %lf \n", &Mat.mu0);
 
-  strBuf = IO::read_line_after(File, "Density (g/mm^3):");
+  strBuf = IO::read_line_after(File, "Density [g/mm^3]:");
   sscanf(strBuf.c_str(), " %lf \n", &Mat.density);
 
 
@@ -249,10 +249,10 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   //////////////////////////////////////////////////////////////////////////////
   // Initial Conditions
 
-  strBuf = IO::read_line_after(File, "Offset:");
+  strBuf = IO::read_line_after(File, "Offset [mm]:");
   sscanf(strBuf.c_str(), " {%lf, %lf, %lf} \n", &Position_Offset[i][0], &Position_Offset[i][1], &Position_Offset[i][2]);
 
-  strBuf = IO::read_line_after(File, "Initial Velocity:");
+  strBuf = IO::read_line_after(File, "Initial Velocity [mm/s]:");
   sscanf(strBuf.c_str(), " {%lf, %lf, %lf} \n", &Initial_Velocity[i][0], &Initial_Velocity[i][1], &Initial_Velocity[i][2]);
 
 
@@ -260,7 +260,7 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   //////////////////////////////////////////////////////////////////////////////
   // Other
 
-  strBuf = IO::read_line_after(File, "Mu (Viscosity):");
+  strBuf = IO::read_line_after(File, "Mu (Viscosity) [Mpa*s]:");
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_mu(lfBuf);
 
@@ -268,13 +268,13 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_alpha(lfBuf);
 
-  strBuf = IO::read_line_after(File, "Support Radius:");
-  sscanf(strBuf.c_str(), " %u \n", &uBuf1);
-  Body_In.Set_Support_Radius(uBuf1);
-
-  strBuf = IO::read_line_after(File, "Inter Particle Spacing:");
+  strBuf = IO::read_line_after(File, "Inter Particle Spacing (IPS) [mm]:");
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_Inter_Particle_Spacing(lfBuf);
+
+  strBuf = IO::read_line_after(File, "Support Radius [# IPS]:");
+  sscanf(strBuf.c_str(), " %u \n", &uBuf1);
+  Body_In.Set_Support_Radius(uBuf1);
 
   strBuf = IO::read_line_after(File, "Time Steps Per Update:");
   sscanf(strBuf.c_str(), " %u \n", &uBuf1);
