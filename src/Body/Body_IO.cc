@@ -21,7 +21,6 @@ void Body::Print_Parameters(void) const {
   printf(         "h:                            %lf\n",   h);
   printf(         "Support Radius:               %u\n",    Support_Radius);
   printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
-  printf(         "Material:                     %s\n",    Body_Material.Name.c_str());
   printf(         "Lame:                         %lf\n",   Body_Material.Lame);
   printf(         "mu0 (Shear modulus):          %lf\n",   Body_Material.mu0);
   printf(         "mu (Viscosity):               %lf\n",   mu);

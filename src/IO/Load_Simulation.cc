@@ -213,18 +213,7 @@ void IO::Load_Body(Body & Body_In) {
   //////////////////////////////////////////////////////////////////////////////
   // Read in Material parameters.
 
-  unsigned Buf_Length = 256;
-  char Buf[Buf_Length];
   Materials::Material Mat;
-
-  // Read in material name
-  strBuf = IO::read_line_after(File, "Material:");
-  sscanf(strBuf.c_str()," %s \n", Buf);
-  Buf[Buf_Length-1] = '\0';                      // This ensures that Buf is a null-terminated string
-  Mat.Name = Buf;
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Material name as:             %s\n", Body_In.Get_Name().c_str(), Buf);
-  #endif
 
   // Read in Lame parameter
   strBuf = IO::read_line_after(File, "Lame parameter:");
@@ -242,24 +231,8 @@ void IO::Load_Body(Body & Body_In) {
     printf("Read %s's Shear modulus (mu0) as:       %lf\n", Body_In.Get_Name().c_str(), lfBuf);
   #endif
 
-  // Read in Viscosity (mu)
-  strBuf = IO::read_line_after(File, "Viscosity (mu):");
-  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
-  Body_In.Set_mu(lfBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Viscosity (mu) as:            %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
-
-  // Read in F_Index
-  strBuf = IO::read_line_after(File, "F_Index:");
-  sscanf(strBuf.c_str()," %u \n", &uBuf);
-  Body_In.Set_F_Index(uBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's F_Index as %u\n", Body_In.Get_Name().c_str(), uBuf);
-  #endif
-
-  // Read in Hourglass Stiffness (E)
-  strBuf = IO::read_line_after(File, "Hourglass Stiffness (E):");
+  // Read in Young's modulus/Hourglass Stiffness (E)
+  strBuf = IO::read_line_after(File, "Young's Modulus/HG Stiffness (E):");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Mat.E = lfBuf;
   #if defined(LOAD_MONITOR)
@@ -277,6 +250,27 @@ void IO::Load_Body(Body & Body_In) {
   // Our material is now fully characterized, we can set Particle's material
   Body_In.Set_Material(Mat);
 
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Read in Other parameters.
+
+  // Read in Viscosity (mu)
+  strBuf = IO::read_line_after(File, "Viscosity (mu):");
+  sscanf(strBuf.c_str()," %lf \n", &lfBuf);
+  Body_In.Set_mu(lfBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's Viscosity (mu) as:            %lf\n", Body_In.Get_Name().c_str(), lfBuf);
+  #endif
+
+  // Read in F_Index
+  strBuf = IO::read_line_after(File, "F_Index:");
+  sscanf(strBuf.c_str()," %u \n", &uBuf);
+  Body_In.Set_F_Index(uBuf);
+  #if defined(LOAD_MONITOR)
+    printf("Read %s's F_Index as %u\n", Body_In.Get_Name().c_str(), uBuf);
+  #endif
+
   // Read in alpha (HG parameter)
   strBuf = IO::read_line_after(File, "alpha (HG parameter):");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
@@ -292,6 +286,8 @@ void IO::Load_Body(Body & Body_In) {
   #if defined(LOAD_MONITOR)
     printf("Read %s's Tau (damage parameter) as:    %lf\n", Body_In.Get_Name().c_str(), lfBuf);
   #endif
+
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Particle properties.

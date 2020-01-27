@@ -19,6 +19,36 @@ namespace Simulation {
 
 
 
+
+// Declare Simulation Parameters
+namespace Simulation {
+  // IO paramaters
+  bool Load_Simulation_From_Save;
+  bool Save_Simulation_To_File;
+  bool Print_Particle_Forces;
+  bool Print_Net_External_Forces;
+  unsigned TimeSteps_Between_Prints;
+
+  // TimeStep paramters
+  double dt;                                     // Time step        : s
+  unsigned Num_Time_Steps;                       // Number of time steps
+
+  // Contact
+  double Contact_Distance;                       // Distance at which bodies begin contacting one another.   : mm
+  double Friction_Coefficient;                                                 //        : unitless
+
+  // Number of bodies
+  unsigned Num_Bodies;                          // Number of bodies in simulation
+
+  // Simulation setup parameters
+  bool * From_FEB_File = nullptr;                // Which bodies will be read from file
+  Box_BCs * Box_Boundary_Conditions = nullptr;   // Specifies the 6 BCs for a box body
+  Vector * Position_Offset = nullptr;            // Position offset for particles in body
+  Vector * Initial_Velocity = nullptr;           // Initial velocity condition
+} // namespace Simulation {
+
+
+
 void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   /* Function description:
   This function, as the name implies, Sets up a Simulation. This means setting

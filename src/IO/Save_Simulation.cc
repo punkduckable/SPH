@@ -85,37 +85,38 @@ void IO::Save_Body(const Body & Body_In) {
 
 
   // Let's begin by printing the Body paramaters
-  fprintf(File,   "Name:                         %s\n\n",  Name.c_str());
+  fprintf(File,   "Name:                                   %s\n\n",  Name.c_str());
 
-  fprintf(File,   "Is a Box:                     %u\n",    Body_In.Get_Is_Box());
+  fprintf(File,   "Is a Box:                               %u\n",    Body_In.Get_Is_Box());
   if(Body_In.Get_Is_Box() == true) {
-    fprintf(File, "     X_SIDE_LENGTH:           %u\n",    Body_In.Get_X_SIDE_LENGTH());
-    fprintf(File, "     Y_SIDE_LENGTH:           %u\n",    Body_In.Get_Y_SIDE_LENGTH());
-    fprintf(File, "     Z_SIDE_LENGTH:           %u\n",    Body_In.Get_Z_SIDE_LENGTH());
+    fprintf(File, "     X_SIDE_LENGTH:                     %u\n",    Body_In.Get_X_SIDE_LENGTH());
+    fprintf(File, "     Y_SIDE_LENGTH:                     %u\n",    Body_In.Get_Y_SIDE_LENGTH());
+    fprintf(File, "     Z_SIDE_LENGTH:                     %u\n",    Body_In.Get_Z_SIDE_LENGTH());
   } //   if(Body_In.Get_Is_Box() == true) {
-  fprintf(File,   "Is Fixed in place:            %u\n",    Body_In.Get_Is_Fixed());
-  fprintf(File,   "Is Damageable:                %u\n\n",  Body_In.Get_Is_Damageable());
+  fprintf(File,   "Is Fixed in place:                      %u\n",    Body_In.Get_Is_Fixed());
+  fprintf(File,   "Is Damageable:                          %u\n\n",  Body_In.Get_Is_Damageable());
 
   fprintf(File,   "       -- Kernel Parameters --\n");
-  fprintf(File,   "Inter Particle Spacing:       %5lf\n",  Body_In.Get_Inter_Particle_Spacing());
-  fprintf(File,   "Support Radius (IPS):         %u\n",    Body_In.Get_Support_Radius());
-  fprintf(File,   "Support Radius (mm) aka h:    %5lf\n",  Body_In.Get_h());
-  fprintf(File,   "Shape Function Amplitude:     %5lf\n\n",Body_In.Get_Shape_Function_Amplitude());
+  fprintf(File,   "Inter Particle Spacing:                 %5lf\n",  Body_In.Get_Inter_Particle_Spacing());
+  fprintf(File,   "Support Radius (IPS):                   %u\n",    Body_In.Get_Support_Radius());
+  fprintf(File,   "Support Radius (mm) aka h:              %5lf\n",  Body_In.Get_h());
+  fprintf(File,   "Shape Function Amplitude:               %5lf\n\n",Body_In.Get_Shape_Function_Amplitude());
 
   fprintf(File,   "       -- Material Parameters --\n");
-  fprintf(File,   "Material:                     %s\n",    Body_In.Get_Material().Name.c_str());
-  fprintf(File,   "Lame parameter:               %5lf\n",  Body_In.Get_Lame());
-  fprintf(File,   "Shear modulus (mu0):          %5lf\n",  Body_In.Get_mu0());
-  fprintf(File,   "Viscosity (mu):               %5lf\n",  Body_In.Get_mu());
-  fprintf(File,   "F_Index:                      %u\n",    Body_In.Get_F_Index());
-  fprintf(File,   "Hourglass Stiffness (E):      %5lf\n",  Body_In.Get_E());
-  fprintf(File,   "Material density:             %5lf\n",  Body_In.Get_density());
-  fprintf(File,   "alpha (HG parameter):         %5lf\n",  Body_In.Get_alpha());
-  fprintf(File,   "Tau (damage parameter):       %5lf\n\n",Body_In.Get_Tau());
+  fprintf(File,   "Lame parameter:                         %5lf\n",  Body_In.Get_Lame());
+  fprintf(File,   "Shear modulus (mu0):                    %5lf\n",  Body_In.Get_mu0());
+  fprintf(File,   "Young's Modulus/HG Stiffness (E):       %5lf\n",  Body_In.Get_E());
+  fprintf(File,   "Material density:                       %5lf\n\n",  Body_In.Get_density());
+
+  fprintf(File,   "       -- Other Parameters --\n");
+  fprintf(File,   "Viscosity (mu):                         %5lf\n",  Body_In.Get_mu());
+  fprintf(File,   "F_Index:                                %u\n",    Body_In.Get_F_Index());
+  fprintf(File,   "alpha (HG parameter):                   %5lf\n",  Body_In.Get_alpha());
+  fprintf(File,   "Tau (damage parameter):                 %5lf\n\n",Body_In.Get_Tau());
 
   // Now let's print the number of particles
   fprintf(File,   "       -- Particles --\n");
-  fprintf(File,   "Number of particles:          %u\n\n",    Body_In.Get_Num_Particles());
+  fprintf(File,   "Number of particles:                    %u\n\n",    Body_In.Get_Num_Particles());
 
   // Finally, let's print the Box paramaters (should be removed if not using
   // a Box)
@@ -156,39 +157,39 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
   const Tensor F_1 = P_In.Get_F(1);
 
   // Print particle ID, dimensions
-  fprintf(File,   "ID:                           %u\n",    P_In.Get_ID());
-  fprintf(File,   "Mass:                         %5e\n",   P_In.Get_Mass());
-  fprintf(File,   "Volume:                       %5e\n",   P_In.Get_Volume());
-  fprintf(File,   "Radius:                       %5lf\n",  P_In.Get_Radius());
+  fprintf(File,   "ID:                                     %u\n",    P_In.Get_ID());
+  fprintf(File,   "Mass:                                   %5e\n",   P_In.Get_Mass());
+  fprintf(File,   "Volume:                                 %5e\n",   P_In.Get_Volume());
+  fprintf(File,   "Radius:                                 %5lf\n",  P_In.Get_Radius());
 
   // Print Particle dynamic properties
-  fprintf(File,   "X:                            <%6.3lf %6.3lf %6.3lf>\n", X(0), X(1), X(2));
-  fprintf(File,   "x:                            <%6.3lf %6.3lf %6.3lf>\n", x(0), x(1), x(2));
-  fprintf(File,   "V:                            <%6.3lf %6.3lf %6.3lf>\n", V(0), V(1), V(2));
-  fprintf(File,   "F[0]:                         |%6.3lf %6.3lf %6.3lf|\n", F_0(0,0), F_0(0,1), F_0(0,2));
-  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_0(1,0), F_0(1,1), F_0(1,2));
-  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_0(2,0), F_0(2,1), F_0(2,2));
-  fprintf(File,   "F[1]:                         |%6.3lf %6.3lf %6.3lf|\n", F_1(0,0), F_1(0,1), F_1(0,2));
-  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_1(1,0), F_1(1,1), F_1(1,2));
-  fprintf(File,   "                              |%6.3lf %6.3lf %6.3lf|\n", F_1(2,0), F_1(2,1), F_1(2,2));
+  fprintf(File,   "X:                                      <%6.3lf %6.3lf %6.3lf>\n", X(0), X(1), X(2));
+  fprintf(File,   "x:                                      <%6.3lf %6.3lf %6.3lf>\n", x(0), x(1), x(2));
+  fprintf(File,   "V:                                      <%6.3lf %6.3lf %6.3lf>\n", V(0), V(1), V(2));
+  fprintf(File,   "F[0]:                                   |%6.3lf %6.3lf %6.3lf|\n", F_0(0,0), F_0(0,1), F_0(0,2));
+  fprintf(File,   "                                        |%6.3lf %6.3lf %6.3lf|\n", F_0(1,0), F_0(1,1), F_0(1,2));
+  fprintf(File,   "                                        |%6.3lf %6.3lf %6.3lf|\n", F_0(2,0), F_0(2,1), F_0(2,2));
+  fprintf(File,   "F[1]:                                   |%6.3lf %6.3lf %6.3lf|\n", F_1(0,0), F_1(0,1), F_1(0,2));
+  fprintf(File,   "                                        |%6.3lf %6.3lf %6.3lf|\n", F_1(1,0), F_1(1,1), F_1(1,2));
+  fprintf(File,   "                                        |%6.3lf %6.3lf %6.3lf|\n", F_1(2,0), F_1(2,1), F_1(2,2));
 
 
   // Damage paramaters
-  fprintf(File,   "Stretch_H:                    %5lf\n",  P_In.Get_Stretch_H());
-  fprintf(File,   "Stretch_M:                    %5lf\n",  P_In.Get_Stretch_M());
-  fprintf(File,   "Stretch_Critical:             %5lf\n",  P_In.Get_Stretch_Critical());
-  fprintf(File,   "D:                            %5lf\n",  P_In.Get_D());
+  fprintf(File,   "Stretch_H:                              %5lf\n",  P_In.Get_Stretch_H());
+  fprintf(File,   "Stretch_M:                              %5lf\n",  P_In.Get_Stretch_M());
+  fprintf(File,   "Stretch_Critical:                       %5lf\n",  P_In.Get_Stretch_Critical());
+  fprintf(File,   "D:                                      %5lf\n",  P_In.Get_D());
 
 
   // BC information
-  fprintf(File,   "Has Boundary Conditions:      <");
+  fprintf(File,   "Has Boundary Conditions:                <");
   for(unsigned i = 0; i < 3; i++) {
     if(P_In.Get_Has_BC(i) == true) { fprintf(File, "true   "); }
     else { fprintf(File, "false  "); }
   } // for(unsigned i = 0; i < 3; i++) {
   fprintf(File, ">\n");
 
-  fprintf(File,   "Boundary Conditions:          <");
+  fprintf(File,   "Boundary Conditions:                    <");
   for(unsigned i = 0; i < 3; i++) {
     if(P_In.Get_Has_BC(i) == true) { fprintf(File, "%6.3lf ", P_In.Get_BC(i)); }
     else { fprintf(File, "FREE   "); }
@@ -200,10 +201,10 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
   unsigned Num_Neighbors = P_In.Get_Num_Neighbors();
 
   // Neighbor paramters
-  fprintf(File,   "Number of neighbors:          %u\n", P_In.Get_Num_Neighbors());
+  fprintf(File,   "Number of neighbors:                    %u\n", P_In.Get_Num_Neighbors());
 
   // Print neighbor IDs
-  fprintf(File,   "Neighbor IDs                  ");
+  fprintf(File,   "Neighbor IDs                            ");
   for(i = 0; i < Num_Neighbors; i++) {
     fprintf(File,"%d ",P_In.Get_Neighbor_IDs(i));
   } // for(i = 0; i < Num_Neighbors; i++) {
