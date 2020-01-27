@@ -2,7 +2,7 @@
 #define SUMULATION_HEADER
 
 //#define SIMULATION_DEBUG
-#define SIMULATION_MONITOR
+#define SIMULATION_SETUP_MONITOR
 
 #include "Classes.h"
 #include "Vector/Vector.h"
@@ -48,7 +48,6 @@ namespace Simulation {
   // Defined in Setup_File.cc
 
   Body* Load_Setup_File(void);
-  void Load_Body_From_Setup_File(Body & Body_In, const unsigned i);
 
 
   //////////////////////////////////////////////////////////////////////////////

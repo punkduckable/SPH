@@ -123,7 +123,7 @@ obj/Timing.o: Timing.cc Simulation.h
 obj/Boundary_Conditions.o: Boundary_Conditions.cc Simulation.h Body.h Particle.h Vector.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Setup_File.o: Setup_File.cc Simulation.h IO_Ops.h Errors.h
+obj/Setup_File.o: Setup_File.cc Simulation.h IO_Ops.h Body.h Vector.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
