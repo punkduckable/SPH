@@ -9,6 +9,13 @@
 #include <fstream>
 #include <stdio.h>
 
+// Prototypes for functions that are local to this file.
+namespace IO {
+  void Load_Body(Body & Body_In);
+} // namespace IO {
+
+
+
 void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   // First, open up the Particle_data file
   std::ifstream File;

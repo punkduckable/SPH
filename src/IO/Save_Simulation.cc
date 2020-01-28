@@ -4,6 +4,16 @@
 #include "IO_Ops.h"
 #include "Errors.h"
 
+// Prototypes for functions that are local to this file
+namespace IO {
+  void Save_Body(const Body & Body_In);
+
+  void Save_Particle(const Particle & P_In,
+                     FILE * File);
+} // namespace IO {
+
+
+
 void IO::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
   /* This Function is used to save a simulation. This function prints all the
   information that is needed to re-create the state of a simulation. This is

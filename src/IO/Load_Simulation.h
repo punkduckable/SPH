@@ -6,10 +6,8 @@
 #include "Classes.h"
 
 namespace IO {
-  void Load_Simulation(Body ** Array_Ptr,
+  void Load_Simulation(Body ** Bodies_Ptr,
                        unsigned & Num_Bodies);
-
-  void Load_Body(Body & Body_In);
 
   void Load_Particle(Particle & P_In,
                      std::ifstream & File);
