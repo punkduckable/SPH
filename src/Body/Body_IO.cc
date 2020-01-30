@@ -376,7 +376,7 @@ void Body::Export_Particle_Positions(void) {
 
 
 
-void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) {
+void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) const {
   // Print header.
   fprintf(File, "SCALARS ");
   fprintf(File, Weight_Name);
@@ -387,4 +387,4 @@ void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particle
   for(unsigned i = 0; i < Num_Particles; i++) {
     fprintf(File,"\t %8.3f\n", Data[i]);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
-} // void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) {
+} // void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) const {

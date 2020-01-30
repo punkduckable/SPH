@@ -9,6 +9,12 @@
   #include <omp.h>
 #endif
 
+// Prototypes for functions that are local to this file
+namespace Simulation {
+  void Export_Bodies_Data(Body * Bodies, const unsigned Num_Bodies, const unsigned t);
+} // namespace Simulation {
+
+
 
 void Simulation::Run_Simulation(void) {
   //////////////////////////////////////////////////////////////////////////////
@@ -48,46 +54,19 @@ void Simulation::Run_Simulation(void) {
   {
   for(t = 0; t < Num_Time_Steps; t++) {
     ////////////////////////////////////////////////////////////////////////////
-    // Print to file
+    // Export Bodies data
     #pragma omp single nowait
     {
       time2 = Get_Time();
     } // #pragma omp single nowait
 
-    if(t%TimeSteps_Between_Prints == 0) {
+    if(t%Simulation::TimeSteps_Between_Prints == 0) {
       #pragma omp single nowait
+      {
         printf("%d time steps complete\n",t);
+      } // #pragma omp single nowait
 
-      #pragma omp for nowait
-      for(b = 0; b < Num_Bodies; b++) {
-        try { Bodies[b].Export_Particle_Positions(); }
-        catch(Exception & Error_In) {
-          printf("%s\n", Error_In.what());
-          abort();
-        } // catch(Exception & Error_In) {
-      } // for(b = 0; b < Num_Bodies; b++ ) {
-
-      if(Print_Particle_Forces == true) {
-        #pragma omp for nowait
-        for(b = 0; b < Num_Bodies; b++) {
-          try { Bodies[b].Export_Particle_Forces(); }
-          catch(Exception & Error_In) {
-            printf("%s\n", Error_In.what());
-            abort();
-          } // catch(Exception & Error_In) {
-        } // for(b = 0; b < Num_Bodies; b++) {
-      } // if(Print_Particle_Forces == true) {
-
-      if(Print_Net_External_Forces == true) {
-        #pragma omp for nowait
-        for(b = 0; b < Num_Bodies; b++) {
-          try { Bodies[b].Export_Net_External_Force(t); }
-          catch(Exception & Error_In) {
-            printf("%s\n", Error_In.what());
-            abort();
-          } // catch(Exception & Error_In) {
-        } // for(b = 0; b < Num_Bodies; b++) {
-      } // if(Print_Net_External_Forces == true) {
+      Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
     } // if(t%TimeSteps_Between_Prints == 0) {
 
     #pragma omp single nowait
@@ -272,7 +251,21 @@ void Simulation::Run_Simulation(void) {
     } // for(b = 0; b < Num_Bodies; b++) {
     } // #pragma omp single
   } // for(t = 0; t < Num_Time_Steps; t++) {
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Export the bodies data for the final configuration of the simulation
+
+  #pragma omp single nowait
+  {
+    printf("%d time steps complete\n",t);
+  } // #pragma omp single nowait
+  Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
+
   } // #pragma omp parallel
+
+
   printf(         "Done!\n");
   simulation_time = Time_Since(time1);
 
@@ -316,3 +309,29 @@ void Simulation::Run_Simulation(void) {
   delete [] Bodies;
   delete [] Time_Step_Index;
 } // void Simulation(void) {
+
+
+
+
+void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned t) {
+  /* Function Description:
+  This function, as the name implies, exports data for each body in a simulation.
+  Position data is always printed. Wheather or not we print Force or
+  Net External Force data depends on the simulation paramaters
+  Print_Prticle_Force and Print_Next_External_Forces, respectivly.
+
+  In general, the only thing that should call this function is Run_Simulation */
+    #pragma omp for nowait
+    for(unsigned b = 0; b < Num_Bodies; b++) {
+      try {
+                                                            Bodies[b].Export_Particle_Positions();
+        if(Simulation::Print_Particle_Forces == true) {     Bodies[b].Export_Particle_Forces();}
+        if(Simulation::Print_Net_External_Forces == true) { Bodies[b].Export_Net_External_Force(t); }
+      } // try {
+
+      catch(Exception & Error_In) {
+        printf("%s\n", Error_In.what());
+        abort();
+      } // catch(Exception & Error_In) {
+    } // for(unsigned b = 0; b < Num_Bodies; b++ ) {
+} // void void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned t) {

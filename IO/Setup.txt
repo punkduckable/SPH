@@ -3,14 +3,14 @@
 
 # IO
 Load Simulation from Save:                       false
-Save Data To File:                               true
-Print Particle Forces:                           true
-Print Net External Forces:                       true
-Time Steps Between Prints:                       1000
+Save Data To File:                               false
+Print Particle Forces:                           false
+Print Net External Forces:                       false
+Time Steps Between Prints:                       100
 
 # Time Step
-dt [s]:                                          .0000001
-Num Time Steps:                                  10000
+dt [s]:                                          .00001
+Num Time Steps:                                  1000
 
 # Contact
 Contact Distance [mm]:                           1.0
@@ -24,7 +24,7 @@ Friction Coefficient:                            .1
 ################################################################################
 # Number of Bodies
 
-Number of Bodies:                                2
+Number of Bodies:                                1
 
 
 
@@ -35,13 +35,13 @@ Number of Bodies:                                2
 Name:                                            Body
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {10, 5, 10}
-    x plus BC [mm/s]:                            {0, Free, Free}
-    x minus BC [mm/s]:                           {0, Free, Free}
-    y plus BC [mm/s]:                            {Free, 0, Free}
-    y minus BC [mm/s]:                           {Free, 0, Free}
-    z plus BC [mm/s]:                            {Free, Free, 0}
-    z minus BC [mm/s]:                           {Free, Free, 0}
+    Dimensions [# Particles]:                    {10, 10, 10}
+    x plus BC [mm/s]:                            {Free, Free, Free}
+    x minus BC [mm/s]:                           {Free, Free, Free}
+    y plus BC [mm/s]:                            {200, 0, 200}
+    y minus BC [mm/s]:                           {0, 0, 0}
+    z plus BC [mm/s]:                            {Free, Free, Free}
+    z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
 Is Damageable:                                   true
     Tau (Damage rate):                           .15
@@ -60,7 +60,7 @@ Mu (Viscosity) [Mpa*s]:                          .0001
 Alpha (Hg Control parameter):                    .75
 Inter Particle Spacing (IPS) [mm]:               1
 Support Radius [# IPS]:                          3
-Time Steps Per Update:                           10
+Time Steps Per Update:                           1
 
 
 
