@@ -8,7 +8,8 @@
 #endif
 
 // Set K (static member of Body class)
-double Body::K = 400;
+const double Body::K = 400;
+const Vector Body::g = {0, -9810., 0};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors, destructor
@@ -21,6 +22,7 @@ Body::Body(void) {
   Z_SIDE_LENGTH = 0;
   Is_Box = false;
   Is_Fixed = false;
+  Gravity_Enabled = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -46,6 +48,8 @@ Body::Body(const unsigned Num_Particles_In) {
   Y_SIDE_LENGTH = 0;
   Z_SIDE_LENGTH = 0;
   Is_Box = false;
+  Is_Fixed = false;
+  Gravity_Enabled = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -244,6 +248,8 @@ void Body::Set_Is_Fixed(const bool Is_Fixed_In) { Is_Fixed = Is_Fixed_In; }
 void Body::Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
 void Body::Set_Time_Steps_Per_Update(const unsigned Steps_In) { Time_Steps_Per_Update = Steps_In; }
 
+void Body::Set_Gravity_Enabled(const bool Gravity_Enabled_In) { Gravity_Enabled = Gravity_Enabled_In; }
+
 void Body::Set_F_Index(const unsigned char i) {
   assert(i <= 1);
   F_Index = i;
@@ -252,8 +258,8 @@ void Body::Set_F_Index(const unsigned char i) {
 
 
 void Body::Increment_F_Index(void) {
-  if(F_Index == 0) { F_Index++; }
-  else { F_Index = 0; }
+  if(F_Index == 0) { F_Index = 1; }
+  else {             F_Index = 0; }
 } // void Body::Increment_F_Counter(void) {
 
 
@@ -263,42 +269,44 @@ void Body::Increment_F_Index(void) {
 ////////////////////////////////////////////////////////////////////////////////
 // Getters
 
-unsigned Body::Get_Num_Particles(void) const { return Num_Particles; }
-std::string Body::Get_Name(void) const { return Name; }
+unsigned Body::Get_Num_Particles(void) const { return (*this).Num_Particles; }
+std::string Body::Get_Name(void) const { return (*this).Name; }
 
-double Body::Get_Inter_Particle_Spacing(void) const { return Inter_Particle_Spacing; }
-unsigned Body::Get_Support_Radius(void) const { return Support_Radius; }
+double Body::Get_Inter_Particle_Spacing(void) const { return (*this).Inter_Particle_Spacing; }
+unsigned Body::Get_Support_Radius(void) const { return (*this).Support_Radius; }
 
-double Body::Get_h(void) const { return h; }
-double Body::Get_Shape_Function_Amplitude(void) const { return Shape_Function_Amplitude; }
-Materials::Material Body::Get_Material(void) const { return Body_Material; }
-double Body::Get_Lame(void) const { return Body_Material.Lame; }
-double Body::Get_mu0(void) const { return Body_Material.mu0; }
-double Body::Get_mu(void) const { return mu; }
-double Body::Get_E(void) const { return Body_Material.E; }
-double Body::Get_density(void) const { return Body_Material.density; }
-double Body::Get_alpha(void) const { return alpha; }
+double Body::Get_h(void) const { return (*this).h; }
+double Body::Get_Shape_Function_Amplitude(void) const { return (*this).Shape_Function_Amplitude; }
+Materials::Material Body::Get_Material(void) const { return (*this).Body_Material; }
+double Body::Get_Lame(void) const { return (*this).Body_Material.Lame; }
+double Body::Get_mu0(void) const { return (*this).Body_Material.mu0; }
+double Body::Get_mu(void) const { return (*this).mu; }
+double Body::Get_E(void) const { return (*this).Body_Material.E; }
+double Body::Get_density(void) const { return (*this).Body_Material.density; }
+double Body::Get_alpha(void) const { return (*this).alpha; }
 
-unsigned char Body::Get_F_Index(void) const { return F_Index; }
+unsigned char Body::Get_F_Index(void) const { return (*this).F_Index; }
 
-double Body::Get_Tau(void) const { return Tau; }
-bool Body::Get_Is_Damageable(void) const { return Is_Damageable; }
+double Body::Get_Tau(void) const { return (*this).Tau; }
+bool Body::Get_Is_Damageable(void) const { return (*this).Is_Damageable; }
 
-bool Body::Get_Is_Box(void) const { return Is_Box; }
+bool Body::Get_Is_Box(void) const { return (*this).Is_Box; }
 unsigned Body::Get_X_SIDE_LENGTH(void) const {
   assert( (*this).Is_Box );
-  return X_SIDE_LENGTH;
+  return (*this).X_SIDE_LENGTH;
 } // unsigned Get_X_SIDE_LENGTH(void) const {
 unsigned Body::Get_Y_SIDE_LENGTH(void) const {
   assert( (*this).Is_Box );
-  return Y_SIDE_LENGTH;
+  return (*this).Y_SIDE_LENGTH;
 } // unsigned Get_Y_SIDE_LENGTH(void) const {
 unsigned Body::Get_Z_SIDE_LENGTH(void) const {
   assert( (*this).Is_Box );
-  return Z_SIDE_LENGTH;
+  return (*this).Z_SIDE_LENGTH;
 } // unsigned Get_Z_SIDE_LENGTH(void) const {
 
-bool Body::Get_Is_Fixed(void) const { return Is_Fixed; }
+bool Body::Get_Is_Fixed(void) const { return (*this).Is_Fixed; }
 
-bool Body::Get_First_Time_Step(void) const { return First_Time_Step; }
-unsigned Body::Get_Time_Steps_Per_Update(void) const { return Time_Steps_Per_Update; }
+bool Body::Get_First_Time_Step(void) const { return (*this).First_Time_Step; }
+unsigned Body::Get_Time_Steps_Per_Update(void) const { return (*this).Time_Steps_Per_Update; }
+
+bool Body::Get_Gravity_Enabled(void) const { return (*this).Gravity_Enabled; }

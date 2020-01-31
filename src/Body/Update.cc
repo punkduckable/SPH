@@ -159,7 +159,7 @@ void Body::Update_P(const double dt) {
     unsigned char i_dt, i_2dt;
     i_dt = F_Index;
     if(i_dt == 0) { i_2dt = 1; }
-    else { i_2dt = 0; }
+    else {          i_2dt = 0; }
 
     F_Prime = (1./(2.*dt))*(3*F - 4*Particles[i].F[i_dt] + Particles[i].F[i_2dt]);      // 1/s Tensor
     L = F_Prime*(F^(-1));                                                      //        : 1/s Tensor
@@ -207,9 +207,6 @@ void Body::Update_x(const double dt) {
 
   This function assumes that every particle in the Body has an updated P tensor.
   This function should not be run until this assumption is valid. */
-
-  // First, define some local variables.
-  const Vector g = {0,0,0};                  // Gravity                              : mm/s^2 Vector
 
   // Current (ith) particle properties
   Vector Force_Int;                              // Internal Force vector                : N Vector
@@ -332,7 +329,6 @@ void Body::Update_x(const double dt) {
       Computing delta_ji this way uses fewer arithmetic operations and should
       therefore improve performnace.
       */
-
       F_j = Particles[Neighbor_ID].F[F_Index];                                 //        : unitless Tensor
       double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
 
@@ -360,8 +356,9 @@ void Body::Update_x(const double dt) {
     a = ((1e+6)*(1./Particles[i].Mass))*(Force_Int                             //        : mm/s^2 Vector
                                        + Particles[i].Force_Contact
                                        + Particles[i].Force_Friction
-                                       + Force_HG)
-                                       + g;                                    // gravity
+                                       + Force_HG);
+    /* If gravity is enabled, add that in. */
+    if((*this).Gravity_Enabled == true) { a += Body::g; }
 
     /* Now update the velocity, position vectors. This is done using the
     'leap-frog' integration scheme. However, during the first step of this

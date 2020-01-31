@@ -49,6 +49,10 @@ class Body {
     // Material Parameters
     Materials::Material Body_Material;
 
+    // Gravity
+    static const Vector g;                       // Set in Body.cc                       : mm/s^2 Vector
+    bool Gravity_Enabled;
+
     // Viscosity parameters
     double mu;                                             // Viscosity                  : Mpa*s
     unsigned char F_Index = 0;                             // Keeps track of which F (in each partilce) is the 'new' one
@@ -62,13 +66,12 @@ class Body {
 
     // Time step information
     bool First_Time_Step = true;
-    unsigned Time_Steps_Per_Update;                   // The number of time steps between when P and F are updated
-
+    unsigned Time_Steps_Per_Update;              // The number of time steps between when P and F are updated
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Contact parameters
-    static double K;                             // Set in Body.h                        : N/(mm^2)
+    static const double K;                       // Set in Body.cc                        : N/(mm^2)
 
 
 
@@ -183,6 +186,8 @@ class Body {
     void Set_First_Time_Step(const bool First_In);
     void Set_Time_Steps_Per_Update(const unsigned Steps_In);
 
+    void Set_Gravity_Enabled(const bool Gravity_Enabled_In);
+
     void Set_F_Index(const unsigned char i);
     void Increment_F_Index(void);
 
@@ -222,6 +227,7 @@ class Body {
     bool Get_First_Time_Step(void) const;
     unsigned Get_Time_Steps_Per_Update(void) const;
 
+    bool Get_Gravity_Enabled(void) const;
 
 
     ////////////////////////////////////////////////////////////////////////////

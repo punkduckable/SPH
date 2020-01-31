@@ -23,6 +23,7 @@ void Body::Print_Parameters(void) const {
   printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
   printf(         "Lame:                         %lf\n",   Body_Material.Lame);
   printf(         "mu0 (Shear modulus):          %lf\n",   Body_Material.mu0);
+  printf(         "Gravity Enabled:              %u\n",    Gravity_Enabled);
   printf(         "mu (Viscosity):               %lf\n",   mu);
   printf(         "E (Young's modulus):          %lf\n",   Body_Material.E);
   printf(         "Tau (Damage rate):            %lf\n\n", Tau);

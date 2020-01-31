@@ -260,6 +260,10 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   //////////////////////////////////////////////////////////////////////////////
   // Other
 
+  strBuf = IO::read_line_after(File, "Enable Gravity:");
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) { Body_In.Set_Gravity_Enabled(true); }
+  else {                                                 Body_In.Set_Gravity_Enabled(false); }
+
   strBuf = IO::read_line_after(File, "Mu (Viscosity) [Mpa*s]:");
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_mu(lfBuf);
@@ -307,11 +311,12 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
     printf("Read Offset[%3u] as:                    {%lf, %lf, %lf}\n", i, Position_Offset[i][0], Position_Offset[i][1], Position_Offset[i][2]);
     printf("Read Initial_Velocity[%3u] as:          {%lf, %lf, %lf}\n", i, Initial_Velocity[i][0], Initial_Velocity[i][1], Initial_Velocity[i][2]);
 
+    printf("Read Bodu[%3u].Gravity_Enabled          %u\n",  i, Body_In.Get_Gravity_Enabled());
     printf("Read Body[%3u].mu as:                   %lf\n", i, Body_In.Get_mu());
     printf("Read Body[%3u].alpha as:                %lf\n", i, Body_In.Get_alpha());
-    printf("Read Body[%3u].Support_Radius as:       %u\n", i, Body_In.Get_Support_Radius());
+    printf("Read Body[%3u].Support_Radius as:       %u\n",  i, Body_In.Get_Support_Radius());
     printf("Read Body[%3u].IPS as:                  %lf\n", i, Body_In.Get_Inter_Particle_Spacing());
-    printf("Read Body[%3u].Time_Steps/Update as:    %u\n", i, Body_In.Get_Time_Steps_Per_Update());
+    printf("Read Body[%3u].Time_Steps/Update as:    %u\n",  i, Body_In.Get_Time_Steps_Per_Update());
   #endif
 
 
