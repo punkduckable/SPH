@@ -2,6 +2,7 @@
 #define LIST_HEADER
 
 #include "classes.h"
+#include "Errors.h"
 #include <stdio.h>
 
 template <typename T>
@@ -145,7 +146,10 @@ T List<T>::Pop_Back(void) {
   old End. */
 
   // Check if there is a node to remove.
-  if(End == nullptr) { return -1; }
+  if((*this).Num_Nodes == 0) {
+    throw Empty_List("Empty List Exception: Thrown by List<T>::Pop_Back\n"
+                     "This list is empty. You can not pop an item from an empty list!\n");
+  } // if((*this).Num_Nodes == 0) {
 
   T ID_Out = End->Value;
 
@@ -171,8 +175,11 @@ T List<T>::Pop_Front(void) {
   done by having Start point to the Old Start's Next_Node, and then freeing the
   old Start. */
 
-  // Check if there is a noe to remove
-  if(Start == nullptr) { return -1; }
+  // Check if there is a node to remove
+  if((*this).Num_Nodes == 0) {
+    throw Empty_List("Empty List Exception: Thrown by List<T>::Pop_Front\n"
+                     "This list is empty. You can not pop an item from an empty list!\n");
+  } // if((*this).Num_Nodes == 0)
 
   T ID_Out = Start->Value;
 
@@ -194,14 +201,24 @@ T List<T>::Pop_Front(void) {
 
 template <typename T>
 T & List<T>::Front(void) {
-  return Start->Value;
+  if((*this).Num_Nodes == 0) {
+    throw Empty_List("Empty List Exception: Thrown by List<T>::Front\n"
+                     "This list is empty. You can not pop an item from an empty list!\n");
+  } // if((*this).Num_Nodes == 0) {
+
+  return (*this).Start->Value;
 } // T & List<T>::Front(void) {
 
 
 
 template <typename T>
 T & List<T>::Back(void) {
-  return End->Value;
+  if((*this).Num_Nodes == 0) {
+    throw Empty_List("Empty List Exception: Thrown by List<T>::Back\n"
+                     "This list is empty. You can not pop an item from an empty list!\n");
+  } // if((*this).Num_Nodes == 0) {
+
+  return (*this).End->Value;
 } // T & List<T>::Back(void) {
 
 

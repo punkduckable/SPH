@@ -44,6 +44,28 @@ class Divide_By_Zero : public Exception {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/* List exceptions
+List_Exception: Base List exception class
+
+Empty_List: This is thrown whenever the user attempts to pop or access (via
+Front/Back) elements of an empty list. */
+
+class List_Exception : public Exception {
+  public:
+    List_Exception(const char* Message_In) : Exception(Message_In) {}
+}; // class List_Exception : public Exception {
+
+
+class Empty_List : public List_Exception {
+  public:
+    Empty_List(const char* Message_In) : List_Exception(Message_In) {}
+}; // class Empty_List : public Exception {
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 /* Array exceptions
 Array_Exception: Base Array exception class
 

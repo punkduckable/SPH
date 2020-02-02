@@ -86,10 +86,16 @@ class Array {
     ////////////////////////////////////////////////////////////////////////////
     // Setters
 
-    void Set_Lenght(const unsigned Length_In) {
+    void Set_Length(const unsigned Length_In) {
+      if((*this).Length_Set == true) {
+        throw Array_Length_Already_Set("List Length Already Set Exception: thrown by Array::Set_Length\n"
+                                       "An Array can not be setup from a list if its length has already been set\n");
+      } // if((*this).Length_Set == true) {
+
+      (*this).Internal_Array = new T[Length_In];
       (*this).Length = Length_In;
       (*this).Length_Set = true;
-    } // void Set_Lenght(const unsigned Length_In) {
+    } // void Set_Length(const unsigned Length_In) {
 
 
 

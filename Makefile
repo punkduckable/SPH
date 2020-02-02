@@ -62,7 +62,7 @@ test: bin/Test
 bin/Test: $(TEST_OBJ_PATHS)
 	$(COMPILER) $(TEST_OBJ_PATHS) -o $@
 
-obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc
+obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc List_Tests.cc Array_Tests.cc List.h Array.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
