@@ -5,7 +5,7 @@
 #include "Array.h"
 #include <assert.h>
 
-void Simulation::Set_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In) {
+void Simulation::Set_General_BCs(Body & Body_In, Array<General_Boundary_Condition> & BCs_In) {
   /* Cycle through the components of the BC array */
   unsigned Num_BCs = BCs_In.Get_Length();
   Vector Position;
@@ -19,32 +19,23 @@ void Simulation::Set_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs
 
     for(unsigned j = 0; j < Num_Particles; j++) {
       // Find distance from ith particle to the BC plane.
-      if(BCs_In[i].Condition_Position_Type == Position_Type::Reference) {
-        Position = Body_In[j].Get_X();
-      } // if(BCs_In[i].Condition_Position_Type == Position_Type::Reference) {
-      else {
-        Position = Body_In[j].Get_x();
-      } // else {
+      Position = Body_In[j].Get_X();
       double Distance_To_Plane = Dot_Product(Position, BCs_In[i].Condition_Plane_Normal_Vector)/Mag_Normal_Vector;
 
 
       // Now check if the distance satisifies the condition
       if( ((BCs_In[i].Condition_Inequality == Inequality::GE) &&
-           (Distance_To_Plane >= BCs_In[i].Condition_Plane_Distance))
-
-          ||
+           (Distance_To_Plane >= BCs_In[i].Condition_Plane_Distance)) ||
 
           ((BCs_In[i].Condition_Inequality == Inequality::LE) &&
            (Distance_To_Plane <= BCs_In[i].Condition_Plane_Distance)) ) {
 
         // If so, set the ith Particle's BCs to the effect vector.
-        if(BCs_In[i].Effect_x == true) { Body_In[j].Set_BC(0,BCs_In[i].Effect_Vector[0]); }
-        if(BCs_In[i].Effect_y == true) { Body_In[j].Set_BC(1,BCs_In[i].Effect_Vector[1]);  }
-        if(BCs_In[i].Effect_z == true) { Body_In[j].Set_BC(2,BCs_In[i].Effect_Vector[2]);  }
+        for(unsigned k = 0; k < 3; k++) { Body_In[j].Set_BC(k, BCs_In[i].Effect_Vector[k]); }
       } // if (Condition == True)
     } // for(unsigned j = 0; j < Num_Particles; j++) {
   } // for(unsigned i = 0; i < Num_BCs; i++) {
-} // void Simulation::Set_General_BCs(Body & Body_In, Array<Boundary_Condition> & BCs_In[i]) {
+} // void Simulation::Set_General_BCs(Body & Body_In, Array<General_Boundary_Condition> & BCs_In[i]) {
 
 
 

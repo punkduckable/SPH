@@ -100,20 +100,16 @@ namespace Simulation {
   // Boundary Conditions
   // Defined in Boundary_Conditions.cc
 
-  enum class Position_Type{Reference = 0, Spatial = 1};
   enum class Inequality{LE = -1, GE = 1};
 
-  struct Boundary_Condition {
-    /* This structure is used to define a Boundary condition. BCs affect
+  struct General_Boundary_Condition {
+    /* This structure is used to define a General Boundary condition. BCs affect
     the velocity of particles in a body.
     Each BC consists of two parts: a condition and an effect.
 
 
     Condition: The condition is used to determine which particles (in a body)
     will have the BC applied to them. The condition consists of....
-        Position_Type: Either Reference or Spatial. Defines if the BC is applied
-        relative to the particle's reference or spatial positions.
-
         Normal_Plane_Vector: Normal vector of a plane in 3d space
 
         Distance_To_Plane: The distance, in the direction of the Normal_Vector,
@@ -125,7 +121,6 @@ namespace Simulation {
         (LE = Less than or equal, GE = Greater than or Equal).
 
     To understand how this works, suppose that
-        Condition_Position_Type = Reference
         Condition_Plane_Normal_Vector = {1,2,3}
         Condition_Plane_Distance = 15
         Condition_Inequality = GE
@@ -135,33 +130,27 @@ namespace Simulation {
 
 
     Effect: This determines the effect that is applied to all particles (in the
-    body) that satisify the condition. The Effect consists of...
-        Effect_x,y,z: Determines if there is an effect in the x, y, or z
-        component. For example, if Effect_x = true, then the x component of the
-        Effect_Vector will be applied to the particles that satisify the
-        condition. If Effect_y is false then the particles that meet the
-        condition will NOT have a BC applied to their y components.
-
-        Effect_Vector: This determines how the BC affects the velocity
-        of the particles that satisify the condition. The components of this
-        vector whose corresponding Effect_x/y/z variable is true are applied.
-        Those whose corresponding Effect_x/y/z variable is false are ignored. */
+    body) that satisify the condition. The Effect consists of the Effect_Vector,
+    which determines how the BC affects the velocity of the particles that
+    satisify the condition. If you want to apply a BC in a particular direction,
+    then the corresponding component of the Effect_Vector should have that value.
+    If you do not want to apply a BC in a particular driection, then the
+    corresponding component of the Effect_Vector should be "FREE" (which is a
+    constant that's defined above. This means that you can not set a component
+    of the Effect_Vector to the value of the FREE constant. If you do, the code
+    will treat that component as Free/prescribe no BC. */
 
     // Condition
-    Position_Type            Condition_Position_Type;
     Vector                   Condition_Plane_Normal_Vector;
     double                   Condition_Plane_Distance;
     Inequality               Condition_Inequality;
 
     // Effect
-    bool                     Effect_x,
-                             Effect_y,
-                             Effect_z;
     Vector                   Effect_Vector;
-  }; // struct Boundary_Condition {
+  }; // struct General_Boundary_Condition {
 
   void Set_General_BCs(Body & Body_In,                     // The body we're applying the BC to
-                       Array<Boundary_Condition> & BCs_In);        // The BCs being applied
+                       Array<General_Boundary_Condition> & BCs_In);  // The BCs being applied
   void Set_Box_BCs(Body & Box,                             // Reference to the box body
                    Box_BCs & Boundary_Conditions);         // Box's parameters
   void Set_Box_Particle_BCs(Particle & P_In,               // Particle that we're applying the BC to
