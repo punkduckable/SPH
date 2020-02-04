@@ -60,7 +60,6 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   TIME_TYPE time_load = Get_Time();
   printf("Setting up simulation...\n");
 
-
   // First, read in from the Setup file.
   *Bodies = Simulation::Load_Setup_File();
 

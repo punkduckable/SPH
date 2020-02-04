@@ -18,7 +18,9 @@ namespace Simulation {
 
 Body* Simulation::Load_Setup_File(void) {
   /* Function description:
-  This function is designed to setup a simulation using the Setup.txt file. */
+  This function is designed to setup a simulation using the Setup.txt file.
+
+  the setup file is case-insensitive. Thus, the reader is case-insensitive. */
 
   // Open setup.txt
   std::ifstream File;
@@ -35,55 +37,55 @@ Body* Simulation::Load_Setup_File(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // IO
-  strBuf = IO::read_line_after(File, "Load Simulation from Save:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) { Load_Simulation_From_Save = true; }
-  else {                                                 Load_Simulation_From_Save = false; }
+  strBuf = IO::read_line_after(File, "Load Simulation from Save:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Load_Simulation_From_Save = true; }
+  else {                                                        Load_Simulation_From_Save = false; }
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("Read Load_Simulation_From_Save as: %s\n", strBuf.c_str());
   #endif
 
-  strBuf = IO::read_line_after(File, "Save Data To File:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) { Save_Simulation_To_File = true; }
-  else {                                                 Save_Simulation_To_File = false; }
+  strBuf = IO::read_line_after(File, "Save Data To File:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Save_Simulation_To_File = true; }
+  else {                                                        Save_Simulation_To_File = false; }
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("Read Save_Simulation_To_File as: %s\n", strBuf.c_str());
   #endif
 
-  strBuf = IO::read_line_after(File, "Print Particle Forces:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) { Print_Particle_Forces = true; }
-  else {                                                 Print_Particle_Forces = false; }
+  strBuf = IO::read_line_after(File, "Print Particle Forces:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Particle_Forces = true; }
+  else {                                                        Print_Particle_Forces = false; }
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("Read Print_Particle_Forces as: %s\n", strBuf.c_str());
   #endif
 
-  strBuf = IO::read_line_after(File, "Print Net External Forces:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) { Print_Net_External_Forces = true; }
-  else {                                                 Print_Net_External_Forces = false; }
+  strBuf = IO::read_line_after(File, "Print Net External Forces:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Net_External_Forces = true; }
+  else {                                                        Print_Net_External_Forces = false; }
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("Read Print_Net_External_Forces as: %s\n", strBuf.c_str());
   #endif
 
-  strBuf = IO::read_line_after(File, "Time Steps Between Prints:");
+  strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::TimeSteps_Between_Prints);
 
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Time Step
-  strBuf = IO::read_line_after(File, "dt [s]:");
+  strBuf = IO::read_line_after(File, "dt [s]:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Simulation::dt);
 
-  strBuf = IO::read_line_after(File, "Num Time Steps:");
+  strBuf = IO::read_line_after(File, "Num Time Steps:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::Num_Time_Steps);
 
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Contact
-  strBuf = IO::read_line_after(File, "Contact Distance [mm]:");
+  strBuf = IO::read_line_after(File, "Contact Distance [mm]:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Simulation::Contact_Distance);
 
-  strBuf = IO::read_line_after(File, "Friction Coefficient:");
+  strBuf = IO::read_line_after(File, "Friction Coefficient:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Simulation::Friction_Coefficient);
 
 
@@ -110,7 +112,7 @@ Body* Simulation::Load_Setup_File(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Number of Bodies
-  strBuf = IO::read_line_after(File, "Number of Bodies:");
+  strBuf = IO::read_line_after(File, "Number of Bodies:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::Num_Bodies);
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("Read Number of Bodies as:      %u\n", Simulation::Num_Bodies);
@@ -162,62 +164,62 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   // First, go to the line of specified body.
   strBuf = "# Body ";
   strBuf += std::to_string(i);
-  IO::read_line_after(File, strBuf.c_str());
+  IO::read_line_after(File, strBuf.c_str(), false);
 
 
 
   //////////////////////////////////////////////////////////////////////////////
   // General
 
-  strBuf = IO::read_line_after(File, "Name:");
+  strBuf = IO::read_line_after(File, "Name:", false);
   sscanf(strBuf.c_str(), " %s \n", Buf);
   Body_In.Set_Name(std::string{Buf});
 
-  strBuf = IO::read_line_after(File, "From FEB File:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) {      Simulation::From_FEB_File[i] = true; }
-  else {                                                      Simulation::From_FEB_File[i] = false; }
+  strBuf = IO::read_line_after(File, "From FEB File:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::From_FEB_File[i] = true; }
+  else {                                                        Simulation::From_FEB_File[i] = false; }
 
   bool Is_Box;
-  strBuf = IO::read_line_after(File, "Is Box:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) {      Is_Box = true; }
-  else {                                                      Is_Box = false; }
+  strBuf = IO::read_line_after(File, "Is Box:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Is_Box = true; }
+  else {                                                        Is_Box = false; }
 
   // Box specific junk
   if(Is_Box == true) {
-    strBuf = IO::read_line_after(File, "Dimensions [# Particles]:");
+    strBuf = IO::read_line_after(File, "Dimensions [# Particles]:", false);
     sscanf(strBuf.c_str(), " {%u, %u, %u} \n", &uBuf1, &uBuf2, &uBuf3);
     Body_In.Set_Box_Dimensions(uBuf1, uBuf2, uBuf3);
 
-    strBuf = IO::read_line_after(File, "x plus BC [mm/s]:");
+    strBuf = IO::read_line_after(File, "x plus BC [mm/s]:", false);
     Simulation::Box_Boundary_Conditions[i].x_plus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "x minus BC [mm/s]:");
+    strBuf = IO::read_line_after(File, "x minus BC [mm/s]:", false);
     Simulation::Box_Boundary_Conditions[i].x_minus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "y plus BC [mm/s]:");
+    strBuf = IO::read_line_after(File, "y plus BC [mm/s]:", false);
     Simulation::Box_Boundary_Conditions[i].y_plus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "y minus BC [mm/s]:");
+    strBuf = IO::read_line_after(File, "y minus BC [mm/s]:", false);
     Simulation::Box_Boundary_Conditions[i].y_minus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "z plus BC [mm/s]:");
+    strBuf = IO::read_line_after(File, "z plus BC [mm/s]:", false);
     Simulation::Box_Boundary_Conditions[i].z_plus_BC = Parse_BC(strBuf);
 
-    strBuf = IO::read_line_after(File, "z minus BC [mm/s]:");
+    strBuf = IO::read_line_after(File, "z minus BC [mm/s]:", false);
     Simulation::Box_Boundary_Conditions[i].z_minus_BC = Parse_BC(strBuf);
   } // if(Is_Box[i] == true) {
 
-  strBuf = IO::read_line_after(File, "Is Fixed In Place:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) {      Body_In.Set_Is_Fixed(true); }
-  else {                                                      Body_In.Set_Is_Fixed(false);  }
+  strBuf = IO::read_line_after(File, "Is Fixed In Place:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Body_In.Set_Is_Fixed(true); }
+  else {                                                        Body_In.Set_Is_Fixed(false);  }
 
-  strBuf = IO::read_line_after(File, "Is Damageable:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) {      Body_In.Set_Is_Damageable(true); }
-  else {                                                      Body_In.Set_Is_Damageable(false); }
+  strBuf = IO::read_line_after(File, "Is Damageable:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Body_In.Set_Is_Damageable(true); }
+  else {                                                        Body_In.Set_Is_Damageable(false); }
 
   // If damageable then set damage rate.
   if(Body_In.Get_Is_Damageable() == true) {
-    strBuf = IO::read_line_after(File, "Tau (Damage rate):");
+    strBuf = IO::read_line_after(File, "Tau (Damage rate):", false);
     sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
     Body_In.Set_Tau(lfBuf);
   } // if(Body_In.Get_Is_Damageable() == true) {
@@ -231,13 +233,13 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
 
   // Read in the material parameters
-  strBuf = IO::read_line_after(File, "Lame Parameter [Mpa]:");
+  strBuf = IO::read_line_after(File, "Lame Parameter [Mpa]:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Mat.Lame);
 
-  strBuf = IO::read_line_after(File, "mu0 (Shear Modulus) [Mpa]:");
+  strBuf = IO::read_line_after(File, "mu0 (Shear Modulus) [Mpa]:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Mat.mu0);
 
-  strBuf = IO::read_line_after(File, "Density [g/mm^3]:");
+  strBuf = IO::read_line_after(File, "Density [g/mm^3]:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Mat.density);
 
 
@@ -249,10 +251,10 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   //////////////////////////////////////////////////////////////////////////////
   // Initial Conditions
 
-  strBuf = IO::read_line_after(File, "Offset [mm]:");
+  strBuf = IO::read_line_after(File, "Offset [mm]:", false);
   sscanf(strBuf.c_str(), " {%lf, %lf, %lf} \n", &Position_Offset[i][0], &Position_Offset[i][1], &Position_Offset[i][2]);
 
-  strBuf = IO::read_line_after(File, "Initial Velocity [mm/s]:");
+  strBuf = IO::read_line_after(File, "Initial Velocity [mm/s]:", false);
   sscanf(strBuf.c_str(), " {%lf, %lf, %lf} \n", &Initial_Velocity[i][0], &Initial_Velocity[i][1], &Initial_Velocity[i][2]);
 
 
@@ -260,27 +262,27 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   //////////////////////////////////////////////////////////////////////////////
   // Other
 
-  strBuf = IO::read_line_after(File, "Enable Gravity:");
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true")) { Body_In.Set_Gravity_Enabled(true); }
-  else {                                                 Body_In.Set_Gravity_Enabled(false); }
+  strBuf = IO::read_line_after(File, "Enable Gravity:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Body_In.Set_Gravity_Enabled(true); }
+  else {                                                        Body_In.Set_Gravity_Enabled(false); }
 
-  strBuf = IO::read_line_after(File, "Mu (Viscosity) [Mpa*s]:");
+  strBuf = IO::read_line_after(File, "Mu (Viscosity) [Mpa*s]:", false);
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_mu(lfBuf);
 
-  strBuf = IO::read_line_after(File, "Alpha (Hg Control parameter):");
+  strBuf = IO::read_line_after(File, "Alpha (Hg Control parameter):", false);
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_alpha(lfBuf);
 
-  strBuf = IO::read_line_after(File, "Inter Particle Spacing (IPS) [mm]:");
+  strBuf = IO::read_line_after(File, "Inter Particle Spacing (IPS) [mm]:", false);
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_Inter_Particle_Spacing(lfBuf);
 
-  strBuf = IO::read_line_after(File, "Support Radius [# IPS]:");
+  strBuf = IO::read_line_after(File, "Support Radius [# IPS]:", false);
   sscanf(strBuf.c_str(), " %u \n", &uBuf1);
   Body_In.Set_Support_Radius(uBuf1);
 
-  strBuf = IO::read_line_after(File, "Time Steps Per Update:");
+  strBuf = IO::read_line_after(File, "Time Steps Per Update:", false);
   sscanf(strBuf.c_str(), " %u \n", &uBuf1);
   Body_In.Set_Time_Steps_Per_Update(uBuf1);
 
@@ -351,7 +353,7 @@ Vector Simulation::Parse_BC(std::string & Line) {
   corresponding component of Parsed_BC to Simulation::FREE. Otherwise,
   set the corresponding component to the value that we read in. */
   for(unsigned i = 0; i < 3; i++) {
-    if(IO::String_Ops::Contains(Buf[i], "Free")) { Parsed_BC[i] = Simulation::FREE; }
+    if(IO::String_Ops::Contains(Buf[i], "Free", false)) { Parsed_BC[i] = Simulation::FREE; }
     else { sscanf(Buf[i], "%lf", &Parsed_BC[i]); }
   } // for(unsigned i = 0; i < 3; i++) {
 
