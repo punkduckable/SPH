@@ -3,10 +3,10 @@
 
 # IO
 Load Simulation from Save:                       false
-Save Data To File:                               true
-Print Particle Forces:                           true
+Save Data To File:                               false
+Print Particle Forces:                           false
 Print Net External Forces:                       false
-Time Steps Between Prints:                       50
+Time Steps Between Prints:                       100
 
 # Time Step
 dt [s]:                                          .00001
@@ -24,7 +24,7 @@ Friction Coefficient:                            .1
 ################################################################################
 # Number of Bodies
 
-Number of Bodies:                                2
+Number of Bodies:                                1
 
 
 
@@ -35,7 +35,7 @@ Number of Bodies:                                2
 Name:                                            Body1
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {4, 20, 4}
+    Dimensions [# Particles]:                    {10, 10, 10}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
     y plus BC [mm/s]:                            {Free, Free, Free}
@@ -52,11 +52,25 @@ mu0 (Shear Modulus) [Mpa]:                       .275
 Density [g/mm^3]:                                .01
 
 # Initial conditions
-Offset [mm]:                                     {0, 10, 0}
-Initial Velocity [mm/s]:                         {0, -500, 0}
+Offset [mm]:                                     {-4.5, -4.5, -4.5}
+Initial Velocity [mm/s]:                         {0, 0, 0}
+
+# General Boundary Conditions
+Number of General Boundary Conditions:           2
+  # Condition 0
+  Condition Plane Normal Vector:                 {1, 1, 1}
+  Condition Plane Distance [mm]:                 5
+  Condition Inequality:                          >
+  Effect Vector [mm/s]:                          {50, 50, 50}
+
+  # Condition 1
+  Condition Plane Normal Vector:                 {-1, -1, -1}
+  Condition Plane Distance [mm]:                 5
+  Condition Inequality:                          >
+  Effect Vector [mm/s]:                          {-50, -50, -50}
 
 # Other
-Enable Gravity:                                  true
+Enable Gravity:                                  false
 Mu (Viscosity) [Mpa*s]:                          .0001
 Alpha (Hg Control parameter):                    .75
 Inter Particle Spacing (IPS) [mm]:               1
@@ -91,6 +105,9 @@ Density [g/mm^3]:                                .01
 # Initial conditions
 Offset [mm]:                                     {-13, 0, 0}
 Initial Velocity [mm/s]:                         {0, 0, 0}
+
+# General Boundary Conditions
+Number of General Boundary Conditions:           0
 
 # Other
 Enable Gravity:                                  false

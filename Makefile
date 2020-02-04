@@ -114,7 +114,7 @@ obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h Errors.h
 obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Vector.h Load_Simulation.h Save_Simulation.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h Particle.h Vector.h FEB_File.h Errors.h
+obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h Particle.h Vector.h FEB_File.h Array.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Timing.o: Timing.cc Simulation.h

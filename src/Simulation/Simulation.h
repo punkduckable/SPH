@@ -80,28 +80,7 @@ namespace Simulation {
   to set a box BC of exactly -293103918 mm/s */
   const double FREE = -293103918;
 
-  struct Box_BCs {
-    Vector x_plus_BC;
-    Vector x_minus_BC;
-    Vector y_plus_BC;
-    Vector y_minus_BC;
-    Vector z_plus_BC;
-    Vector z_minus_BC;
-  }; // struct Box_BCs {
-
-  extern bool * From_FEB_File;                   // Which bodies will be read from file
-  extern Box_BCs * Box_Boundary_Conditions;      // Specifies the 6 BCs for a box body
-  extern Vector * Position_Offset;               // Position offset for particles in body
-  extern Vector * Initial_Velocity;              // Initial velocity condition for each body
-
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Boundary Conditions
-  // Defined in Boundary_Conditions.cc
-
-  enum class Inequality{LE = -1, GE = 1};
-
+  enum class Inequality{L = -2, LE = -1, E = 0, GE = 1, G = 2};
   struct General_Boundary_Condition {
     /* This structure is used to define a General Boundary condition. BCs affect
     the velocity of particles in a body.
@@ -148,6 +127,26 @@ namespace Simulation {
     // Effect
     Vector                   Effect_Vector;
   }; // struct General_Boundary_Condition {
+
+  extern bool * From_FEB_File;                             // Which bodies will be read from file
+  extern Array<General_Boundary_Condition> * General_BCs;  // Specifies the general boundary conditions for each body.
+  extern Vector * Position_Offset;                         // Position offset for particles in body
+  extern Vector * Initial_Velocity;                        // Initial velocity condition for each body
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Boundary Conditions
+  // Defined in Boundary_Conditions.cc
+
+  struct Box_BCs {
+    Vector x_plus_BC;
+    Vector x_minus_BC;
+    Vector y_plus_BC;
+    Vector y_minus_BC;
+    Vector z_plus_BC;
+    Vector z_minus_BC;
+  }; // struct Box_BCs {
 
   void Set_General_BCs(Body & Body_In,                     // The body we're applying the BC to
                        Array<General_Boundary_Condition> & BCs_In);  // The BCs being applied

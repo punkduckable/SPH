@@ -72,7 +72,9 @@ Body::~Body(void) {
 // Operator Overoading
 
 Particle & Body::operator[](const unsigned i) {
-  // Check that i is within bounds of Particles array.
+  // Check that the Particles are set up and that i is within the bounds of
+  // This body's Particles array.
+  assert((*this).Particles_Set_Up == true);
   assert(i < (*this).Num_Particles);
 
   return (*this).Particles[i];
@@ -81,7 +83,9 @@ Particle & Body::operator[](const unsigned i) {
 
 
 const Particle & Body::operator[](const unsigned i) const {
-  // Check that i is within bounds of Particles Array.
+  // Check that the Particles are set up and that i is within the bounds of
+  // This body's Particles array.
+  assert((*this).Particles_Set_Up == true); 
   assert(i < (*this).Num_Particles);
 
   return (*this).Particles[i];

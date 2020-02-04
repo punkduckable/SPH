@@ -3,6 +3,7 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "IO/FEB_File.h"
+#include "Array.h"
 #include "Errors.h"
 #include <assert.h>
 #if defined(_OPENMP)
@@ -42,7 +43,7 @@ namespace Simulation {
 
   // Simulation setup parameters
   bool * From_FEB_File = nullptr;                // Which bodies will be read from file
-  Box_BCs * Box_Boundary_Conditions = nullptr;   // Specifies the 6 BCs for a box body
+  Array<General_Boundary_Condition> * General_BCs = nullptr;    // Specifies the general BCs for each body
   Vector * Position_Offset = nullptr;            // Position offset for particles in body
   Vector * Initial_Velocity = nullptr;           // Initial velocity condition
 } // namespace Simulation {
@@ -101,8 +102,15 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
 
       /* If the ith Body is a Box then set it up as a Box. Otherwise, if the ith
       both is from a FEB file, then read it in. */
-      if((*Bodies)[i].Get_Is_Box() == true) { Setup_Box((*Bodies)[i], i); }
-      else { Setup_FEB_Body((*Bodies)[i], i); }
+      if((*Bodies)[i].Get_Is_Box() == true) { Simulation::Setup_Box((*Bodies)[i], i); }
+      else {                                  Simulation::Setup_FEB_Body((*Bodies)[i], i); }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Set up (*Bodies)[i]'s General Boundary Condition
+
+      Simulation::Set_General_BCs((*Bodies)[i], General_BCs[i]);
     } // for(unsigned i = 0; i < Simulation::Num_Bodies; i++) {
   } // else {
 
@@ -144,7 +152,7 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   // Now that the simulation has been set up, we can free the Simulation
   // parameters
   delete [] From_FEB_File;
-  delete [] Box_Boundary_Conditions;
+  delete [] General_BCs;
   delete [] Position_Offset;
   delete [] Initial_Velocity;
 } // void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
@@ -179,6 +187,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   // Vectors to hold onto Parameters
   Vector X, x;
   Vector V = Simulation::Initial_Velocity[m];              // Initial_Velocity set in Simulation.h           : mm/s
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
@@ -217,12 +226,6 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
     unsigned long MS_Gen = (unsigned long)(((float)time1)/((float)CLOCKS_PER_MS));
     printf(        "Done!\ntook %lu ms\n",MS_Gen);
   #endif
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Set up BCs
-  Set_Box_BCs(Body_In, Simulation::Box_Boundary_Conditions[m]);
-
 
 
   //////////////////////////////////////////////////////////////////////////////

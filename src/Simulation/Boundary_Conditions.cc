@@ -24,15 +24,33 @@ void Simulation::Set_General_BCs(Body & Body_In, Array<General_Boundary_Conditio
 
 
       // Now check if the distance satisifies the condition
-      if( ((BCs_In[i].Condition_Inequality == Inequality::GE) &&
-           (Distance_To_Plane >= BCs_In[i].Condition_Plane_Distance)) ||
+      bool Condition_Met = false;
+      switch(BCs_In[i].Condition_Inequality) {
+        case (Inequality::L):
+          if(Distance_To_Plane < BCs_In[i].Condition_Plane_Distance) { Condition_Met = true; }
+          break;
 
-          ((BCs_In[i].Condition_Inequality == Inequality::LE) &&
-           (Distance_To_Plane <= BCs_In[i].Condition_Plane_Distance)) ) {
+        case (Inequality::LE):
+          if(Distance_To_Plane <= BCs_In[i].Condition_Plane_Distance) { Condition_Met = true; }
+          break;
 
-        // If so, set the ith Particle's BCs to the effect vector.
-        for(unsigned k = 0; k < 3; k++) { Body_In[j].Set_BC(k, BCs_In[i].Effect_Vector[k]); }
-      } // if (Condition == True)
+        case (Inequality::E):
+          if(Distance_To_Plane == BCs_In[i].Condition_Plane_Distance) { Condition_Met = true; }
+          break;
+
+        case (Inequality::GE):
+          if(Distance_To_Plane >= BCs_In[i].Condition_Plane_Distance) { Condition_Met = true; }
+          break;
+
+        case (Inequality::G):
+          if(Distance_To_Plane > BCs_In[i].Condition_Plane_Distance) { Condition_Met = true; }
+          break;
+      } // switch(BCs_In[i].Condition_Inequality) {
+
+      // If so, set the ith Particle's BCs to the effect vector.
+      if(Condition_Met == true) { for(unsigned k = 0; k < 3; k++) {
+        Body_In[j].Set_BC(k, BCs_In[i].Effect_Vector[k]); }
+      } // if(Condition_Met == True)
     } // for(unsigned j = 0; j < Num_Particles; j++) {
   } // for(unsigned i = 0; i < Num_BCs; i++) {
 } // void Simulation::Set_General_BCs(Body & Body_In, Array<General_Boundary_Condition> & BCs_In[i]) {

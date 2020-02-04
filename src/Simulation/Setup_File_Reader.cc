@@ -3,6 +3,7 @@
 #include "Errors.h"
 #include "Body/Body.h"
 #include "Vector/Vector.h"
+#include "Array.h"
 #include <fstream>
 #include <string>
 #include <stdio.h>
@@ -126,10 +127,9 @@ Body* Simulation::Load_Setup_File(void) {
 
   // Now allocate Body-specific members.
   Simulation::From_FEB_File            = new bool[Num_Bodies];
-  Simulation::Box_Boundary_Conditions  = new Box_BCs[Num_Bodies];
+  Simulation::General_BCs              = new Array<General_Boundary_Condition>[Num_Bodies];
   Simulation::Position_Offset          = new Vector[Num_Bodies];
   Simulation::Initial_Velocity         = new Vector[Num_Bodies];
-
 
   // Load the bodies from the setup file.
   for(unsigned i = 0; i < Simulation::Num_Bodies; i++) { Load_Body_From_Setup_File(Bodies[i], i); }
@@ -160,6 +160,7 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   unsigned uBuf1, uBuf2, uBuf3;
   double lfBuf;
   char Buf[256];
+  Simulation::Box_BCs Box_Boundary_Conditions;
 
   // First, go to the line of specified body.
   strBuf = "# Body ";
@@ -191,22 +192,25 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
     Body_In.Set_Box_Dimensions(uBuf1, uBuf2, uBuf3);
 
     strBuf = IO::read_line_after(File, "x plus BC [mm/s]:", false);
-    Simulation::Box_Boundary_Conditions[i].x_plus_BC = Parse_BC(strBuf);
+    Box_Boundary_Conditions.x_plus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "x minus BC [mm/s]:", false);
-    Simulation::Box_Boundary_Conditions[i].x_minus_BC = Parse_BC(strBuf);
+    Box_Boundary_Conditions.x_minus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "y plus BC [mm/s]:", false);
-    Simulation::Box_Boundary_Conditions[i].y_plus_BC = Parse_BC(strBuf);
+    Box_Boundary_Conditions.y_plus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "y minus BC [mm/s]:", false);
-    Simulation::Box_Boundary_Conditions[i].y_minus_BC = Parse_BC(strBuf);
+    Box_Boundary_Conditions.y_minus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "z plus BC [mm/s]:", false);
-    Simulation::Box_Boundary_Conditions[i].z_plus_BC = Parse_BC(strBuf);
+    Box_Boundary_Conditions.z_plus_BC = Parse_BC(strBuf);
 
     strBuf = IO::read_line_after(File, "z minus BC [mm/s]:", false);
-    Simulation::Box_Boundary_Conditions[i].z_minus_BC = Parse_BC(strBuf);
+    Box_Boundary_Conditions.z_minus_BC = Parse_BC(strBuf);
+
+    // Now set the BC
+    Simulation::Set_Box_BCs(Body_In, Box_Boundary_Conditions);
   } // if(Is_Box[i] == true) {
 
   strBuf = IO::read_line_after(File, "Is Fixed In Place:", false);
@@ -260,6 +264,49 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
 
   //////////////////////////////////////////////////////////////////////////////
+  // General Boundary Conditions
+
+  // First, read in number of BCs
+  unsigned Number_General_BCs;
+  strBuf = IO::read_line_after(File, "Number of General Boundary Conditions:", false);
+  sscanf(strBuf.c_str(), " %u \n", &Number_General_BCs);
+
+  // Check if there are any General BCs for this body
+  if(Number_General_BCs != 0) {
+    // If so, then make the BCs array
+    General_BCs[i].Set_Length(Number_General_BCs);
+
+    // Now read in each Boundary condition for this body
+    for(unsigned j = 0; j < Number_General_BCs; j++) {
+      strBuf = IO::read_line_after(File, "Condition Plane Normal Vector:", false);
+      sscanf(strBuf.c_str(), " {%lf, %lf, %lf} \n",
+            &General_BCs[i][j].Condition_Plane_Normal_Vector[0],
+            &General_BCs[i][j].Condition_Plane_Normal_Vector[1],
+            &General_BCs[i][j].Condition_Plane_Normal_Vector[2]);
+
+      strBuf = IO::read_line_after(File, "Condition Plane Distance [mm]:", false);
+      sscanf(strBuf.c_str(), " %lf \n", &General_BCs[i][j].Condition_Plane_Distance);
+
+      /* Read in the condition inequality. Note that we must check for >= and <=
+      BEFORE we check < and > (since the last two are contained in the first two) */
+      strBuf = IO::read_line_after(File, "Condition Inequality:", false);
+           if(IO::String_Ops::Contains(strBuf.c_str(), "<=")) { General_BCs[i][j].Condition_Inequality = Simulation::Inequality::LE; }
+      else if(IO::String_Ops::Contains(strBuf.c_str(), ">=")) { General_BCs[i][j].Condition_Inequality = Simulation::Inequality::GE; }
+      else if(IO::String_Ops::Contains(strBuf.c_str(), "==")) { General_BCs[i][j].Condition_Inequality = Simulation::Inequality::E;  }
+      else if(IO::String_Ops::Contains(strBuf.c_str(), "<" )) { General_BCs[i][j].Condition_Inequality = Simulation::Inequality::L;  }
+      else if(IO::String_Ops::Contains(strBuf.c_str(), ">" )) { General_BCs[i][j].Condition_Inequality = Simulation::Inequality::G;  }
+
+      strBuf = IO::read_line_after(File, "Effect Vector [mm/s]:", false);
+      sscanf(strBuf.c_str(), " {%lf, %lf, %lf} \n",
+             &General_BCs[i][j].Effect_Vector[0],
+             &General_BCs[i][j].Effect_Vector[1],
+             &General_BCs[i][j].Effect_Vector[2]);
+    } // for(unsigned j = 0; j < Number_General_BCs; j++) {
+  } // if(Number_General_BCs != 0) {
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
   // Other
 
   strBuf = IO::read_line_after(File, "Enable Gravity:", false);
@@ -288,7 +335,7 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
 
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf("\nRead Name[%3u] as:                      %s\n", i, Body_In.Get_Name().c_str());
+    printf("\n\nRead Name[%3u] as:                      %s\n", i, Body_In.Get_Name().c_str());
     printf("Read From_FEB_File[%3u] as:             %u\n", i, Simulation::From_FEB_File[i]);
     printf("Read Is_Box[%3u] as:                    %u\n", i, Is_Box);
     if(Is_Box == true) {
@@ -298,22 +345,44 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
     printf("Read Body[%3u].Is_Damageable as:        %u\n", i, Body_In.Get_Is_Damageable());
     if(Body_In.Get_Is_Damageable() == true) {
       printf("Read Body[%3u].Tau as:                  %lf\n", i, Body_In.Get_Tau());
-      printf("Read Body[%3u].x_plus_BC as:            ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].x_plus_BC);
-      printf("Read Body[%3u].x_minus_BC as:           ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].x_minus_BC);
-      printf("Read Body[%3u].y_plus_BC as:            ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].y_plus_BC);
-      printf("Read Body[%3u].y_minus_BC as:           ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].y_minus_BC);
-      printf("Read Body[%3u].z_plus_BC as:            ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].z_plus_BC);
-      printf("Read Body[%3u].z_minus_BC as:           ", i); Print_BC(Simulation::Box_Boundary_Conditions[i].z_minus_BC);
+      printf("Read Body[%3u].x_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.x_plus_BC);
+      printf("Read Body[%3u].x_minus_BC as:           ", i); Print_BC(Box_Boundary_Conditions.x_minus_BC);
+      printf("Read Body[%3u].y_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.y_plus_BC);
+      printf("Read Body[%3u].y_minus_BC as:           ", i); Print_BC(Box_Boundary_Conditions.y_minus_BC);
+      printf("Read Body[%3u].z_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.z_plus_BC);
+      printf("Read Body[%3u].z_minus_BC as:           ", i); Print_BC(Box_Boundary_Conditions.z_minus_BC);
     } // if(Body_In.Get_Is_Damageable() == true) {
 
-    printf("Read Body[%3u].Material.Lame as:        %lf\n", i, Mat.Lame);
+    printf("\nRead Body[%3u].Material.Lame as:        %lf\n", i, Mat.Lame);
     printf("Read Body[%3u].Material.mu0 as:         %lf\n", i, Mat.mu0);
     printf("Read Body[%3u].Material.density as:     %lf\n", i, Mat.density);
 
-    printf("Read Offset[%3u] as:                    {%lf, %lf, %lf}\n", i, Position_Offset[i][0], Position_Offset[i][1], Position_Offset[i][2]);
+    printf("\nRead Offset[%3u] as:                    {%lf, %lf, %lf}\n", i, Position_Offset[i][0], Position_Offset[i][1], Position_Offset[i][2]);
     printf("Read Initial_Velocity[%3u] as:          {%lf, %lf, %lf}\n", i, Initial_Velocity[i][0], Initial_Velocity[i][1], Initial_Velocity[i][2]);
 
-    printf("Read Bodu[%3u].Gravity_Enabled          %u\n",  i, Body_In.Get_Gravity_Enabled());
+    printf("\nRead Number_General_BCs[%3u] as:        %u\n",  i, Number_General_BCs);
+    for(unsigned j = 0; j < Number_General_BCs; j++) {
+      printf("Read Body[%3u]'s Plane_Vector %3u as:   {%lf, %lf, %lf}\n", i, j,
+              General_BCs[i][j].Condition_Plane_Normal_Vector[0],
+              General_BCs[i][j].Condition_Plane_Normal_Vector[1],
+              General_BCs[i][j].Condition_Plane_Normal_Vector[2]);
+
+      printf("Read Body[%3u]'s Plane_Distance %3u as: %lf\n", i, j, General_BCs[i][j].Condition_Plane_Distance);
+      printf("Read Body[%3u]'s Inequality %3u as:     ", i, j);
+      switch(General_BCs[i][j].Condition_Inequality) {
+        case (Inequality::L):  printf("<\n" ); break;
+        case (Inequality::LE): printf("<=\n"); break;
+        case (Inequality::E):  printf("==\n"); break;
+        case (Inequality::GE): printf(">=\n"); break;
+        case (Inequality::G):  printf(">\n" ); break;
+      } // switch(General_BCs[i][j].Condition_Inequality) {
+      printf("Read Body[%3u]'s Effect_Vector %3u as:  {%lf, %lf, %lf}\n", i, j,
+              General_BCs[i][j].Effect_Vector[0],
+              General_BCs[i][j].Effect_Vector[1],
+              General_BCs[i][j].Effect_Vector[2]);
+    } // for(unsigned j = 0; j < Number_General_BCs; j++) {
+
+    printf("\nRead Bodu[%3u].Gravity_Enabled          %u\n",  i, Body_In.Get_Gravity_Enabled());
     printf("Read Body[%3u].mu as:                   %lf\n", i, Body_In.Get_mu());
     printf("Read Body[%3u].alpha as:                %lf\n", i, Body_In.Get_alpha());
     printf("Read Body[%3u].Support_Radius as:       %u\n",  i, Body_In.Get_Support_Radius());
