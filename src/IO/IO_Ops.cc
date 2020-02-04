@@ -3,11 +3,15 @@
 #include "Vector/Vector.h"
 #include "assert.h"
 #include "Errors.h"
+#include <cctype>
 
 
-std::string IO::read_line_after(std::ifstream & File, const char* Word) {
+std::string IO::read_line_after(std::ifstream & File, const char* Word, bool Case_Sensitive) {
   /* Read in the file line by line until one is found that contains the
-  word (or the end of file is reached) */
+  word (or the end of file is reached)
+
+  The optional Case_Sensitive argument specifies if this function ignores
+  case in Word/Buffer. (see Index_After_Word description).   */
   assert(File.is_open() == true);
 
 
@@ -16,10 +20,11 @@ std::string IO::read_line_after(std::ifstream & File, const char* Word) {
   int index;
   while(true) {
     File.getline(Line_Buffer, Buffer_Size);
-    index = IO::String_Ops::Index_After_Word(Line_Buffer, Word);
+    Line_Buffer[Buffer_Size-1] = '\0';           // Make sur that Line_Buffer is a null-terminated string.
+    index = IO::String_Ops::Index_After_Word(Line_Buffer, Word, Case_Sensitive);
 
-    /* If Word is in Line then index will be some positive number. Otherwise,
-    index = -1. */
+    /* If Word is not in the Line then index will be equal to -1. If not, then
+    index specifies the index (in the Line) of first character of Word. */
     if(index != -1) { break; }
 
     /* Now check if the end of file has been reached. If so then the requested
@@ -43,35 +48,43 @@ std::string IO::read_line_after(std::ifstream & File, const char* Word) {
   std::string Trimmed_Line;
   for(unsigned k = index; Line_Buffer[k] != '\0'; k++) { Trimmed_Line += Line_Buffer[k]; }
   return Trimmed_Line;
-} // std::string IO::read_line_after(std::ifstream & File, const char* Word) {
+} // std::string IO::read_line_after(std::ifstream & File, const char* Word, bool Case_Sensitive) {
 
 
 
-bool IO::String_Ops::Contains(const char* Buffer, const char* Word, unsigned Start_At) {
+bool IO::String_Ops::Contains(const char* Buffer, const char* Word, bool Case_Sensitive, unsigned Start_At) {
   /* Function description:
-  This function determines if Word is contained in Buffer. The optional Start_At
-  argument can be used to only search through part of the string. If, for
-  example, Start_At = 5, then this function will only search for matches that
-  begin at index 5 (or later) of Buffer. */
+  This function determines if Word is contained in Buffer.
 
-  if(IO::String_Ops::Index_After_Word(Buffer,Word,Start_At) == -1) { return false; }
+  The optional Case_Sensitive argument specifies if this function ignores
+  case in Word/Buffer. Thus, Contains("tHe WoRd","wOrD", false) would
+  return true while Contains("tHe WoRd","wOrD", false) would return false.
+
+  The optional Start_At argument can be used to only search through part of the
+  string. If, for example, Start_At = 5, then this function will only search for
+  matches that begin at index 5 (or later) of Buffer. */
+
+  if(IO::String_Ops::Index_After_Word(Buffer, Word, Case_Sensitive, Start_At) == -1) { return false; }
   else { return true; }
-} // bool String_Ops::Contains(const char* Buffer, const char* Word, unsigned Start_At) {
+} // bool IO::String_Ops::Contains(const char* Buffer, const char* Word, bool Case_Sensitive, unsigned Start_At) {
 
 
 
-int IO::String_Ops::Index_After_Word(const char* Buffer, const char* Word, unsigned Start_At) {
+int IO::String_Ops::Index_After_Word(const char* Buffer, const char* Word, bool Case_Sensitive, unsigned Start_At) {
   /* Function description:
   This function attempts to find Word in Buffer. If Word is in Buffer, then this
   function will return the index of the first character in Buffer past the
   end of the Word. If Word is not contained in Buffer, then this function returns
   -1.
 
+  The optional Case_Sensitive argument specifies if this function ignores
+  case in Word/Buffer. Thus, Index_After_Word("tHe WoRd","wOrD", false) would
+  return true while Index_After_Word("tHe WoRd","wOrD", false) would return false.
+
   The optional Start_At argument tells the function to only search through
   the string after the Start_At'th character. If, for example, Start_At = 5
   then this function will only search for Word in Buffer after the 5th
   character of Buffer. */
-
 
   /* Assumptions:
   This function assumes that both Buffer and Word are NULL TERMINATED strings.
@@ -84,28 +97,34 @@ int IO::String_Ops::Index_After_Word(const char* Buffer, const char* Word, unsig
     if(Buffer[i] == '\0') { return -1; }
   } // for(unsigned i = 0; i < Start_At; i++) {
 
+
   // Loop through the characters of Buffer.
   unsigned i = Start_At;
   unsigned j;
   while(Buffer[i] != '\0') {
     // At each one, see if Word starts at that character.
     j = 0;
-    while(Buffer[i+j] == Word[j]) {
+    while(true) {
+      // Check if i+jth letter of Buffer mathces jth letter of Word. If not,
+      // then break.
+      if(Case_Sensitive == true && Buffer[i+j] != Word[j]) { break; }
+      else if(Case_Sensitive == false && tolower(Buffer[i+j]) != tolower(Word[j])) { break; }
+
+      // Increment j
       j++;
 
-      /* If we're still in here and we've reached the end of "Word" then
-      we've found a match! i+j is the index of the first character beyond the
-      end of Word in Buffer. */
+      /* If we've reached the end of "Word" then we've found a match!
+      i+j is the index of the first character beyond the end of Word in Buffer. */
       if(Word[j] == '\0') { return i+j; }
 
       /* If we haven't reached the end of Word but we have reached the end of
-      Buffer then Buffer does not contain Word. Return -1 */
+      Buffer, then Buffer does not contain Word. Return -1 */
       if(Buffer[i+j] == '\0') { return -1; }
-    } // while(Buffer[i+j] == Word[j]) {
+    } // while(true) {
     i++;
   } // while(Buffer[i] != '\0') {
 
   /* If we get here then we cycled through Buffer without finding a match.
   Thus, buffer does not contain Word. Return -1 */
   return -1;
-} // int IO::String_Ops::Index_After_Word(const char* Buffer, const char* Word, unsigned Start_At) {
+} // int IO::String_Ops::Index_After_Word(const char* Buffer, const char* Word, bool Case_Sensitive, unsigned Start_At) {

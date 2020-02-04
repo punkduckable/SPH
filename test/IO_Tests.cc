@@ -3,7 +3,7 @@
 #include <string>
 #include <stdio.h>
 
-TEST_CASE("IO_Base","[IO]") {
+TEST_CASE("read_line_after","[IO]") {
   /* First, open the test file. */
   std::ifstream File;
   File.open("./IO/Test/test_file.txt");
@@ -59,4 +59,22 @@ TEST_CASE("IO_Base","[IO]") {
 
   strBuf = IO::read_line_after(File, "Value 2:");
   REQUIRE_THROWS( IO::read_line_after(File, "Value 1:") );
-} // TEST_CASE("IO_Base","[IO]") {
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Try case-insensitive reading.
+
+  File.close();
+  File.open("./IO/Test/test_file.txt");
+
+  strBuf = IO::read_line_after(File, "vAlUe 1:", false);
+  sscanf(strBuf.c_str(), " %u \n", &uBuf);
+  REQUIRE( uBuf == 1);
+
+  strBuf = IO::read_line_after(File, "VALUE 2:", false);
+  sscanf(strBuf.c_str(), " %u \n", &uBuf);
+  REQUIRE( uBuf == 2 );
+
+  REQUIRE_THROWS( IO::read_line_after(File, "vAlue 3:", true) );
+} // TEST_CASE("read_line_after","[IO]") {

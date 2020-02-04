@@ -12,15 +12,19 @@ This file houses several functions that make reading and writing from a file
 easier. */
 
 namespace IO  {
-  std::string read_line_after(std::ifstream & File, const char* Word);
+  std::string read_line_after(std::ifstream & File,
+                              const char* Word,
+                              bool Case_Sensitive = true);
 
   namespace String_Ops {
-    bool Contains(const char* Buffer,                                            // Intent: Read
-                  const char* Word,                                              // Intent: Read
-                  unsigned Start_At = 0);                                        // Intent: Read
+    bool Contains(const char* Buffer,
+                  const char* Word,
+                  bool Case_Sensitive = true,
+                  unsigned Start_At = 0);
 
     int Index_After_Word(const char* Buffer,
                          const char* Word,
+                         bool Case_Sensitive = true,
                          unsigned Start_At = 0);
   } // namespace String_Ops {
 }
