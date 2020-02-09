@@ -7,9 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods
 
-void Body::Remove_Damaged_Particle(const unsigned p) {
+void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
+  while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
+
+  unsigned p = Damaged_Particle_List.Pop_Back();
+
   #if defined(DAMAGE_MONITOR)
-    printf("Particle %d is damaged. ",p);
+    printf("Particle %d is damaged. ", p);
     Particles[p].X.Print();
   #endif
 
@@ -20,7 +24,7 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
   more. Let P_i, P_j and P be particles with the following reference
   configuration
 
-         P_i              P             P_j
+         P_i              P                P_j
          ()               ()               ()
 
   Suppose that P is damaged. Further suppose that P_i and P_j are neighbors.
@@ -176,12 +180,12 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
       // Check if the scalar projection of R_In - R_i onto Rj - Rj is positive
       // or negative.
 
-      if( Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
+      if( Dot_Product(RIn_Ri, Rj_Ri) <= 0 ) {
         // If not positive, then Ri and Rj must be neighbors, add P_j to P_i's
         // new neighbor list.
         Pi_New_Neighbor_List.Push_Front(Pj_ID);
         continue;
-      } // if( Dot_Product(RIn_Ri, Rj_Ri) <= 0) {
+      } // if( Dot_Product(RIn_Ri, Rj_Ri) <= 0 ) {
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -217,12 +221,24 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
         no longer a neighbor of P_j, and that P_j is no longer a neighbor of
         P_i. To things need to happen for this to work, P_i needs to stop
         being a neighbor with P_j and P_j needs to stop being a neighbor
-        with P_i. To prevent P_i from being a neighbor with P_j all we have to
-        do is NOT include P_j on P_i's new neighbor list. To make P_i not a
-        neighbor of P_j, we need to re-do P_j's neighbor list, including
-        every old neighbor except for P_i. This is done in the 'Remove Neighbor
-        member function' */
-        Remove_Neighbor(Pj_ID, Pi_ID);
+        with P_i.
+
+        To ensure that P_j is not one of P_i's neighbors, we simply do NOT
+        include P_j on P_i's new neighbor's list.
+
+        To ensure that P_i is not one of P_j's neighbors, we need to remove
+        P_i from P_j's neighbor list. This is done by the 'Remove Neighbor'
+        member function.
+
+        Removing this neighbor may give Pj a non-invertible A matrix. If this
+        is the case, then calling Remove_Neighbor will throw a Singular_Matrix
+        exception. If this happens, then we need to damage Pj and add it to
+        the damaged particle list. */
+        try { (*this).Remove_Neighbor(Pj_ID, Pi_ID); }
+        catch(Singular_Matrix & Er_In) {
+          Particles[Pj_ID].Set_D(1);
+          Damaged_Particle_List.Push_Front(Pj_ID);
+        } // catch(Singular_Matrix & Er_In) {
 
         continue;
       } // if(d_squared < r_squared) {
@@ -258,11 +274,18 @@ void Body::Remove_Damaged_Particle(const unsigned p) {
     // won't be able to reset P_i's neighbors
     Particles[Pi_ID].Neighbors_Are_Set = false;
 
-    // Now we can reset the neighbors
-    Set_Neighbors(Pi_ID, Pi_New_Neighbors);
-  } // for(i = 0; i < Particles[i].Num_Neighbors; i++) {
+    /* Now we can reset the neighbors. This may throw a Singular_Matrix
+    exception. If this happens, then we need to damage Pi and it to the Damaged
+    particle list */
+    try { Set_Neighbors(Pi_ID, Pi_New_Neighbors); }
+    catch(Singular_Matrix & Er_In) {
+      Particles[Pi_ID].Set_D(1);
+      Damaged_Particle_List.Push_Front(Pi_ID);
+    } // catch(Singular_Matrix & Er_In) {
+  } // for(i = 0; i < Num_Neighbors; i++) {
 
   /* Now that we've causally removed the damaged particle from the particles
   array, we need to make that it think that it has no neighbors */
   Particles[p].Num_Neighbors = 0;
-} // void Body::Remove_Damaged_Particle(const unsigned i) {
+  } // while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
+} // void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {

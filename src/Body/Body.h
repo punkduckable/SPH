@@ -69,6 +69,7 @@ class Body {
     unsigned Time_Steps_Per_Update;              // The number of time steps between when P and F are updated
 
 
+
     ////////////////////////////////////////////////////////////////////////////
     // Contact parameters
     static const double K;                       // Set in Body.cc                        : N/(mm^2)
@@ -149,7 +150,7 @@ class Body {
     //////////////////////////////////////////////////////////////////////////////
     // Damage methods.
     // Defined in Damage.cc
-    void Remove_Damaged_Particle(const unsigned i);
+    void Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List);
 
 
 

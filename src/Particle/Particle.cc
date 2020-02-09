@@ -10,8 +10,9 @@
 Particle::Particle(void) {
   (*this).Neighbors_Are_Set = false;
   (*this).Num_Neighbors = 0;
-  (*this).Volume = 0;                                                          //        : mm^3
-  (*this).Mass = 0;                                                            //        : g
+  (*this).Mass_Set = false;
+  (*this).Volume_Set = false;
+  (*this).Radius_Set = false;
   for(unsigned i = 0; i < 3; i++) { (*this).Has_BC[i] = false; }
 
   // Now randomly set critical stress
@@ -58,9 +59,22 @@ void Particle::Apply_BCs(void) {
 // Setters
 
 void Particle::Set_ID(const unsigned ID_In) { ID = ID_In; }
-void Particle::Set_Mass(const double Mass_In) { Mass = Mass_In; }
-void Particle::Set_Volume(const double Volume_In) { Volume = Volume_In; }
-void Particle::Set_Radius(const double Radius_In) { Radius = Radius_In; }
+
+void Particle::Set_Mass(const double Mass_In) {
+  assert(Mass_In != 0 );
+  (*this).Mass = Mass_In;
+  (*this).Mass_Set = true;
+} // void Particle::Set_Mass(const double Mass_In) {
+void Particle::Set_Volume(const double Volume_In) {
+  assert(Volume_In != 0);
+  (*this).Volume = Volume_In;
+  (*this).Volume_Set = true;
+} // void Particle::Set_Volume(const double Volume_In) {
+void Particle::Set_Radius(const double Radius_In) {
+  assert(Radius_In != 0);
+  (*this).Radius = Radius_In;
+  (*this).Radius_Set = true;
+} // void Particle::Set_Radius(const double Radius_In) {
 
 void Particle::Set_X(const Vector & X_In) { X = X_In; }
 void Particle::Set_x(const Vector & x_In) { x = x_In; }
@@ -83,9 +97,19 @@ void Particle::Set_BC(const unsigned Component, const double Value) {
 // Getters
 
 unsigned Particle::Get_ID(void) const { return ID; }
-double Particle::Get_Mass(void) const { return Mass; }
-double Particle::Get_Volume(void) const { return Volume; }
-double Particle::Get_Radius(void) const { return Radius; }
+
+double Particle::Get_Mass(void) const {
+  assert((*this).Mass_Set == true);
+  return (*this).Mass;
+} // double Particle::Get_Mass(void) const {
+double Particle::Get_Volume(void) const {
+  assert((*this).Volume_Set == true);
+  return (*this).Volume;
+} // double Particle::Get_Volume(void) const {
+double Particle::Get_Radius(void) const {
+  assert((*this).Radius_Set == true);
+  return (*this).Radius;
+} // double Particle::Get_Radius(void) const {
 
 const Vector & Particle::Get_X(void) const { return X; }
 const Vector & Particle::Get_x(void) const { return x; }
@@ -152,10 +176,10 @@ double Particle::Get_BC(unsigned Component) const {
 void Particle::Print(void) const {
   // Print basic particle parameters.
   printf("ID:       %u\n",(*this).ID);
-  printf("Mass:     %lf\n",(*this).Mass);
-  printf("Volume:   %lf\n",(*this).Volume);
-  printf("Radius:   %lf\n",(*this).Radius);
 
+  printf("Mass   (Set = %u):  %lf\n", (*this).Mass_Set,   (*this).Mass);
+  printf("Volume (Set = %u):  %lf\n", (*this).Volume_Set, (*this).Volume);
+  printf("Radius (Set = %u):  %lf\n", (*this).Radius_Set, (*this).Radius);
 
   printf("X:   "); (*this).X.Print();
   printf("x:   "); (*this).x.Print();

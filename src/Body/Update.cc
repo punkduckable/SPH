@@ -3,7 +3,9 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "List.h"
+#include "Errors.h"
 #include <math.h>
+#include <assert.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Update methods
@@ -18,7 +20,8 @@ void Body::Update_P(const double dt) {
   members. This function should not be called until these assumptions are valid.
 
   what are the arguments? This function accepts a the desired time step. dt
-  is used to calculate the viscosity. */
+  is used to calculate the viscosity. We must have dt > 0 */
+  assert(dt > 0);
 
   // First, let's declare some local variables.
   Tensor F;                                      // Deformation gradient                 : unitless Tensor
@@ -96,6 +99,8 @@ void Body::Update_P(const double dt) {
     // if damage is enabled and Max is greater than crticial then start adding damage
     if((*this).Is_Damageable == true) {
       if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
+        /* Note: Set_Tau requires that Tau != 0. Therefore, dividing by Tau
+        should be well defined. */
         Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1;
       } // if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
 
@@ -131,8 +136,11 @@ void Body::Update_P(const double dt) {
       // it once we have cycled through all partilces)
       Damaged_Particle_List.Push_Back(Particles[i].ID);
       continue;
-    } // if(J < 0) {
+    } // if(J <= 0) {
 
+    /* Note: C should be invertible if J != 0.
+    C = (F^T)F. Thus, det(C) = det(F^T)det(F) = det(F)^2 = J^2. Thus, if J != 0
+    then det(C) != 0, and C^(-1) is well defined. */
     S = (1- Particles[i].D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));        //        : Mpa Tensor
 
 
@@ -161,6 +169,11 @@ void Body::Update_P(const double dt) {
     if(i_dt == 0) { i_2dt = 1; }
     else {          i_2dt = 0; }
 
+    /* Note: Update_P requires that dt > 0 (see assertion near the top of this
+    fucntion). Thus, dividing by dt should be ewell defined.
+
+    Note: F^(-T) should be well defined as long as J != 0 (which we check for
+    above). J = det(F), so if J != 0 then F should be invertible. */
     F_Prime = (1./(2.*dt))*(3*F - 4*Particles[i].F[i_dt] + Particles[i].F[i_2dt]);      // 1/s Tensor
     L = F_Prime*(F^(-1));                                                      //        : 1/s Tensor
     Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                      //        : Mpa Tensor
@@ -184,9 +197,7 @@ void Body::Update_P(const double dt) {
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
   #pragma omp critical
-  while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
-    Remove_Damaged_Particle(Damaged_Particle_List.Pop_Back());
-  } // while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
+  Remove_Damaged_Particles(Damaged_Particle_List);
 
   // Explicit barrier to ensure that all broken particles have been removed
   // before any thread is allowed to move on.
@@ -301,6 +312,15 @@ void Body::Update_x(const double dt) {
       and should therefore perform better. */
       rj = Particles[Neighbor_ID].x - Particles[i].x;                          //        : mm Vector
       double Mag_rj = Magnitude(rj);                                           //        : mm
+      if(Mag_rj == 0) {
+        char Buf[512];
+        sprintf(Buf,
+                "Divide By Zero Exception: thrown by %s while calling Body::Update_x\n"
+                "In %s, Particle %u and %u have the same x coordinate. As such, rj = 0,\n"
+                "which means that we can calculate delta_ij (which is needed to update x).\n",
+                (*this).Name.c_str(), (*this).Name.c_str(), Neighbor_ID, i);
+        throw Divide_By_Zero(Buf);
+      } // if(Mag_rj == 0) {
       double delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
 
       /* Here we calculate delta_ji.
@@ -327,8 +347,10 @@ void Body::Update_x(const double dt) {
                      = (F_j*R_ij dot r_ij) / |r_ij| - |r_ij|^2/|r_ij|
                      = (F_j*R_ij dot r_ij) / |r_ij| - |r_ij|
       Computing delta_ji this way uses fewer arithmetic operations and should
-      therefore improve performnace.
-      */
+      therefore improve performance.
+
+      Note: this calculation requires that Mag_rj != 0. We check for this
+      condition above, however. */
       F_j = Particles[Neighbor_ID].F[F_Index];                                 //        : unitless Tensor
       double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
 
@@ -336,7 +358,11 @@ void Body::Update_x(const double dt) {
       noted that each term of Force_HG is multiplied by -(1/2), E, alpha,
       and Vi. However, these four quantities are constants. We can therefore
       pull these multiplications out of the summations (thereby saving
-      several thousand floating point operations per particle!)*/
+      several thousand floating point operations per particle!)
+
+      Note: this assumes that Mag_R and Mag_rj are non-zero. We already checked
+      for the latter. The former should be true so long as the bodies were setup
+      properly. */
       Force_HG += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*                    //        : (1/mm) Vector
                   (delta_ij + delta_ji))*(rj);
     } // for(unsigned j = 0; j < Num_Neighbors; j++) {
@@ -352,11 +378,15 @@ void Body::Update_x(const double dt) {
     Our mass is in units of grams and we want the acceleration in units of
     mm/s^2. To get that, we note that 1N = 10^6(g*mm/s^2). Therefore, if we
     multiply our force, in Newtons, by 10^6 and then divide by the mass, in grams,
-    then we get acceleration in mm/s^2. */
-    a = ((1e+6)*(1./Particles[i].Mass))*(Force_Int                             //        : mm/s^2 Vector
-                                       + Particles[i].Force_Contact
-                                       + Particles[i].Force_Friction
-                                       + Force_HG);
+    then we get acceleration in mm/s^2.
+
+    Note: This assumes that Particles[i].Mass != 0. However, the Set_Mass
+    function of the Particle class requires that Mass != 0, and Get_Mass will
+    only work if a mass has been set. Thus, this assumption should hold. */
+    a = ((1e+6)*(1./Particles[i].Get_Mass()))*(Force_Int                        //        : mm/s^2 Vector
+                                             + Particles[i].Force_Contact
+                                             + Particles[i].Force_Friction
+                                             + Force_HG);
     /* If gravity is enabled, add that in. */
     if((*this).Gravity_Enabled == true) { a += Body::g; }
 
@@ -397,9 +427,7 @@ void Body::Update_x(const double dt) {
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
   #pragma omp critical
-  while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
-    Remove_Damaged_Particle(Damaged_Particle_List.Pop_Back());
-  } // while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
+  Remove_Damaged_Particles(Damaged_Particle_List);
 
   /* Note, there is no explicit barrier here because the next kernel, which
   updates each particle's timestep counter, does not use any data being

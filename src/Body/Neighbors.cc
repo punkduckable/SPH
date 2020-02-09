@@ -102,6 +102,7 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 } // void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 
 
+
 bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
   /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
   particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
@@ -262,6 +263,7 @@ void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) 
   // To be able to remove a neighbor, the particle in question must have neighbors!
   if(Particles[i].Neighbors_Are_Set == false || Particles[i].Num_Neighbors == 0) {
     printf("Particle %d has no neighbors! We can't remove %d\n", i, Remove_Neighbor_ID);
+    return;
   } // if(P_In.Neighbors_Are_Set == false || P_In.Num_Neighbors == 0) {
 
   /* Note: We use the term 'Neighbor Arrays' to refer to the dynamic particle
@@ -315,7 +317,7 @@ void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) 
     // Calculate New shape tensor.
     Vol_p = Particles[Particles[i].Neighbor_IDs[p]].Volume;                    //        : mm^3
     New_A += Dyadic_Product((Vol_p*New_Grad_W[p]), New_R[p]);                  // New shape tensor : unitless Tensor
-  } // for(j = 0; j < Num_Neighbors; j++) {
+  } // for(unsigned j = 0; j < Num_Neighbors; j++) {
 
   // Now that we have our new neighbor arrays, we can replace/delete the old
   // neighbor arrays

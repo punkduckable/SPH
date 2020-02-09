@@ -85,7 +85,7 @@ Particle & Body::operator[](const unsigned i) {
 const Particle & Body::operator[](const unsigned i) const {
   // Check that the Particles are set up and that i is within the bounds of
   // This body's Particles array.
-  assert((*this).Particles_Set_Up == true); 
+  assert((*this).Particles_Set_Up == true);
   assert(i < (*this).Num_Particles);
 
   return (*this).Particles[i];
@@ -201,7 +201,10 @@ void Body::Set_Material(const Materials::Material & Mat_In) {
 void Body::Set_mu(const double mu_In) { mu = mu_In; }
 void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }
 
-void Body::Set_Tau(const double Tau_In) { Tau = Tau_In; }
+void Body::Set_Tau(const double Tau_In) {
+  assert(Tau_In != 0);
+  (*this).Tau = Tau_In;
+} // void Body::Set_Tau(const double Tau_In) {
 void Body::Set_Is_Damageable(const bool D_In) { Is_Damageable = D_In; }
 
 

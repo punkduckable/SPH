@@ -19,6 +19,9 @@ class Particle {
     unsigned ID;
 
     // Particle dimensions (Mass, Vol, etc...)
+    bool Mass_Set;
+    bool Volume_Set;
+    bool Radius_Set;
     double Mass;                                           // Particle Mass              : g
     double Volume;                                         // Particle volume            : mm^3
     double Radius;                                         // Particle radius            : mm
@@ -101,6 +104,7 @@ class Particle {
     ////////////////////////////////////////////////////////////////////////////
     // Setters
     void Set_ID(const unsigned ID_In);
+
     void Set_Mass(const double Mass_In);                                       //        : g
     void Set_Volume(const double Volume_In);                                   //        : mm^3
     void Set_Radius(const double Radius_In);                                   //        : mm
@@ -119,6 +123,7 @@ class Particle {
     ////////////////////////////////////////////////////////////////////////////
     // Getters
     unsigned Get_ID(void) const;                                               //
+
     double Get_Mass(void) const;                                               //        : g
     double Get_Volume(void) const;                                             //        : mm^3
     double Get_Radius(void) const;                                             //        : mm
@@ -151,7 +156,7 @@ class Particle {
   friend void Particle_Tests(void);
   friend void Simulation::Run_Simulation(void);
   friend void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC);
-  friend void IO::Load_Particle(Particle & P_In, 
+  friend void IO::Load_Particle(Particle & P_In,
                                 std::ifstream & File);
 
   // Printing function

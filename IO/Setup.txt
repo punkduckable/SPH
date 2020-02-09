@@ -10,7 +10,7 @@ Time Steps Between Prints:                       100
 
 # Time Step
 dt [s]:                                          .00001
-Num Time Steps:                                  2000
+Num Time Steps:                                  4000
 
 # Contact
 Contact Distance [mm]:                           1.0
@@ -35,11 +35,11 @@ Number of Bodies:                                1
 Name:                                            Body1
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {10, 10, 10}
+    Dimensions [# Particles]:                    {15, 15, 15}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
     y plus BC [mm/s]:                            {Free, Free, Free}
-    y minus BC [mm/s]:                           {Free, Free, Free}
+    y minus BC [mm/s]:                           {0, 0, 0}
     z plus BC [mm/s]:                            {Free, Free, Free}
     z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
@@ -56,16 +56,10 @@ Offset [mm]:                                     {-4.5, -4.5, -4.5}
 Initial Velocity [mm/s]:                         {0, 0, 0}
 
 # General Boundary Conditions
-Number of General Boundary Conditions:           2
+Number of General Boundary Conditions:           1
   # Condition 0
   Condition Plane Normal Vector:                 {1, 1, 1}
-  Condition Plane Distance [mm]:                 5
-  Condition Inequality:                          >
-  Effect Vector [mm/s]:                          {50, 50, 50}
-
-  # Condition 1
-  Condition Plane Normal Vector:                 {-1, -1, -1}
-  Condition Plane Distance [mm]:                 5
+  Condition Plane Distance [mm]:                 3
   Condition Inequality:                          >
   Effect Vector [mm/s]:                          {-50, -50, -50}
 

@@ -100,8 +100,8 @@ class Array_Length_Already_Set : public Array_Exception {
 /* Tensor exceptions
 Tensor_Exception: Base Tensor exception class.
 
-Zero_Determinant: This is thrown whenever it is impossible to calculate some
-value because a tensor's determinant is zero. */
+Singular_Matrix: This is thrown whenever the user tries to find the inverse of
+a singular matrix (Determinant = 0) */
 
 class Tensor_Exception : public Exception {
   public:
@@ -109,10 +109,10 @@ class Tensor_Exception : public Exception {
 }; // class Tensor_Exception : public Exception {
 
 
-class Zero_Determinant : public Tensor_Exception {
+class Singular_Matrix : public Tensor_Exception {
   public:
-    Zero_Determinant(const char* Message_In) : Tensor_Exception(Message_In) {}
-}; // class Zero_Determinant : public Tensor_Exception {
+    Singular_Matrix(const char* Message_In) : Tensor_Exception(Message_In) {}
+}; // class Singular_Matrix : public Tensor_Exception {
 
 
 class Undefined_Exponent : public Tensor_Exception {
@@ -129,7 +129,11 @@ class Undefined_Exponent : public Tensor_Exception {
 Particle_Exception: Base Particle exception class
 
 Bad_Neighbor_Index: This is thrown whenever the user tries to access a particle's
-jth neighbor, when j is greater than the particle's number of neighbors */
+jth neighbor, when j is greater than the particle's number of neighbors
+
+No_BC: This is thrown whenever the user tries to access the ith component of a
+particle's boundary condition, but the particle has no boundary condition for
+that component. */
 
 class Particle_Exception : public Exception {
   public:
@@ -146,7 +150,7 @@ class Bad_Neighbor_Index : public Particle_Exception {
 class No_BC : public Particle_Exception {
   public:
     No_BC(const char* Message_In) : Particle_Exception(Message_In) {}
-}; // class No_BC : publci Particle_Exception {
+}; // class No_BC : public Particle_Exception {
 
 
 
