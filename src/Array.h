@@ -19,7 +19,7 @@ class Array {
       same code twice, I made this function (both of the aformentioned functions
       call this one). */
 
-      unsigned Num_Nodes = List_In.Get_Num_Nodes();
+      unsigned Num_Nodes = List_In.Get_Length();
       (*this).Length = Num_Nodes;
       (*this).Internal_Array = new T[Num_Nodes];
       (*this).Length_Set = true;

@@ -36,7 +36,7 @@ class List {
     T & Back(void);                              // Returns a reference to the value of the last item of the list.
 
     // Methods to get list info
-    unsigned Get_Num_Nodes(void) const;             // Returns number of nodes
+    unsigned Get_Length(void) const;             // Returns number of nodes
     void Print_Node_Info(void) const;            // For testing
 };
 
@@ -230,9 +230,9 @@ T & List<T>::Back(void) {
 // Methods to get list info
 
 template <typename T>
-unsigned int List<T>::Get_Num_Nodes(void) const {
+unsigned int List<T>::Get_Length(void) const {
   return Num_Nodes;
-} // void List<T>::Get_Num_Nodes(void) const {
+} // void List<T>::Get_Length(void) const {
 
 
 

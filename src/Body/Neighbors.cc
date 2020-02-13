@@ -68,22 +68,23 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 
   // Loop through each neighbor, determine relevant information
   for(unsigned j = 0; j < Num_Neighbors; j++) {
-    Neighbor_ID = Particles[i].Get_Neighbor_IDs(j);          // Get Neighbor ID of the jth neighbor of particle i
+    Neighbor_ID = Particles[i].Get_Neighbor_IDs(j);        // Get Neighbor ID of the jth neighbor of particle i
 
     // Calculate displacement vectors
     R[j] = Particles[Neighbor_ID].X - Particles[i].X;      // Reference displacement vector        : mm Vector
-    Mag_R[j] = R[j].Magnitude();                 // |R[j]|                               : mm
+    Mag_R[j] = R[j].Magnitude();                           // |R[j]|                               : mm
 
     // Calculate shape function, shape function gradient for jth neighbor
     W[j] = Shape_Function_Amplitude*(h - Mag_R[j])                             //        : unitless
                                    *(h - Mag_R[j])
                                    *(h - Mag_R[j]);
+
     Grad_W[j] = -3*Shape_Function_Amplitude                                    //        : 1/mm Vector
                   *((h - Mag_R[j])*(h - Mag_R[j]))
                   *(R[j] / Mag_R[j]);
 
     // Add in the Current Neighbor's contribution to the Shape tensor
-    V_j = Particles[Neighbor_ID].Volume;         // Neighbor Volume                      : mm^3
+    V_j = Particles[Neighbor_ID].Volume;                   // Neighbor Volume            : mm^3
     A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless Tensor
   } // for(unsigned j = 0; j < Num_Neighbors_In; j++) {
 
@@ -111,7 +112,11 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 
   It should be noted that, since h and |Rj| are positive numbers, if h>|Rj|
   then h^2>|Rj|^2. We can compute this second condition using a dot product
-  (which is far easier than finding the magnitude)*/
+  (which is far easier than finding the magnitude) */
+
+  /* A particle can not be its own neighbor. If i = j, then something went wrong.
+  and we should abort. */
+  assert(i != j);
 
   const Vector Rj = (*this).Particles[i].Get_X() - (*this).Particles[j].Get_X();
   return ( h*h > Dot_Product(Rj, Rj) );
@@ -197,37 +202,36 @@ void Body::Find_Neighbors_Box(void) {
         unsigned p_min, p_max, q_min, q_max, r_min, r_max;
         List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
 
-        /* If we are near the edge of the cube then we need to adjust which
-        particles we search through
+        /* If we are near the upper or lower bound for any one of the 3
+        coordinates, then we need to adjust the upper or lower bound of our
+        search.
 
-        Note: Because unsigned integers rollover, we need to be careful to
-        structure our tests such that they do not modify i j or k. For example,
-        if k = 0 then check if k - Support_Radius < 0 will ALWAYS return
-        false since 0 - Support_Radius = ~4 billion (rollover!). However,
-        structuring the checks in this way makes them less readible, so I have
-        included a logically equivalent (if rollover is ignored) if statement
-        as a comment for each check */
+        To understand why we need to do this, suppose that our i coordinate is 3.
+        Then, the only smaller i coordinates are 0, 1, and 2. In general, if our
+        i coordinate is n then there are n smaller i coordinate values. If the
+        support radius is < n, then we need to check the n-Support_Radius i
+        coordinates with a smaller i coordinate. Otherwise, we need to check
+        all n. */
 
         // i index (x coordinate) checks
-        if(i < ((*this).Support_Radius)) { p_min = 0; }                                        // Same as if i - (*this).Support_Radius < 0
-        else { p_min  = i - (*this).Support_Radius; }
+        if(i < (*this).Support_Radius) { p_min = 0; }
+        else{ p_min = i -  (*this).Support_Radius; }
 
-
-        if(i > (X_SIDE_LENGTH - 1) - (*this).Support_Radius) { p_max = X_SIDE_LENGTH - 1; }  // Same as if(i + (*this).Support_Radius > X_SIDE_LENGTH -1)
+        if(i + (*this).Support_Radius > (X_SIDE_LENGTH - 1)) { p_max = X_SIDE_LENGTH - 1; }
         else { p_max = i + (*this).Support_Radius; }
 
         // j index (y coordinate) checks
-        if(j < (*this).Support_Radius) { q_min = 0; }                                        // Same as if(j - (*this).Support_Radius < 0)
+        if(j < (*this).Support_Radius) { q_min = 0; }
         else { q_min = j - (*this).Support_Radius; }
 
-        if(j > (Y_SIDE_LENGTH - 1) - (*this).Support_Radius) { q_max = Y_SIDE_LENGTH - 1; }  // Same as if(j + (*this).Support_Radius > Y_SIDE_LENGTH - 1)
+        if(j + (*this).Support_Radius > (Y_SIDE_LENGTH - 1)) { q_max = Y_SIDE_LENGTH - 1; }
         else { q_max = j + (*this).Support_Radius; }
 
         // k index (z coordinate) checks
-        if(k < (*this).Support_Radius) { r_min = 0; }                                        // Same as if(k - (*this).Support_Radius < 0)
+        if(k < (*this).Support_Radius) { r_min = 0; }
         else { r_min = k - (*this).Support_Radius; }
 
-        if(k > (Z_SIDE_LENGTH - 1) - (*this).Support_Radius) { r_max = Z_SIDE_LENGTH - 1; }  // Same as if(k + (*this).Support_Radius > Z_SIDE_LENGTH - 1)
+        if(k + (*this).Support_Radius > (Z_SIDE_LENGTH - 1)) { r_max = Z_SIDE_LENGTH - 1; }
         else { r_max = k + (*this).Support_Radius; }
 
         // Loop through potential neighbors, generate neighbor list

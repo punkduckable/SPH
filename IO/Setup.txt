@@ -24,7 +24,7 @@ Friction Coefficient:                            .1
 ################################################################################
 # Number of Bodies
 
-Number of Bodies:                                1
+Number of Bodies:                                2
 
 
 
@@ -35,52 +35,7 @@ Number of Bodies:                                1
 Name:                                            Body1
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {15, 15, 15}
-    x plus BC [mm/s]:                            {Free, Free, Free}
-    x minus BC [mm/s]:                           {Free, Free, Free}
-    y plus BC [mm/s]:                            {Free, Free, Free}
-    y minus BC [mm/s]:                           {0, 0, 0}
-    z plus BC [mm/s]:                            {Free, Free, Free}
-    z minus BC [mm/s]:                           {Free, Free, Free}
-Is Fixed In Place:                               false
-Is Damageable:                                   true
-    Tau (Damage rate):                           .15
-
-# Material
-Lame Parameter [Mpa]:                            1.125
-mu0 (Shear Modulus) [Mpa]:                       .275
-Density [g/mm^3]:                                .01
-
-# Initial conditions
-Offset [mm]:                                     {-4.5, -4.5, -4.5}
-Initial Velocity [mm/s]:                         {0, 0, 0}
-
-# General Boundary Conditions
-Number of General Boundary Conditions:           1
-  # Condition 0
-  Condition Plane Normal Vector:                 {1, 1, 1}
-  Condition Plane Distance [mm]:                 3
-  Condition Inequality:                          >
-  Effect Vector [mm/s]:                          {-50, -50, -50}
-
-# Other
-Enable Gravity:                                  false
-Mu (Viscosity) [Mpa*s]:                          .0001
-Alpha (Hg Control parameter):                    .75
-Inter Particle Spacing (IPS) [mm]:               1
-Support Radius [# IPS]:                          3
-Time Steps Per Update:                           1
-
-
-
-################################################################################
-# Body 1
-
-# General
-Name:                                            Body2
-From FEB File:                                   false
-Is Box:                                          true
-    Dimensions [# Particles]:                    {30, 4, 4}
+    Dimensions [# Particles]:                    {3, 10, 3}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
     y plus BC [mm/s]:                            {Free, Free, Free}
@@ -97,7 +52,52 @@ mu0 (Shear Modulus) [Mpa]:                       .275
 Density [g/mm^3]:                                .01
 
 # Initial conditions
-Offset [mm]:                                     {-13, 0, 0}
+Offset [mm]:                                     {-1, 5, -1}
+Initial Velocity [mm/s]:                         {0, -500, 0}
+
+# General Boundary Conditions
+Number of General Boundary Conditions:           0
+  # Condition 0
+  Condition Plane Normal Vector:                 {0, 13, 0}
+  Condition Plane Distance [mm]:
+  Condition Inequality:                          >=
+  Effect Vector [mm/s]:                          {0, -200, 0}
+
+# Other
+Enable Gravity:                                  true
+Mu (Viscosity) [Mpa*s]:                          .00004
+Alpha (Hg Control parameter):                    .75
+Inter Particle Spacing (IPS) [mm]:               1.0
+Support Radius [# IPS]:                          3
+Time Steps Per Update:                           1
+
+
+
+################################################################################
+# Body 1
+
+# General
+Name:                                            Body2
+From FEB File:                                   false
+Is Box:                                          true
+    Dimensions [# Particles]:                    {20, 3, 3}
+    x plus BC [mm/s]:                            {Free, Free, Free}
+    x minus BC [mm/s]:                           {Free, Free, Free}
+    y plus BC [mm/s]:                            {Free, Free, Free}
+    y minus BC [mm/s]:                           {Free, Free, Free}
+    z plus BC [mm/s]:                            {Free, Free, Free}
+    z minus BC [mm/s]:                           {Free, Free, Free}
+Is Fixed In Place:                               false
+Is Damageable:                                   true
+    Tau (Damage rate):                           .15
+
+# Material
+Lame Parameter [Mpa]:                            1.125
+mu0 (Shear Modulus) [Mpa]:                       .275
+Density [g/mm^3]:                                .01
+
+# Initial conditions
+Offset [mm]:                                     {0, -1, -1}
 Initial Velocity [mm/s]:                         {0, 0, 0}
 
 # General Boundary Conditions
@@ -105,7 +105,7 @@ Number of General Boundary Conditions:           0
 
 # Other
 Enable Gravity:                                  false
-Mu (Viscosity) [Mpa*s]:                          .00005
+Mu (Viscosity) [Mpa*s]:                          .00004
 Alpha (Hg Control parameter):                    .75
 Inter Particle Spacing (IPS) [mm]:               1
 Support Radius [# IPS]:                          3

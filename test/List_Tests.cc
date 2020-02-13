@@ -6,7 +6,7 @@ TEST_CASE("List Tests","[List]") {
   List<unsigned> L;
   REQUIRE_THROWS( L.Front() );
   REQUIRE_THROWS( L.Back() );
-  REQUIRE( L.Get_Num_Nodes()  == 0 );
+  REQUIRE( L.Get_Length()  == 0 );
 
   const unsigned Value1 = 7;
   unsigned Value2;
@@ -15,13 +15,13 @@ TEST_CASE("List Tests","[List]") {
   L.Push_Back(Value1);
   REQUIRE( L.Front()         == Value1 );
   REQUIRE( L.Back()          == Value1 );
-  REQUIRE( L.Get_Num_Nodes() == 1 );
+  REQUIRE( L.Get_Length() == 1 );
 
   Value2 = L.Pop_Back();
   REQUIRE( Value2            == Value1 );
   REQUIRE_THROWS( L.Front() );
   REQUIRE_THROWS( L.Back() );
-  REQUIRE( L.Get_Num_Nodes()  == 0 );
+  REQUIRE( L.Get_Length()  == 0 );
 
   // Try poping an element from the back of an empty list
   REQUIRE_THROWS( L.Pop_Back() );
@@ -32,12 +32,12 @@ TEST_CASE("List Tests","[List]") {
   L.Push_Front(Value1);
   REQUIRE( L.Front()         == Value1 );
   REQUIRE( L.Back()          == Value1 );
-  REQUIRE( L.Get_Num_Nodes() == 1 );
+  REQUIRE( L.Get_Length() == 1 );
 
   Value2 = 0;
   Value2 = L.Pop_Front();
   REQUIRE( Value2             == Value1 );
-  REQUIRE( L.Get_Num_Nodes()  == 0 );
+  REQUIRE( L.Get_Length()  == 0 );
   REQUIRE_THROWS( L.Front() );
   REQUIRE_THROWS( L.Back() );
 
@@ -56,7 +56,7 @@ TEST_CASE("List Tests","[List]") {
 
   for(unsigned i = 0; i <= 5; i++) {
     Value2 = L.Pop_Front();
-    REQUIRE( L.Get_Num_Nodes()  == 5-i );
+    REQUIRE( L.Get_Length()  == 5-i );
     REQUIRE( Value2 == i );
   } // for(unsigned i = 0; i <= 5; i++) {
 } // TEST_CASE("List Tests","[List]") {

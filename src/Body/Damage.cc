@@ -8,7 +8,7 @@
 // Damage methods
 
 void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
-  while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
+  while(Damaged_Particle_List.Get_Length() != 0) {
 
   unsigned p = Damaged_Particle_List.Pop_Back();
 
@@ -287,5 +287,5 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
   /* Now that we've causally removed the damaged particle from the particles
   array, we need to make that it think that it has no neighbors */
   Particles[p].Num_Neighbors = 0;
-  } // while(Damaged_Particle_List.Get_Num_Nodes() != 0) {
+} // while(Damaged_Particle_List.Get_Length() != 0) {
 } // void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
