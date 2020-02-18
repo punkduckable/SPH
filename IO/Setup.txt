@@ -1,0 +1,112 @@
+################################################################################
+# Simulation Parameters
+
+# IO
+Load Simulation from Save:                       false
+Save Data To File:                               false
+Print Particle Forces:                           false
+Print Net External Forces:                       false
+Time Steps Between Prints:                       100
+
+# Time Step
+dt [s]:                                          .00001
+Num Time Steps:                                  100
+
+# Contact
+Contact Distance [mm]:                           1.0
+Friction Coefficient:                            .1
+
+# Note: The information below this line will not be read if
+# "Load Simulation From Save" == true.
+
+
+
+################################################################################
+# Number of Bodies
+
+Number of Bodies:                                2
+
+
+
+################################################################################
+# Body 0
+
+# General
+Name:                                            Body0
+From FEB File:                                   false
+Is Box:                                          true
+    Dimensions [# Particles]:                    {3, 10, 3}
+    x plus BC [mm/s]:                            {Free, Free, Free}
+    x minus BC [mm/s]:                           {Free, Free, Free}
+    y plus BC [mm/s]:                            {Free, Free, Free}
+    y minus BC [mm/s]:                           {Free, Free, Free}
+    z plus BC [mm/s]:                            {Free, Free, Free}
+    z minus BC [mm/s]:                           {Free, Free, Free}
+Is Fixed In Place:                               false
+Is Damageable:                                   true
+    Tau (Damage rate):                           .15
+
+# Material
+Lame Parameter [Mpa]:                            1.125
+mu0 (Shear Modulus) [Mpa]:                       .275
+Density [g/mm^3]:                                .01
+
+# Initial conditions
+Offset [mm]:                                     {-1, 5, -1}
+Initial Velocity [mm/s]:                         {0, -1000, 0}
+
+# General Boundary Conditions
+Number of General Boundary Conditions:           0
+  # Condition 0
+  Condition Plane Normal Vector:                 {0, 13, 0}
+  Condition Plane Distance [mm]:
+  Condition Inequality:                          >=
+  Effect Vector [mm/s]:                          {0, -200, 0}
+
+# Other
+Enable Gravity:                                  true
+Mu (Viscosity) [Mpa*s]:                          .00004
+Alpha (Hg Control parameter):                    .75
+Inter Particle Spacing (IPS) [mm]:               1.0
+Support Radius [# IPS]:                          3
+Time Steps Per Update:                           1
+
+
+
+################################################################################
+# Body 1
+
+# General
+Name:                                            Body1
+From FEB File:                                   false
+Is Box:                                          true
+    Dimensions [# Particles]:                    {20, 3, 3}
+    x plus BC [mm/s]:                            {Free, Free, Free}
+    x minus BC [mm/s]:                           {Free, Free, Free}
+    y plus BC [mm/s]:                            {Free, Free, Free}
+    y minus BC [mm/s]:                           {Free, Free, Free}
+    z plus BC [mm/s]:                            {Free, Free, Free}
+    z minus BC [mm/s]:                           {Free, Free, Free}
+Is Fixed In Place:                               false
+Is Damageable:                                   true
+    Tau (Damage rate):                           .15
+
+# Material
+Lame Parameter [Mpa]:                            1.125
+mu0 (Shear Modulus) [Mpa]:                       .275
+Density [g/mm^3]:                                .01
+
+# Initial conditions
+Offset [mm]:                                     {0, -1, -1}
+Initial Velocity [mm/s]:                         {0, 0, 0}
+
+# General Boundary Conditions
+Number of General Boundary Conditions:           0
+
+# Other
+Enable Gravity:                                  false
+Mu (Viscosity) [Mpa*s]:                          .00004
+Alpha (Hg Control parameter):                    .75
+Inter Particle Spacing (IPS) [mm]:               1
+Support Radius [# IPS]:                          3
+Time Steps Per Update:                           1

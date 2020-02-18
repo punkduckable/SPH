@@ -1,6 +1,7 @@
 #include "Body.h"
 #include "Vector/Vector.h"
 #include "Particle/Particle.h"
+#include "Errors.h"
 #include <stdio.h>
 #include <cstring>
 #include <string>
@@ -20,9 +21,9 @@ void Body::Print_Parameters(void) const {
   printf(         "h:                            %lf\n",   h);
   printf(         "Support Radius:               %u\n",    Support_Radius);
   printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
-  printf(         "Material:                     %s\n",    Body_Material.Name.c_str());
   printf(         "Lame:                         %lf\n",   Body_Material.Lame);
   printf(         "mu0 (Shear modulus):          %lf\n",   Body_Material.mu0);
+  printf(         "Gravity Enabled:              %u\n",    Gravity_Enabled);
   printf(         "mu (Viscosity):               %lf\n",   mu);
   printf(         "E (Young's modulus):          %lf\n",   Body_Material.E);
   printf(         "Tau (Damage rate):            %lf\n\n", Tau);
@@ -36,7 +37,7 @@ void Body::Export_Net_External_Force(const unsigned time_step) {
   function is not thread safe). */
 
   #if defined(IO_MONITOR)
-    printf("Exporting net external force %s\n",(*this).Name.c_str());
+    printf("Exporting net external force for %s\n",(*this).Name.c_str());
   #endif
 
   // First, open the file.
@@ -51,6 +52,15 @@ void Body::Export_Net_External_Force(const unsigned time_step) {
   else {
     File = fopen(File_Path.c_str(),"a");
   } // else {
+
+  if(File == nullptr) {
+    char Buf[500];
+    sprintf(Buf,
+            "Cant Open File Exception: Thrown by Body::Export_Net_External_Force\n"
+            "For some reason, ./IO/Force_Files/%s_Net_External_Forces.txt wouldn't open :(\n",
+            (*this).Name.c_str());
+    throw Cant_Open_File(Buf);
+  } // if(File == nullptr) {
 
   // Increment the number of times that we're printed net force data.
   Times_Printed_Net_External_Force++;
@@ -82,12 +92,21 @@ void Body::Export_Particle_Forces(void) {
   char Buf[10];
   sprintf(Buf,"%05u.txt",Times_Printed_Particle_Forces);
   std::string File_Path = "./IO/Force_Files/";
-  File_Path += (*this).Name.c_str();
+  File_Path += (*this).Name;
   File_Path +=  "_Force_";
   File_Path +=  Buf;
 
   // Now open the file.
   FILE * File = fopen(File_Path.c_str(), "w");
+  if(File == nullptr) {
+    char Error_Buf[500];
+    sprintf(Error_Buf,
+            "Cant Open File Exception: Thrown by Body::Export_Particle_Forces\n"
+            "For some reason, ./IO/Force_Files/%s_Force_%s won't open :(\n",
+            (*this).Name.c_str(),
+            Buf);
+    throw Cant_Open_File(Error_Buf);
+  } // if(File == nullptr) {
 
   // Increment the number of times that we're printed particle force data.
   Times_Printed_Particle_Forces++;
@@ -133,12 +152,21 @@ void Body::Export_Particle_Positions(void) {
 
   // Set up file
   char Buf[10];
-  sprintf(Buf,"%05u.txt",Times_Printed_Particle_Positions);
+  sprintf(Buf,"%05u.vtk",Times_Printed_Particle_Positions);
   std::string File_Path = "./IO/Position_Files/";
   File_Path += (*this).Name;
   File_Path += "_positions_";
   File_Path += Buf;
   FILE * File = fopen(File_Path.c_str(), "w");
+  if(File == nullptr) {
+    char Error_Buf[500];
+    sprintf(Error_Buf,
+            "Cant Open File Exception: Thrown by Body::Export_Particle_Positions\n"
+            "For some reason, ./IO/Position_Files/%s_positions_%s won't open :(\n",
+            (*this).Name.c_str(),
+            Buf);
+    throw Cant_Open_File(Error_Buf);
+  } // if(File == nullptr) {
 
   // Increment the number of times that we're printed particle positio data.
   Times_Printed_Particle_Positions++;
@@ -349,7 +377,7 @@ void Body::Export_Particle_Positions(void) {
 
 
 
-void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) {
+void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) const {
   // Print header.
   fprintf(File, "SCALARS ");
   fprintf(File, Weight_Name);
@@ -360,4 +388,4 @@ void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particle
   for(unsigned i = 0; i < Num_Particles; i++) {
     fprintf(File,"\t %8.3f\n", Data[i]);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
-} // void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) {
+} // void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) const {

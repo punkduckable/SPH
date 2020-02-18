@@ -1,4 +1,4 @@
-#if !defined CLASSES_HEADER
+#if !defined(CLASSES_HEADER)
 #define CLASSES_HEADER
 
   class Tensor;
@@ -6,7 +6,10 @@
   class Particle;
   class Body;
 
-  template <typename Type>
+  template <typename T>
   class List;
+
+  template <typename T>
+  class Array;
 
 #endif

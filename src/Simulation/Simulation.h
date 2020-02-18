@@ -1,9 +1,16 @@
 #if !defined(SUMULATION_HEADER)
 #define SUMULATION_HEADER
 
+//#define SIMULATION_DEBUG
+#define SIMULATION_SETUP_MONITOR
+
 #include "Classes.h"
+#include "Vector/Vector.h"
 #include "Materials.h"
 #include <string>
+#include <ctime>
+
+const double CLOCKS_PER_MS = CLOCKS_PER_SEC/1000.;
 
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
@@ -12,22 +19,14 @@ namespace Simulation {
   // Setup functions.
   // Defined in Simulation_Setup.cc
 
-  void Setup_Box(Body & Body_In, const unsigned m);
-  void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
-  void Bodies_Setup(void);                                 // Set up Body/Needle simulation
-  void Set_Body_Members(Body & Body_In);                   // Set default body members
-
+  void Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
 
 
   //////////////////////////////////////////////////////////////////////////////
-  // Run the simulation.
+  // Functions that run simulations
   // Defined in Simulation.cc
 
   void Run_Simulation(void);
-  void Startup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
-  void Set_Box_BCs(Body & Box);
-  void Set_Needle_BCs(Body & Needle);
-
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -43,45 +42,121 @@ namespace Simulation {
   TIME_TYPE Time_Since(TIME_TYPE time);
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Setup file function
+  // Defined in Setup_File.cc
+
+  Body* Load_Setup_File(void);
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation parameters
-  // (Note: const variables have internal linkage)
+  // Declared in Setup_File.cc (defined by Load_Setup_File.cc and Setup.txt)
 
-  // Simulation flags/properties. Defined
-  const bool Load_Data_From_File                 = false;
-  const bool Save_Data_To_File                   = false;
-  const bool Print_Particle_Forces               = true;
-  const bool Print_Net_Force                     = true;
-  const unsigned TimeSteps_Between_Prints        = 1000;
+  // IO paramaters
+  extern bool Load_Simulation_From_Save;
+  extern bool Save_Simulation_To_File;
+  extern bool Print_Particle_Forces;
+  extern bool Print_Net_External_Forces;
+  extern unsigned TimeSteps_Between_Prints;
 
-  // TimeStep paramters
-  const double dt                                = .0000001;        // Time step        : s
-  const unsigned Num_Steps                       = 100000;          // Number of time steps
+  // Time Step
+  extern double dt;                              // Time step                   : s
+  extern unsigned Num_Time_Steps;                // Number of time steps
 
-  // Contact parameter
-  const double Contact_Distance = 1;             // Distance at which bodies begin contacting one another.   : mm
+  // Contact
+  extern double Contact_Distance;                // Distance at which bodies begin contacting one another.   : mm
+  extern double Friction_Coefficient;                                          // unitless
 
-  // Friction coefficient.
-  const double Friction_Coefficient = .1;                                      //        : unitless
+  // Number of bodies
+  extern unsigned Num_Bodies;                    // Number of bodies in simulation
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Simulation Setup Parameters
+  // These variables are used to set up the simulation. They are defined in
+  // Setup_File.cc and used in Simulation_Setup.cc
+
+  /* To simplify implementation, I choose a random value to designate as "free".
+  If a particular BC component has this value, then that BC component is treated
+  as if it were "free" (had no BC applied to it). This means that it is impossible
+  to set a box BC of exactly -293103918 mm/s */
+  const double FREE = -293103918;
+
+  enum class Inequality{L = -2, LE = -1, E = 0, GE = 1, G = 2};
+  struct General_Boundary_Condition {
+    /* This structure is used to define a General Boundary condition. BCs affect
+    the velocity of particles in a body.
+    Each BC consists of two parts: a condition and an effect.
+
+
+    Condition: The condition is used to determine which particles (in a body)
+    will have the BC applied to them. The condition consists of....
+        Normal_Plane_Vector: Normal vector of a plane in 3d space
+
+        Distance_To_Plane: The distance, in the direction of the Normal_Vector,
+        from the origin to the plane. The plane consists of all points in 3d
+        space such that
+            <x,y,z> dot Condition_Normal_Vector = Condition_Distance_To_Plane
+
+        Inequality: Defines how the BC is applied relative to the plane
+        (LE = Less than or equal, GE = Greater than or Equal).
+
+    To understand how this works, suppose that
+        Condition_Plane_Normal_Vector = {1,2,3}
+        Condition_Plane_Distance = 15
+        Condition_Inequality = GE
+    Then any particle P whose reference position P_X satisifies
+        Dot_Product(P_X, {1,2,3}) / Magnitude({1,2,3}) >= 15
+    will have the BC effect applied to it.
+
+
+    Effect: This determines the effect that is applied to all particles (in the
+    body) that satisify the condition. The Effect consists of the Effect_Vector,
+    which determines how the BC affects the velocity of the particles that
+    satisify the condition. If you want to apply a BC in a particular direction,
+    then the corresponding component of the Effect_Vector should have that value.
+    If you do not want to apply a BC in a particular driection, then the
+    corresponding component of the Effect_Vector should be "FREE" (which is a
+    constant that's defined above. This means that you can not set a component
+    of the Effect_Vector to the value of the FREE constant. If you do, the code
+    will treat that component as Free/prescribe no BC. */
+
+    // Condition
+    Vector                   Condition_Plane_Normal_Vector;
+    double                   Condition_Plane_Distance;
+    Inequality               Condition_Inequality;
+
+    // Effect
+    Vector                   Effect_Vector;
+  }; // struct General_Boundary_Condition {
+
+  extern bool * From_FEB_File;                             // Which bodies will be read from file
+  extern Array<General_Boundary_Condition> * General_BCs;  // Specifies the general boundary conditions for each body.
+  extern Vector * Position_Offset;                         // Position offset for particles in body
+  extern Vector * Initial_Velocity;                        // Initial velocity condition for each body
 
 
 
   //////////////////////////////////////////////////////////////////////////////
-  // Body properties (defined in Simulation_Setup.cc)
+  // Boundary Conditions
+  // Defined in Boundary_Conditions.cc
 
-  extern unsigned Num_Bodies;                    // Number of bodies in simulation
-  extern std::string * Names;                    // The names of each body (name must match File name if reading from FEB file)
-  extern bool * Is_Box;                          // Which bodies are Boxs
-  extern bool * Is_Boundary;                     // Which bodies are boundaries (can be from FEB file or Box)
-  extern bool * Is_Damagable;                    // Which bodies can be damaged
-  extern bool * From_FEB_File;                   // Which bodies will be read from file
-  extern unsigned * Steps_Per_Update;            // How many time steps pass between updating this Body's P-K tensor
-  extern double * IPS;                           // Inter particle spacing in mm.
-  extern Vector * Dimensions;                    // Dimensions of Boxs (only applicable for Boxs)
-  extern Vector * Offset;                        // Poisition offset (only applicable for Boxs)
-  extern Vector * Initial_Velocity;              // Initial velocity condition
-  extern Materials::Material * Simulation_Materials;       // Each bodies material
+  struct Box_BCs {
+    Vector x_plus_BC;
+    Vector x_minus_BC;
+    Vector y_plus_BC;
+    Vector y_minus_BC;
+    Vector z_plus_BC;
+    Vector z_minus_BC;
+  }; // struct Box_BCs {
+
+  void Set_General_BCs(Body & Body_In,                     // The body we're applying the BC to
+                       Array<General_Boundary_Condition> & BCs_In);  // The BCs being applied
+  void Set_Box_BCs(Body & Box,                             // Reference to the box body
+                   Box_BCs & Boundary_Conditions);         // Box's parameters
+  void Set_Box_Particle_BCs(Particle & P_In,               // Particle that we're applying the BC to
+                            Vector BC);                    // The BC that's being applied
 } // namespace Simulation {
 
 #endif

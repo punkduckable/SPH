@@ -646,7 +646,7 @@ Tensor Tensor::Inverse(void) const{
   if(Det_S == 0) {
     char Error_Message_Buffer[500];
     sprintf(Error_Message_Buffer,
-            "Zero_Determinant Exception: Thrown by Tensor::Inverse\n"
+            "Singular_Matrix Exception: Thrown by Tensor::Inverse\n"
             "| %9.2e %9.2e %9.2e |\n"
             "| %9.2e %9.2e %9.2e |\n"
             "| %9.2e %9.2e %9.2e |\n"
@@ -654,7 +654,7 @@ Tensor Tensor::Inverse(void) const{
             (*this)[0*3 + 0], (*this)[0*3 + 1], (*this)[0*3 + 2],
             (*this)[1*3 + 0], (*this)[1*3 + 1], (*this)[1*3 + 2],
             (*this)[2*3 + 0], (*this)[2*3 + 1], (*this)[2*3 + 2]);
-    throw Zero_Determinant(Error_Message_Buffer);
+    throw Singular_Matrix(Error_Message_Buffer);
   } // if(Det_S == 0) {
 
   Tensor_Inv[3*0 + 0] = -(*this)[2*3 + 1]*(*this)[1*3 + 2]

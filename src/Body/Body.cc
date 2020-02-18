@@ -3,9 +3,13 @@
 #include "Vector/Vector.h"
 #include <assert.h>
 #include <math.h>
+#if defined(_OPENMP)
+  #include <omp.h>
+#endif
 
 // Set K (static member of Body class)
-double Body::K = 400;
+const double Body::K = 400;
+const Vector Body::g = {0, -9810., 0};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors, destructor
@@ -17,7 +21,8 @@ Body::Body(void) {
   Y_SIDE_LENGTH = 0;
   Z_SIDE_LENGTH = 0;
   Is_Box = false;
-  Is_Boundary = false;
+  Is_Fixed = false;
+  Gravity_Enabled = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -43,6 +48,8 @@ Body::Body(const unsigned Num_Particles_In) {
   Y_SIDE_LENGTH = 0;
   Z_SIDE_LENGTH = 0;
   Is_Box = false;
+  Is_Fixed = false;
+  Gravity_Enabled = false;
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -53,7 +60,9 @@ Body::Body(const unsigned Num_Particles_In) {
 
 
 
-Body::~Body(void) { }
+Body::~Body(void) {
+  delete [] Particles;
+}
 
 
 
@@ -63,7 +72,9 @@ Body::~Body(void) { }
 // Operator Overoading
 
 Particle & Body::operator[](const unsigned i) {
-  // Check that i is within bounds of Particles array.
+  // Check that the Particles are set up and that i is within the bounds of
+  // This body's Particles array.
+  assert((*this).Particles_Set_Up == true);
   assert(i < (*this).Num_Particles);
 
   return (*this).Particles[i];
@@ -72,11 +83,29 @@ Particle & Body::operator[](const unsigned i) {
 
 
 const Particle & Body::operator[](const unsigned i) const {
-  // Check that i is within bounds of Particles Array.
+  // Check that the Particles are set up and that i is within the bounds of
+  // This body's Particles array.
+  assert((*this).Particles_Set_Up == true);
   assert(i < (*this).Num_Particles);
 
   return (*this).Particles[i];
 } // const Particle & Body::operator[](const unsigned i) const {
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Boundary Conditions
+
+void Body::Apply_BCs(void) {
+  // Using this function only makes sense if the particles array has been set up.
+  assert(Particles_Set_Up);
+
+  // For each particle in this body, apply its BCs.
+  #pragma omp for
+  for(unsigned i = 0; i < (*this).Num_Particles; i++) { Particles[i].Apply_BCs(); }
+} // void Body::Apply_BCs(void) {
 
 
 
@@ -158,17 +187,30 @@ void Body::Set_Support_Radius(const unsigned SR_In) {
 
 
 
-void Body::Set_Material(const Materials::Material & Mat_In) { Body_Material = Mat_In; }
+void Body::Set_Material(const Materials::Material & Mat_In) {
+  Body_Material = Mat_In;
+
+  /* Note: In general, E may or may not be set in Mat_In. The Lame parameter
+  and shear modulus should be set, however, and E can be calculated from
+  these parameters. Thus, to allow bodies to be set up without directly setting
+  E, we calculuate E using the following equation:
+            E = mu0*(3*Lame + 2*mu0)/(Lame + mu0)
+  */
+  Body_Material.E = (Mat_In.mu0)*(3*Mat_In.Lame + 2*Mat_In.mu0)/(Mat_In.Lame + Mat_In.mu0);
+} // void Body::Set_Material(const Materials::Material & Mat_In) {
 void Body::Set_mu(const double mu_In) { mu = mu_In; }
 void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }
 
-void Body::Set_Tau(const double Tau_In) { Tau = Tau_In; }
-void Body::Set_Damageable(const bool D_In) { Damageable = D_In; }
+void Body::Set_Tau(const double Tau_In) {
+  assert(Tau_In != 0);
+  (*this).Tau = Tau_In;
+} // void Body::Set_Tau(const double Tau_In) {
+void Body::Set_Is_Damageable(const bool D_In) { Is_Damageable = D_In; }
 
 
 
 
-void Body::Set_Box_Dimensions(const Vector & Dimensions) {
+void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const unsigned Dim_z) {
   // Check if Box has already been set up
   if((*this).Particles_Set_Up == true) {
     printf("%s has already been set up! You can't change its dimensions\n", Name.c_str());
@@ -176,17 +218,17 @@ void Body::Set_Box_Dimensions(const Vector & Dimensions) {
   } // if(Num_Particles != 0) {
 
   // Check for non-sensical input
-  if(Dimensions(0) == 0 || Dimensions(1) == 0 || Dimensions(2) == 0) {
+  if(Dim_x == 0 || Dim_y == 0 || Dim_z == 0) {
       printf("%s can't have a side length of zero...\n", Name.c_str());
       return;
-  } // if(Dimensions(0) == 0 || Dimensions(1) == 0 || Dimensions(2) == 0) {
+  } // if(Dim_x == 0 || Dim_y == 0 || Dim_z == 0) {
 
   // Now designate this Body as a Box
   Is_Box = true;
 
-  X_SIDE_LENGTH = Dimensions(0);
-  Y_SIDE_LENGTH = Dimensions(1);
-  Z_SIDE_LENGTH = Dimensions(2);
+  X_SIDE_LENGTH = Dim_x;
+  Y_SIDE_LENGTH = Dim_y;
+  Z_SIDE_LENGTH = Dim_z;
 
   // Set up particles array.
   Num_Particles = X_SIDE_LENGTH*Y_SIDE_LENGTH*Z_SIDE_LENGTH;
@@ -204,13 +246,16 @@ void Body::Set_Box_Dimensions(const Vector & Dimensions) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
 
   (*this).Particles_Set_Up = true;
-} // void Body::Set_Box_Dimensions(const Vector & Dimensions); {
+} // void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const unsigned Dim_z) {
 
 
 
-void Body::Set_Boundary(const bool Boundary_In) { Is_Boundary = Boundary_In; }
+void Body::Set_Is_Fixed(const bool Is_Fixed_In) { Is_Fixed = Is_Fixed_In; }
 
 void Body::Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
+void Body::Set_Time_Steps_Per_Update(const unsigned Steps_In) { Time_Steps_Per_Update = Steps_In; }
+
+void Body::Set_Gravity_Enabled(const bool Gravity_Enabled_In) { Gravity_Enabled = Gravity_Enabled_In; }
 
 void Body::Set_F_Index(const unsigned char i) {
   assert(i <= 1);
@@ -220,8 +265,8 @@ void Body::Set_F_Index(const unsigned char i) {
 
 
 void Body::Increment_F_Index(void) {
-  if(F_Index == 0) { F_Index++; }
-  else { F_Index = 0; }
+  if(F_Index == 0) { F_Index = 1; }
+  else {             F_Index = 0; }
 } // void Body::Increment_F_Counter(void) {
 
 
@@ -231,41 +276,44 @@ void Body::Increment_F_Index(void) {
 ////////////////////////////////////////////////////////////////////////////////
 // Getters
 
-unsigned Body::Get_Num_Particles(void) const { return Num_Particles; }
-std::string Body::Get_Name(void) const { return Name; }
+unsigned Body::Get_Num_Particles(void) const { return (*this).Num_Particles; }
+std::string Body::Get_Name(void) const { return (*this).Name; }
 
-double Body::Get_Inter_Particle_Spacing(void) const { return Inter_Particle_Spacing; }
-unsigned Body::Get_Support_Radius(void) const { return Support_Radius; }
+double Body::Get_Inter_Particle_Spacing(void) const { return (*this).Inter_Particle_Spacing; }
+unsigned Body::Get_Support_Radius(void) const { return (*this).Support_Radius; }
 
-double Body::Get_h(void) const { return h; }
-double Body::Get_Shape_Function_Amplitude(void) const { return Shape_Function_Amplitude; }
-Materials::Material Body::Get_Material(void) const { return Body_Material; }
-double Body::Get_Lame(void) const { return Body_Material.Lame; }
-double Body::Get_mu0(void) const { return Body_Material.mu0; }
-double Body::Get_mu(void) const { return mu; }
-double Body::Get_E(void) const { return Body_Material.E; }
-double Body::Get_density(void) const { return Body_Material.density; }
-double Body::Get_alpha(void) const { return alpha; }
+double Body::Get_h(void) const { return (*this).h; }
+double Body::Get_Shape_Function_Amplitude(void) const { return (*this).Shape_Function_Amplitude; }
+Materials::Material Body::Get_Material(void) const { return (*this).Body_Material; }
+double Body::Get_Lame(void) const { return (*this).Body_Material.Lame; }
+double Body::Get_mu0(void) const { return (*this).Body_Material.mu0; }
+double Body::Get_mu(void) const { return (*this).mu; }
+double Body::Get_E(void) const { return (*this).Body_Material.E; }
+double Body::Get_density(void) const { return (*this).Body_Material.density; }
+double Body::Get_alpha(void) const { return (*this).alpha; }
 
-unsigned char Body::Get_F_Index(void) const { return F_Index; }
+unsigned char Body::Get_F_Index(void) const { return (*this).F_Index; }
 
-double Body::Get_Tau(void) const { return Tau; }
-bool Body::Get_Damagable(void) const { return Damageable; }
+double Body::Get_Tau(void) const { return (*this).Tau; }
+bool Body::Get_Is_Damageable(void) const { return (*this).Is_Damageable; }
 
-bool Body::Get_Box(void) const { return Is_Box; }
+bool Body::Get_Is_Box(void) const { return (*this).Is_Box; }
 unsigned Body::Get_X_SIDE_LENGTH(void) const {
   assert( (*this).Is_Box );
-  return X_SIDE_LENGTH;
+  return (*this).X_SIDE_LENGTH;
 } // unsigned Get_X_SIDE_LENGTH(void) const {
 unsigned Body::Get_Y_SIDE_LENGTH(void) const {
   assert( (*this).Is_Box );
-  return Y_SIDE_LENGTH;
+  return (*this).Y_SIDE_LENGTH;
 } // unsigned Get_Y_SIDE_LENGTH(void) const {
 unsigned Body::Get_Z_SIDE_LENGTH(void) const {
   assert( (*this).Is_Box );
-  return Z_SIDE_LENGTH;
+  return (*this).Z_SIDE_LENGTH;
 } // unsigned Get_Z_SIDE_LENGTH(void) const {
 
-bool Body::Get_Boundary(void) const { return Is_Boundary; }
+bool Body::Get_Is_Fixed(void) const { return (*this).Is_Fixed; }
 
-bool Body::Get_First_Time_Step(void) const { return First_Time_Step; }
+bool Body::Get_First_Time_Step(void) const { return (*this).First_Time_Step; }
+unsigned Body::Get_Time_Steps_Per_Update(void) const { return (*this).Time_Steps_Per_Update; }
+
+bool Body::Get_Gravity_Enabled(void) const { return (*this).Gravity_Enabled; }

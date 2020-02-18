@@ -1,9 +1,10 @@
 #include "FEB_File.h"
 #include "Vector/Vector.h"
+#include "Errors.h"
 
-int FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
+void IO::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
   // First, we need to get the path to the Febio file. Now we can open the file
-  std::string File_Path = "../Files/";
+  std::string File_Path = "./IO/Files/";
   File_Path += File_Name;                        // Add file name
   File_Path += ".feb";                           // add FEBio file extension
 
@@ -12,8 +13,12 @@ int FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsi
 
   // Check that file could be opened
   if(File == nullptr) {
-    printf("Requested FEBio file does not exist.\n");
-    return 1;
+    char Buf[500];
+    sprintf(Buf,
+            "Can't Open File Exception: Thrown by Read_FEB_File\n"
+            "For some reason, ./IO/Files/%s.feb can not be opened",
+            File_Name.c_str());
+    throw Cant_Open_File(Buf);
   } // if(File == nullptr) {
 
   // Now search through FEBio file until we come to 'Nodes' section
@@ -59,8 +64,8 @@ int FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsi
 
     // Read in a line and check if we're at the end of the nodes section
     if(fgets(Buf, Buf_Length, File) == nullptr) {
-      printf("Couldn't find end of FEBio file\n");
-      return 1;
+      throw Bad_Read("Bad Read Exception: Thrown by IO::Read_FEB_File\n"
+                     "The program could not find the end of the FEBio file :(\n");
     } // if(fgets(Buf, Buf_Length, File) == nullptr) {
 
     End_Of_Current_Line = ftell(File);
@@ -109,6 +114,4 @@ int FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsi
 
   printf("Read in %u particles \n",ID_Buf);
   fclose(File);
-
-  return 0;
-} // int FEB_File::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
+} // void IO::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {

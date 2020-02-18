@@ -2,12 +2,13 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "List.h"
+#include "Array.h"
 #include <assert.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Neighbor methods!
 
-void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, const unsigned * Neighbor_ID_Array) {
+void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_In) {
   /* First check if this particle already has neighbors. This function should
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
@@ -15,11 +16,12 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
   assert(Particles[i].Neighbors_Are_Set == false);
 
   // Set Num_Neighbors using input
+  unsigned Num_Neighbors_In = Neighbor_IDs_In.Get_Length();
   Particles[i].Num_Neighbors = Num_Neighbors_In;
 
   /* Next, check that Num_Neighbors_In > 0. if Num_Neighbors_In = 0, then there are no neighbors. */
   if(Num_Neighbors_In == 0) {
-    printf("You didn't supply any neighbors for particle %u! I'm damaging this particle.\n", i);
+    printf("You didn't supply any neighbors for particle %u! Particle %u is being damaged.\n", i, i);
     Particles[i].D = 1;
     return;
   } // if(Num_Neighbors_In == 0) {
@@ -27,17 +29,35 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /* Now that we know our neighbors IDs, we can figure out everything that we
-  want to know about them. We an set the Neighbor_IDs, r, R, W, and Grad_W
-  members. These can be used to calculate the shape matrix (and its inverse)! */
+  /* Now that we know our neighbors IDs, we can set Particle[i]'s neighbor list.
+  After that has been set, we can call Set_Neighbor_Dependent_Members to set up
+  the members of particles[i] that can not be set until the neighbors are
+  known (such as r, R, W, and Grad_W, etc...) */
 
+  unsigned * Neighbor_IDs = new unsigned[Num_Neighbors_In];
+  for(unsigned j = 0; j < Num_Neighbors_In; j++) { Neighbor_IDs[j] = Neighbor_IDs_In[j]; }
+  Particles[i].Neighbor_IDs = Neighbor_IDs;
+
+  Set_Neighbor_Dependent_Members(i);
+} // void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_In) {
+
+
+
+void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
+  /* Function description:
+  This function is designed to set up the members of a particle that can not be
+  defined until the particle's members are known (such as R, Mag_R, W, A_Inv,
+  etc...).
+
+  This function should NOT be called until the ith particle's neighbor list
+  has been set! */
+  unsigned Num_Neighbors = Particles[i].Get_Num_Neighbors();
 
   // Allocate memory for the Dynamic arrays
-  unsigned * Neighbor_IDs = new unsigned[Num_Neighbors_In];
-  Vector * R = new Vector[Num_Neighbors_In];                                   //        : mm Vector
-  double * Mag_R = new double[Num_Neighbors_In];                               //        : mm
-  double * W = new double[Num_Neighbors_In];                                   //        : unitless
-  Vector * Grad_W = new Vector[Num_Neighbors_In];                              //        : 1/mm Vector
+  Vector * R = new Vector[Num_Neighbors];                                      //        : mm Vector
+  double * Mag_R = new double[Num_Neighbors];                                  //        : mm
+  double * W = new double[Num_Neighbors];                                      //        : unitless
+  Vector * Grad_W = new Vector[Num_Neighbors];                                 //        : 1/mm Vector
 
   // Allocate some variables
   int Neighbor_ID;                               // Keep track of current particle
@@ -47,24 +67,24 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
            0,0,0};
 
   // Loop through each neighbor, determine relevant information
-  for(unsigned j = 0; j < Num_Neighbors_In; j++) {
-    Neighbor_ID = Neighbor_ID_Array[j];          // Get Neighbor ID (index in Particles array)
-    Neighbor_IDs[j] = Neighbor_ID;               // Set jth element of Neighbor_IDs member
+  for(unsigned j = 0; j < Num_Neighbors; j++) {
+    Neighbor_ID = Particles[i].Get_Neighbor_IDs(j);        // Get Neighbor ID of the jth neighbor of particle i
 
     // Calculate displacement vectors
     R[j] = Particles[Neighbor_ID].X - Particles[i].X;      // Reference displacement vector        : mm Vector
-    Mag_R[j] = R[j].Magnitude();                 // |R[j]|                               : mm
+    Mag_R[j] = R[j].Magnitude();                           // |R[j]|                               : mm
 
     // Calculate shape function, shape function gradient for jth neighbor
     W[j] = Shape_Function_Amplitude*(h - Mag_R[j])                             //        : unitless
                                    *(h - Mag_R[j])
                                    *(h - Mag_R[j]);
+
     Grad_W[j] = -3*Shape_Function_Amplitude                                    //        : 1/mm Vector
                   *((h - Mag_R[j])*(h - Mag_R[j]))
                   *(R[j] / Mag_R[j]);
 
     // Add in the Current Neighbor's contribution to the Shape tensor
-    V_j = Particles[Neighbor_ID].Vol;            // Neighbor Volume                      : mm^3
+    V_j = Particles[Neighbor_ID].Volume;                   // Neighbor Volume            : mm^3
     A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless Tensor
   } // for(unsigned j = 0; j < Num_Neighbors_In; j++) {
 
@@ -72,17 +92,15 @@ void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors_In, cons
 
   //////////////////////////////////////////////////////////////////////////////
   // Now set the ith particle's members
-  Particles[i].Neighbor_IDs = Neighbor_IDs;
   Particles[i].R = R;                                                          //        : mm Vector
   Particles[i].Mag_R = Mag_R;                                                  //        : mm
   Particles[i].W = W;                                                          //        : unitless
   Particles[i].Grad_W = Grad_W;                                                //        : 1/mm Vector
   Particles[i].A_Inv = A^(-1);                                                 //        : unitless Tensor
 
-
   // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
   Particles[i].Neighbors_Are_Set = true;
-} // void Body::Set_Neighbors(const unsigned i, const unsigned Num_Neighbors, const unsigned * Neighbor_ID_Array) {
+} // void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 
 
 
@@ -94,7 +112,11 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 
   It should be noted that, since h and |Rj| are positive numbers, if h>|Rj|
   then h^2>|Rj|^2. We can compute this second condition using a dot product
-  (which is far easier than finding the magnitude)*/
+  (which is far easier than finding the magnitude) */
+
+  /* A particle can not be its own neighbor. If i = j, then something went wrong.
+  and we should abort. */
+  assert(i != j);
 
   const Vector Rj = (*this).Particles[i].Get_X() - (*this).Particles[j].Get_X();
   return ( h*h > Dot_Product(Rj, Rj) );
@@ -105,7 +127,6 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 void Body::Find_Neighbors(void) {
   unsigned i,j;                              // Loop index variables
   List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
-  unsigned *Neighbor_IDs;                    // Array that holds final list of neighbors
 
   // Cycle through the particles
   for(i = 0; i < Num_Particles; i++) {
@@ -120,20 +141,12 @@ void Body::Find_Neighbors(void) {
       if(Are_Neighbors(i, j)) { Particle_Neighbor_List.Push_Back(j); }
     } // for(unsigned j = 0; j < Num_Particles; j++) {
 
-    /* Now that we have the neighbor list, we can make it into an array. To do
-    this, we allocate an array whose length is equal to the length of the
-    neighbor list. We then populate this array with the elements of the list
-    and finally send this off to the particle (whose neighbors we found) */
-    unsigned Num_Neighbors = Particle_Neighbor_List.Node_Count();
-    Neighbor_IDs = new unsigned[Num_Neighbors];
-
-    for(j = 0; j < Num_Neighbors; j++) { Neighbor_IDs[j] = Particle_Neighbor_List.Pop_Front(); }
+    /* Now that we have the neighbor ID list, we can make it into an array.
+    This is done using the Array class' list constructor. See Array.h */
+    Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
 
     // Now sent the Neighbor list to the particle
-    Set_Neighbors(i, Num_Neighbors, Neighbor_IDs);
-
-    /* Now free Neighbor_IDs array for next particle! */
-    delete [] Neighbor_IDs;
+    Set_Neighbors(i, Neighbor_IDs);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 } // void Body::Find_Neighbors(void) {
 
@@ -188,40 +201,37 @@ void Body::Find_Neighbors_Box(void) {
         unsigned p,q,r;                             // Loop index variables
         unsigned p_min, p_max, q_min, q_max, r_min, r_max;
         List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
-        unsigned Num_Neighbors;                    // Number of neighbors found
-        unsigned *Neighbor_IDs;                    // Array that holds final list of neighbors
 
-        /* If we are near the edge of the cube then we need to adjust which
-        particles we search through
+        /* If we are near the upper or lower bound for any one of the 3
+        coordinates, then we need to adjust the upper or lower bound of our
+        search.
 
-        Note: Because unsigned integers rollover, we need to be careful to
-        structure our tests such that they do not modify i j or k. For example,
-        if k = 0 then check if k - Support_Radius < 0 will ALWAYS return
-        false since 0 - Support_Radius = ~4 billion (rollover!). However,
-        structuring the checks in this way makes them less readible, so I have
-        included a logically equivalent (if rollover is ignored) if statement
-        as a comment for each check */
+        To understand why we need to do this, suppose that our i coordinate is 3.
+        Then, the only smaller i coordinates are 0, 1, and 2. In general, if our
+        i coordinate is n then there are n smaller i coordinate values. If the
+        support radius is < n, then we need to check the n-Support_Radius i
+        coordinates with a smaller i coordinate. Otherwise, we need to check
+        all n. */
 
         // i index (x coordinate) checks
-        if(i < ((*this).Support_Radius)) { p_min = 0; }                                        // Same as if i - (*this).Support_Radius < 0
-        else { p_min  = i - (*this).Support_Radius; }
+        if(i < (*this).Support_Radius) { p_min = 0; }
+        else{ p_min = i -  (*this).Support_Radius; }
 
-
-        if(i > (X_SIDE_LENGTH - 1) - (*this).Support_Radius) { p_max = X_SIDE_LENGTH - 1; }  // Same as if(i + (*this).Support_Radius > X_SIDE_LENGTH -1)
+        if(i + (*this).Support_Radius > (X_SIDE_LENGTH - 1)) { p_max = X_SIDE_LENGTH - 1; }
         else { p_max = i + (*this).Support_Radius; }
 
         // j index (y coordinate) checks
-        if(j < (*this).Support_Radius) { q_min = 0; }                                        // Same as if(j - (*this).Support_Radius < 0)
+        if(j < (*this).Support_Radius) { q_min = 0; }
         else { q_min = j - (*this).Support_Radius; }
 
-        if(j > (Y_SIDE_LENGTH - 1) - (*this).Support_Radius) { q_max = Y_SIDE_LENGTH - 1; }  // Same as if(j + (*this).Support_Radius > Y_SIDE_LENGTH - 1)
+        if(j + (*this).Support_Radius > (Y_SIDE_LENGTH - 1)) { q_max = Y_SIDE_LENGTH - 1; }
         else { q_max = j + (*this).Support_Radius; }
 
         // k index (z coordinate) checks
-        if(k < (*this).Support_Radius) { r_min = 0; }                                        // Same as if(k - (*this).Support_Radius < 0)
+        if(k < (*this).Support_Radius) { r_min = 0; }
         else { r_min = k - (*this).Support_Radius; }
 
-        if(k > (Z_SIDE_LENGTH - 1) - (*this).Support_Radius) { r_max = Z_SIDE_LENGTH - 1; }  // Same as if(k + (*this).Support_Radius > Z_SIDE_LENGTH - 1)
+        if(k + (*this).Support_Radius > (Z_SIDE_LENGTH - 1)) { r_max = Z_SIDE_LENGTH - 1; }
         else { r_max = k + (*this).Support_Radius; }
 
         // Loop through potential neighbors, generate neighbor list
@@ -239,19 +249,11 @@ void Body::Find_Neighbors_Box(void) {
         } // for(p = p_min; p <= p_max; p++) {
 
         /* Now that we have the neighbor list, we can make it into an array. To do
-        this, we allocate an array whose length is equal to the length of the
-        neighbor list. We then populate this array with the elements of the list
-        and finally send this off to the particle (whose neighbors we found) */
-        Num_Neighbors = Particle_Neighbor_List.Node_Count();
-        Neighbor_IDs = new unsigned[Num_Neighbors];
-
-        for(p = 0; p < Num_Neighbors; p++) { Neighbor_IDs[p] = Particle_Neighbor_List.Pop_Front(); }
+        this, I use the Array class' list constructor. See Array.h */
+        Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
 
         // Now sent the Neighbor list to the particle
-        Set_Neighbors(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, Num_Neighbors, Neighbor_IDs);
-
-        /* Now free Neighbor_IDs array for next particle! */
-        delete [] Neighbor_IDs;
+        Set_Neighbors(i*(Y_SIDE_LENGTH*Z_SIDE_LENGTH) + k*(Y_SIDE_LENGTH) + j, Neighbor_IDs);
       } // for(unsigned k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
@@ -265,6 +267,7 @@ void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) 
   // To be able to remove a neighbor, the particle in question must have neighbors!
   if(Particles[i].Neighbors_Are_Set == false || Particles[i].Num_Neighbors == 0) {
     printf("Particle %d has no neighbors! We can't remove %d\n", i, Remove_Neighbor_ID);
+    return;
   } // if(P_In.Neighbors_Are_Set == false || P_In.Num_Neighbors == 0) {
 
   /* Note: We use the term 'Neighbor Arrays' to refer to the dynamic particle
@@ -316,9 +319,9 @@ void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) 
     New_Grad_W[p]       = Particles[i].Grad_W[j];                              //        : 1/(mm^4) Vector
 
     // Calculate New shape tensor.
-    Vol_p = Particles[Particles[i].Neighbor_IDs[p]].Vol;                       //        : mm^3
+    Vol_p = Particles[Particles[i].Neighbor_IDs[p]].Volume;                    //        : mm^3
     New_A += Dyadic_Product((Vol_p*New_Grad_W[p]), New_R[p]);                  // New shape tensor : unitless Tensor
-  } // for(j = 0; j < Num_Neighbors; j++) {
+  } // for(unsigned j = 0; j < Num_Neighbors; j++) {
 
   // Now that we have our new neighbor arrays, we can replace/delete the old
   // neighbor arrays

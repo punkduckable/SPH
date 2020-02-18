@@ -1,11 +1,16 @@
 #if !defined(PARTICLE_HEADER)
 #define PARTICLE_HEADER
 
+#define PARTICLE_DEBUG
+
 #include "Classes.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
 #include "Simulation/Simulation.h"
-#include "IO/Data_Dump.h"
+#include "IO/Save_Simulation.h"
+#include "IO/Load_Simulation.h"
+#include <fstream>
+
 
 class Particle {
   friend Body;
@@ -14,8 +19,11 @@ class Particle {
     unsigned ID;
 
     // Particle dimensions (Mass, Vol, etc...)
+    bool Mass_Set;
+    bool Volume_Set;
+    bool Radius_Set;
     double Mass;                                           // Particle Mass              : g
-    double Vol;                                            // Particle volume            : mm^3
+    double Volume;                                         // Particle volume            : mm^3
     double Radius;                                         // Particle radius            : mm
 
     // Particle dynamics variables
@@ -64,6 +72,10 @@ class Particle {
     Vector *Grad_W;                                        // Dynamic array. Stores Gradient of the Shape function at each neighbor        : 1/(mm^4)
     Tensor A_Inv;                                          // Inverse of shape tensor                                                      : unitless
 
+    // BC variables.
+    bool Has_BC[3];                                        // ith component is true if this particle has a BC in the ith direction.
+    double BC[3];                                          // velocity BC       : mm/s Vector
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors, destructor
@@ -82,10 +94,19 @@ class Particle {
 
 
     ////////////////////////////////////////////////////////////////////////////
+    // Other functions
+
+    void Apply_BCs(void);                                  // Applies boundary conditions
+
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
     // Setters
     void Set_ID(const unsigned ID_In);
+
     void Set_Mass(const double Mass_In);                                       //        : g
-    void Set_Vol(const double Vol_In);                                         //        : mm^3
+    void Set_Volume(const double Volume_In);                                   //        : mm^3
     void Set_Radius(const double Radius_In);                                   //        : mm
 
     void Set_X(const Vector & X_In);                       // Set ref position           : mm Vector
@@ -95,13 +116,16 @@ class Particle {
 
     void Set_D(const double D_In);                         // Set Damage parameter       : unitless
 
+    void Set_BC(const unsigned Component,                  // Set a component of the particles BC
+                const double Value);
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Getters
     unsigned Get_ID(void) const;                                               //
+
     double Get_Mass(void) const;                                               //        : g
-    double Get_Vol(void) const;                                                //        : mm^3
+    double Get_Volume(void) const;                                             //        : mm^3
     double Get_Radius(void) const;                                             //        : mm
 
     const Vector & Get_X(void) const;                                          //        : mm Vector
@@ -122,17 +146,18 @@ class Particle {
     unsigned Get_Num_Neighbors(void) const;
     unsigned Get_Neighbor_IDs(unsigned i) const;
 
+    bool Get_Has_BC(unsigned Component) const;             // true if particle has a BC in the direction of specified Component
+    double Get_BC(unsigned Component) const;               // returns BC in the Component direction (if the particle has one)
+
 
 
   ////////////////////////////////////////////////////////////////////////////
   // Friends, Printing
   friend void Particle_Tests(void);
   friend void Simulation::Run_Simulation(void);
-  friend void Simulation::Set_Box_BCs(Body & Box);
-  friend void Simulation::Set_Needle_BCs(Body & Needle);
-  friend int Data_Dump::Load_Body(Body & Body_In);
-  friend void Data_Dump::Load_Particle(Particle & P_In,
-                                       FILE * File);
+  friend void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC);
+  friend void IO::Load_Particle(Particle & P_In,
+                                std::ifstream & File);
 
   // Printing function
   void Print(void) const;                                  // Print's info about particle (mostly for testing)

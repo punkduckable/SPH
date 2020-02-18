@@ -6,7 +6,8 @@
 
 #include "Materials.h"
 #include "Classes.h"
-#include "IO/Data_Dump.h"
+#include "IO/Save_Simulation.h"
+#include "IO/Load_Simulation.h"
 #include <string>
 
 #if !defined(PI)
@@ -24,8 +25,8 @@ class Body {
     unsigned Y_SIDE_LENGTH = 0;
     unsigned Z_SIDE_LENGTH = 0;
 
-    // Boundary parameters
-    bool Is_Boundary = false;
+    // Is Fixed parameters
+    bool Is_Fixed = false;
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -48,6 +49,10 @@ class Body {
     // Material Parameters
     Materials::Material Body_Material;
 
+    // Gravity
+    static const Vector g;                       // Set in Body.cc                       : mm/s^2 Vector
+    bool Gravity_Enabled;
+
     // Viscosity parameters
     double mu;                                             // Viscosity                  : Mpa*s
     unsigned char F_Index = 0;                             // Keeps track of which F (in each partilce) is the 'new' one
@@ -57,16 +62,17 @@ class Body {
 
     // Damage paramaters
     double Tau;                                            // Damage rate parameter (see eq 26)
-    bool Damageable = 1;                                   // If true, allows this Body to take damage.
+    bool Is_Damageable = 1;                                // If true, allows this Body to take damage.
 
-    // First time step?
+    // Time step information
     bool First_Time_Step = true;
+    unsigned Time_Steps_Per_Update;              // The number of time steps between when P and F are updated
 
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Contact parameters
-    static double K;                             // Set in Body.h                        : N/(mm^2)
+    static const double K;                       // Set in Body.cc                        : N/(mm^2)
 
 
 
@@ -85,7 +91,7 @@ class Body {
     void Add_Point_Data(FILE * File,             // Defined in Body_IO.cc
                         char * Weight_Name,      // Helps Export_Particle_Positions.
                         unsigned Num_Particles,
-                        double * Data);
+                        double * Data) const;
 
 
 
@@ -111,11 +117,19 @@ class Body {
 
 
     ////////////////////////////////////////////////////////////////////////////
+    // Boundary Conditions
+    // Defined in Body.cc
+
+    void Apply_BCs(void);                        // Applies BCs for each particle in the Body
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
     // Neighbor methods.
     // Defined in Neighbors.cc
-    void Set_Neighbors(const unsigned i,         // Set Neighbors
-                       const unsigned Num_Neighbors_In,
-                       const unsigned * Neighbor_ID_Array);
+    void Set_Neighbors(const unsigned i,         // Set Neighbors + Neighbor dependent members (using Set_Neighbor_Dependent_Members)
+                       const Array<unsigned> & Neighbor_IDs_In);
+    void Set_Neighbor_Dependent_Members(const unsigned i); // Sets Particle[i]'s members that can't be set up without a Neighbor_List
     void Find_Neighbors(void);                   // Generate neighbor list for every particle in 'Particles' array
     void Find_Neighbors_Box(void);               // Generate neighbor list for 'Box' geometry
     bool Are_Neighbors(const unsigned i,         // Returns true if particles i,j are neighbors
@@ -136,7 +150,7 @@ class Body {
     //////////////////////////////////////////////////////////////////////////////
     // Damage methods.
     // Defined in Damage.cc
-    void Remove_Damaged_Particle(const unsigned i);
+    void Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List);
 
 
 
@@ -162,13 +176,18 @@ class Body {
     void Set_alpha(const double alpha_In);
 
     void Set_Tau(const double Tau_In);
-    void Set_Damageable(const bool D_In);
+    void Set_Is_Damageable(const bool D_In);
 
-    void Set_Box_Dimensions(const Vector & Dimensions);
+    void Set_Box_Dimensions(const unsigned Dim_x,
+                            const unsigned Dim_y,
+                            const unsigned Dim_z);
 
-    void Set_Boundary(const bool Boundary_In);
+    void Set_Is_Fixed(const bool Is_Fixed_In);
 
     void Set_First_Time_Step(const bool First_In);
+    void Set_Time_Steps_Per_Update(const unsigned Steps_In);
+
+    void Set_Gravity_Enabled(const bool Gravity_Enabled_In);
 
     void Set_F_Index(const unsigned char i);
     void Increment_F_Index(void);
@@ -197,17 +216,19 @@ class Body {
     unsigned char Get_F_Index(void) const;
 
     double Get_Tau(void) const;
-    bool Get_Damagable(void) const;
+    bool Get_Is_Damageable(void) const;
 
-    bool Get_Box(void) const;
+    bool Get_Is_Box(void) const;
     unsigned Get_X_SIDE_LENGTH(void) const;
     unsigned Get_Y_SIDE_LENGTH(void) const;
     unsigned Get_Z_SIDE_LENGTH(void) const;
 
-    bool Get_Boundary(void) const;
+    bool Get_Is_Fixed(void) const;
 
     bool Get_First_Time_Step(void) const;
+    unsigned Get_Time_Steps_Per_Update(void) const;
 
+    bool Get_Gravity_Enabled(void) const;
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -221,10 +242,10 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Friends
-    friend void Data_Dump::Save_Simulation(const Body * Arrays,
-                                           const unsigned Num_Arrays);
-    friend int Data_Dump::Load_Simulation(Body ** Array_Ptr,
-                                          unsigned & Num_Bodies);
+    friend void IO::Save_Simulation(const Body * Arrays,
+                                    const unsigned Num_Arrays);
+    friend void IO::Load_Simulation(Body ** Array_Ptr,
+                                    unsigned & Num_Bodies);
 }; // class Body {
 
 #endif
