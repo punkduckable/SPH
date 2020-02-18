@@ -44,6 +44,8 @@ Is Box:                                          true
     z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
 Is Damageable:                                   true
+    Critical Stretch Mean:                       1.3
+    Critical Stretch SD:                         .05
     Tau (Damage rate):                           .15
 
 # Material
@@ -89,6 +91,8 @@ Is Box:                                          true
     z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
 Is Damageable:                                   true
+    Critical Stretch Mean:                       1.3
+    Critical Stretch SD:                         .05
     Tau (Damage rate):                           .15
 
 # Material

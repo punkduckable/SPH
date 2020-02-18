@@ -15,14 +15,17 @@ const Vector Body::g = {0, -9810., 0};
 // Constructors, destructor
 
 Body::Body(void) {
+  // Particles array
   Particles = nullptr;
   Num_Particles = 0;
-  X_SIDE_LENGTH = 0;
-  Y_SIDE_LENGTH = 0;
-  Z_SIDE_LENGTH = 0;
+
+  // Body flags
   Is_Box = false;
   Is_Fixed = false;
   Gravity_Enabled = false;
+  Is_Damageable = true;
+
+  // Kernel Parameters
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -43,13 +46,13 @@ Body::Body(const unsigned Num_Particles_In) {
   // Now assign each particle's ID
   for(unsigned i = 0; i < Num_Particles; i++) { Particles[i].Set_ID(i); }
 
-  // Set other members
-  X_SIDE_LENGTH = 0;
-  Y_SIDE_LENGTH = 0;
-  Z_SIDE_LENGTH = 0;
+  // Body Flags
   Is_Box = false;
   Is_Fixed = false;
   Gravity_Enabled = false;
+  Is_Damageable = true;
+
+  // Kernel Parameters
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
   h = 0;
@@ -122,6 +125,9 @@ void Body::Set_h(const double h_In) {
   (*this).Shape_Function_Amplitude =  15./(PI*pow(h_In,6));
 } // void Body::Set_h(const double h_In) {
 
+
+
+
 //---//---//---//---//---//---//---//---//---//---//---//---//---//---//---//--//
 // Public
 
@@ -145,7 +151,7 @@ void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
   Num_Particles = Num_Particles_In;
   Particles = new Particle[Num_Particles];
 
-  // Now assign each particle's Id
+  // Now assign each particle's ID
   for(unsigned i = 0; i < Num_Particles; i++) { Particles[i].Set_ID(i); }
 
   (*this).Particles_Set_Up = true;
@@ -201,10 +207,13 @@ void Body::Set_Material(const Materials::Material & Mat_In) {
 void Body::Set_mu(const double mu_In) { mu = mu_In; }
 void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }
 
+
+
 void Body::Set_Tau(const double Tau_In) {
   assert(Tau_In != 0);
   (*this).Tau = Tau_In;
 } // void Body::Set_Tau(const double Tau_In) {
+
 void Body::Set_Is_Damageable(const bool D_In) { Is_Damageable = D_In; }
 
 

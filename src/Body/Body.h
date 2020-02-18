@@ -62,7 +62,7 @@ class Body {
 
     // Damage paramaters
     double Tau;                                            // Damage rate parameter (see eq 26)
-    bool Is_Damageable = 1;                                // If true, allows this Body to take damage.
+    bool Is_Damageable;                                    // If true, allows this Body to take damage.
 
     // Time step information
     bool First_Time_Step = true;
@@ -92,7 +92,6 @@ class Body {
                         char * Weight_Name,      // Helps Export_Particle_Positions.
                         unsigned Num_Particles,
                         double * Data) const;
-
 
 
   public:
@@ -151,6 +150,9 @@ class Body {
     // Damage methods.
     // Defined in Damage.cc
     void Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List);
+    void Set_Particles_Critical_Stretch(const double Stretch_Critical_Mean,
+                                        const double Stretch_Critical_SD);
+
 
 
 
