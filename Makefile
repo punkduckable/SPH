@@ -67,6 +67,15 @@ obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc List_Tests.cc 
 
 
 
+################################################################################
+# Debug
+
+debug: CFLAGS := -c -Wall -Wsign-compare -Wextra -g -Og -fno-inline -std=c++11
+debug: bin/Debug
+
+bin/Debug: $(OBJ_PATHS)
+		$(COMPILER) $(OBJ_PATHS) -o $@
+
 
 ################################################################################
 # Object files
@@ -148,7 +157,11 @@ obj/IO_Ops.o: IO_Ops.cc IO_Ops.h Vector.h Simulation.h Errors.h
 
 clean:
 	rm ./obj/*.o
+	rm ./bin/Test
 	rm ./bin/SPH
+	rm ./bin/Debug
+
+
 
 
 help:
@@ -157,6 +170,7 @@ help:
 	$(info make           - compiles code to 'SPH' (in /bin))
 	$(info make compile   - same as 'make')
 	$(info make test      - makes unit test file (in /bin))
+	$(info make debug     - makes Debug file for debugging (in /bin))
 	$(info make clean     - clears all object files (in /obj) and binary files (in \bin))
 	$(info make help      - displays this message)
 	$(info )

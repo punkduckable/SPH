@@ -10,7 +10,7 @@ Time Steps Between Prints:                       100
 
 # Time Step
 dt [s]:                                          .00001
-Num Time Steps:                                  4000
+Num Time Steps:                                  100
 
 # Contact
 Contact Distance [mm]:                           1.0
@@ -32,7 +32,7 @@ Number of Bodies:                                2
 # Body 0
 
 # General
-Name:                                            Body1
+Name:                                            Body0
 From FEB File:                                   false
 Is Box:                                          true
     Dimensions [# Particles]:                    {3, 10, 3}
@@ -53,7 +53,7 @@ Density [g/mm^3]:                                .01
 
 # Initial conditions
 Offset [mm]:                                     {-1, 5, -1}
-Initial Velocity [mm/s]:                         {0, -500, 0}
+Initial Velocity [mm/s]:                         {0, -1000, 0}
 
 # General Boundary Conditions
 Number of General Boundary Conditions:           0
@@ -77,7 +77,7 @@ Time Steps Per Update:                           1
 # Body 1
 
 # General
-Name:                                            Body2
+Name:                                            Body1
 From FEB File:                                   false
 Is Box:                                          true
     Dimensions [# Particles]:                    {20, 3, 3}
