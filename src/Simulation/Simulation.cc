@@ -140,7 +140,7 @@ void Simulation::Run(void) {
     /* Here we enable particle-particle contact. To do this, we cycle through
     each Body. For the mth body, we check if any of its particles are
     in contact with any of the partilces in the ith body for i > m. We only
-    use i > m so that we only run the contact algorythm on each part of
+    use i > m so that we only run the contact algorithm on each part of
     Bodys once. Further, we only calculate the contact forces for the
     mth Body if that body is being updated this time step. */
 
@@ -164,7 +164,7 @@ void Simulation::Run(void) {
       } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
     } // for(b = 0; b < Num_Bodies; b++) {
 
-    /* Now we can apply the contact algorythm. Note that this must be applied
+    /* Now we can apply the contact algorithm. Note that this must be applied
     every time step no matter what (so that bodies that update each step can
     are proprly updated/have the right forces applied each timestpe) */
     for(unsigned b1 = 0; b1 < Num_Bodies - 1; b1++) {
@@ -321,7 +321,7 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
   Net External Force data depends on the simulation paramaters
   Print_Prticle_Force and Print_Next_External_Forces, respectivly.
 
-  In general, the only thing that should call this function is Simulation::Run */
+  Simulation::Run is the only function  that should call this function */
     #pragma omp for nowait
     for(unsigned b = 0; b < Num_Bodies; b++) {
       try {
@@ -335,4 +335,4 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
         abort();
       } // catch(Exception & Error_In) {
     } // for(unsigned b = 0; b < Num_Bodies; b++ ) {
-} // void void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned t) {
+} // void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned t) {

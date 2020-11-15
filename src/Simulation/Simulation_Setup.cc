@@ -181,7 +181,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   const double Particle_Radius = IPS*.578;                                     //        : mm
   const double Particle_Mass = Particle_Volume*Body_In.Get_density();          //        : g
 
-  // Furst, let's get number of partilces in the Bodys
+  // First, let's get number of partilces in Body_In
   const unsigned X_SIDE_LENGTH = Body_In.Get_X_SIDE_LENGTH();
   const unsigned Y_SIDE_LENGTH = Body_In.Get_Y_SIDE_LENGTH();
   const unsigned Z_SIDE_LENGTH = Body_In.Get_Z_SIDE_LENGTH();

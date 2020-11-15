@@ -145,7 +145,8 @@ Body* Simulation::Load_Setup_File(void) {
 void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   /* Function description:
   This function reads in the ith body from Setup.txt.
-  In general, Load_Setup_File is the only thing that should call this function. */
+
+  Load_Setup_File is the only thing that should call this function. */
 
   // Open setup.txt
   std::ifstream File;
@@ -414,8 +415,8 @@ Vector Simulation::Parse_BC(std::string & Line) {
   /* Function description:
   This function is designed to take a line of the form " {BCx, BCy, BCz} and
   return the vector <BCx, BCy, BCz>, where BCx/y/z is either a double or "free".
-  In general, Load_Body_From_Setup_File is the only thing that should call this
-  function. */
+
+  Load_Body_From_Setup_File is the only thing that should call this function. */
 
   // Setup buffers
   char Buf[3][32];
