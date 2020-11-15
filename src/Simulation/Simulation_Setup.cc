@@ -50,13 +50,13 @@ namespace Simulation {
 
 
 
-void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+void Simulation::Setup(Body ** Bodies, unsigned ** Time_Step_Index) {
   /* Function description:
-  This function, as the name implies, Sets up a Simulation. This means setting
-  all simulation parameters, the Bodies, and the Time_Step_Index array.
+  This function, as the name implies, sets up a Simulation. This means setting
+  all simulation parameters, creating the Bodies, and the Time_Step_Index array.
   Most of this is actually handeled by Load_Setup_File.
 
-  In general, Run_Simulation is the only thing that should call this function */
+  Simulation::Run is the only thing that should call this function */
 
   TIME_TYPE time_load = Get_Time();
   printf("Setting up simulation...\n");
@@ -65,10 +65,12 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   *Bodies = Simulation::Load_Setup_File();
 
   /* Load Setup_File set "Load_Simulation_From_Save". If this parameter is true,
-  then we should run Load_Simulation. Otherwise, we should finish setting up
-  the bodies. */
-  if(Simulation::Load_Simulation_From_Save == true) { IO::Load_Simulation(Bodies, Simulation::Num_Bodies); }
+  then we should run Load_Simulation. */
+  if(Simulation::Load_Simulation_From_Save == true) {
+    IO::Load_Simulation(Bodies, Simulation::Num_Bodies);
+  } // if(Simulation::Load_Simulation_From_Save == true) {
 
+  /* Otherwise, we should finish setting up the bodies. */
   else {
     for(unsigned i = 0; i < Simulation::Num_Bodies; i++) {
       //////////////////////////////////////////////////////////////////////////
@@ -155,7 +157,7 @@ void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
   delete [] General_BCs;
   delete [] Position_Offset;
   delete [] Initial_Velocity;
-} // void Simulation::Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index) {
+} // void Simulation::Setup(Body ** Bodies, unsigned ** Time_Step_Index) {
 
 
 
@@ -168,7 +170,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   to body m in Bodies_Setup. This function should NOT be used if you're loading
   from a save.
 
-  In general, Setup_Simulation is the only thing that should call this function. */
+  Simulation::Setup is the only thing that should call this function. */
 
   unsigned i,j,k;
   TIME_TYPE time1;
@@ -263,7 +265,7 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
   /* Function description:
   This function sets up a Body by reading in information from a FEB file.
 
-  In general, Setup_Simulation is the only thing that should call this function */
+  Simulation::Setup is the only thing that should call this function */
 
   printf("\nReading in Particles for %s from FEB file...\n", FEB_Body.Get_Name().c_str());
   assert(Simulation::From_FEB_File[m] == true);

@@ -16,7 +16,7 @@ namespace Simulation {
 
 
 
-void Simulation::Run_Simulation(void) {
+void Simulation::Run(void) {
   //////////////////////////////////////////////////////////////////////////////
   // Simulation variables
 
@@ -40,7 +40,7 @@ void Simulation::Run_Simulation(void) {
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
 
-  Setup_Simulation(&Bodies, &Time_Step_Index);
+  Setup(&Bodies, &Time_Step_Index);
 
 
 
@@ -308,7 +308,8 @@ void Simulation::Run_Simulation(void) {
 
   delete [] Bodies;
   delete [] Time_Step_Index;
-} // void Simulation(void) {
+} // void Simulation::Run(void) {
+
 
 
 
@@ -320,7 +321,7 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
   Net External Force data depends on the simulation paramaters
   Print_Prticle_Force and Print_Next_External_Forces, respectivly.
 
-  In general, the only thing that should call this function is Run_Simulation */
+  In general, the only thing that should call this function is Simulation::Run */
     #pragma omp for nowait
     for(unsigned b = 0; b < Num_Bodies; b++) {
       try {

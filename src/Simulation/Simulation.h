@@ -19,14 +19,14 @@ namespace Simulation {
   // Setup functions.
   // Defined in Simulation_Setup.cc
 
-  void Setup_Simulation(Body ** Bodies, unsigned ** Time_Step_Index);
+  void Setup(Body ** Bodies, unsigned ** Time_Step_Index);
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Functions that run simulations
   // Defined in Simulation.cc
 
-  void Run_Simulation(void);
+  void Run(void);
 
 
   //////////////////////////////////////////////////////////////////////////////
