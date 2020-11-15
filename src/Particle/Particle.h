@@ -13,6 +13,7 @@
 
 
 class Particle {
+  // Friend classes
   friend Body;
 
   private:
@@ -115,6 +116,7 @@ class Particle {
     void Set_a(const Vector & a_In);                       // Set particle's acel        : mm/s^2 Vector
 
     void Set_D(const double D_In);                         // Set Damage parameter       : unitless
+    void Set_Stretch_Critical(const double Stretch_Critical_In);               //        : unitless
 
     void Set_BC(const unsigned Component,                  // Set a component of the particles BC
                 const double Value);

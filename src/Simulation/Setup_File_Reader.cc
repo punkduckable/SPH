@@ -222,7 +222,16 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   else {                                                        Body_In.Set_Is_Damageable(false); }
 
   // If damageable then set damage rate.
+  double Stretch_Critical_Mean, Stretch_Critical_SD;
   if(Body_In.Get_Is_Damageable() == true) {
+    strBuf = IO::read_line_after(File, "Critical Stretch Mean:", false);
+    sscanf(strBuf.c_str(), " %lf \n", &Stretch_Critical_Mean);
+
+    strBuf = IO::read_line_after(File, "Critical Stretch SD:", false);
+    sscanf(strBuf.c_str(), " %lf \n", &Stretch_Critical_SD);
+
+    Body_In.Set_Particles_Critical_Stretch(Stretch_Critical_Mean, Stretch_Critical_SD);
+
     strBuf = IO::read_line_after(File, "Tau (Damage rate):", false);
     sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
     Body_In.Set_Tau(lfBuf);
@@ -340,17 +349,19 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
     printf("Read Is_Box[%3u] as:                    %u\n", i, Is_Box);
     if(Is_Box == true) {
       printf("Read Dimensions[%3u] as:                {%u, %u, %u}\n", i, Body_In.Get_X_SIDE_LENGTH(), Body_In.Get_Y_SIDE_LENGTH(), Body_In.Get_Z_SIDE_LENGTH());
-    } // if(Is_Box == true) {
-    printf("Read Body[%3u].Is_Fixed as:             %u\n", i, Body_In.Get_Is_Fixed());
-    printf("Read Body[%3u].Is_Damageable as:        %u\n", i, Body_In.Get_Is_Damageable());
-    if(Body_In.Get_Is_Damageable() == true) {
-      printf("Read Body[%3u].Tau as:                  %lf\n", i, Body_In.Get_Tau());
       printf("Read Body[%3u].x_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.x_plus_BC);
       printf("Read Body[%3u].x_minus_BC as:           ", i); Print_BC(Box_Boundary_Conditions.x_minus_BC);
       printf("Read Body[%3u].y_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.y_plus_BC);
       printf("Read Body[%3u].y_minus_BC as:           ", i); Print_BC(Box_Boundary_Conditions.y_minus_BC);
       printf("Read Body[%3u].z_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.z_plus_BC);
       printf("Read Body[%3u].z_minus_BC as:           ", i); Print_BC(Box_Boundary_Conditions.z_minus_BC);
+    } // if(Is_Box == true) {
+    printf("Read Body[%3u].Is_Fixed as:             %u\n", i, Body_In.Get_Is_Fixed());
+    printf("Read Body[%3u].Is_Damageable as:        %u\n", i, Body_In.Get_Is_Damageable());
+    if(Body_In.Get_Is_Damageable() == true) {
+      printf("Read Body[%3u].Tau as:                  %lf\n", i, Body_In.Get_Tau());
+      printf("Read Stretch Critical Mean as:          %lf\n", Stretch_Critical_Mean);
+      printf("Read Stretch Critical SD as:            %lf\n", Stretch_Critical_SD);
     } // if(Body_In.Get_Is_Damageable() == true) {
 
     printf("\nRead Body[%3u].Material.Lame as:        %lf\n", i, Mat.Lame);

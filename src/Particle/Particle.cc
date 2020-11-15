@@ -15,17 +15,13 @@ Particle::Particle(void) {
   (*this).Radius_Set = false;
   for(unsigned i = 0; i < 3; i++) { (*this).Has_BC[i] = false; }
 
-  // Now randomly set critical stress
-  unsigned seed = std::rand();
-  std::default_random_engine generator (seed);
-  std::normal_distribution<double> distribution(1.3,.00);
-  Stretch_Critical = distribution(generator);
+  // Now set a defualt critical stretch
+  Stretch_Critical = 1.3;
 } // Particle::Particle(void) {
 
 
 
 Particle::~Particle(void) {
-
   // Note, we should only free the memory if it has been allocated.
   if(Neighbors_Are_Set == true) {
     delete [] R;                                                               //        : mm Vectro
@@ -82,6 +78,7 @@ void Particle::Set_V(const Vector & V_In) { V = V_In; }
 void Particle::Set_a(const Vector & a_In) { a = a_In; }
 
 void Particle::Set_D(const double D_In) { D = D_In; }
+void Particle::Set_Stretch_Critical(const double Stretch_Critical_In) { Stretch_Critical = Stretch_Critical_In; } 
 
 void Particle::Set_BC(const unsigned Component, const double Value) {
   assert(Component < 3);

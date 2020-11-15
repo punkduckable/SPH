@@ -3,9 +3,39 @@
 #include "Vector/Vector.h"
 #include "List.h"
 #include "Array.h"
+#include <time.h>
+#include <random>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Damage methods
+
+
+void Body::Set_Particles_Critical_Stretch(const double Stretch_Critical_Mean, const double Stretch_Critical_SD) {
+  /* Function description:
+  This function is used to set the critical stretch of each particle in this
+  body.
+
+  In general, the only functions that should call this function are the
+  Num_Particles_In constructor and, the Set_Num_Particles method, and the
+  Set_Box_Dimensions method. */
+
+  // We assume that the Number of particles has been set!
+  assert((*this).Num_Particles != 0);
+
+  // We also assume that Stretch_Critical_Mean >= 1 and Stretch_Critical_SD >= 0.
+  assert(Stretch_Critical_Mean >= 1);
+  assert(Stretch_Critical_SD >= 0);
+
+  // Now assign each particle's ID and critical stretch.
+  srand(time(NULL));
+  unsigned seed = std::rand();
+  std::default_random_engine generator(seed);
+  std::normal_distribution<double> distribution(Stretch_Critical_Mean,
+                                                Stretch_Critical_SD);
+  for(unsigned i = 0; i < Num_Particles; i++) { Particles[i].Set_Stretch_Critical(distribution(generator)); }
+} // void Body::Set_Particles_Critical_Stretch(const double Stretch_Critical_Mean, const double Stretch_Critical_SD) {
+
+
 
 void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
   while(Damaged_Particle_List.Get_Length() != 0) {
