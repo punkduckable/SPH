@@ -55,7 +55,7 @@ Density [g/mm^3]:                                .01
 
 # Initial conditions
 Offset [mm]:                                     {-1, 5, -1}
-Initial Velocity [mm/s]:                         {0, -1000, 0}
+Initial Velocity [mm/s]:                         {0, -500, 0}
 
 # General Boundary Conditions
 Number of General Boundary Conditions:           0
