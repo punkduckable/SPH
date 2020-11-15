@@ -15,7 +15,7 @@ array, V denotes a Vector object, c denotes a scalar. */
 #include "Classes.h"
 
 // Used for ^ method (to define ^T and stuff).
-const unsigned T = 2;
+const int T = 2;
 
 /* Smallest allowed difference for equality
 Getting exact equality (even when you should) is difficult with floating point
