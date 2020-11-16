@@ -50,138 +50,138 @@ void Simulation::Run(void) {
   // time step loop.
   #pragma omp parallel default(shared) private(b, p, t) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
-  for(t = 0; t < Num_Time_Steps; t++) {
-    ////////////////////////////////////////////////////////////////////////////
-    // Export Bodies data
-    #pragma omp single nowait
-    { time2 = Get_Time(); }
-
-    if(t%Simulation::TimeSteps_Between_Prints == 0) {
+    for(t = 0; t < Num_Time_Steps; t++) {
+      //////////////////////////////////////////////////////////////////////////
+      // Export Bodies data
       #pragma omp single nowait
-      { printf("%d time steps complete\n",t); }
+      { time2 = Get_Time(); }
 
-      Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
-    } // if(t%TimeSteps_Between_Prints == 0) {
+      if(t%Simulation::TimeSteps_Between_Prints == 0) {
+        #pragma omp single nowait
+        { printf("%d time steps complete\n",t); }
 
-    #pragma omp single nowait
-    { Print_time += Time_Since(time2); }
+        Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
+      } // if(t%TimeSteps_Between_Prints == 0) {
+
+      #pragma omp single nowait
+      { Print_time += Time_Since(time2); }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Apply Boundary conditions
+      #pragma omp single nowait
+      { time2 = Get_Time(); }
+
+      // Note: apply BCs uses a parallel for loop
+      for(b = 0; b < Num_Bodies; b++) { Bodies[b].Apply_BCs();  }
+
+      #pragma omp single nowait
+      { update_BC_time += Time_Since(time2); }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Update Stress tensor (P)
+
+      #pragma omp single nowait
+      { time2 = Get_Time(); }
+
+      for(b = 0; b < Num_Bodies; b++) {
+        // Note: We don't update P for Bodys that are fixed in place
+        if(Bodies[b].Get_Is_Fixed() == true) { continue; }
+
+        else {
+          /* Update each Particles's P tensor.
+
+          Note: the Update_P method has an orphaned for loop (and takes care of
+          removing damaged particles in parallel, damaged particles are not
+          removed until every particle's P tensor has been updated. This makes
+          the code parallelizable and determinstic) */
+          Bodies[b].Update_P(dt);
+        } // else
+      } // for(b = 0; b < Num_Bodies; b++) {
+
+      #pragma omp single nowait
+      { update_P_time += Time_Since(time2); }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Contact
+      /* Here we enable particle-particle contact. To do this, we cycle through
+      each Body. For the mth body, we check if any of its particles are
+      in contact with any of the partilces in the ith body for i > m. We only
+      use i > m so that we only run the contact algorithm on each part of
+      Bodys once. Further, we only calculate the contact forces for the
+      mth Body if that body is being updated this time step. */
+
+      #pragma omp single nowait
+      { time2 = Get_Time(); }
+
+      /* First, we need to set each particle's contact force to zero. It should
+      be noted that we only do this for a particular Body if that body
+      is updating it's position this cycle. Otherwise, since the force won't be
+      used for anything, there's no reason to waste CPU cycles setting that
+      bodies's particle's contact forces to zero. */
+      for(b = 0; b < Num_Bodies; b++) {
+        unsigned Num_Particles = Bodies[b].Get_Num_Particles();
+
+        #pragma omp for
+        for(p = 0; p < Num_Particles; p++) {
+          (Bodies[b])[p].Force_Contact = {0,0,0};
+          (Bodies[b])[p].Force_Friction = {0,0,0};
+        } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
+      } // for(b = 0; b < Num_Bodies; b++) {
+
+      /* Now we can apply the contact algorithm. Note that this must be applied
+      every time step no matter what (so that bodies that update each step can
+      are proprly updated/have the right forces applied each timestpe) */
+      for(unsigned b1 = 0; b1 < Num_Bodies - 1; b1++) {
+        for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
+          Body::Contact(Bodies[b2], Bodies[b1]);
+        } // for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
+      } // for(unsinged b1 = 0; b1 < Num_Bodies - 1; b1++) {
+
+      #pragma omp single nowait
+      { contact_time += Time_Since(time2); }
+
+
+
+      //////////////////////////////////////////////////////////////////////////
+      // Update Position (x)
+
+      #pragma omp single nowait
+      { time2 = Get_Time(); }
+
+      for(b = 0; b < Num_Bodies; b++) {
+        // Note: we don't update P for Bodies that are fixed in place
+        if(Bodies[b].Get_Is_Fixed() == true) { continue; }
+
+        else {
+          /* First, update the 'F_Index' for the current Body. This
+          controls which member of each particle's 'F' array is the 'newest'. */
+          #pragma omp single
+          { Bodies[b].Increment_F_Index(); }
+
+          // Now update the position of each particle in this body.
+          Bodies[b].Update_x(dt);
+        } // else {
+      } // for(b = 0; b < Num_Bodies; b++) {
+
+      #pragma omp single nowait
+      { update_x_time += Time_Since(time2); }
+    } // for(t = 0; t < Num_Time_Steps; t++) {
 
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // Apply Boundary conditions
-    #pragma omp single nowait
-    { time2 = Get_Time(); }
-
-    // Note: apply BCs uses a parallel for loop
-    for(b = 0; b < Num_Bodies; b++) { Bodies[b].Apply_BCs();  }
+    // Export the bodies data for the final configuration of the simulation
 
     #pragma omp single nowait
-    { update_BC_time += Time_Since(time2); }
+    { printf("%d time steps complete\n",t); }
 
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Update Stress tensor (P)
-
-    #pragma omp single nowait
-    { time2 = Get_Time(); }
-
-    for(b = 0; b < Num_Bodies; b++) {
-      // Note: We don't update P for Bodys that are fixed in place
-      if(Bodies[b].Get_Is_Fixed() == true) { continue; }
-
-      else {
-        /* Update each Particles's P tensor.
-
-        Note: the Update_P method has an orphaned for loop (and takes care of
-        removing damaged particles in parallel, damaged particles are not
-        removed until every particle's P tensor has been updated. This makes
-        the code parallelizable and determinstic) */
-        Bodies[b].Update_P(dt);
-      } // else
-    } // for(b = 0; b < Num_Bodies; b++) {
-
-    #pragma omp single nowait
-    { update_P_time += Time_Since(time2);
-
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Contact
-    /* Here we enable particle-particle contact. To do this, we cycle through
-    each Body. For the mth body, we check if any of its particles are
-    in contact with any of the partilces in the ith body for i > m. We only
-    use i > m so that we only run the contact algorithm on each part of
-    Bodys once. Further, we only calculate the contact forces for the
-    mth Body if that body is being updated this time step. */
-
-    #pragma omp single nowait
-    { time2 = Get_Time(); }
-
-    /* First, we need to set each particle's contact force to zero. It should be
-    noted that we only do this for a particular Body if that body
-    is updating it's position this cycle. Otherwise, since the force won't be
-    used for anything, there's no reason to waste CPU cycles setting that
-    bodies's particle's contact forces to zero. */
-    for(b = 0; b < Num_Bodies; b++) {
-      unsigned Num_Particles = Bodies[b].Get_Num_Particles();
-
-      #pragma omp for
-      for(p = 0; p < Num_Particles; p++) {
-        (Bodies[b])[p].Force_Contact = {0,0,0};
-        (Bodies[b])[p].Force_Friction = {0,0,0};
-      } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
-    } // for(b = 0; b < Num_Bodies; b++) {
-
-    /* Now we can apply the contact algorithm. Note that this must be applied
-    every time step no matter what (so that bodies that update each step can
-    are proprly updated/have the right forces applied each timestpe) */
-    for(unsigned b1 = 0; b1 < Num_Bodies - 1; b1++) {
-      for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
-        Body::Contact(Bodies[b2], Bodies[b1]);
-      } // for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
-    } // for(unsinged b1 = 0; b1 < Num_Bodies - 1; b1++) {
-
-    #pragma omp single nowait
-    { contact_time += Time_Since(time2); }
-
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Update Position (x)
-
-    #pragma omp single nowait
-    { time2 = Get_Time(); }
-
-    for(b = 0; b < Num_Bodies; b++) {
-      // Note: we don't update P for Bodies that are fixed in place
-      if(Bodies[b].Get_Is_Fixed() == true) { continue; }
-
-      else {
-        /* First, update the 'F_Index' for the current Body. This
-        controls which member of each particle's 'F' array is the 'newest'. */
-        #pragma omp single
-        { Bodies[b].Increment_F_Index(); }
-
-        // Now update the position of each particle in this body.
-        Bodies[b].Update_x(dt);
-      } // else {
-    } // for(b = 0; b < Num_Bodies; b++) {
-
-    #pragma omp single nowait
-    { update_x_time += Time_Since(time2); }
-
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Export the bodies data for the final configuration of the simulation
-
-  #pragma omp single nowait
-  { printf("%d time steps complete\n",t); }
-
-  Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
-
+    Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
   } // #pragma omp parallel
 
 
