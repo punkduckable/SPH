@@ -783,7 +783,7 @@ Tensor Tensor::Transpose(void) const {
 
 
 
-const Vector Tensor::Eigenvalues(const char Mode) const {
+const Vector Tensor::Eigenvalues(void) const {
   double p, p_inv, p1, p2, q, r, phi;
   Vector Eig_Values;
   Tensor B;
@@ -838,32 +838,15 @@ const Vector Tensor::Eigenvalues(const char Mode) const {
     } // else if(r <= -1) {
 
     else {
-
-      // Fast mode: Use my approximation methods
-      if(Mode == 'F' || Mode == 'f') {
-        phi = (1./3.)*Quick_Math::Acos(r);
-        Eig_Values[0] = q + 2*p*Quick_Math::cos(phi);
-        Eig_Values[1] = q + 2*p*Quick_Math::cos(phi + 2.*PI/3.);
-      } // if(Mode == 'F') {
-
-      // Accurate mode, use C's built in cos functions.
-      else if(Mode == 'A' || Mode == 'a') {
-        phi = (1./3.)*acos(r);
-        Eig_Values[0] = q + 2*p*cos(phi);
-        Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
-      } // else if(Mode == 'A') {
-
-      else {
-        printf("Invalid mode selection! 'F' = Fast , 'A' = Accurate\n ");
-        return Vector{0,0,0};
-      } // else {
-
+      phi = (1./3.)*acos(r);
+      Eig_Values[0] = q + 2*p*cos(phi);
+      Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
       Eig_Values[2] = 3*q - Eig_Values[0] - Eig_Values[1];
     } // else {
   } // else {
 
   return Eig_Values;
-} // const Vector Tensor::Eigenvalues(const char mode) {
+} // const Vector Tensor::Eigenvalues(void) {
 
 
 
@@ -887,7 +870,7 @@ double Determinant(const Tensor & Tensor_In) { return Tensor_In.Determinant(); }
 
 Tensor Transpose(const Tensor & Tensor_In) { return Tensor_In.Transpose(); }
 
-const Vector Eigenvalues(const Tensor & T_In, const char Mode) { return T_In.Eigenvalues(Mode); }
+const Vector Eigenvalues(const Tensor & T_In) { return T_In.Eigenvalues(); }
 
 void Print(const Tensor & Tensor_In) { Tensor_In.Print(); }
 

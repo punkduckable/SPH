@@ -81,7 +81,7 @@ class Tensor {
     // Other methods
     double Determinant(void) const;               // Tensor Determinant. Returns Det(T)
     Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T  (Tranpose of T)
-    const Vector Eigenvalues(const char Mode = 'A') const; // Returns eigenvalues of the Tensor
+    const Vector Eigenvalues(void) const;         // Returns eigenvalues of the Tensor
     void Print(void) const;                       // Print tensor components
 }; // class Tensor {
 
@@ -91,8 +91,7 @@ Tensor operator*(double c,
 Tensor Inverse(const Tensor & T_In);
 double Determinant(const Tensor & T_In);
 Tensor Transpose(const Tensor & T_In);
-const Vector Eigenvalues(const Tensor & T_In,
-                         const char Mode = 'A');
+const Vector Eigenvalues(const Tensor & T_In);
 double Dot_Product(const Tensor & T1,
                    const Tensor & T2);
 void Print(const Tensor & T_In);

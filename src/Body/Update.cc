@@ -87,7 +87,7 @@ void Body::Update_P(const double dt) {
     double J = Determinant(F);                   // J is det of F                        : unitless
 
     // Calculate current principle stretch
-    double Max_EigenValue = Max_Component(Eigenvalues(C, 'F'));                //        : unitless
+    double Max_EigenValue = Max_Component(Eigenvalues(C));                     //        : unitless
     double Stretch_Max_Principle = sqrt(Max_EigenValue);                       //        : unitless
 
     // If this stretch is greater than max stretch, update particle's Max stretch.
