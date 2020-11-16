@@ -44,7 +44,7 @@ void Simulation::Run(void) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
-  printf(         "\nRunning %d time steps....\n",Num_Time_Steps);
+  printf(         "\nRunning %d time steps....\n", Num_Time_Steps);
   time1 = Get_Time();
 
   // time step loop.
