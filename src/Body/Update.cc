@@ -188,10 +188,7 @@ void Body::Update_P(const double dt) {
     and F(t-dt) (in Particles[i].F[i_dt]).*/
     Particles[i].P = (F*S + Visc)*Particles[i].A_Inv;                          //         : Mpa Tensor
     Particles[i].F[i_2dt] = F;                                                 //         : unitless Tensor
-
-    #if defined(PARTICLE_DEBUG)
-      Particles[i].Visc = Visc*Particles[i].A_Inv;
-    #endif
+    Particles[i].Visc = Visc*Particles[i].A_Inv;
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
@@ -220,15 +217,12 @@ void Body::Update_x(const double dt) {
   This function should not be run until this assumption is valid. */
 
   // Current (ith) particle properties
-  Vector Force_Int;                              // Internal Force vector                : N Vector
-  Vector Force_HG;                               // Hour-glass force                     : N Vector
+  Vector Force_Internal;                         // Internal Force vector                : N Vector
+  Vector Force_Hourglass;                        // Hour-glass force                     : N Vector
+  Vector Force_Viscosity;                        // Viscosity force.                     : N Vector
   Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
   Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Vector a;                                      // acceleration                         : mm/s^2 Vector
-
-  #if defined(PARTICLE_DEBUG)
-    Vector Force_Visc;                           // Viscosity force.
-  #endif
 
   // Neighboring (jth) particle properties
   Tensor P_j;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
@@ -248,12 +242,9 @@ void Body::Update_x(const double dt) {
     if( Particles[i].Get_D() >= 1) { continue; }
 
     // Now reset the force vectors
-    Force_Int = {0,0,0};
-    Force_HG = {0,0,0};
-
-    #if defined(PARTICLE_DEBUG)
-      Force_Visc = {0,0,0};
-    #endif
+    Force_Internal = {0,0,0};
+    Force_Hourglass = {0,0,0};
+    Force_Viscosity = {0,0,0};
 
     // Set up current particle properties
     double V_i = Particles[i].Get_Volume();      // volume of current particle           : mm^3
@@ -275,7 +266,7 @@ void Body::Update_x(const double dt) {
 
       /* Note, each term in the internal force sum is multiplied by Vi. If  we
       we were to multiply through by Vi in this loop, we'd peerform this operation
-      Num_Neighbors times. By moving it out of the summation (mutiplying Force_Int
+      Num_Neighbors times. By moving it out of the summation (mutiplying Force_Internal
       by Vi after the loop) we reduce the number of multiplications to 1, thereby
       reducing the number of FLOPs required to calculate the internal force and
       speeding up the program. */
@@ -283,11 +274,8 @@ void Body::Update_x(const double dt) {
 
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
-      Force_Int += (V_j)*((P_i + P_j)*Grad_W[j]);                              //        : N Vector
-
-      #if defined(PARTICLE_DEBUG)
-        Force_Visc += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
-      #endif
+      Force_Internal += (V_j)*((P_i + P_j)*Grad_W[j]);                         //        : N Vector
+      Force_Viscosity += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -355,7 +343,7 @@ void Body::Update_x(const double dt) {
       double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
 
       /* Finally, we calculate the hour glass force. However, it should be
-      noted that each term of Force_HG is multiplied by -(1/2), E, alpha,
+      noted that each term of Force_Hourglass is multiplied by -(1/2), E, alpha,
       and Vi. However, these four quantities are constants. We can therefore
       pull these multiplications out of the summations (thereby saving
       several thousand floating point operations per particle!)
@@ -363,15 +351,12 @@ void Body::Update_x(const double dt) {
       Note: this assumes that Mag_R and Mag_rj are non-zero. We already checked
       for the latter. The former should be true so long as the bodies were setup
       properly. */
-      Force_HG += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*                    //        : (1/mm) Vector
-                  (delta_ij + delta_ji))*(rj);
+      Force_Hourglass += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*             //        : (1/mm) Vector
+                         (delta_ij + delta_ji))*(rj);
     } // for(unsigned j = 0; j < Num_Neighbors; j++) {
-    Force_HG *= -.5*E*V_i*alpha;       // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
-    Force_Int *= V_i;                  // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
-
-    #if defined(PARTICLE_DEBUG)
-      Force_Visc *= V_i;               // Viscious force
-    #endif
+    Force_Hourglass *= -.5*E*V_i*alpha;  // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
+    Force_Internal *= V_i;               // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
+    Force_Viscosity *= V_i;              // Viscious force
 
     /* Compute acceleration of particle at new position a(t_i+1).
     Note that all the forces we have calculated have been in units of Newtons.
@@ -383,10 +368,10 @@ void Body::Update_x(const double dt) {
     Note: This assumes that Particles[i].Mass != 0. However, the Set_Mass
     function of the Particle class requires that Mass != 0, and Get_Mass will
     only work if a mass has been set. Thus, this assumption should hold. */
-    a = ((1e+6)*(1./Particles[i].Get_Mass()))*(Force_Int                        //        : mm/s^2 Vector
+    a = ((1e+6)*(1./Particles[i].Get_Mass()))*(Force_Internal                  //        : mm/s^2 Vector
                                              + Particles[i].Force_Contact
                                              + Particles[i].Force_Friction
-                                             + Force_HG);
+                                             + Force_Hourglass);
     /* If gravity is enabled, add that in. */
     if((*this).Gravity_Enabled == true) { a += Body::g; }
 
@@ -411,17 +396,14 @@ void Body::Update_x(const double dt) {
     } //  if(std::isnan(a[0]) || std::isnan(a[1]) || std::isnan(a[2])) {
 
     Particles[i].x += dt*Particles[i].V;         // x_i+1 = x_i + dt*v_(i+1/2)           : mm Vector
-    Particles[i].V += dt*a;                      // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
+    Particles[i].V += (dt)*a;                    // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
 
-    if(Simulation::Print_Particle_Forces == true) {
-      Particles[i].Force_Int = Force_Int;          // update Internal force                : N Vector
-      Particles[i].Force_HG = Force_HG;            // update Hourglassing force            : N Vector
-
-      #if defined(PARTICLE_DEBUG)
-        Particles[i].Force_Visc = Force_Visc;        // update Viscosity force               : N Vector
-      #endif
-    } // if(Simulation::Print_Particle_Forces == true) {
+    if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true) {
+      Particles[i].Force_Internal = Force_Internal;     // update Internal force                : N Vector
+      Particles[i].Force_Hourglass = Force_Hourglass;   // update Hourglassing force            : N Vector
+      Particles[i].Force_Viscosity = Force_Viscosity;   // update Viscosity force               : N Vector
+    } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one

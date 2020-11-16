@@ -114,11 +114,11 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
     // Finally read in File number information
-    strBuf = read_line_after(File, "# times printed net external forces:");
+    strBuf = read_line_after(File, "# times printed Body forces:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
-    (*Bodies_Ptr)[i].Times_Printed_Net_External_Force = uBuf;
+    (*Bodies_Ptr)[i].Times_Printed_Body_Forces = uBuf;
     #if defined(LOAD_MONITOR)
-      printf("Read Body %u's # times printed net external forces as %u\n", i, uBuf);
+      printf("Read Body %u's # times printed Body forces as %u\n", i, uBuf);
     #endif
 
     strBuf = read_line_after(File, "# times printed particle forces:");

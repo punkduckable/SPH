@@ -59,11 +59,11 @@ Body* Simulation::Load_Setup_File(void) {
     printf("Read Print_Particle_Forces as: %s\n", strBuf.c_str());
   #endif
 
-  strBuf = IO::read_line_after(File, "Print Net External Forces:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Net_External_Forces = true; }
-  else {                                                        Print_Net_External_Forces = false; }
+  strBuf = IO::read_line_after(File, "Print Body Forces:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Body_Forces = true; }
+  else {                                                        Print_Body_Forces = false; }
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Print_Net_External_Forces as: %s\n", strBuf.c_str());
+    printf("Read Print_Body_Forces as: %s\n", strBuf.c_str());
   #endif
 
   strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);

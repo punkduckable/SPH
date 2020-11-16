@@ -27,7 +27,7 @@ namespace Simulation {
   bool Load_Simulation_From_Save;
   bool Save_Simulation_To_File;
   bool Print_Particle_Forces;
-  bool Print_Net_External_Forces;
+  bool Print_Body_Forces;
   unsigned TimeSteps_Between_Prints;
 
   // TimeStep paramters
@@ -131,7 +131,7 @@ void Simulation::Setup(Body ** Bodies) {
   printf(         "Load_Simulation_From_Save =   %u\n",    Simulation::Load_Simulation_From_Save);
   printf(         "Save_Simulation_To_File =     %u\n",    Simulation::Save_Simulation_To_File);
   printf(         "Print_Particle_Forces =       %u\n",    Simulation::Print_Particle_Forces);
-  printf(         "Print_Net_External_Forces =   %u\n",    Simulation::Print_Net_External_Forces);
+  printf(         "Print_Body_Forces =           %u\n",    Simulation::Print_Body_Forces);
   printf(         "TimeSteps_Between_Prints =    %u\n",    Simulation::TimeSteps_Between_Prints);
   printf(         "Parallel execution =          ");
   #if defined(_OPENMP)

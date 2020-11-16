@@ -31,54 +31,80 @@ void Body::Print_Parameters(void) const {
 
 
 
-void Body::Export_Net_External_Force(const unsigned time_step) {
-  /* This function is used to find and print the net external force on a body
+void Body::Export_Body_Forces(const unsigned time_steps) {
+  /* This function is used to find and print the forces applied to a body.
+
   This function can NOT be called by multiple threads at once (this
   function is not thread safe). */
 
   #if defined(IO_MONITOR)
-    printf("Exporting net external force for %s\n",(*this).Name.c_str());
+    printf("Exporting Forces for %s\n",(*this).Name.c_str());
   #endif
 
   // First, open the file.
   std::string File_Path = "./IO/Force_Files/";
   File_Path += (*this).Name.c_str();
-  File_Path +=  "_Net_External_Forces.txt";
+  File_Path +=  "_Forces.txt";
 
   FILE * File;
-  if(Times_Printed_Net_External_Force == 0) {
-    File = fopen(File_Path.c_str(),"w");
-  } // if(Times_Printed_Net_External_Force == 0) {
-  else {
-    File = fopen(File_Path.c_str(),"a");
-  } // else {
+  if(Times_Printed_Body_Forces == 0) { File = fopen(File_Path.c_str(),"w"); }
+  else {                               File = fopen(File_Path.c_str(),"a"); }
 
+  // Make sure we could open the file.
   if(File == nullptr) {
     char Buf[500];
     sprintf(Buf,
-            "Cant Open File Exception: Thrown by Body::Export_Net_External_Force\n"
-            "For some reason, ./IO/Force_Files/%s_Net_External_Forces.txt wouldn't open :(\n",
+            "Cant Open File Exception: Thrown by Body::Export_Body_Forces\n"
+            "For some reason, ./IO/Force_Files/%s_Forces.txt wouldn't open :(\n",
             (*this).Name.c_str());
     throw Cant_Open_File(Buf);
   } // if(File == nullptr) {
 
-  // Increment the number of times that we're printed net force data.
-  Times_Printed_Net_External_Force++;
-
-  // Now add up net external force on supplied particle array and print it out
-  // Note that we must do this using a single thread
-  Vector Net_Contact_Force = {0,0,0};
+  /* Calculate the Internal, Viscosity, Contact, Friction, and Hourglass forces
+  acting acting on the body. To do this, we add up the corresponding forces in
+  each particle in the body. */
+  Vector Internal_Force  = {0, 0, 0};
+  Vector Viscosity_Force = {0, 0, 0};
+  Vector Contact_Force   = {0, 0, 0};
+  Vector Friction_Force  = {0, 0, 0};
+  Vector Hourglass_Force = {0, 0, 0};
+  Vector Net_Force       = {0, 0, 0};
 
   for(unsigned i = 0; i < Num_Particles; i++) {
-    Net_Contact_Force += Particles[i].Get_Force_Friction();
-    Net_Contact_Force += Particles[i].Get_Force_Contact();
+    Internal_Force  += Particles[i].Get_Force_Internal();
+    Viscosity_Force += Particles[i].Get_Force_Viscosity();
+    Contact_Force   += Particles[i].Get_Force_Contact();
+    Friction_Force  += Particles[i].Get_Force_Friction();
+    Hourglass_Force += Particles[i].Get_Force_Hourglass();
+    Net_Force       += (Particles[i].Get_Mass()/1000.)*(Particles[i].Get_a()/1000.);     // Particle mass is in g, we want it in Kg. a is in mm/s^2, we want it in m/s^2.
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 
-  fprintf(File,"%6u:  <%10.4f, %10.4f, %10.4f>\n", time_step, Net_Contact_Force(0), Net_Contact_Force(1), Net_Contact_Force(2));
+  /* Print the results to file. If we're on the first time step, then we need
+  to print a header. Otherwise, just print the forces! */
+  if(Times_Printed_Body_Forces == 0) {
+    fprintf(File,"Time Steps |");
+    fprintf(File,"            Internal Force (N)            |");
+    fprintf(File,"            Viscous Force (N)             |");
+    fprintf(File,"            Contact Force (N)             |");
+    fprintf(File,"            Friction Force (N)            |");
+    fprintf(File,"            Hourglass Force (N)           |");
+    fprintf(File,"            Net Force (N)                 \n");
+  } //   if(Times_Printed_Body_Forces == 0) {
+
+  fprintf(File,"%10d | ", time_steps);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Internal_Force[0],  Internal_Force[1],  Internal_Force[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Viscosity_Force[0], Viscosity_Force[1], Viscosity_Force[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Contact_Force[0],   Contact_Force[1],   Contact_Force[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Friction_Force[0],  Friction_Force[1],  Friction_Force[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Hourglass_Force[0], Hourglass_Force[1], Hourglass_Force[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e>\n",   Net_Force[0],       Net_Force[1],       Net_Force[2]);
 
   // Now close the file.
   fclose(File);
-} // void Body::Print_Net_External_Force(const unsigned time_step) {
+
+  // Increment the number of times that we're printed Body force data.
+  Times_Printed_Body_Forces++;
+} // void Body::Export_Body_Forces(const unsigned time_steps) {
 
 
 
@@ -115,29 +141,21 @@ void Body::Export_Particle_Forces(void) {
   fprintf(File,"  ID  |");
   fprintf(File," Particle Pos  |");
   fprintf(File,"        Internal Force        |");
-
-  #if defined(PARTICLE_DEBUG)
-    fprintf(File,"        Viscous Force         |");
-  #endif
-
+  fprintf(File,"        Viscous Force         |");
   fprintf(File,"        Contact Force         |");
   fprintf(File,"        Friction Force        |");
   fprintf(File,"        Hourglass Force       |");
   fprintf(File,"\n");
 
-  // Cycle through particles, print spacial positions of each particle
+  // Cycle through particles, print spacial positions, forces for each particle
   for(unsigned i = 0; i < Num_Particles; i++) {
     fprintf(File,"%6u|", Particles[i].Get_ID());
-    fprintf(File,"%4.1f,%4.1f,%4.1f | ",    Particles[i].X[0],            Particles[i].X[1],            Particles[i].X[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Int[0],    Particles[i].Force_Int[1],    Particles[i].Force_Int[2]);
-
-    #if defined(PARTICLE_DEBUG)
-      fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Visc[0],   Particles[i].Force_Visc[1],   Particles[i].Force_Visc[2]);
-    #endif
-
-    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Contact[0], Particles[i].Force_Contact[1], Particles[i].Force_Contact[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Friction[0],Particles[i].Force_Friction[1],Particles[i].Force_Friction[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",   Particles[i].Force_HG[0],      Particles[i].Force_HG[1],      Particles[i].Force_HG[2]);
+    fprintf(File,"%4.1f,%4.1f,%4.1f | ",    Particles[i].X[0],               Particles[i].X[1],               Particles[i].X[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Internal[0],  Particles[i].Force_Internal[1],  Particles[i].Force_Internal[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Viscosity[0], Particles[i].Force_Viscosity[1], Particles[i].Force_Viscosity[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Contact[0],   Particles[i].Force_Contact[1],   Particles[i].Force_Contact[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Friction[0],  Particles[i].Force_Friction[1],  Particles[i].Force_Friction[2]);
+    fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",   Particles[i].Force_Hourglass[0], Particles[i].Force_Hourglass[1], Particles[i].Force_Hourglass[2]);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 
   fclose(File);

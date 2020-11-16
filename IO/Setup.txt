@@ -5,7 +5,7 @@
 Load Simulation from Save:                       false
 Save Data To File:                               false
 Print Particle Forces:                           false
-Print Net External Forces:                       false
+Print Body Forces:                               true
 Time Steps Between Prints:                       100
 
 # Time Step
@@ -66,7 +66,7 @@ Number of General Boundary Conditions:           0
   Effect Vector [mm/s]:                          {0, -200, 0}
 
 # Other
-Enable Gravity:                                  false
+Enable Gravity:                                  true
 Mu (Viscosity) [Mpa*s]:                          .00004
 Alpha (Hg Control parameter):                    .75
 Inter Particle Spacing (IPS) [mm]:               1.0

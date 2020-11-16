@@ -11,7 +11,9 @@
 
 // Prototypes for functions that are local to this file
 namespace Simulation {
-  void Export_Bodies_Data(Body * Bodies, const unsigned Num_Bodies, const unsigned t);
+  void Export_Bodies_Data(Body * Bodies,
+                          const unsigned Num_Bodies,
+                          const unsigned time_steps);
 } // namespace Simulation {
 
 
@@ -232,7 +234,7 @@ void Simulation::Run(void) {
 
 
 
-void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned t) {
+void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned time_steps) {
   /* Function Description:
   This function, as the name implies, exports data for each body in a simulation.
   Position data is always printed. Wheather or not we print Force or
@@ -243,9 +245,9 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
   #pragma omp for nowait
   for(unsigned b = 0; b < Num_Bodies; b++) {
     try {
-                                                          Bodies[b].Export_Particle_Positions();
-      if(Simulation::Print_Particle_Forces == true) {     Bodies[b].Export_Particle_Forces();}
-      if(Simulation::Print_Net_External_Forces == true) { Bodies[b].Export_Net_External_Force(t); }
+                                                      Bodies[b].Export_Particle_Positions();
+      if(Simulation::Print_Particle_Forces == true) { Bodies[b].Export_Particle_Forces();}
+      if(Simulation::Print_Body_Forces == true) {     Bodies[b].Export_Body_Forces(time_steps); }
     } // try {
 
     catch(Exception & Error_In) {
@@ -253,4 +255,4 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
       abort();
     } // catch(Exception & Error_In) {
   } // for(unsigned b = 0; b < Num_Bodies; b++ ) {
-} // void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned t) {
+} // void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned time_steps) {

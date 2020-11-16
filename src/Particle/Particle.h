@@ -1,8 +1,6 @@
 #if !defined(PARTICLE_HEADER)
 #define PARTICLE_HEADER
 
-#define PARTICLE_DEBUG
-
 #include "Classes.h"
 #include "Vector/Vector.h"
 #include "Tensor/Tensor.h"
@@ -45,17 +43,14 @@ class Particle {
                     0,0,1}};
 
     // Forces acting on the particle
-    Vector Force_Int{0,0,0};                               // Internal Force vector      : N Vector
+    Vector Force_Internal{0,0,0};                          // Internal Force vector      : N Vector
     Vector Force_Contact{0,0,0};                           // Contact Force Vector       : N Vector
     Vector Force_Friction{0,0,0};                          // Frictional force Vector (from contact)    : N Vector
-    Vector Force_HG{0,0,0};                                // Hour-glass force           : N Vector
-
-    #if defined(PARTICLE_DEBUG)
-      Vector Force_Visc{0,0,0};
-      Tensor Visc{0,0,0,
-                  0,0,0,
-                  0,0,0};
-    #endif
+    Vector Force_Hourglass{0,0,0};                         // Hour-glass force           : N Vector
+    Vector Force_Viscosity{0,0,0};                         // Viscious force             : N Vector
+    Tensor Visc{0,0,0,                                     // Viscosity tensor
+                0,0,0,
+                0,0,0};
 
     // Damage parameters
     double Stretch_H = 0;                                  // Historical max stretch     : unitless
@@ -139,6 +134,9 @@ class Particle {
 
     const Vector & Get_Force_Friction(void) const;                             //        : N Vector
     const Vector & Get_Force_Contact(void) const;                              //        : N Vector
+    const Vector & Get_Force_Internal(void) const;                             //        : N Vector
+    const Vector & Get_Force_Viscosity(void) const;                            //        : N Vector
+    const Vector & Get_Force_Hourglass(void) const;                            //        : N Vector
 
     double Get_Stretch_M(void) const;                                          //        : unitless
     double Get_Stretch_H(void) const;                                          //        : unitless

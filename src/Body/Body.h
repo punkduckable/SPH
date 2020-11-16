@@ -50,7 +50,7 @@ class Body {
     Materials::Material Body_Material;
 
     // Gravity
-    static const Vector g;                       // Set in Body.cc                       : mm/s^2 Vector
+    static const Vector g;                                // Set in Body.cc              : mm/s^2 Vector
     bool Gravity_Enabled;
 
     // Viscosity parameters
@@ -77,7 +77,7 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Printing Parameters
-    unsigned Times_Printed_Net_External_Force = 0;
+    unsigned Times_Printed_Body_Forces = 0;
     unsigned Times_Printed_Particle_Forces = 0;
     unsigned Times_Printed_Particle_Positions = 0;
 
@@ -230,7 +230,7 @@ class Body {
     // Printing methods
     // Defined in Body_IO.cc
     void Print_Parameters(void) const;                               // Prints to command line
-    void Export_Net_External_Force(const unsigned time_step);        // Prints to file
+    void Export_Body_Forces(const unsigned time_steps);              // Prints to file
     void Export_Particle_Forces(void);                               // Prints to file
     void Export_Particle_Positions(void);                            // Prints to file
 

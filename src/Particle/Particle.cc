@@ -78,7 +78,7 @@ void Particle::Set_V(const Vector & V_In) { V = V_In; }
 void Particle::Set_a(const Vector & a_In) { a = a_In; }
 
 void Particle::Set_D(const double D_In) { D = D_In; }
-void Particle::Set_Stretch_Critical(const double Stretch_Critical_In) { Stretch_Critical = Stretch_Critical_In; } 
+void Particle::Set_Stretch_Critical(const double Stretch_Critical_In) { Stretch_Critical = Stretch_Critical_In; }
 
 void Particle::Set_BC(const unsigned Component, const double Value) {
   assert(Component < 3);
@@ -120,6 +120,10 @@ const Tensor & Particle::Get_F(const unsigned i) const {
 
 const Vector & Particle::Get_Force_Friction(void) const { return Force_Friction; }
 const Vector & Particle::Get_Force_Contact(void) const { return Force_Contact; }
+const Vector & Particle::Get_Force_Internal(void) const { return Force_Internal; }
+const Vector & Particle::Get_Force_Viscosity(void) const { return Force_Viscosity; }
+const Vector & Particle::Get_Force_Hourglass(void) const { return Force_Hourglass; }
+
 
 double Particle::Get_Stretch_M(void) const { return Stretch_M; }
 double Particle::Get_Stretch_H(void) const { return Stretch_H; }
@@ -192,8 +196,8 @@ void Particle::Print(void) const {
   printf("A^(-1)\n");
   (*this).A_Inv.Print();
 
-  printf("F_Int = "); (*this).Force_Int.Print();
-  printf("F_Hg = "); (*this).Force_HG.Print();
+  printf("F_Int = "); (*this).Force_Internal.Print();
+  printf("F_Hg = "); (*this).Force_Hourglass.Print();
   printf("F_Contact = "); (*this).Force_Contact.Print();
   printf("F_Friction = "); (*this).Force_Friction.Print();
   printf("\n");
@@ -203,10 +207,8 @@ void Particle::Print(void) const {
   printf("Stretch_Critical: %lf\n",(*this).Stretch_Critical);
   printf("D:                %lf\n",(*this).D);
 
-  #if defined(PARTICLE_DEBUG)
-    printf("F_Visc = "); (*this).Force_Visc.Print();
-    printf("Visc: \n"); (*this).Visc.Print();
-  #endif
+  printf("F_Visc = "); (*this).Force_Viscosity.Print();
+  printf("Visc: \n"); (*this).Visc.Print();
 
   // If we have neighbors, print neighbor information
   if(Neighbors_Are_Set == true) {
