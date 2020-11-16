@@ -34,13 +34,11 @@ void Simulation::Run(void) {
             Print_time = 0;
 
   Body * Bodies;                                 // Will point to the Bodies's for this simulation
-  unsigned * Time_Step_Index;                    // Time step counters for each body
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Simulation start up.
-
-  Setup(&Bodies, &Time_Step_Index);
+  Setup(&Bodies);
 
 
 
@@ -56,41 +54,30 @@ void Simulation::Run(void) {
     ////////////////////////////////////////////////////////////////////////////
     // Export Bodies data
     #pragma omp single nowait
-    {
-      time2 = Get_Time();
-    } // #pragma omp single nowait
+    { time2 = Get_Time(); }
 
     if(t%Simulation::TimeSteps_Between_Prints == 0) {
       #pragma omp single nowait
-      {
-        printf("%d time steps complete\n",t);
-      } // #pragma omp single nowait
+      { printf("%d time steps complete\n",t); }
 
       Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
     } // if(t%TimeSteps_Between_Prints == 0) {
 
     #pragma omp single nowait
-    {
-      Print_time += Time_Since(time2);
-    } // #pragma omp single nowait
+    { Print_time += Time_Since(time2); }
 
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Apply Boundary conditions
-
     #pragma omp single nowait
-    {
-      time2 = Get_Time();
-    } // #pragma omp single nowait
+    { time2 = Get_Time(); }
 
     // Note: apply BCs uses a parallel for loop
     for(b = 0; b < Num_Bodies; b++) { Bodies[b].Apply_BCs();  }
 
     #pragma omp single nowait
-    {
-      update_BC_time += Time_Since(time2);
-    } // #pragma omp single nowait
+    { update_BC_time += Time_Since(time2); }
 
 
 
@@ -98,9 +85,7 @@ void Simulation::Run(void) {
     // Update Stress tensor (P)
 
     #pragma omp single nowait
-    {
-      time2 = Get_Time();
-    } // #pragma omp single nowait
+    { time2 = Get_Time(); }
 
     for(b = 0; b < Num_Bodies; b++) {
       // Note: We don't update P for Bodys that are fixed in place
@@ -108,30 +93,17 @@ void Simulation::Run(void) {
 
       else {
         /* Update each Particles's P tensor.
-        We only update P when the bth Body's counter is zero.
 
         Note: the Update_P method has an orphaned for loop (and takes care of
         removing damaged particles in parallel, damaged particles are not
         removed until every particle's P tensor has been updated. This makes
         the code parallelizable and determinstic) */
-        if(Time_Step_Index[b] == 0) {
-          double time_update = dt*Bodies[b].Get_Time_Steps_Per_Update();
-
-          #if defined(SIMULATION_DEBUG)
-            printf("time update: %e\n", time_update);
-            printf("dt: %e\n", dt);
-            printf("Bodies[b].Get_Time_Steps_Per_Update(): %u\n", Bodies[b].Get_Time_Steps_Per_Update());
-          #endif
-
-          Bodies[b].Update_P(time_update);
-        } // if(Time_Step_Index[b] == 0) {
+        Bodies[b].Update_P(dt);
       } // else
     } // for(b = 0; b < Num_Bodies; b++) {
 
     #pragma omp single nowait
-    {
-      update_P_time += Time_Since(time2);
-    } // #pragma omp single nowait
+    { update_P_time += Time_Since(time2);
 
 
 
@@ -145,9 +117,7 @@ void Simulation::Run(void) {
     mth Body if that body is being updated this time step. */
 
     #pragma omp single nowait
-    {
-      time2 = Get_Time();
-    } // #pragma omp single nowait
+    { time2 = Get_Time(); }
 
     /* First, we need to set each particle's contact force to zero. It should be
     noted that we only do this for a particular Body if that body
@@ -174,9 +144,7 @@ void Simulation::Run(void) {
     } // for(unsinged b1 = 0; b1 < Num_Bodies - 1; b1++) {
 
     #pragma omp single nowait
-    {
-      contact_time += Time_Since(time2);
-    } // #pragma omp single nowait
+    { contact_time += Time_Since(time2); }
 
 
 
@@ -184,73 +152,25 @@ void Simulation::Run(void) {
     // Update Position (x)
 
     #pragma omp single nowait
-    {
-      time2 = Get_Time();
-    } // #pragma omp single nowait
+    { time2 = Get_Time(); }
 
     for(b = 0; b < Num_Bodies; b++) {
       // Note: we don't update P for Bodies that are fixed in place
       if(Bodies[b].Get_Is_Fixed() == true) { continue; }
 
       else {
-        /* We only want to update x (the traditional way) if we're on a timestep
-        where the bth Body gets updated. Suppose that the bth body
-        only updates once every k steps (meaning that Stpes_Between_Update[b] = k)
-        on the 0th step, the bth Bodies's counter is zero. After
-        each step it increments. On the kth step, its counter reaches k and the
-        counter gets truncaed back to zero. Therefore, every k steps the bth
-        Body's counter will be zero. Thus, we use a 0 counter
-        as an indicator that we should update this Body. */
-        if(Time_Step_Index[b] == 0) {
-          /* First, update the 'F_Index' for the current Body. This
-          controls which member of each particle's 'F' array is the 'newest'. */
-          #pragma omp single
-            Bodies[b].Increment_F_Index();
+        /* First, update the 'F_Index' for the current Body. This
+        controls which member of each particle's 'F' array is the 'newest'. */
+        #pragma omp single
+        { Bodies[b].Increment_F_Index(); }
 
-          // Now update the position of each particle in this body.
-          Bodies[b].Update_x(dt);
-        } // if(Time_Step_Index[b] == 0) {
-        else {
-          /* If we're not on an update step, then we'll let this body continue
-          accelerating at whatever acceleration it attained after the last
-          time step. */
-          unsigned Num_Particles = (Bodies[b]).Get_Num_Particles();
-
-          #pragma omp for
-          for(p = 0; p < Num_Particles; p++) {
-            if((Bodies[b])[p].Get_D() >= 1) { continue; }
-
-            (Bodies[b])[p].x += dt*(Bodies[b])[p].V;       // x_p+1 = x_p + dt*v_(p+1/2)           : mm Vector
-            (Bodies[b])[p].V += dt*(Bodies[b])[p].a;       // V_p+3/2 = V_p+1/2 + dt*a(t_p+1)      : mm/s Vector
-          } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
-        } // else {
+        // Now update the position of each particle in this body.
+        Bodies[b].Update_x(dt);
       } // else {
     } // for(b = 0; b < Num_Bodies; b++) {
 
     #pragma omp single nowait
-    {
-      update_x_time += Time_Since(time2);
-    } // #pragma omp single nowait
-
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Update each time step counter
-    /* Here we increment each Body's counter. If a particular counter
-    reaches its limit (the value of Bodies[b].Time_Steps_Per_Update) then we set that
-    counter to zero (reset the counter). */
-
-    #pragma omp single
-    {
-    for(b = 0; b < Num_Bodies; b++) {
-      Time_Step_Index[b]++;
-
-      if(Time_Step_Index[b] == Bodies[b].Get_Time_Steps_Per_Update()) {
-        Time_Step_Index[b] = 0;
-      } // if(Time_Step_Index[b] == Time_Setps_Between_Updates[b]) {
-    } // for(b = 0; b < Num_Bodies; b++) {
-    } // #pragma omp single
-  } // for(t = 0; t < Num_Time_Steps; t++) {
+    { update_x_time += Time_Since(time2); }
 
 
 
@@ -258,9 +178,8 @@ void Simulation::Run(void) {
   // Export the bodies data for the final configuration of the simulation
 
   #pragma omp single nowait
-  {
-    printf("%d time steps complete\n",t);
-  } // #pragma omp single nowait
+  { printf("%d time steps complete\n",t); }
+
   Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
 
   } // #pragma omp parallel
@@ -307,7 +226,6 @@ void Simulation::Run(void) {
   #endif
 
   delete [] Bodies;
-  delete [] Time_Step_Index;
 } // void Simulation::Run(void) {
 
 
@@ -322,17 +240,17 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
   Print_Prticle_Force and Print_Next_External_Forces, respectivly.
 
   Simulation::Run is the only function  that should call this function */
-    #pragma omp for nowait
-    for(unsigned b = 0; b < Num_Bodies; b++) {
-      try {
-                                                            Bodies[b].Export_Particle_Positions();
-        if(Simulation::Print_Particle_Forces == true) {     Bodies[b].Export_Particle_Forces();}
-        if(Simulation::Print_Net_External_Forces == true) { Bodies[b].Export_Net_External_Force(t); }
-      } // try {
+  #pragma omp for nowait
+  for(unsigned b = 0; b < Num_Bodies; b++) {
+    try {
+                                                          Bodies[b].Export_Particle_Positions();
+      if(Simulation::Print_Particle_Forces == true) {     Bodies[b].Export_Particle_Forces();}
+      if(Simulation::Print_Net_External_Forces == true) { Bodies[b].Export_Net_External_Force(t); }
+    } // try {
 
-      catch(Exception & Error_In) {
-        printf("%s\n", Error_In.what());
-        abort();
-      } // catch(Exception & Error_In) {
-    } // for(unsigned b = 0; b < Num_Bodies; b++ ) {
+    catch(Exception & Error_In) {
+      printf("%s\n", Error_In.what());
+      abort();
+    } // catch(Exception & Error_In) {
+  } // for(unsigned b = 0; b < Num_Bodies; b++ ) {
 } // void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned t) {

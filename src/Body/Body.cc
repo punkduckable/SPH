@@ -260,10 +260,7 @@ void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const 
 
 
 void Body::Set_Is_Fixed(const bool Is_Fixed_In) { Is_Fixed = Is_Fixed_In; }
-
 void Body::Set_First_Time_Step(const bool First_In) { First_Time_Step = First_In; }
-void Body::Set_Time_Steps_Per_Update(const unsigned Steps_In) { Time_Steps_Per_Update = Steps_In; }
-
 void Body::Set_Gravity_Enabled(const bool Gravity_Enabled_In) { Gravity_Enabled = Gravity_Enabled_In; }
 
 void Body::Set_F_Index(const unsigned char i) {
@@ -321,8 +318,5 @@ unsigned Body::Get_Z_SIDE_LENGTH(void) const {
 } // unsigned Get_Z_SIDE_LENGTH(void) const {
 
 bool Body::Get_Is_Fixed(void) const { return (*this).Is_Fixed; }
-
 bool Body::Get_First_Time_Step(void) const { return (*this).First_Time_Step; }
-unsigned Body::Get_Time_Steps_Per_Update(void) const { return (*this).Time_Steps_Per_Update; }
-
 bool Body::Get_Gravity_Enabled(void) const { return (*this).Gravity_Enabled; }

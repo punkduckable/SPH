@@ -66,7 +66,6 @@ class Body {
 
     // Time step information
     bool First_Time_Step = true;
-    unsigned Time_Steps_Per_Update;              // The number of time steps between when P and F are updated
 
 
 
@@ -185,10 +184,7 @@ class Body {
                             const unsigned Dim_z);
 
     void Set_Is_Fixed(const bool Is_Fixed_In);
-
     void Set_First_Time_Step(const bool First_In);
-    void Set_Time_Steps_Per_Update(const unsigned Steps_In);
-
     void Set_Gravity_Enabled(const bool Gravity_Enabled_In);
 
     void Set_F_Index(const unsigned char i);
@@ -226,10 +222,7 @@ class Body {
     unsigned Get_Z_SIDE_LENGTH(void) const;
 
     bool Get_Is_Fixed(void) const;
-
     bool Get_First_Time_Step(void) const;
-    unsigned Get_Time_Steps_Per_Update(void) const;
-
     bool Get_Gravity_Enabled(void) const;
 
 

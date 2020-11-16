@@ -19,7 +19,7 @@ namespace Simulation {
   // Setup functions.
   // Defined in Simulation_Setup.cc
 
-  void Setup(Body ** Bodies, unsigned ** Time_Step_Index);
+  void Setup(Body ** Bodies);
 
 
   //////////////////////////////////////////////////////////////////////////////

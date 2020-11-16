@@ -50,10 +50,10 @@ namespace Simulation {
 
 
 
-void Simulation::Setup(Body ** Bodies, unsigned ** Time_Step_Index) {
+void Simulation::Setup(Body ** Bodies) {
   /* Function description:
   This function, as the name implies, sets up a Simulation. This means setting
-  all simulation parameters, creating the Bodies, and the Time_Step_Index array.
+  all simulation parameters and creating the Bodies.
   Most of this is actually handeled by Load_Setup_File.
 
   Simulation::Run is the only thing that should call this function */
@@ -116,13 +116,6 @@ void Simulation::Setup(Body ** Bodies, unsigned ** Time_Step_Index) {
     } // for(unsigned i = 0; i < Simulation::Num_Bodies; i++) {
   } // else {
 
-
-  /* Set up the Time_Step_Index array (Note: if Load_Simulation_From_Save = true
-  then the number of bodies is not known until Load_Simulation is done) */
-  *Time_Step_Index = new unsigned[Num_Bodies];
-  for(unsigned i = 0; i < Num_Bodies; i++) {  (*Time_Step_Index)[i] = 0; }
-
-
   // Report setup time.
   time_load = Time_Since(time_load);
   #if defined(_OPENMP)
@@ -157,7 +150,7 @@ void Simulation::Setup(Body ** Bodies, unsigned ** Time_Step_Index) {
   delete [] General_BCs;
   delete [] Position_Offset;
   delete [] Initial_Velocity;
-} // void Simulation::Setup(Body ** Bodies, unsigned ** Time_Step_Index) {
+} // void Simulation::Setup(Body ** Bodies) {
 
 
 

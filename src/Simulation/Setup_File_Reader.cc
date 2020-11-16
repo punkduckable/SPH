@@ -339,11 +339,6 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   sscanf(strBuf.c_str(), " %u \n", &uBuf1);
   Body_In.Set_Support_Radius(uBuf1);
 
-  strBuf = IO::read_line_after(File, "Time Steps Per Update:", false);
-  sscanf(strBuf.c_str(), " %u \n", &uBuf1);
-  Body_In.Set_Time_Steps_Per_Update(uBuf1);
-
-
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("\n\nRead Name[%3u] as:                      %s\n", i, Body_In.Get_Name().c_str());
     printf("Read From_FEB_File[%3u] as:             %u\n", i, Simulation::From_FEB_File[i]);
@@ -399,7 +394,6 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
     printf("Read Body[%3u].alpha as:                %lf\n", i, Body_In.Get_alpha());
     printf("Read Body[%3u].Support_Radius as:       %u\n",  i, Body_In.Get_Support_Radius());
     printf("Read Body[%3u].IPS as:                  %lf\n", i, Body_In.Get_Inter_Particle_Spacing());
-    printf("Read Body[%3u].Time_Steps/Update as:    %u\n",  i, Body_In.Get_Time_Steps_Per_Update());
   #endif
 
 

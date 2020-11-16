@@ -71,7 +71,6 @@ Mu (Viscosity) [Mpa*s]:                          .00004
 Alpha (Hg Control parameter):                    .75
 Inter Particle Spacing (IPS) [mm]:               1.0
 Support Radius [# IPS]:                          3
-Time Steps Per Update:                           1
 
 
 
@@ -113,4 +112,3 @@ Mu (Viscosity) [Mpa*s]:                          .00004
 Alpha (Hg Control parameter):                    .75
 Inter Particle Spacing (IPS) [mm]:               1
 Support Radius [# IPS]:                          3
-Time Steps Per Update:                           1

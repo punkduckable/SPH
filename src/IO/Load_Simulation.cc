@@ -113,16 +113,6 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     #endif
 
 
-    // Now read in time steps between updates
-    strBuf = read_line_after(File, "Time steps per update:");
-    sscanf(strBuf.c_str()," %u \n", &uBuf);
-    (*Bodies_Ptr)[i].Set_Time_Steps_Per_Update(uBuf);
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's time steps per update as %u\n", i, uBuf);
-    #endif
-
-
-
     // Finally read in File number information
     strBuf = read_line_after(File, "# times printed net external forces:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);

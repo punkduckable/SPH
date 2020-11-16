@@ -49,7 +49,6 @@ void IO::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
     fprintf(File, "     Is fixed in place:       %u\n",    Bodies[i].Get_Is_Fixed());
     fprintf(File, "     Is Damageable:           %u\n",    Bodies[i].Get_Is_Damageable());
     fprintf(File, "     Number of particles:     %u\n",    Bodies[i].Get_Num_Particles());
-    fprintf(File, "     Time steps per update:   %u\n",    Bodies[i].Get_Time_Steps_Per_Update());
 
     fprintf(File, "     # times printed net external forces:         %u\n",    Bodies[i].Times_Printed_Net_External_Force);
     fprintf(File, "     # times printed particle forces:             %u\n",    Bodies[i].Times_Printed_Particle_Forces);
