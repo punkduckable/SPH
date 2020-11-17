@@ -80,7 +80,10 @@ void Print(const Vector & V_In);
 // Functions of multiple vectors
 double Dot_Product(const Vector & V1,
                    const Vector & V2);
+Vector Cross_Product(const Vector & V1,
+                     const Vector & V2);
 Tensor Dyadic_Product(const Vector & V1,
                       const Vector & V2);
+
 
 #endif

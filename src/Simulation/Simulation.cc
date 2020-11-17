@@ -113,7 +113,7 @@ void Simulation::Run(void) {
       // Contact
       /* Here we enable particle-particle contact. To do this, we cycle through
       each Body. For the mth body, we check if any of its particles are
-      in contact with any of the partilces in the ith body for i > m. We only
+      in contact with any of the particles in the ith body for i > m. We only
       use i > m so that we only run the contact algorithm on each part of
       Bodys once. Further, we only calculate the contact forces for the
       mth Body if that body is being updated this time step. */
@@ -248,6 +248,7 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
                                                       Bodies[b].Export_Particle_Positions();
       if(Simulation::Print_Particle_Forces == true) { Bodies[b].Export_Particle_Forces();}
       if(Simulation::Print_Body_Forces == true) {     Bodies[b].Export_Body_Forces(time_steps); }
+      if(Simulation::Print_Body_Torques == true) {    Bodies[b].Export_Body_Torques(time_steps); }
     } // try {
 
     catch(Exception & Error_In) {

@@ -327,6 +327,20 @@ double Dot_Product(const Vector & V1, const Vector & V2) {
 
 
 
+Vector Cross_Product(const Vector & V1, const Vector & V2) {
+  Vector V1_x_V2;
+
+  /* We assign the elements of the cross product V1 x V2 to the corresponding
+  elements of V1_x_V2. */
+  V1_x_V2[0] = V1[1]*V2[2] - V1[2]*V2[1];
+  V1_x_V2[1] = V1[2]*V2[0] - V1[0]*V2[2];
+  V1_x_V2[2] = V1[0]*V2[1] - V1[1]*V2[0];
+
+  return V1_x_V2;
+} // Vector Cross_Product(const Vector & V1, const Vector & V2) {
+
+
+
 Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
   Tensor S;
 

@@ -55,7 +55,7 @@ class Body {
 
     // Viscosity parameters
     double mu;                                             // Viscosity                  : Mpa*s
-    unsigned char F_Index = 0;                             // Keeps track of which F (in each partilce) is the 'new' one
+    unsigned char F_Index = 0;                             // Keeps track of which F (in each particle) is the 'new' one
 
     // Hourglass (Hg) correction parameters
     double alpha;                                          // Hg control parameter       : unitless
@@ -78,6 +78,7 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Printing Parameters
     unsigned Times_Printed_Body_Forces = 0;
+    unsigned Times_Printed_Body_Torques = 0;
     unsigned Times_Printed_Particle_Forces = 0;
     unsigned Times_Printed_Particle_Positions = 0;
 
@@ -231,6 +232,7 @@ class Body {
     // Defined in Body_IO.cc
     void Print_Parameters(void) const;                               // Prints to command line
     void Export_Body_Forces(const unsigned time_steps);              // Prints to file
+    void Export_Body_Torques(const unsigned time_steps);             // Prints to file
     void Export_Particle_Forces(void);                               // Prints to file
     void Export_Particle_Positions(void);                            // Prints to file
 

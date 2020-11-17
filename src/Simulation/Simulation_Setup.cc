@@ -28,6 +28,7 @@ namespace Simulation {
   bool Save_Simulation_To_File;
   bool Print_Particle_Forces;
   bool Print_Body_Forces;
+  bool Print_Body_Torques;
   unsigned TimeSteps_Between_Prints;
 
   // TimeStep paramters
@@ -132,6 +133,7 @@ void Simulation::Setup(Body ** Bodies) {
   printf(         "Save_Simulation_To_File =     %u\n",    Simulation::Save_Simulation_To_File);
   printf(         "Print_Particle_Forces =       %u\n",    Simulation::Print_Particle_Forces);
   printf(         "Print_Body_Forces =           %u\n",    Simulation::Print_Body_Forces);
+  printf(         "Print_Body_Torques =          %u\n",    Simulation::Print_Body_Torques);
   printf(         "TimeSteps_Between_Prints =    %u\n",    Simulation::TimeSteps_Between_Prints);
   printf(         "Parallel execution =          ");
   #if defined(_OPENMP)
@@ -174,7 +176,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   const double Particle_Radius = IPS*.578;                                     //        : mm
   const double Particle_Mass = Particle_Volume*Body_In.Get_density();          //        : g
 
-  // First, let's get number of partilces in Body_In
+  // First, let's get number of particles in Body_In
   const unsigned X_SIDE_LENGTH = Body_In.Get_X_SIDE_LENGTH();
   const unsigned Y_SIDE_LENGTH = Body_In.Get_Y_SIDE_LENGTH();
   const unsigned Z_SIDE_LENGTH = Body_In.Get_Z_SIDE_LENGTH();

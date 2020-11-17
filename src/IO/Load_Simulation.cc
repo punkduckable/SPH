@@ -121,6 +121,13 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
       printf("Read Body %u's # times printed Body forces as %u\n", i, uBuf);
     #endif
 
+    strBuf = read_line_after(File, "# times printed Body torques:");
+    sscanf(strBuf.c_str()," %u \n", &uBuf);
+    (*Bodies_Ptr)[i].Times_Printed_Body_Torques = uBuf;
+    #if defined(LOAD_MONITOR)
+      printf("Read Body %u's # times printed Body torques as %u\n", i, uBuf);
+    #endif
+
     strBuf = read_line_after(File, "# times printed particle forces:");
     sscanf(strBuf.c_str()," %u \n \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Forces = uBuf;

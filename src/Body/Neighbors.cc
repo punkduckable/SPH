@@ -171,7 +171,7 @@ void Body::Find_Neighbors_Box(void) {
   same vertical layer are stored in contiguous memory.
 
   Thus, if working with a cube with sidelength N, the (1,1,1) particle will be
-  N*N particles away from the (2,1,1) partilce in the, N particles away from the
+  N*N particles away from the (2,1,1) particle in the, N particles away from the
   (1,1,2) particle and 1 particle away from the (1,2,1) particle in the
   Particles array.
 

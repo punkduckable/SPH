@@ -14,7 +14,7 @@ void Body::Update_P(const double dt) {
   /* The purpose of this function is to calculate the First Piola-Kirchhoff
   stress tensor for each particle in a Body.
 
-  This function assumes that the position each partilce in Particle's has been
+  This function assumes that the position each particle in Particle's has been
   updated to the previous time step. It also assumes that each particle has
   a neighbor list, has calculate A^(-1), and has populated its dynamic array
   members. This function should not be called until these assumptions are valid.
@@ -37,7 +37,7 @@ void Body::Update_P(const double dt) {
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
   Tensor Visc;                                   // Viscosity correction term for P      : Mpa*s Tensor
-  Vector rj;                                     // Displacemtn vector of jth neighbor   : mm Vector
+  Vector rj;                                     // Displacement vector of jth neighbor   : mm Vector
 
 
   // Material parameters
@@ -133,7 +133,7 @@ void Body::Update_P(const double dt) {
       printf("\n");
 
       // Now we add the bad particles to the Damaged_Particle list (we'll remove
-      // it once we have cycled through all partilces)
+      // it once we have cycled through all particles)
       Damaged_Particle_List.Push_Back(Particles[i].ID);
       continue;
     } // if(J <= 0) {
@@ -235,7 +235,7 @@ void Body::Update_x(const double dt) {
   // Damage variables
   List<unsigned> Damaged_Particle_List;      // Keeps track of which particles have broken
 
-  // Now loop through each partilce in the Partilces' array
+  // Now loop through each particle in the particles' array
   #pragma omp for
   for(unsigned i = 0; i < Num_Particles; i++) {
     // First, check if particle is damaged (if so, we skip this particle)
@@ -399,11 +399,11 @@ void Body::Update_x(const double dt) {
     Particles[i].V += (dt)*a;                    // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
 
-    if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true) {
+    if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques) {
       Particles[i].Force_Internal = Force_Internal;     // update Internal force                : N Vector
       Particles[i].Force_Hourglass = Force_Hourglass;   // update Hourglassing force            : N Vector
       Particles[i].Force_Viscosity = Force_Viscosity;   // update Viscosity force               : N Vector
-    } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true) {
+    } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one

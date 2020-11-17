@@ -1,3 +1,4 @@
+bin/SPH
 *.DS_Store
 *.o
 *.vtk

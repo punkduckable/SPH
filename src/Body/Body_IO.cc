@@ -62,7 +62,11 @@ void Body::Export_Body_Forces(const unsigned time_steps) {
 
   /* Calculate the Internal, Viscosity, Contact, Friction, and Hourglass forces
   acting acting on the body. To do this, we add up the corresponding forces in
-  each particle in the body. */
+  each particle in the body.
+
+  Note: we count damaged particles in this calculation. Thus, this
+  calculation may give inaccurate results if some of the body's particles are
+  damaged */
   Vector Internal_Force  = {0, 0, 0};
   Vector Viscosity_Force = {0, 0, 0};
   Vector Contact_Force   = {0, 0, 0};
@@ -89,7 +93,7 @@ void Body::Export_Body_Forces(const unsigned time_steps) {
     fprintf(File,"            Friction Force (N)            |");
     fprintf(File,"            Hourglass Force (N)           |");
     fprintf(File,"            Net Force (N)                 \n");
-  } //   if(Times_Printed_Body_Forces == 0) {
+  } // if(Times_Printed_Body_Forces == 0) {
 
   fprintf(File,"%10d | ", time_steps);
   fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Internal_Force[0],  Internal_Force[1],  Internal_Force[2]);
@@ -105,6 +109,108 @@ void Body::Export_Body_Forces(const unsigned time_steps) {
   // Increment the number of times that we're printed Body force data.
   Times_Printed_Body_Forces++;
 } // void Body::Export_Body_Forces(const unsigned time_steps) {
+
+
+
+void Body::Export_Body_Torques(const unsigned time_steps) {
+  /* This function is used to find and print the torques applied to a body.
+
+  This function can NOT be called by multiple threads at once (this
+  function is not thread safe). */
+
+  #if defined(IO_MONITOR)
+    printf("Exporting Torques for %s\n",(*this).Name.c_str());
+  #endif
+
+  // First, open the file.
+  std::string File_Path = "./IO/Force_Files/";
+  File_Path += (*this).Name.c_str();
+  File_Path +=  "_Torques.txt";
+
+  FILE * File;
+  if(Times_Printed_Body_Torques == 0) { File = fopen(File_Path.c_str(),"w"); }
+  else {                                File = fopen(File_Path.c_str(),"a"); }
+
+  // Make sure we could open the file.
+  if(File == nullptr) {
+    char Buf[500];
+    sprintf(Buf,
+            "Cant Open File Exception: Thrown by Body::Export_Body_Torques\n"
+            "For some reason, ./IO/Force_Files/%s_Torques.txt wouldn't open :(\n",
+            (*this).Name.c_str());
+    throw Cant_Open_File(Buf);
+  } // if(File == nullptr) {
+
+  /* Next, we need to find the centroid of the body. Since every particle in
+  the body has the same mass, this is equivalent to just finding the average
+  position of the particles in the body.
+
+  Note: we still count damaged particles in this calculation. Thus, this
+  calculation may give inaccurate results if some of the body's particles are
+  damaged */
+  Vector Centroid = {0, 0, 0};
+  for(unsigned i = 0; i < Num_Particles; i++) {
+    Centroid += (*this).Particles[i].Get_x();
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
+  Centroid = Centroid/Num_Particles;
+
+  /* Calculate the Torques due to Internal, Viscosity, Contact, Friction, and
+  Hourglass forces. To do this, we add up the corresponding Torques in
+  each particle in the body. */
+  Vector Internal_Torque  = {0, 0, 0};
+  Vector Viscosity_Torque = {0, 0, 0};
+  Vector Contact_Torque   = {0, 0, 0};
+  Vector Friction_Torque  = {0, 0, 0};
+  Vector Hourglass_Torque = {0, 0, 0};
+  Vector Net_Torque       = {0, 0, 0};
+
+  for(unsigned i = 0; i < Num_Particles; i++) {
+    /* First, calculate the displacement between the Body's centroid and the
+    ith particle's spatial position. */
+    Vector Displacement = (*this).Particles[i].Get_x() - Centroid;
+
+    /* Next calculate the torque due to the ith particle from each force acting
+    on the particle. In general, the torque on the body due to a force F acting
+    on a point with some displacement from the body's centroid is
+    F x Displacement.
+
+    Note: to calculate the total force, we use a, which is in units of mm/s^2,
+    and the particle's mass, which is in units of grams. We need some conversion
+    factors to make this work. */
+    Internal_Torque  += Cross_Product(Displacement, Particles[i].Get_Force_Internal());
+    Viscosity_Torque += Cross_Product(Displacement, Particles[i].Get_Force_Viscosity());
+    Contact_Torque   += Cross_Product(Displacement, Particles[i].Get_Force_Contact());
+    Friction_Torque  += Cross_Product(Displacement, Particles[i].Get_Force_Friction());
+    Hourglass_Torque += Cross_Product(Displacement, Particles[i].Get_Force_Hourglass());
+    Net_Torque       += Cross_Product(Displacement, (Particles[i].Get_Mass()/1000.)*(Particles[i].Get_a()/1000.));
+  } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+  /* Print the results to file. If we're on the first time step, then we need
+  to print a header. Otherwise, just print the torques! */
+  if(Times_Printed_Body_Torques == 0) {
+    fprintf(File,"Time Steps |");
+    fprintf(File,"           Internal Torque (N)            |");
+    fprintf(File,"           Viscous Torque (N)             |");
+    fprintf(File,"           Contact Torque (N)             |");
+    fprintf(File,"           Friction Torque (N)            |");
+    fprintf(File,"           Hourglass Torque (N)           |");
+    fprintf(File,"           Net Torque (N)                 \n");
+  } //   if(Times_Printed_Body_Torques == 0) {
+
+  fprintf(File,"%10d | ", time_steps);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Internal_Torque[0],  Internal_Torque[1],  Internal_Torque[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Viscosity_Torque[0], Viscosity_Torque[1], Viscosity_Torque[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Contact_Torque[0],   Contact_Torque[1],   Contact_Torque[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Friction_Torque[0],  Friction_Torque[1],  Friction_Torque[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Hourglass_Torque[0], Hourglass_Torque[1], Hourglass_Torque[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e>\n",   Net_Torque[0],       Net_Torque[1],       Net_Torque[2]);
+
+  // Now close the file.
+  fclose(File);
+
+  // Increment the number of times that we're printed Body force data.
+  Times_Printed_Body_Torques++;
+} // void Body::Export_Body_Torques(const unsigned time_steps) {
 
 
 

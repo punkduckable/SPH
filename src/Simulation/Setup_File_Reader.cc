@@ -66,6 +66,13 @@ Body* Simulation::Load_Setup_File(void) {
     printf("Read Print_Body_Forces as: %s\n", strBuf.c_str());
   #endif
 
+  strBuf = IO::read_line_after(File, "Print Body Torques:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Body_Torques = true; }
+  else {                                                        Print_Body_Torques = false; }
+  #if defined(SIMULATION_SETUP_MONITOR)
+    printf("Read Print_Body_Torques as: %s\n", strBuf.c_str());
+  #endif
+
   strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::TimeSteps_Between_Prints);
 

@@ -51,6 +51,7 @@ void IO::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
     fprintf(File, "     Number of particles:     %u\n",    Bodies[i].Get_Num_Particles());
 
     fprintf(File, "     # times printed Body forces:                 %u\n",    Bodies[i].Times_Printed_Body_Forces);
+    fprintf(File, "     # times printed Body torques:                %u\n",    Bodies[i].Times_Printed_Body_Torques);
     fprintf(File, "     # times printed particle forces:             %u\n",    Bodies[i].Times_Printed_Particle_Forces);
     fprintf(File, "     # times printed particle positions:          %u\n\n",  Bodies[i].Times_Printed_Particle_Positions);
   } // for(unsigned i = 0; i < Num_Bodies; i++) {

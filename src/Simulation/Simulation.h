@@ -58,6 +58,7 @@ namespace Simulation {
   extern bool Save_Simulation_To_File;
   extern bool Print_Particle_Forces;
   extern bool Print_Body_Forces;
+  extern bool Print_Body_Torques;
   extern unsigned TimeSteps_Between_Prints;
 
   // Time Step
