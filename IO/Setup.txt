@@ -69,7 +69,7 @@ Number of General Boundary Conditions:           0
 # Other
 Enable Gravity:                                  true
 Mu (Viscosity) [Mpa*s]:                          .00004
-Alpha (Hg Control parameter):                    .75
+Alpha (Hg Control parameter):                    0
 Inter Particle Spacing (IPS) [mm]:               1.0
 Support Radius [# IPS]:                          3
 
