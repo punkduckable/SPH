@@ -186,7 +186,7 @@ void Body::Update_P(const double dt) {
     we overwrite the current particle's F tensor for two time steps ago with the
     new F. This way, the current particle stores F(t) (in Particles[i].F[i_2dt])
     and F(t-dt) (in Particles[i].F[i_dt]).*/
-    Particles[i].P = (F*S + Visc)*Particles[i].A_Inv;                          //         : Mpa Tensor
+    Particles[i].P = F*S*Particles[i].A_Inv;                                   //         : Mpa Tensor
     Particles[i].F[i_2dt] = F;                                                 //         : unitless Tensor
     Particles[i].Visc = Visc*Particles[i].A_Inv;
   } // for(unsigned i = 0; i < Num_Particles; i++) {
@@ -275,7 +275,7 @@ void Body::Update_x(const double dt) {
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
       Force_Internal += (V_j)*((P_i + P_j)*Grad_W[j]);                         //        : N Vector
-      Force_Viscosity += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
+      Force_Viscosity += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); //   : N Vector
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -369,6 +369,7 @@ void Body::Update_x(const double dt) {
     function of the Particle class requires that Mass != 0, and Get_Mass will
     only work if a mass has been set. Thus, this assumption should hold. */
     a = ((1e+6)*(1./Particles[i].Get_Mass()))*(Force_Internal                  //        : mm/s^2 Vector
+                                             + Force_Viscosity
                                              + Particles[i].Force_Contact
                                              + Particles[i].Force_Friction
                                              + Force_Hourglass);
