@@ -107,6 +107,7 @@ void Body::Update_P(const double dt) {
       // If particle is fully damaged, add this particle to the damaged list
       // and move on (we'll remove it later)
       if(Particles[i].D >= 1) {
+        Particles[i].D = 1;  // Set D to 1 (paraview gets angry if D is too big)
         Damaged_Particle_List.Push_Back(Particles[i].ID);
         continue;
       } // if(Particles[i].D >= 1) {
