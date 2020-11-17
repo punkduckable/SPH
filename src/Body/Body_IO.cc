@@ -60,14 +60,21 @@ void Body::Export_Body_Forces(const unsigned time_steps) {
     throw Cant_Open_File(Buf);
   } // if(File == nullptr) {
 
-  /* Calculate the Internal, Viscosity, Contact, Friction, and Hourglass forces
+  /* Calculate the Elastic, Viscosity, Contact, Friction, and Hourglass forces
   acting acting on the body. To do this, we add up the corresponding forces in
   each particle in the body.
+
+  Note: the internal force combines the force due to the elastic and viscous
+  parts of the constitutive law. I want to look at the contribuitions from
+  both pieces. Thankfully, we calculate the viscous contributions on their own.
+  Thus, to get the elastic terms, I just subtract the viscosity force from the
+  internal one.
 
   Note: we count damaged particles in this calculation. Thus, this
   calculation may give inaccurate results if some of the body's particles are
   damaged */
   Vector Internal_Force  = {0, 0, 0};
+  Vector Elastic_Force   = {0, 0, 0};
   Vector Viscosity_Force = {0, 0, 0};
   Vector Contact_Force   = {0, 0, 0};
   Vector Friction_Force  = {0, 0, 0};
@@ -75,19 +82,24 @@ void Body::Export_Body_Forces(const unsigned time_steps) {
   Vector Net_Force       = {0, 0, 0};
 
   for(unsigned i = 0; i < Num_Particles; i++) {
+    /*  Note: to calculate the total force, we use a, which is in units of mm/s^2,
+    and the particle's mass, which is in units of grams. We need some conversion
+    factors to make this work. */
     Internal_Force  += Particles[i].Get_Force_Internal();
     Viscosity_Force += Particles[i].Get_Force_Viscosity();
     Contact_Force   += Particles[i].Get_Force_Contact();
     Friction_Force  += Particles[i].Get_Force_Friction();
     Hourglass_Force += Particles[i].Get_Force_Hourglass();
-    Net_Force       += (Particles[i].Get_Mass()/1000.)*(Particles[i].Get_a()/1000.);     // Particle mass is in g, we want it in Kg. a is in mm/s^2, we want it in m/s^2.
+    Net_Force       += (Particles[i].Get_Mass()/1000.)*(Particles[i].Get_a()/1000.);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+  Elastic_Force = Internal_Force - Viscosity_Force;
 
   /* Print the results to file. If we're on the first time step, then we need
   to print a header. Otherwise, just print the forces! */
   if(Times_Printed_Body_Forces == 0) {
     fprintf(File,"Time Steps |");
-    fprintf(File,"            Internal Force (N)            |");
+    fprintf(File,"            Elastic Force (N)             |");
     fprintf(File,"            Viscous Force (N)             |");
     fprintf(File,"            Contact Force (N)             |");
     fprintf(File,"            Friction Force (N)            |");
@@ -96,7 +108,7 @@ void Body::Export_Body_Forces(const unsigned time_steps) {
   } // if(Times_Printed_Body_Forces == 0) {
 
   fprintf(File,"%10d | ", time_steps);
-  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Internal_Force[0],  Internal_Force[1],  Internal_Force[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Elastic_Force[0],   Elastic_Force[1],   Elastic_Force[2]);
   fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Viscosity_Force[0], Viscosity_Force[1], Viscosity_Force[2]);
   fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Contact_Force[0],   Contact_Force[1],   Contact_Force[2]);
   fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Friction_Force[0],  Friction_Force[1],  Friction_Force[2]);
@@ -154,10 +166,11 @@ void Body::Export_Body_Torques(const unsigned time_steps) {
   } // for(unsigned i = 0; i < Num_Particles; i++) {
   Centroid = Centroid/Num_Particles;
 
-  /* Calculate the Torques due to Internal, Viscosity, Contact, Friction, and
+  /* Calculate the Torques due to Elastic, Viscosity, Contact, Friction, and
   Hourglass forces. To do this, we add up the corresponding Torques in
   each particle in the body. */
   Vector Internal_Torque  = {0, 0, 0};
+  Vector Elastic_Torque  = {0, 0, 0};
   Vector Viscosity_Torque = {0, 0, 0};
   Vector Contact_Torque   = {0, 0, 0};
   Vector Friction_Torque  = {0, 0, 0};
@@ -185,11 +198,13 @@ void Body::Export_Body_Torques(const unsigned time_steps) {
     Net_Torque       += Cross_Product(Displacement, (Particles[i].Get_Mass()/1000.)*(Particles[i].Get_a()/1000.));
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 
+  Elastic_Torque = Internal_Torque - Viscosity_Torque;
+
   /* Print the results to file. If we're on the first time step, then we need
   to print a header. Otherwise, just print the torques! */
   if(Times_Printed_Body_Torques == 0) {
     fprintf(File,"Time Steps |");
-    fprintf(File,"           Internal Torque (N)            |");
+    fprintf(File,"           Elastic Torque (N)             |");
     fprintf(File,"           Viscous Torque (N)             |");
     fprintf(File,"           Contact Torque (N)             |");
     fprintf(File,"           Friction Torque (N)            |");
@@ -198,7 +213,7 @@ void Body::Export_Body_Torques(const unsigned time_steps) {
   } //   if(Times_Printed_Body_Torques == 0) {
 
   fprintf(File,"%10d | ", time_steps);
-  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Internal_Torque[0],  Internal_Torque[1],  Internal_Torque[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Elastic_Torque[0],   Elastic_Torque[1],   Elastic_Torque[2]);
   fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Viscosity_Torque[0], Viscosity_Torque[1], Viscosity_Torque[2]);
   fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Contact_Torque[0],   Contact_Torque[1],   Contact_Torque[2]);
   fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Friction_Torque[0],  Friction_Torque[1],  Friction_Torque[2]);
