@@ -12,7 +12,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   /* This function implements Particle-Particle 'contact'.
   the contact force is applied whenever two particles are within a 2h radius of
   one another (when the two particles's support radii overlap). The applied
-  force is in the direction of the line between the two particles centers. */
+  force is in the direction of the line between the two particles' centers. */
   const double h = Simulation::Contact_Distance;           // Contact force support radius         : mm
   const double h_squared = h*h;                            // Square of support radius   : mm^2
   unsigned i;
@@ -71,14 +71,14 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
         /* Now apply the force to the two interacting bodies (Note the forces
         are equal and opposite). It should be noted that we don't actually
         apply the force to body B's jth particle. The reason for this is
-        race conditions. It is possible for two threads to attempt to write
+        race conditions. Two threads can attempt to write
         the contact force to the same particle in body B at the same time.
         This causes a race condition (when run in parallel). This can be
         fixed using a critical region, but that's slow. To fix this, each
         thread gets its own 'Local contact force array'. each thread stores
         the force that it would apply to the particles in body B in this array.
         Once we have cycled through all of body A's particles, we then 'reduce'
-        these force arrays. One by one, the threads add their contribuitions to
+        these force arrays. One by one, the threads add their contributions to
         body_b's contact forces. This runs about 2x faster than if we had
         inserted the critical region into this loop. */
         F_Contact = (KV_i*V_j)*Grad_W;                                         //        : N Vector
@@ -116,8 +116,9 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   delete [] Body_B_F_Contact_Local;
   delete [] Body_B_F_Friction_Local;
 
-  /* Note, there is no explicit barrier here. This is because the next kernel
-  , update_x , has a for loop before it uses the forces modified above. This
-  means that the update_x method will force synchronize each thread before any
-  data from here is used. Therefore, we don't need a barrier. */
+  /* We put a barrier here so that each particle's contact and friction forces
+  have been set before returning. The next function in the simulaiton (update_x)
+  will only work correctly if each particle's contact and friction forces have
+  been set. */
+  #pragma omp barrier
 } // void Body::Contact(Body & Body_A, Body & Body_B) {

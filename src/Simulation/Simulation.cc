@@ -23,7 +23,7 @@ void Simulation::Run(void) {
   // Simulation variables
 
   // Loop indicies
-  unsigned p,b,t;
+  unsigned p,b,time_step;
 
   // Simulation time measurement variables
   TIME_TYPE time1,
@@ -50,9 +50,9 @@ void Simulation::Run(void) {
   time1 = Get_Time();
 
   // time step loop.
-  #pragma omp parallel default(shared) private(b, p, t) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
-    for(t = 0; t < Num_Time_Steps; t++) {
+    for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
       //////////////////////////////////////////////////////////////////////////
       // Export Bodies data
       #pragma omp single nowait
@@ -60,9 +60,9 @@ void Simulation::Run(void) {
 
       if(t%Simulation::TimeSteps_Between_Prints == 0) {
         #pragma omp single nowait
-        { printf("%d time steps complete\n",t); }
+        { printf("%d time steps complete\n", time_step); }
 
-        Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
+        Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
       } // if(t%TimeSteps_Between_Prints == 0) {
 
       #pragma omp single nowait
@@ -115,17 +115,12 @@ void Simulation::Run(void) {
       each Body. For the mth body, we check if any of its particles are
       in contact with any of the particles in the ith body for i > m. We only
       use i > m so that we only run the contact algorithm on each part of
-      Bodys once. Further, we only calculate the contact forces for the
-      mth Body if that body is being updated this time step. */
+      Bodys once. */
 
       #pragma omp single nowait
       { time2 = Get_Time(); }
 
-      /* First, we need to set each particle's contact force to zero. It should
-      be noted that we only do this for a particular Body if that body
-      is updating it's position this cycle. Otherwise, since the force won't be
-      used for anything, there's no reason to waste CPU cycles setting that
-      bodies's particle's contact forces to zero. */
+      /* First, we need to set each particle's contact force to zero. */
       for(b = 0; b < Num_Bodies; b++) {
         unsigned Num_Particles = Bodies[b].Get_Num_Particles();
 
@@ -136,9 +131,8 @@ void Simulation::Run(void) {
         } // for(p = 0; p < (Bodies[b]).Get_Num_Particles(); p++) {
       } // for(b = 0; b < Num_Bodies; b++) {
 
-      /* Now we can apply the contact algorithm. Note that this must be applied
-      every time step no matter what (so that bodies that update each step can
-      are proprly updated/have the right forces applied each timestpe) */
+      /* Now we can apply the contact algorithm.
+      Note: this uses an orphaned parallel for loop. */
       for(unsigned b1 = 0; b1 < Num_Bodies - 1; b1++) {
         for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
           Body::Contact(Bodies[b2], Bodies[b1]);
@@ -173,7 +167,7 @@ void Simulation::Run(void) {
 
       #pragma omp single nowait
       { update_x_time += Time_Since(time2); }
-    } // for(t = 0; t < Num_Time_Steps; t++) {
+    } // for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
 
 
 
@@ -183,17 +177,15 @@ void Simulation::Run(void) {
     #pragma omp single nowait
     { printf("%d time steps complete\n",t); }
 
-    Simulation::Export_Bodies_Data(Bodies, Num_Bodies, t);
+    Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
   } // #pragma omp parallel
 
 
   printf(         "Done!\n");
   simulation_time = Time_Since(time1);
 
-  // If saving is enabled, Dump particle data to file
-  if(Save_Simulation_To_File == 1) {
-    IO::Save_Simulation(Bodies, Num_Bodies);
-  } // if(Save_Simulation_To_File == 1) {
+  // If saving is enabled, save particle data to file
+  if(Save_Simulation_To_File == 1) { IO::Save_Simulation(Bodies, Num_Bodies); }
 
   // Print timing data
   #if defined(_OPENMP)

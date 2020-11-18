@@ -142,7 +142,7 @@ void Body::Update_P(const double dt) {
     /* Note: C should be invertible if J != 0.
     C = (F^T)F. Thus, det(C) = det(F^T)det(F) = det(F)^2 = J^2. Thus, if J != 0
     then det(C) != 0, and C^(-1) is well defined. */
-    S = (1- Particles[i].D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));        //        : Mpa Tensor
+    S = (1 - Particles[i].D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));       //        : Mpa Tensor
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ void Body::Update_P(const double dt) {
     F's). We really want to overwrite the older deformation gradient. Therefore,
     we overwrite the current particle's F tensor for two time steps ago with the
     new F. This way, the current particle stores F(t) (in Particles[i].F[i_2dt])
-    and F(t-dt) (in Particles[i].F[i_dt]).*/
+    and F(t-dt) (in Particles[i].F[i_dt]). */
     Particles[i].P = (F*S + Visc)*Particles[i].A_Inv;                          //         : Mpa Tensor
     Particles[i].F[i_2dt] = F;                                                 //         : unitless Tensor
     Particles[i].Visc = Visc*Particles[i].A_Inv;
