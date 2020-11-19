@@ -126,7 +126,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   #pragma omp barrier
 } // void Body::Contact(Body & Body_A, Body & Body_B) {
 
-typdef struct Contact_Particle_Bucket {
+typedef struct Contact_Particle_Bucket {
   Array<unsigned> Array_A{};
   Array<unsigned> Array_B{};
 
@@ -135,7 +135,7 @@ typdef struct Contact_Particle_Bucket {
 }; // typdef struct Particle_Bucket {
 
 
-void Body::Contact_New(Body & Body_A, Body & Body_B) {
+void Contact_New(Body & Body_A, Body & Body_B) {
   /* This function calculates the contact force between the particles in both A
   and those in body B.
 
@@ -167,45 +167,45 @@ void Body::Contact_New(Body & Body_A, Body & Body_B) {
   const unsigned Num_Particles_B = Body_B.Get_Num_Particles();
 
   // Set up variables.
-  double max_x, min_x;
-  double max_y, min_y;
-  double max_z, min_z;
+  double x_max, x_min;
+  double y_max, y_min;
+  double z_max, z_min;
 
   Vector x = Body_A.Particles[0].Get_x();
-  max_x = x[0];
-  min_x = max_x;
-  max_y = x[1];
-  min_y = max_y;
-  max_z = x[2];
-  min_z = max_z;
+  x_max = x[0];
+  x_min = x_max;
+  y_max = x[1];
+  y_min = y_max;
+  z_max = x[2];
+  z_min = z_max;
 
   /* Determine the maximum and minimum x, y, z coordinate of the particles
   in the two bodies. */
-  for(unsigned i = 0; i < Num_Particle_A; i++) {
+  for(unsigned i = 0; i < Num_Particles_A; i++) {
     x = Body_A.Particles[i].Get_x();
 
-    if(x[0] > max_x) { max_x = x[0]; }
-    if(x[0] < min_x) { min_x = x[0]; }
+    if(x[0] > x_max) { x_max = x[0]; }
+    if(x[0] < x_min) { x_min = x[0]; }
 
-    if(x[1] > max_y) { max_y = x[1]; }
-    if(x[1] < min_y) { min_y = x[1]; }
+    if(x[1] > y_max) { y_max = x[1]; }
+    if(x[1] < y_min) { y_min = x[1]; }
 
-    if(x[2] > max_z) { max_z = x[2]; }
-    if(x[2] < min_z) { min_z = x[2]; }
-  } // for(unsigned i = 0; i < Num_Particle_A; i++) {
+    if(x[2] > z_max) { z_max = x[2]; }
+    if(x[2] < z_min) { z_min = x[2]; }
+  } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
-  for(unsigned i = 0; i < Num_Particle_B; i++) {
+  for(unsigned i = 0; i < Num_Particles_B; i++) {
     x = Body_B.Particles[i].Get_x();
 
-    if(x[0] > max_x) { max_x = x[0]; }
-    if(x[0] < min_x) { min_x = x[0]; }
+    if(x[0] > x_max) { x_max = x[0]; }
+    if(x[0] < x_min) { x_min = x[0]; }
 
-    if(x[1] > max_y) { max_y = x[1]; }
-    if(x[1] < min_y) { min_y = x[1]; }
+    if(x[1] > y_max) { y_max = x[1]; }
+    if(x[1] < y_min) { y_min = x[1]; }
 
-    if(x[2] > max_z) { max_z = x[2]; }
-    if(x[2] < min_z) { min_z = x[2]; }
-  } // for(unsigned i = 0; i < Num_Particle_B; i++) {
+    if(x[2] > z_max) { z_max = x[2]; }
+    if(x[2] < z_min) { z_min = x[2]; }
+  } // for(unsigned i = 0; i < Num_Particles_B; i++) {
 
   /* We want the dimension (in all three coordinate directions) of the
   sub-cuboids to be >= the contact distance. By doing this, particles
@@ -235,9 +235,8 @@ void Body::Contact_New(Body & Body_A, Body & Body_B) {
   const double sub_cuboid_x_dim = (x_max - x_min)/Nx;
   const double sub_cuboid_y_dim = (y_max - y_min)/Ny;
   const double sub_cuboid_z_dim = (y_max - z_min)/Nz;
-  vector x{};
 
-  for(unsigned i = 0; i < Num_Particle_A; i++) {
+  for(unsigned i = 0; i < Num_Particles_A; i++) {
     /* First, we need to determine which bucket our particle belongs in. Let's
     focus on the x coordinate. Each bucket has an x-dimension length of
     (x_max - x_min)/Nx, which we call sub_cuboid_x_dim. The x coordinates of
@@ -252,14 +251,14 @@ void Body::Contact_New(Body & Body_A, Body & Body_B) {
     unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
 
     Buckets[nx + ny*Nx + nz*Nx*Ny].List_A.Push_Front(i);
-  } // for(unsigned i = 0; i < Num_Particle_A; i++) {
+  } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
-  for(unsigned i = 0; i < Num_Particle_B; i++) {
+  for(unsigned i = 0; i < Num_Particles_B; i++) {
     x = Body_B.Particles[i].Get_x();
     unsigned nx = floor((x[0] - x_min)/sub_cuboid_x_dim);
     unsigned ny = floor((x[1] - y_min)/sub_cuboid_y_dim);
     unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
 
     Buckets[nx + ny*Nx + nz*Nx*Ny].List_B.Push_Front(i);
-  } // for(unsigned i = 0; i < Num_Particle_B; i++) {
+  } // for(unsigned i = 0; i < Num_Particles_B; i++) {
 } // void Body::Contact_New(Body & Body_A, Body & Body_B) {
