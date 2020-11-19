@@ -342,9 +342,9 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_Inter_Particle_Spacing(lfBuf);
 
-  strBuf = IO::read_line_after(File, "Support Radius [# IPS]:", false);
-  sscanf(strBuf.c_str(), " %u \n", &uBuf1);
-  Body_In.Set_Support_Radius(uBuf1);
+  strBuf = IO::read_line_after(File, "Support Radius [mm]:", false);
+  sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
+  Body_In.Set_Support_Radius(lfBuf);
 
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("\n\nRead Name[%3u] as:                      %s\n", i, Body_In.Get_Name().c_str());
@@ -396,11 +396,11 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
               General_BCs[i][j].Effect_Vector[2]);
     } // for(unsigned j = 0; j < Number_General_BCs; j++) {
 
-    printf("\nRead Bodu[%3u].Gravity_Enabled          %u\n",  i, Body_In.Get_Gravity_Enabled());
-    printf("Read Body[%3u].mu as:                   %lf\n", i, Body_In.Get_mu());
-    printf("Read Body[%3u].alpha as:                %lf\n", i, Body_In.Get_alpha());
-    printf("Read Body[%3u].Support_Radius as:       %u\n",  i, Body_In.Get_Support_Radius());
-    printf("Read Body[%3u].IPS as:                  %lf\n", i, Body_In.Get_Inter_Particle_Spacing());
+    printf("\nRead Bodu[%3u].Gravity_Enabled          %u\n", i, Body_In.Get_Gravity_Enabled());
+    printf("Read Body[%3u].mu as:                   %lf\n",  i, Body_In.Get_mu());
+    printf("Read Body[%3u].alpha as:                %lf\n",  i, Body_In.Get_alpha());
+    printf("Read Body[%3u].IPS as:                  %lf\n",  i, Body_In.Get_Inter_Particle_Spacing());
+    printf("Read Body[%3u].Support_Radius as:       %lf\n",  i, Body_In.Get_Support_Radius());
   #endif
 
 

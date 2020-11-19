@@ -18,8 +18,7 @@ void Body::Print_Parameters(void) const {
   printf(         "Number of particles:          %u\n",    Num_Particles);
   printf(         "Partciles Array address:      %p\n",    Particles);
   printf(         "Inter particle spacing:       %lf\n",   Inter_Particle_Spacing);
-  printf(         "h:                            %lf\n",   h);
-  printf(         "Support Radius:               %u\n",    Support_Radius);
+  printf(         "Support Radius:               %lf\n",   Support_Radius);
   printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
   printf(         "Lame:                         %lf\n",   Body_Material.Lame);
   printf(         "mu0 (Shear modulus):          %lf\n",   Body_Material.mu0);

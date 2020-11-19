@@ -42,8 +42,7 @@ class Body {
 
     // Kernel parameters
     double Inter_Particle_Spacing = 0;                     //                            : mm
-    unsigned Support_Radius = 0;                           // Support radius in Inter Particle Spacings's    : unitless
-    double h = 0;                                          // Support radius in mm's     : mm
+    double Support_Radius = 0;                             // Support radius             : mm
     double Shape_Function_Amplitude = 0;                   // Shape function Amplitude   : 1/(mm^6)
 
     // Material Parameters
@@ -86,8 +85,6 @@ class Body {
 
     ////////////////////////////////////////////////////////////////////////////
     // Private methods
-    void Set_h(const double h_In);               // Defined in Body.cc
-
     void Add_Point_Data(FILE * File,             // Defined in Body_IO.cc
                         char * Weight_Name,      // Helps Export_Particle_Positions.
                         unsigned Num_Particles,
@@ -171,7 +168,7 @@ class Body {
     void Set_Name(const std::string & S_In);
 
     void Set_Inter_Particle_Spacing(const double IPS);
-    void Set_Support_Radius(const unsigned SR_In);
+    void Set_Support_Radius(const double SR_In);
 
     void Set_Material(const Materials::Material & Mat_In);
     void Set_mu(const double mu_In);
@@ -200,9 +197,8 @@ class Body {
     std::string Get_Name(void) const;
 
     double Get_Inter_Particle_Spacing(void) const;
-    unsigned Get_Support_Radius(void) const;
+    double Get_Support_Radius(void) const;
 
-    double Get_h(void) const;
     double Get_Shape_Function_Amplitude(void) const;
     Materials::Material Get_Material(void) const;
     double Get_Lame(void) const;

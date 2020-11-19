@@ -11,7 +11,7 @@ Time Steps Between Prints:                       100
 
 # Time Step
 dt [s]:                                          .00001
-Num Time Steps:                                  10000
+Num Time Steps:                                  6000
 
 # Contact
 Contact Distance [mm]:                           1.0
@@ -71,7 +71,7 @@ Enable Gravity:                                  true
 Mu (Viscosity) [Mpa*s]:                          .00004
 Alpha (Hg Control parameter):                    .075
 Inter Particle Spacing (IPS) [mm]:               1.0
-Support Radius [# IPS]:                          3
+Support Radius [mm]:                             3
 
 
 
@@ -112,4 +112,4 @@ Enable Gravity:                                  false
 Mu (Viscosity) [Mpa*s]:                          .00004
 Alpha (Hg Control parameter):                    7.5
 Inter Particle Spacing (IPS) [mm]:               1
-Support Radius [# IPS]:                          3
+Support Radius [mm]:                             3

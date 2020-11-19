@@ -4,6 +4,7 @@
 #include "List.h"
 #include "Array.h"
 #include <assert.h>
+#include <math.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Neighbor methods!
@@ -59,7 +60,8 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
   double * W = new double[Num_Neighbors];                                      //        : unitless
   Vector * Grad_W = new Vector[Num_Neighbors];                                 //        : 1/mm Vector
 
-  // Allocate some variables
+  // Declare some variables
+  const double h = (*this).Support_Radius;
   int Neighbor_ID;                               // Keep track of current particle
   double V_j;                                    // Volume of jth neighbor               : mm^3
   Tensor A{0,0,0,                                // Shape Tensor (zero initialized)      : unitless Tensor
@@ -67,6 +69,7 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
            0,0,0};
 
   // Loop through each neighbor, determine relevant information
+  printf("Shape Function Amplitude = %lf\n", Shape_Function_Amplitude);
   for(unsigned j = 0; j < Num_Neighbors; j++) {
     Neighbor_ID = Particles[i].Get_Neighbor_IDs(j);        // Get Neighbor ID of the jth neighbor of particle i
 
@@ -87,7 +90,6 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
     V_j = Particles[Neighbor_ID].Volume;                   // Neighbor Volume            : mm^3
     A += Dyadic_Product((V_j*Grad_W[j]), R[j]);                                //        : unitless Tensor
   } // for(unsigned j = 0; j < Num_Neighbors_In; j++) {
-
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -118,6 +120,7 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
   and we should abort. */
   assert(i != j);
 
+  const double h = (*this).Support_Radius;
   const Vector Rj = (*this).Particles[i].Get_X() - (*this).Particles[j].Get_X();
   return ( h*h > Dot_Product(Rj, Rj) );
 } // bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
@@ -172,20 +175,18 @@ void Body::Find_Neighbors_Box(void) {
 
   Thus, if working with a cube with sidelength N, the (1,1,1) particle will be
   N*N particles away from the (2,1,1) particle in the, N particles away from the
-  (1,1,2) particle and 1 particle away from the (1,2,1) particle in the
-  Particles array.
+  (1,1,2) particle and 1 particle away from the (1,2,1) particle in the body.
 
   So why does this function exist?
   A generic neighbor search is slow. For a given particle to find its neighbors,
-  it has no choice but to search through EVERY other particle in the Particles
-  array. If the Particles array has M particles then there are a total of M*M
+  it has no choice but to search through EVERY other particle in the body.
+  If the body has M particles then there are a total of M*M
   neighbor tests performed in all. This is highly inefficient. However, if
   we're working with a Box of particles, then the particles are stored in
   a regular grid pattern. Rather than searching through every particle in
-  the Particles array, we can just search through the grid elements that are
+  the body, we can just search through the grid elements that are
   close to the current particle! This reduces the number of searches with a M
-  particle array from M*M to M*(Support_Radius^3), where Support radius is in
-  units of inter particle spacings.
+  body from M*M to M*(d_max^3), where d_max = floor(Support_Radius/IPS)
 
   So how do you use this function?
   This function is used just like the Generage_Neighbor_List function. We can
@@ -194,6 +195,8 @@ void Body::Find_Neighbors_Box(void) {
   particles in a vertical column then Z_SIDE_LENGTH is p. For a 100x50x200
   Box of particles, X_SIDE_LENGTH is 100, Y_SIDE_LENGTH is 50, and
   Z_SIDE_LENGTH is 200 */
+
+  const unsigned d_max = floor((*this).Support_Radius / (*this).Inter_Particle_Spacing);
 
   for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
     for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
@@ -209,30 +212,30 @@ void Body::Find_Neighbors_Box(void) {
         To understand why we need to do this, suppose that our i coordinate is 3.
         Then, the only smaller i coordinates are 0, 1, and 2. In general, if our
         i coordinate is n then there are n smaller i coordinate values. If the
-        support radius is < n, then we need to check the n-Support_Radius i
+        support radius is < n, then we need to check the n-d_max i
         coordinates with a smaller i coordinate. Otherwise, we need to check
         all n. */
 
         // i index (x coordinate) checks
-        if(i < (*this).Support_Radius) { p_min = 0; }
-        else{ p_min = i -  (*this).Support_Radius; }
+        if(i < d_max) { p_min = 0; }
+        else{ p_min = i -  d_max; }
 
-        if(i + (*this).Support_Radius > (X_SIDE_LENGTH - 1)) { p_max = X_SIDE_LENGTH - 1; }
-        else { p_max = i + (*this).Support_Radius; }
+        if(i + d_max > (X_SIDE_LENGTH - 1)) { p_max = X_SIDE_LENGTH - 1; }
+        else { p_max = i + d_max; }
 
         // j index (y coordinate) checks
-        if(j < (*this).Support_Radius) { q_min = 0; }
-        else { q_min = j - (*this).Support_Radius; }
+        if(j < d_max) { q_min = 0; }
+        else { q_min = j - d_max; }
 
-        if(j + (*this).Support_Radius > (Y_SIDE_LENGTH - 1)) { q_max = Y_SIDE_LENGTH - 1; }
-        else { q_max = j + (*this).Support_Radius; }
+        if(j + d_max > (Y_SIDE_LENGTH - 1)) { q_max = Y_SIDE_LENGTH - 1; }
+        else { q_max = j + d_max; }
 
         // k index (z coordinate) checks
-        if(k < (*this).Support_Radius) { r_min = 0; }
-        else { r_min = k - (*this).Support_Radius; }
+        if(k < d_max) { r_min = 0; }
+        else { r_min = k - d_max; }
 
-        if(k + (*this).Support_Radius > (Z_SIDE_LENGTH - 1)) { r_max = Z_SIDE_LENGTH - 1; }
-        else { r_max = k + (*this).Support_Radius; }
+        if(k + d_max > (Z_SIDE_LENGTH - 1)) { r_max = Z_SIDE_LENGTH - 1; }
+        else { r_max = k + d_max; }
 
         // Loop through potential neighbors, generate neighbor list
         for(p = p_min; p <= p_max; p++) {
@@ -280,8 +283,7 @@ void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) 
   If it doesn't match, then we copy that neighbor's data from the old Neighbor
   arrays into the new Neighbor arrays. If it does match, then we skip that
   neighbor (don't copy its info over). Once we are finished, we delete the old
-  Neighbor arrays and point this particle's arrays to the new Neighbor
-  arrays. */
+  Neighbor arrays and point this body's to the new Neighbor arrays. */
 
   unsigned Num_Neighbors = Particles[i].Num_Neighbors;
   unsigned p = -1;                               // new neighbors index variables

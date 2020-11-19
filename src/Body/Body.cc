@@ -28,7 +28,6 @@ Body::Body(void) {
   // Kernel Parameters
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
-  h = 0;
   Shape_Function_Amplitude = 0;
 } // Body::Body(void) {
 
@@ -55,7 +54,6 @@ Body::Body(const unsigned Num_Particles_In) {
   // Kernel Parameters
   Inter_Particle_Spacing = 0;
   Support_Radius = 0;
-  h = 0;
   Shape_Function_Amplitude = 0;
 
   (*this).Particles_Set_Up = true;
@@ -117,20 +115,6 @@ void Body::Apply_BCs(void) {
 ////////////////////////////////////////////////////////////////////////////////
 // Setters
 
-//---//---//---//---//---//---//---//---//---//---//---//---//---//---//---//--//
-// Private
-
-void Body::Set_h(const double h_In) {
-  (*this).h = h_In;
-  (*this).Shape_Function_Amplitude =  15./(PI*pow(h_In,6));
-} // void Body::Set_h(const double h_In) {
-
-
-
-
-//---//---//---//---//---//---//---//---//---//---//---//---//---//---//---//--//
-// Public
-
 void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
   if(Is_Box == true) {
     printf("This is a Box... set the x, y, and z side lengths\n");
@@ -159,7 +143,7 @@ void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
 
 
 
-void Body::Set_Name(const std::string & S_In) { Name = S_In; }
+void Body::Set_Name(const std::string & S_In) { (*this).Name = S_In; }
 
 
 
@@ -169,27 +153,20 @@ void Body::Set_Inter_Particle_Spacing(const double IPS) {
     return;
   } // if(IPS <= 0) {
 
-  // If Support_Radius has been set (meaning it's non-zero) then we can also
-  // set h.
-  if(Support_Radius != 0) { Set_h(IPS*Support_Radius); }
-
-  Inter_Particle_Spacing = IPS;
+  (*this).Inter_Particle_Spacing = IPS;
 } // void Body::Set_Inter_Particle_Spacing(const double IPS) {
 
 
 
-void Body::Set_Support_Radius(const unsigned SR_In) {
+void Body::Set_Support_Radius(const double SR_In) {
   if(SR_In == 0) {
     printf("The support radius must be non-zero!\n");
     return;
   } // if(SR_In == 0){
 
-  // If the Inter particle spacing has been set (meaning it's non-zero) then
-  // we can also set h.
-  if(Inter_Particle_Spacing != 0) { Set_h(SR_In*Inter_Particle_Spacing); }
-
-  Support_Radius = SR_In;
-} // void Body::Set_Support_Radius(const unsigned SR_In) {
+  (*this).Support_Radius = SR_In;
+  (*this).Shape_Function_Amplitude =  15./(PI*pow(SR_In,6));
+} // void Body::Set_Support_Radius(const double SR_In) {
 
 
 
@@ -286,9 +263,8 @@ unsigned Body::Get_Num_Particles(void) const { return (*this).Num_Particles; }
 std::string Body::Get_Name(void) const { return (*this).Name; }
 
 double Body::Get_Inter_Particle_Spacing(void) const { return (*this).Inter_Particle_Spacing; }
-unsigned Body::Get_Support_Radius(void) const { return (*this).Support_Radius; }
+double Body::Get_Support_Radius(void) const { return (*this).Support_Radius; }
 
-double Body::Get_h(void) const { return (*this).h; }
 double Body::Get_Shape_Function_Amplitude(void) const { return (*this).Shape_Function_Amplitude; }
 Materials::Material Body::Get_Material(void) const { return (*this).Body_Material; }
 double Body::Get_Lame(void) const { return (*this).Body_Material.Lame; }

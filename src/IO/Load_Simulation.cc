@@ -201,7 +201,7 @@ void IO::Load_Body(Body & Body_In) {
     printf("Read %s's IPS as:                       %lf\n",Body_In.Get_Name().c_str(), lfBuf);
   #endif
 
-  strBuf = IO::read_line_after(File, "Support Radius (IPS):");
+  strBuf = IO::read_line_after(File, "Support Radius (mm):");
   sscanf(strBuf.c_str(), " %u \n", &uBuf);
   Body_In.Set_Support_Radius(uBuf);
   #if defined(LOAD_MONITOR)
@@ -209,7 +209,6 @@ void IO::Load_Body(Body & Body_In) {
   #endif
 
   // Skip these lines (they're redundant)
-  IO::read_line_after(File, "Support Radius (mm) aka h:");
   IO::read_line_after(File, "Shape Function Amplitude:");
 
 

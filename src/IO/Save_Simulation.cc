@@ -108,8 +108,7 @@ void IO::Save_Body(const Body & Body_In) {
 
   fprintf(File,   "       -- Kernel Parameters --\n");
   fprintf(File,   "Inter Particle Spacing:                 %5lf\n",  Body_In.Get_Inter_Particle_Spacing());
-  fprintf(File,   "Support Radius (IPS):                   %u\n",    Body_In.Get_Support_Radius());
-  fprintf(File,   "Support Radius (mm) aka h:              %5lf\n",  Body_In.Get_h());
+  fprintf(File,   "Support Radius (mm):                    %u\n",    Body_In.Get_Support_Radius());
   fprintf(File,   "Shape Function Amplitude:               %5lf\n\n",Body_In.Get_Shape_Function_Amplitude());
 
   fprintf(File,   "       -- Material Parameters --\n");

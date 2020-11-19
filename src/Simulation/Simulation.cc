@@ -58,7 +58,7 @@ void Simulation::Run(void) {
       #pragma omp single nowait
       { time2 = Get_Time(); }
 
-      if(t%Simulation::TimeSteps_Between_Prints == 0) {
+      if(time_step%Simulation::TimeSteps_Between_Prints == 0) {
         #pragma omp single nowait
         { printf("%d time steps complete\n", time_step); }
 
@@ -175,7 +175,7 @@ void Simulation::Run(void) {
     // Export the bodies data for the final configuration of the simulation
 
     #pragma omp single nowait
-    { printf("%d time steps complete\n",t); }
+    { printf("%d time steps complete\n", time_step); }
 
     Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
   } // #pragma omp parallel
