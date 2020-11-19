@@ -126,7 +126,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   #pragma omp barrier
 } // void Body::Contact(Body & Body_A, Body & Body_B) {
 
-typedef struct Contact_Particle_Bucket {
+struct Contact_Particle_Bucket {
   Array<unsigned> Array_A{};
   Array<unsigned> Array_B{};
 
@@ -135,7 +135,7 @@ typedef struct Contact_Particle_Bucket {
 }; // typdef struct Particle_Bucket {
 
 
-void Contact_New(Body & Body_A, Body & Body_B) {
+void Body::Contact_New(Body & Body_A, Body & Body_B) {
   /* This function calculates the contact force between the particles in both A
   and those in body B.
 
@@ -223,7 +223,7 @@ void Contact_New(Body & Body_A, Body & Body_B) {
 
   /* Now that we know the number of buckets in each direction, we can allocate
   the buckets array! */
-  Array<Contact_Particle_Bucket> Buckets{Nx*Ny*Nz};
+  Array<struct Contact_Particle_Bucket> Buckets{Nx*Ny*Nz};
 
 
 
