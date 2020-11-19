@@ -11,5 +11,4 @@
 
   template <typename T>
   class Array;
-
 #endif

@@ -52,10 +52,7 @@ class Array {
     Array & operator=(const Array & Ar_In) = delete;
 
     T operator[](const unsigned index) const {
-      if((*this).Length_Set == false) {
-        throw Array_Length_Not_Set("Array Length Not Set Exception: Thrown by Array::operator[] (access)\n"
-                                   "An array must have a length before you can access its elements\n");
-      } // if((*this).Length_Set == false) {
+      assert((*this).Length_Set == true);
       assert(index < (*this).Length);
 
       return Internal_Array[index];
@@ -64,10 +61,7 @@ class Array {
 
 
     T & operator[](const unsigned index) {
-      if((*this).Length_Set == false) {
-        throw Array_Length_Not_Set("Array Length Not Set Exception: Thrown by Array::operator[] (modify)\n"
-                                   "An array must have a length before you can access its elements\n");
-      } // if((*this).Length_Set == false) {
+      assert((*this).Length_Set == true);
       assert(index < (*this).Length);
 
       return Internal_Array[index];

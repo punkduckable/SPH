@@ -2,6 +2,9 @@
 #include "Simulation/Simulation.h"
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
+#include "List.h"
+#include "Array.h"
+#include <math.h>
 
 void Body::Contact(Body & Body_A, Body & Body_B) {
   // Get paramaters from Body_A, Body_B
@@ -122,3 +125,141 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   been set. */
   #pragma omp barrier
 } // void Body::Contact(Body & Body_A, Body & Body_B) {
+
+typdef struct Contact_Particle_Bucket {
+  Array<unsigned> Array_A{};
+  Array<unsigned> Array_B{};
+
+  List<unsigned> List_A{};
+  List<unsigned> List_B{};
+}; // typdef struct Particle_Bucket {
+
+
+void Body::Contact_New(Body & Body_A, Body & Body_B) {
+  /* This function calculates the contact force between the particles in both A
+  and those in body B.
+
+  First, we partition the spatial domain. To do this, we first determine the
+  maximum and minimum x, y, and z coordinates of the live (damage < 1) particles
+  This gives us a cuboid in which the particles of the two bodies live. We
+  then divide the x, y, and z dimensions of this cuboid into smaller cuboids,
+  each one of which has a side length that is barely greater than the contact
+  distance. We then allocate an array of buckets with one bucket per sub-cuboid.
+  We then cycle through the particles of A and B, sorting them into their
+  corresponding buckets (specifically the lists in those buckets).
+
+  Once every particle has been sorted, the bucket lists are used to generate
+  arrays in each bucket (we use lists at first because we don't know ahead of
+  time how many particles will go into each bucket. We convert these lists into
+  arrays so that we can access them quickly).
+
+  We then apply the contact algorithm. The way that these buckets are
+  set up, a particle can only contact particles that are in its bucket or a
+  bucket which is adjacent to its bucket (27 total buckets to check). This
+  greatly reduces the number of particles that we need to check against, thereby
+  eliminating needless calculations. */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /* Determine how many buckets we need */
+
+  // Get paramaters from Body_A, Body_B
+  const unsigned Num_Particles_A = Body_A.Get_Num_Particles();
+  const unsigned Num_Particles_B = Body_B.Get_Num_Particles();
+
+  // Set up variables.
+  double max_x, min_x;
+  double max_y, min_y;
+  double max_z, min_z;
+
+  Vector x = Body_A.Particles[0].Get_x();
+  max_x = x[0];
+  min_x = max_x;
+  max_y = x[1];
+  min_y = max_y;
+  max_z = x[2];
+  min_z = max_z;
+
+  /* Determine the maximum and minimum x, y, z coordinate of the particles
+  in the two bodies. */
+  for(unsigned i = 0; i < Num_Particle_A; i++) {
+    x = Body_A.Particles[i].Get_x();
+
+    if(x[0] > max_x) { max_x = x[0]; }
+    if(x[0] < min_x) { min_x = x[0]; }
+
+    if(x[1] > max_y) { max_y = x[1]; }
+    if(x[1] < min_y) { min_y = x[1]; }
+
+    if(x[2] > max_z) { max_z = x[2]; }
+    if(x[2] < min_z) { min_z = x[2]; }
+  } // for(unsigned i = 0; i < Num_Particle_A; i++) {
+
+  for(unsigned i = 0; i < Num_Particle_B; i++) {
+    x = Body_B.Particles[i].Get_x();
+
+    if(x[0] > max_x) { max_x = x[0]; }
+    if(x[0] < min_x) { min_x = x[0]; }
+
+    if(x[1] > max_y) { max_y = x[1]; }
+    if(x[1] < min_y) { min_y = x[1]; }
+
+    if(x[2] > max_z) { max_z = x[2]; }
+    if(x[2] < min_z) { min_z = x[2]; }
+  } // for(unsigned i = 0; i < Num_Particle_B; i++) {
+
+  /* We want the dimension (in all three coordinate directions) of the
+  sub-cuboids to be >= the contact distance. By doing this, particles
+  can only compe into contact with particles in their bucket or in buckets
+  that are adjacent to their bucket. In general, we want the buckets to be as
+  small as possible (so that there are as few particles to check for contact as
+  possible). Let's focus on the x coordinate. Let Nx denote the number of
+  sub-cuboids in the x direction. We want Nx to be the largest natural number
+  such that Contact_Distance <= (x_max - x_min)/Nx. A little though reveals
+  that this occurs precisely when Nx = floor((x_max - x_min)/Contact_Distance).
+  A similar result holds for the y and z directions. */
+  const unsigned Nx = floor((x_max - x_min)/Simulation::Contact_Distance);
+  const unsigned Ny = floor((y_max - y_min)/Simulation::Contact_Distance);
+  const unsigned Nz = floor((z_max - z_min)/Simulation::Contact_Distance);
+
+  /* Now that we know the number of buckets in each direction, we can allocate
+  the buckets array! */
+  Array<Contact_Particle_Bucket> Buckets{Nx*Ny*Nz};
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /* Now, sort the particles of A and B into their corresponding buckets. */
+
+  /* First, we calculate some variables (see the next comment for an
+  explanation) */
+  const double sub_cuboid_x_dim = (x_max - x_min)/Nx;
+  const double sub_cuboid_y_dim = (y_max - y_min)/Ny;
+  const double sub_cuboid_z_dim = (y_max - z_min)/Nz;
+  vector x{};
+
+  for(unsigned i = 0; i < Num_Particle_A; i++) {
+    /* First, we need to determine which bucket our particle belongs in. Let's
+    focus on the x coordinate. Each bucket has an x-dimension length of
+    (x_max - x_min)/Nx, which we call sub_cuboid_x_dim. The x coordinates of
+    the bucket for the ith particle is the number of units of length
+    sub_cuboid_x_dim that fit between x_min and the x coordinate of the particle
+    (think about it). A little thought reveals that this is precisely
+    floor((Particle[i].x[0] - x_min)/((x_max - x_min)/Nx))
+    A similar result holds for y and z. */
+    x = Body_A.Particles[i].Get_x();
+    unsigned nx = floor((x[0] - x_min)/sub_cuboid_x_dim);
+    unsigned ny = floor((x[1] - y_min)/sub_cuboid_y_dim);
+    unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
+
+    Buckets[nx + ny*Nx + nz*Nx*Ny].List_A.Push_Front(i);
+  } // for(unsigned i = 0; i < Num_Particle_A; i++) {
+
+  for(unsigned i = 0; i < Num_Particle_B; i++) {
+    x = Body_B.Particles[i].Get_x();
+    unsigned nx = floor((x[0] - x_min)/sub_cuboid_x_dim);
+    unsigned ny = floor((x[1] - y_min)/sub_cuboid_y_dim);
+    unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
+
+    Buckets[nx + ny*Nx + nz*Nx*Ny].List_B.Push_Front(i);
+  } // for(unsigned i = 0; i < Num_Particle_B; i++) {
+} // void Body::Contact_New(Body & Body_A, Body & Body_B) {
