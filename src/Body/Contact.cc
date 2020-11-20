@@ -6,136 +6,16 @@
 #include "Array.h"
 #include <math.h>
 
-void Body::Contact(Body & Body_A, Body & Body_B) {
-  // Get paramaters from Body_A, Body_B
-  const unsigned Num_Particles_A = Body_A.Get_Num_Particles();
-  const unsigned Num_Particles_B = Body_B.Get_Num_Particles();
-  const double Shape_Function_Amp = Body_A.Get_Shape_Function_Amplitude();
-
-  /* This function implements Particle-Particle 'contact'.
-  the contact force is applied whenever two particles are within a 2h radius of
-  one another (when the two particles's support radii overlap). The applied
-  force is in the direction of the line between the two particles' centers. */
-  const double h = Simulation::Contact_Distance;           // Contact force support radius         : mm
-  const double h_squared = h*h;                            // Square of support radius   : mm^2
-  unsigned i;
-  Vector r_ij;                                                                 //        : mm Vector
-  Vector * Body_B_x = new Vector[Num_Particles_B];                             //        : mm Vector
-  Vector Grad_W;                                                               //        : 1/mm^4 Vector
-  Vector x_i;                                                                  //        : mm Vector
-  Vector F_Contact, F_Friction;                                                //        : N Vector
-  Vector Relative_Velocity;                                                    //        : mm/s Vector
-  bool Contact_Flag = false;
-
-  // Thread-local (private) force contributions to Body_B (see description below)
-  Vector * Body_B_F_Contact_Local = new Vector[Num_Particles_B];               //        : N Vector
-  Vector * Body_B_F_Friction_Local = new Vector[Num_Particles_B];              //        : N Vector
-
-  // First, store all of Body B's position vectors in an array (this improves performance... I think?)
-  for(i = 0; i < Num_Particles_B; i++) {
-    Body_B_x[i] = Body_B[i].Get_x();                                           //        : mm Vector
-    Body_B_F_Contact_Local[i] = {0,0,0};                                       //        : N Vector
-    Body_B_F_Friction_Local[i] = {0,0,0};                                      //        : N Vector
-  } //   for(i = 0; i < Num_Particles_B; i++) {
-
-  // For each particle in A, check if there is a particle in B that is within
-  // the combined support radius
-  #pragma omp for schedule(dynamic)
-  for(i = 0; i < Num_Particles_A; i++) {
-    // Skip broken particles
-    if(Body_A[i].Get_D() >= 1) { continue; }
-
-    double V_i = Body_A[i].Get_Volume();                                       //        : mm^3
-    const double KV_i = K*V_i;                                                 //        : N*mm
-    x_i = Body_A[i].Get_x();                                                   //        : mm Vector
-
-    for(unsigned j = 0; j < Num_Particles_B; j++) {
-      r_ij = x_i - Body_B_x[j];                                                //        : mm Vector
-
-      // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
-      // If so, add contact force
-      if(Dot_Product(r_ij, r_ij) < h_squared) {
-        /* First, set the 'contact flag' to true. This flag is designed to
-        improve perfomance. The idea here is that there will be no contact
-        for most of the time steps. Because of this, it doesn't make sense
-        to run throug the critical for loop (to add each thread's contact and
-        friction forces to the particles). Thus, we only run that critical loop
-        if this flag is false. The idea here is that the cost of updating this
-        flag for each contacting particle is cheaper than running through the
-        critical for loop on every time step. */
-        Contact_Flag = true;
-
-        // Calculate the contact force
-        double V_j = Body_B[j].Get_Volume();                                   //        : mm^3
-        double Mag_r_ij = Magnitude(r_ij);                                     //        : mm
-        double h_minus_Mag_r_ij = h - Mag_r_ij;                                //        : mm
-        Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
-
-        /* Now apply the force to the two interacting bodies (Note the forces
-        are equal and opposite). It should be noted that we don't actually
-        apply the force to body B's jth particle. The reason for this is
-        race conditions. Two threads can attempt to write
-        the contact force to the same particle in body B at the same time.
-        This causes a race condition (when run in parallel). This can be
-        fixed using a critical region, but that's slow. To fix this, each
-        thread gets its own 'Local contact force array'. each thread stores
-        the force that it would apply to the particles in body B in this array.
-        Once we have cycled through all of body A's particles, we then 'reduce'
-        these force arrays. One by one, the threads add their contributions to
-        body_b's contact forces. This runs about 2x faster than if we had
-        inserted the critical region into this loop. */
-        F_Contact = (KV_i*V_j)*Grad_W;                                         //        : N Vector
-        Body_A[i].Force_Contact -= F_Contact;                                  //        : N Vector
-        Body_B_F_Contact_Local[j] += F_Contact;                                //        : N Vector
-
-        /* Now let's calculate the frictional force. To do this, we first need
-        to get the unit vector of the relative velocity between bodies A and B
-        as well as the magnitude of the contact force */
-        double Mag_F_Contact = F_Contact.Magnitude();                          //        : N
-        Relative_Velocity = Body_A[i].V - Body_B[j].V;                         //        : mm/s Vector
-
-        // Now we can calculate the frictional force and apply it to the two bodies
-        F_Friction = ((-1*Simulation::Friction_Coefficient*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
-        Body_A[i].Force_Friction += F_Friction;                                //        : N Vector
-        Body_B_F_Friction_Local[j] -= F_Friction;                              //        : N Vector
-      } // if(Magnitude(r_ij) < h) {
-    } // for(j = 0; j < Num_Particle_B, j++) {
-  } // for(i = 0; i < Num_Particles_A; i++) {
-
-  /* Now that we have finished the loop above, each thread has its
-  contribution to the contact force for each of Body_B's particles. We therefore
-  add these contributions to Body_B's particles one by one (using a critical
-  region) */
-  #pragma omp critical
-  if(Contact_Flag == true) {
-    for(i = 0; i < Num_Particles_B; i++) {
-      Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                    //        : N Vector
-      Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                  //        : N Vector
-    } // for(i = 0; i < Num_Particles_B; i++) {
-  } // if(Contact_Flag == true) {
-
-  // Now free any dynamically allocated memory.
-  delete [] Body_B_x;
-  delete [] Body_B_F_Contact_Local;
-  delete [] Body_B_F_Friction_Local;
-
-  /* We put a barrier here so that each particle's contact and friction forces
-  have been set before returning. The next function in the simulaiton (update_x)
-  will only work correctly if each particle's contact and friction forces have
-  been set. */
-  #pragma omp barrier
-} // void Body::Contact(Body & Body_A, Body & Body_B) {
-
 struct Contact_Particle_Bucket {
-  Array<unsigned> Array_A{};
-  Array<unsigned> Array_B{};
-
   List<unsigned> List_A{};
   List<unsigned> List_B{};
+
+  Array<unsigned> Array_A{};
+  Array<unsigned> Array_B{};
 }; // typdef struct Particle_Bucket {
 
 
-void Body::Contact_New(Body & Body_A, Body & Body_B) {
+void Body::Contact(Body & Body_A, Body & Body_B) {
   /* This function calculates the contact force between the particles in both A
   and those in body B.
 
@@ -159,12 +39,15 @@ void Body::Contact_New(Body & Body_A, Body & Body_B) {
   greatly reduces the number of particles that we need to check against, thereby
   eliminating needless calculations. */
 
+
+
   //////////////////////////////////////////////////////////////////////////////
   /* Determine how many buckets we need */
 
   // Get paramaters from Body_A, Body_B
   const unsigned Num_Particles_A = Body_A.Get_Num_Particles();
   const unsigned Num_Particles_B = Body_B.Get_Num_Particles();
+  const double Shape_Function_Amp = Body_A.Get_Shape_Function_Amplitude();
 
   // Set up variables.
   double x_max, x_min;
@@ -261,4 +144,172 @@ void Body::Contact_New(Body & Body_A, Body & Body_B) {
 
     Buckets[nx + ny*Nx + nz*Nx*Ny].List_B.Push_Front(i);
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
+  /* Now, let's convert the buckets lists into arrays. */
+  for(unsigned r = 0; r < Nz; r++) {
+    for(unsigned q = 0; q < Ny; q++) {
+      for(unsigned p = 0; p < Nx; p++) {
+        Buckets[p + q*Nx + r*Nx*Ny].Array_A.Setup_From_List(Buckets[p + q*Nx + r*Nx*Ny].List_A);
+        Buckets[p + q*Nx + r*Nx*Ny].Array_B.Setup_From_List(Buckets[p + q*Nx + r*Nx*Ny].List_B);
+      } // for(unsigned p = 0; p < Nx; p++) {
+    } // for(unsigned q = 0; q < Ny; q++) {
+  } // for(unsigned r = 0; r < Nz; r++) {
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /* Finally, let's apply the contact algorithm! */
+
+  /* This function implements Particle-Particle 'contact'.
+  If a particle from body A is within Simulation::Contact_Distance of a particle
+  in body B, then we apply a contact and friction force between those particeles.
+  The applied force is in the direction of the line between the two particles'
+  centers. */
+  const double h = Simulation::Contact_Distance;                               //        : mm
+  const double h_squared = h*h;                                                //        : mm^2
+  Vector r_ij;                                                                 //        : mm Vector
+  Vector Grad_W;                                                               //        : 1/mm^4 Vector
+  Vector x_i;                                                                  //        : mm Vector
+  Vector F_Contact, F_Friction;                                                //        : N Vector
+  Vector Relative_Velocity;                                                    //        : mm/s Vector
+
+  /* Variables to help us apply contact and frictional forces in parallel. */
+  bool Contact_Flag = false;
+  Vector * Body_B_F_Contact_Local = new Vector[Num_Particles_B];               //        : N Vector
+  Vector * Body_B_F_Friction_Local = new Vector[Num_Particles_B];              //        : N Vector
+
+  // First, initialize the local contact/frictional force vectors
+  for(unsigned i = 0; i < Num_Particles_B; i++) {
+    Body_B_F_Contact_Local[i] = {0,0,0};                                       //        : N Vector
+    Body_B_F_Friction_Local[i] = {0,0,0};                                      //        : N Vector
+  } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
+  // Now loop over the buckets
+  for(unsigned kb = 0; kb < Nz; kb++) {
+    for(unsigned jb = 0; jb < Ny; jb++) {
+      for(unsigned ib = 0; ib < Nx; ib++) {
+        /* In this iteration we will apply the contact algorithm for
+        particles of body A in bucket ib + jb*Nx + kb*Nx*Ny. Because of the way
+        that we set up the buckets, these particles can only come into contact
+        with particles in body B that are in this bucket or a bucket that is
+        adjacent to this bucket. Thus, we must cycle through these buckets. We
+        need to be careful, however, since there may not be buckets in a
+        particular direction (depending on the values of kb, jb, ib) */
+        unsigned ib_min = (ib == 0)      ? 0  : ib - 1;
+        unsigned jb_min = (jb == 0)      ? 0  : jb - 1;
+        unsigned kb_min = (kb == 0)      ? 0  : kb - 1;
+
+        unsigned ib_max = (ib == Nx - 1) ? ib : ib + 1;
+        unsigned jb_max = (jb == Ny - 1) ? jb : jb + 1;
+        unsigned kb_max = (kb == Nz - 1) ? kb : kb + 1;
+
+        Array<unsigned> & Array_A = Buckets[ib + jb*Nx + kb*Nx*Ny].Array_A;
+        const unsigned Num_Particles_A_Bucket = Array_A.Get_Length();
+
+        /* Cycle through the buckets that contact can occur in. */
+        for(unsigned rb = kb_min; rb <= kb_max; rb++) {
+          for(unsigned qb = jb_min; qb <= jb_max; qb++) {
+            for(unsigned pb = ib_min; pb <= ib_max; pb++) {
+              /* Cycle through Body A's particles in bucket ib + jb*Nx + kb*Nx*Ny
+              and Body B's particles in bucket ib + jb*Nx + kb*Nx*Ny */
+              Array<unsigned> & Array_B = Buckets[pb + qb*Nx + rb*Nx*Ny].Array_B;
+              const unsigned Num_Particles_B_Bucket = Array_B.Get_Length();
+
+              for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {
+                const unsigned i = Array_A[A_particle_index];
+
+                // Skip broken particles
+                if(Body_A[i].Get_D() >= 1) { continue; }
+
+                double V_i = Body_A[i].Get_Volume();                           //        : mm^3
+                const double KV_i = K*V_i;                                     //        : N*mm
+                x_i = Body_A[i].Get_x();                                       //        : mm Vector
+
+                for(unsigned B_Particle_index = 0; B_Particle_index < Num_Particles_B_Bucket; B_Particle_index++) {
+                  const unsigned j = Array_B[B_Particle_index];
+                  r_ij = x_i - Body_B[j].Get_x();                              //        : mm Vector
+
+                  // Check if |rij| < h. Note that this is equivalent to rij dot rij < h^2
+                  // If so, add contact force
+                  if(Dot_Product(r_ij, r_ij) < h_squared) {
+                    /* First, set the 'contact flag' to true. This flag is
+                    designed to improve perfomance. The idea here is that there
+                    will be no contact for most of the time steps. Because of
+                    this, it doesn't make sense to run throug the critical for
+                    loop (to add each thread's contact and friction forces to
+                    the particles). Thus, we only run that critical loop if this
+                    flag is true. */
+                    Contact_Flag = true;
+
+                    // Calculate the contact force
+                    double V_j = Body_B[j].Get_Volume();                       //        : mm^3
+                    double Mag_r_ij = Magnitude(r_ij);                         //        : mm
+                    double h_minus_Mag_r_ij = h - Mag_r_ij;                    //        : mm
+                    Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
+
+                    /* Now apply the force to the two interacting bodies (Note
+                    the forces are equal and opposite). We have to apply the
+                    contact force on B using a critical region. The reson for
+                    this is that multiple threads may try to update the same
+                    particle's contact force at the same time. Because different
+                    thereads operate on different buckets of particles of A, and
+                    each particle is in just one bucket, this issue can not
+                    happen for particles in body A. However, since different
+                    threads can work with the same buckets of B particles, it is
+                    possible for two threads to try and update a particle's
+                    contact force at the same time, thereby creating a race
+                    condition. To fix this, each thread gets its own 'Local
+                    contact force array'. each thread stores the force that it
+                    would apply to the particles in body B in this array.
+                    Once we have cycled through all of body A's particles, we
+                    then 'reduce' these force arrays. One by one, the threads
+                    add their contributions to body_b's contact forces. This
+                    runs about 2x faster than if we had inserted the critical
+                    region into this loop. */
+                    F_Contact = (KV_i*V_j)*Grad_W;                             //        : N Vector
+                    Body_A[i].Force_Contact -= F_Contact;                      //        : N Vector
+                    Body_B_F_Contact_Local[j] += F_Contact;                    //        : N Vector
+
+                    /* Now let's calculate the frictional force. To do this,
+                    we first need to get the unit vector of the relative
+                    velocity between bodies A and B as well as the magnitude of
+                    the contact force */
+                    double Mag_F_Contact = F_Contact.Magnitude();              //        : N
+                    Relative_Velocity = Body_A[i].V - Body_B[j].V;             //        : mm/s Vector
+
+                    // Now we can calculate the frictional force and apply it to the two bodies
+                    F_Friction = ((-1*Simulation::Friction_Coefficient*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
+                    Body_A[i].Force_Friction += F_Friction;                    //        : N Vector
+                    Body_B_F_Friction_Local[j] -= F_Friction;                  //        : N Vector
+                  } // if(Magnitude(r_ij) < h) {
+                } // for(unsigned B_Particle_index = 0; B_Particle_index < Num_Particles_B_Bucket; B_Particle_index++) {
+              } // for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {
+            } // for(unsigned pb = ib_min; pb <= ib_max; pb++) {
+          } // for(unsigned qb = jb_min; qb <= jb_max; qb++) {
+        } // for(unsigned rb = kb_min; rb <= kb_max; rb++) {
+      } // for(unsigned ib = 0; ib < Nx; ib++) {
+    } // for(unsigned jb = 0; jb < Ny; jb++) {
+  } // for(unsigned kb = 0; kb < Nz; kb++) {
+
+  /* Now that we have finished the loop above, each thread has its
+  contribution to the contact force for each of Body_B's particles. We therefore
+  add these contributions to Body_B's particles one by one (using a critical
+  region) */
+  #pragma omp critical
+  if(Contact_Flag == true) {
+    for(unsigned i = 0; i < Num_Particles_B; i++) {
+      Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                    //        : N Vector
+      Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                  //        : N Vector
+    } // for(unsignd i = 0; i < Num_Particles_B; i++) {
+  } // if(Contact_Flag == true) {
+
+  // Now free any dynamically allocated memory.
+  delete [] Body_B_F_Contact_Local;
+  delete [] Body_B_F_Friction_Local;
+
+  /* We put a barrier here so that each particle's contact and friction forces
+  have been set before returning. The next function in the simulaiton (update_x)
+  will only work correctly if each particle's contact and friction forces have
+  been set. */
+  #pragma omp barrier
 } // void Body::Contact_New(Body & Body_A, Body & Body_B) {

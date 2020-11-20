@@ -98,7 +98,7 @@ class Array {
 
     void Setup_From_List(List<T> & List_In) {
       /* This function exists to convert a List into an Array.
-      The array has the same length as the input list. The list is destroyed in
+      The array has the same length as the input list. The list is emptied in
       the process. */
       if((*this).Length_Set == true) {
         throw Array_Length_Already_Set("List Length Already Set Exception: thrown by Array::Setup_From_List\n"
