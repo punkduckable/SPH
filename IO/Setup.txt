@@ -11,7 +11,7 @@ Time Steps Between Prints:                       100
 
 # Time Step
 dt [s]:                                          .00001
-Num Time Steps:                                  6000
+Num Time Steps:                                  4000
 
 # Contact
 Contact Distance [mm]:                           1.0
@@ -56,7 +56,7 @@ Density [g/mm^3]:                                .01
 
 # Initial conditions
 Offset [mm]:                                     {-5, 10, -5}
-Initial Velocity [mm/s]:                         {0, 0, 0}
+Initial Velocity [mm/s]:                         {0, -500, 0}
 
 # General Boundary Conditions
 Number of General Boundary Conditions:           0

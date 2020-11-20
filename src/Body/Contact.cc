@@ -218,7 +218,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
               continue. */
               Array<unsigned> & Array_B = Buckets[pb + qb*Nx + rb*Nx*Ny].Array_B;
               const unsigned Num_Particles_B_Bucket = Array_B.Get_Length();
-              if(Num_Particles_B == 0) { continue; }
+              if(Num_Particles_B_Bucket == 0) { continue; }
 
               /* Cycle through Body A's particles in bucket ib + jb*Nx + kb*Nx*Ny
               and Body B's particles in bucket ib + jb*Nx + kb*Nx*Ny */
