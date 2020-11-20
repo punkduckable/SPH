@@ -185,9 +185,16 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
 
   // Now loop over the buckets
+  #pragma omp for schedule(dynamic) collapse(3)
   for(unsigned kb = 0; kb < Nz; kb++) {
     for(unsigned jb = 0; jb < Ny; jb++) {
       for(unsigned ib = 0; ib < Nx; ib++) {
+        /* First, check if body A has any particles in this bucket. If not, then
+        move onto the next one. */
+        Array<unsigned> & Array_A = Buckets[ib + jb*Nx + kb*Nx*Ny].Array_A;
+        const unsigned Num_Particles_A_Bucket = Array_A.Get_Length();
+        if(Num_Particles_A_Bucket == 0) { continue; }
+
         /* In this iteration we will apply the contact algorithm for
         particles of body A in bucket ib + jb*Nx + kb*Nx*Ny. Because of the way
         that we set up the buckets, these particles can only come into contact
@@ -203,18 +210,18 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
         unsigned jb_max = (jb == Ny - 1) ? jb : jb + 1;
         unsigned kb_max = (kb == Nz - 1) ? kb : kb + 1;
 
-        Array<unsigned> & Array_A = Buckets[ib + jb*Nx + kb*Nx*Ny].Array_A;
-        const unsigned Num_Particles_A_Bucket = Array_A.Get_Length();
-
         /* Cycle through the buckets that contact can occur in. */
         for(unsigned rb = kb_min; rb <= kb_max; rb++) {
           for(unsigned qb = jb_min; qb <= jb_max; qb++) {
             for(unsigned pb = ib_min; pb <= ib_max; pb++) {
-              /* Cycle through Body A's particles in bucket ib + jb*Nx + kb*Nx*Ny
-              and Body B's particles in bucket ib + jb*Nx + kb*Nx*Ny */
+              /* Check if body B has any particles in this bucket. If not, then
+              continue. */
               Array<unsigned> & Array_B = Buckets[pb + qb*Nx + rb*Nx*Ny].Array_B;
               const unsigned Num_Particles_B_Bucket = Array_B.Get_Length();
+              if(Num_Particles_B == 0) { continue; }
 
+              /* Cycle through Body A's particles in bucket ib + jb*Nx + kb*Nx*Ny
+              and Body B's particles in bucket ib + jb*Nx + kb*Nx*Ny */
               for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {
                 const unsigned i = Array_A[A_particle_index];
 

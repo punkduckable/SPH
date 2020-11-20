@@ -69,7 +69,6 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
            0,0,0};
 
   // Loop through each neighbor, determine relevant information
-  printf("Shape Function Amplitude = %lf\n", Shape_Function_Amplitude);
   for(unsigned j = 0; j < Num_Neighbors; j++) {
     Neighbor_ID = Particles[i].Get_Neighbor_IDs(j);        // Get Neighbor ID of the jth neighbor of particle i
 
