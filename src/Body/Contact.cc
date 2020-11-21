@@ -7,12 +7,18 @@
 #include <math.h>
 
 struct Contact_Particle_Bucket {
-  List<unsigned> List_A{};
-  List<unsigned> List_B{};
-
   Array<unsigned> Array_A{};
   Array<unsigned> Array_B{};
+
+  unsigned Counter_A = 0;
+  unsigned Counter_B = 0;
 }; // typdef struct Particle_Bucket {
+
+/* Global (shared) variables for the buckets. */
+static Contact_Particle_Bucket * Buckets;
+static unsigned * Bucket_Indicies_Body_A;
+static unsigned * Bucket_Indicies_Body_B;
+static double Buffer[6];
 
 
 void Body::Contact(Body & Body_A, Body & Body_B) {
@@ -25,13 +31,13 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   then divide the x, y, and z dimensions of this cuboid into smaller cuboids,
   each one of which has a side length that is barely greater than the contact
   distance. We then allocate an array of buckets with one bucket per sub-cuboid.
-  We then cycle through the particles of A and B, sorting them into their
-  corresponding buckets (specifically the lists in those buckets).
+  We then cycle through the particles of A and B, determining which bucket each
+  particle belongs to.
 
-  Once every particle has been sorted, the bucket lists are used to generate
-  arrays in each bucket (we use lists at first because we don't know ahead of
-  time how many particles will go into each bucket. We convert these lists into
-  arrays so that we can access them quickly).
+  Once we finish this, we allocate Array_A and array_B in each bucket. We
+  populate Array_A in the ith bucket with the ID's of the particles in body A
+  that live in that bucket. Once these arrays have been populated, the particles
+  have essentially been "sorted" into their buckets.
 
   We then apply the contact algorithm. The way that these buckets are
   set up, a particle can only contact particles that are in its bucket or a
@@ -63,7 +69,10 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   z_min = z_max;
 
   /* Determine the maximum and minimum x, y, z coordinate of the particles
-  in the two bodies. */
+  in the two bodies. Each thread only searches through a subset of the
+  particles. Once this is done, we will "reduce" them together in the
+  buffer to determine the global minimum. */
+  #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
     x = Body_A.Particles[i].Get_x();
 
@@ -77,6 +86,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     if(x[2] < z_min) { z_min = x[2]; }
   } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
+  #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_B; i++) {
     x = Body_B.Particles[i].Get_x();
 
@@ -89,6 +99,71 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     if(x[2] > z_max) { z_max = x[2]; }
     if(x[2] < z_min) { z_min = x[2]; }
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
+  /* The static global buffer variable will be used to perform the reduce
+  operation. We will associate the 6 elements of the Buffer to perform the
+  following reductions:
+  Buffer[0] = global x_min
+  Buffer[1] = global x_max
+  Buffer[2] = global y_min
+  Buffer[3] = global y_max
+  Buffer[4] = global z_min
+  Buffer[5] = global z_max */
+
+  /* First, we need to initialize the buffer. Whichever thread gets here first
+  does that. We need the implict barrier so that threads don't begin the
+  reduction until the buffer has been initialized. */
+  #pragma omp single
+  {
+    Buffer[0] = x_min;
+    Buffer[1] = x_max;
+    Buffer[2] = y_min;
+    Buffer[3] = y_max;
+    Buffer[4] = z_min;
+    Buffer[5] = z_max;
+  } // #pragma omp single
+
+  /* Now, perform the reduction. */
+  #pragma omp critical
+  {
+    if(x_min < Buffer[0]) { Buffer[0] = x_min; }
+    if(x_max > Buffer[1]) { Buffer[1] = x_max; }
+
+    if(y_min < Buffer[2]) { Buffer[2] = y_min; }
+    if(y_max > Buffer[3]) { Buffer[3] = y_max; }
+
+    if(z_min < Buffer[4]) { Buffer[4] = z_min; }
+    if(z_max > Buffer[5]) { Buffer[5] = z_max; }
+  } // #pragma omp critical
+  #pragma omp barrier
+
+  /* Once the reduction is done, each thread can get the global min/max
+  quantities from the buffer. */
+  x_min = Buffer[0];
+  x_max = Buffer[1];
+  y_min = Buffer[2];
+  y_max = Buffer[3];
+  z_min = Buffer[4];
+  z_max = Buffer[5];
+
+  #ifdef CONTACT_MONITOR
+    /* Check that every thread got the same min/max x, y, and z values. */
+    #pragma omp critical
+    {
+      printf("Buffer = %p\n", Buffer);
+      printf("x_min = %lf\n", x_min);
+      printf("x_max = %lf\n", x_max);
+      printf("y_min = %lf\n", y_min);
+      printf("y_max = %lf\n", y_max);
+      printf("z_min = %lf\n", z_min);
+      printf("z_max = %lf\n", z_max);
+      printf("5:00\n");
+    } // #pragma omp critical
+  #endif
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /* Now, determine the bucket dimensions and allocate the buckets */
 
   /* We want the dimension (in all three coordinate directions) of the
   sub-cuboids to be >= the contact distance. By doing this, particles
@@ -104,14 +179,31 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   const unsigned Ny = floor((y_max - y_min)/Simulation::Contact_Distance);
   const unsigned Nz = floor((z_max - z_min)/Simulation::Contact_Distance);
 
-  /* Now that we know the number of buckets in each direction, we can allocate
-  the buckets array! */
-  Array<struct Contact_Particle_Bucket> Buckets{Nx*Ny*Nz};
+  /* Now that we know the number of buckets in each direction, one thread can
+  allocate the global arrays */
+  #pragma omp single
+  {
+    Buckets = new Contact_Particle_Bucket[Nx*Ny*Nz];
+    Bucket_Indicies_Body_A = new unsigned[Num_Particles_A];
+    Bucket_Indicies_Body_B = new unsigned[Num_Particles_B];
+  } // #pragma omp single
+
+  #ifdef CONTACT_MONITOR
+    /* Check that Nx, Ny, Nz were set up properly and that all threads see the
+    same dynamically allocated global arrays */
+    #pragma omp critical
+    {
+      printf("(Nx, Ny, Nz) = (%d, %d, %d)\n", Nx, Ny, Nz);
+      printf("Buckets = %p\n", Buckets);
+      printf("Bucket_Indicies_Body_A = %p\n", Bucket_Indicies_Body_A);
+      printf("Bucket_Indicies_Body_B = %p\n", Bucket_Indicies_Body_B);
+    } // #pragma omp critical
+  #endif
 
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /* Now, sort the particles of A and B into their corresponding buckets. */
+  /* Now, determine which bucket each particle belongs to. */
 
   /* First, we calculate some variables (see the next comment for an
   explanation) */
@@ -119,6 +211,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   const double sub_cuboid_y_dim = (y_max - y_min)/Ny;
   const double sub_cuboid_z_dim = (y_max - z_min)/Nz;
 
+  #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
     /* First, we need to determine which bucket our particle belongs in. Let's
     focus on the x coordinate. Each bucket has an x-dimension length of
@@ -133,27 +226,90 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     unsigned ny = floor((x[1] - y_min)/sub_cuboid_y_dim);
     unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
 
-    Buckets[nx + ny*Nx + nz*Nx*Ny].List_A.Push_Front(i);
+    /* Determine which bucket this particle goes into. Also, increment the
+    number of particles of body A that go in that bucket. Note that we need
+    the atomic declaration because it is theoretically possible for two
+    threads to increment the same bucket element at the same time. */
+    Bucket_Indicies_Body_A[i] = nx + ny*Nx + nz*Nx*Ny;
+
+    #pragma omp atomic
+      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
   } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
+  #pragma omp for
   for(unsigned i = 0; i < Num_Particles_B; i++) {
     x = Body_B.Particles[i].Get_x();
     unsigned nx = floor((x[0] - x_min)/sub_cuboid_x_dim);
     unsigned ny = floor((x[1] - y_min)/sub_cuboid_y_dim);
     unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
 
-    Buckets[nx + ny*Nx + nz*Nx*Ny].List_B.Push_Front(i);
+    Bucket_Indicies_Body_B[i] = nx + ny*Nx + nz*Nx*Ny;
+
+    #pragma omp atomic
+      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
 
-  /* Now, let's convert the buckets lists into arrays. */
-  for(unsigned r = 0; r < Nz; r++) {
-    for(unsigned q = 0; q < Ny; q++) {
-      for(unsigned p = 0; p < Nx; p++) {
-        Buckets[p + q*Nx + r*Nx*Ny].Array_A.Setup_From_List(Buckets[p + q*Nx + r*Nx*Ny].List_A);
-        Buckets[p + q*Nx + r*Nx*Ny].Array_B.Setup_From_List(Buckets[p + q*Nx + r*Nx*Ny].List_B);
-      } // for(unsigned p = 0; p < Nx; p++) {
-    } // for(unsigned q = 0; q < Ny; q++) {
-  } // for(unsigned r = 0; r < Nz; r++) {
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /* Sort the particles into their corresponding buckets. */
+  #pragma omp sections
+  {
+    #pragma omp section
+    {
+      /* First, lets set up the Array_A arrays in each bucket (the ith one of
+      these holds the indicies of the particles of Body A that are in the ith
+      bucket). */
+      for(unsigned i = 0; i < Nx*Ny*Nz; i++) { Buckets[i].Array_A.Set_Length(Buckets[i].Counter_A); }
+
+      /* Now, cycle through the elements of Bucket_Indicies_Body_A. Consider
+      the ith iteration of this cycle. The ith element of this array tells us
+      which bucket particle i of body A belongs in. We, therefore, add its
+      index to the corresponding bucket's Array_A array. Importantly, we use the
+      Counter_A member of the corresponding bucket to keep track of where we
+      should put the particle index in the corresponding bucker's Array_A array
+      (remember 0 indexing!) */
+      for(unsigned i = 0; i < Num_Particles_A; i++) {
+        const unsigned Bucket_Index = Bucket_Indicies_Body_A[i];
+        Buckets[Bucket_Index].Counter_A--;
+        Buckets[Bucket_Index].Array_A[Buckets[Bucket_Index].Counter_A] = i;
+      } // for(unsigned i = 0; i < Num_Particles_A; i++) {
+    } // #pragma omp section
+    #pragma omp section
+    {
+      /* First, lets set up the Array_B arrays in each bucket (the ith one of
+      these holds the indicies of the particles of body B that are in the ith
+      bucket). */
+      for(unsigned i = 0; i < Nx*Ny*Nz; i++) { Buckets[i].Array_B.Set_Length(Buckets[i].Counter_B); }
+
+      /* Now, cycle through the elements of Bucket_Indicies_Body_B. Consider
+      the ith iteration of this cycle. The ith element of this array tells us
+      which bucket particle i of body B belongs in. We, therefore, add its
+      index to the corresponding bucket's Array_B array. Importantly, we use the
+      Counter_B member of the corresponding bucket to keep track of where we
+      should put the particle index in the corresponding bucker's Array_B array
+      (remember 0 indexing!) */
+      for(unsigned i = 0; i < Num_Particles_B; i++) {
+        const unsigned Bucket_Index = Bucket_Indicies_Body_B[i];
+        Buckets[Bucket_Index].Counter_B--;
+        Buckets[Bucket_Index].Array_B[Buckets[Bucket_Index].Counter_B] = i;
+      } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+    } // #pragma omp section
+  } // #pragma omp sections
+
+  #ifdef CONTACT_MONITOR
+    /* Check that each bucket got the right number of particles. This occurs
+    precisely when a bucket's Counter's are 0. If they are non-zero, then
+    the bucket got too many or too few particles. Since this is stored in the
+    global Buckets array, only one thread needs to check this. */
+    #pragma omp single
+    {
+      for(unsigned i = 0; i < Nx*Ny*Nz; i++) {
+        if(Buckets[i].Counter_A != 0) { printf("Bucket[%d].Counter_A = %d\n",i, Buckets[i].Counter_A); }
+        if(Buckets[i].Counter_B != 0) { printf("Bucket[%d].Counter_B = %d\n",i, Buckets[i].Counter_B); }
+      } // for(unsigned i = 0; i < Nx*Ny*Nz; i++) {
+    } // #pragma omp single
+  #endif
 
 
 
@@ -315,8 +471,21 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   delete [] Body_B_F_Friction_Local;
 
   /* We put a barrier here so that each particle's contact and friction forces
-  have been set before returning. The next function in the simulaiton (update_x)
-  will only work correctly if each particle's contact and friction forces have
-  been set. */
+  have been set before deallocating the global arrays and returning. The next
+  function in the simulaiton (update_x) will only work correctly if each
+  particle's contact and friction forces have been set. */
   #pragma omp barrier
+
+  /* Delete the shared arrays. Why don't we need a barrier? Because there's a
+  barrier just before this. The threads can't pass that barrier until they are
+  done adding their part of the Contact/Friction forces into the bodies. Thus,
+  once they pass this barrier, they are ready to work on update_x. All this
+  single directive does is free the dynamic arrays. Thus, the other threads can
+  get started on Update_x before this completes */
+  #pragma omp single nowait
+  {
+    delete [] Buckets;
+    delete [] Bucket_Indicies_Body_A;
+    delete [] Bucket_Indicies_Body_B;
+  } // #pragma omp single
 } // void Body::Contact_New(Body & Body_A, Body & Body_B) {

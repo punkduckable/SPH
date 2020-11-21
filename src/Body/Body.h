@@ -3,6 +3,7 @@
 
 #define DAMAGE_MONITOR
 #define IO_MONITOR
+//#define CONTACT_MONITOR
 
 #include "Materials.h"
 #include "Classes.h"
