@@ -23,7 +23,7 @@ namespace Simulation {
 
 // Declare Simulation Parameters
 namespace Simulation {
-  // IO paramaters
+  // IO parameters 
   bool Load_Simulation_From_Save;
   bool Save_Simulation_To_File;
   bool Print_Particle_Forces;
@@ -31,7 +31,7 @@ namespace Simulation {
   bool Print_Body_Torques;
   unsigned TimeSteps_Between_Prints;
 
-  // TimeStep paramters
+  // TimeStep parameters 
   double dt;                                     // Time step        : s
   unsigned Num_Time_Steps;                       // Number of time steps
 
@@ -170,7 +170,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   unsigned i,j,k;
   TIME_TYPE time1;
 
-  // Particle paramaters
+  // Particle parameters 
   const double IPS = Body_In.Get_Inter_Particle_Spacing();                     //        : mm
   const double Particle_Volume = IPS*IPS*IPS;                                  //        : mm^3
   const double Particle_Radius = IPS*.578;                                     //        : mm

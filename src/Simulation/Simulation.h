@@ -53,7 +53,7 @@ namespace Simulation {
   // Simulation parameters
   // Declared in Setup_File.cc (defined by Load_Setup_File.cc and Setup.txt)
 
-  // IO paramaters
+  // IO parameters 
   extern bool Load_Simulation_From_Save;
   extern bool Save_Simulation_To_File;
   extern bool Print_Particle_Forces;

@@ -15,9 +15,9 @@ struct Contact_Particle_Bucket {
 }; // typdef struct Particle_Bucket {
 
 /* Global (shared) variables for the buckets. */
-static Contact_Particle_Bucket * Buckets;
-static unsigned * Bucket_Indicies_Body_A;
-static unsigned * Bucket_Indicies_Body_B;
+static Contact_Particle_Bucket * Buckets;        // Array of buckets
+static unsigned * Bucket_Indicies_Body_A;        // Which bucket each particle of body A goes to.
+static unsigned * Bucket_Indicies_Body_B;        // Which bucket each paritcle of body B goes to.
 static double Buffer[6];
 
 
@@ -29,10 +29,10 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   maximum and minimum x, y, and z coordinates of the live (damage < 1) particles
   This gives us a cuboid in which the particles of the two bodies live. We
   then divide the x, y, and z dimensions of this cuboid into smaller cuboids,
-  each one of which has a side length that is barely greater than the contact
-  distance. We then allocate an array of buckets with one bucket per sub-cuboid.
-  We then cycle through the particles of A and B, determining which bucket each
-  particle belongs to.
+  called cells, each one of which has a side length that is barely greater than
+  the contact distance. We then allocate an array of buckets with one bucket per
+  cell. We then cycle through the particles of A and B, determining which bucket
+  each particle belongs to.
 
   Once we finish this, we allocate Array_A and array_B in each bucket. We
   populate Array_A in the ith bucket with the ID's of the particles in body A
@@ -50,17 +50,17 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   //////////////////////////////////////////////////////////////////////////////
   /* Determine how many buckets we need */
 
-  // Get paramaters from Body_A, Body_B
+  // Get parameters from Body_A, Body_B
   const unsigned Num_Particles_A = Body_A.Get_Num_Particles();
   const unsigned Num_Particles_B = Body_B.Get_Num_Particles();
-  const double Shape_Function_Amp = Body_A.Get_Shape_Function_Amplitude();
 
-  // Set up variables.
+  // Declare some variables.
   double x_max, x_min;
   double y_max, y_min;
   double z_max, z_min;
 
-  Vector x = Body_A.Particles[0].Get_x();
+  // Initialize the variables.
+  Vector x = Body_A[0].Get_x();
   x_max = x[0];
   x_min = x_max;
   y_max = x[1];
@@ -74,30 +74,32 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   buffer to determine the global minimum. */
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
-    x = Body_A.Particles[i].Get_x();
+    x = Body_A[i].Get_x();
 
-    if(x[0] > x_max) { x_max = x[0]; }
-    if(x[0] < x_min) { x_min = x[0]; }
+    /* Note: if x[0] > x_max, then we can't also have x[0] < x_min (this relies
+    on the fact that x_min <= x_max) */
+    if     (x[0] > x_max) { x_max = x[0]; }
+    else if(x[0] < x_min) { x_min = x[0]; }
 
-    if(x[1] > y_max) { y_max = x[1]; }
-    if(x[1] < y_min) { y_min = x[1]; }
+    if     (x[1] > y_max) { y_max = x[1]; }
+    else if(x[1] < y_min) { y_min = x[1]; }
 
-    if(x[2] > z_max) { z_max = x[2]; }
-    if(x[2] < z_min) { z_min = x[2]; }
+    if     (x[2] > z_max) { z_max = x[2]; }
+    else if(x[2] < z_min) { z_min = x[2]; }
   } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_B; i++) {
-    x = Body_B.Particles[i].Get_x();
+    x = Body_B[i].Get_x();
 
-    if(x[0] > x_max) { x_max = x[0]; }
-    if(x[0] < x_min) { x_min = x[0]; }
+    if     (x[0] > x_max) { x_max = x[0]; }
+    else if(x[0] < x_min) { x_min = x[0]; }
 
-    if(x[1] > y_max) { y_max = x[1]; }
-    if(x[1] < y_min) { y_min = x[1]; }
+    if     (x[1] > y_max) { y_max = x[1]; }
+    else if(x[1] < y_min) { y_min = x[1]; }
 
-    if(x[2] > z_max) { z_max = x[2]; }
-    if(x[2] < z_min) { z_min = x[2]; }
+    if     (x[2] > z_max) { z_max = x[2]; }
+    else if(x[2] < z_min) { z_min = x[2]; }
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
 
   /* The static global buffer variable will be used to perform the reduce
@@ -157,21 +159,21 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
       printf("y_max = %lf\n", y_max);
       printf("z_min = %lf\n", z_min);
       printf("z_max = %lf\n", z_max);
-      printf("5:00\n");
     } // #pragma omp critical
   #endif
+
 
 
   //////////////////////////////////////////////////////////////////////////////
   /* Now, determine the bucket dimensions and allocate the buckets */
 
   /* We want the dimension (in all three coordinate directions) of the
-  sub-cuboids to be >= the contact distance. By doing this, particles
+  cell to be >= the contact distance. By doing this, particles
   can only compe into contact with particles in their bucket or in buckets
   that are adjacent to their bucket. In general, we want the buckets to be as
   small as possible (so that there are as few particles to check for contact as
   possible). Let's focus on the x coordinate. Let Nx denote the number of
-  sub-cuboids in the x direction. We want Nx to be the largest natural number
+  cell in the x direction. We want Nx to be the largest natural number
   such that Contact_Distance <= (x_max - x_min)/Nx. A little though reveals
   that this occurs precisely when Nx = floor((x_max - x_min)/Contact_Distance).
   A similar result holds for the y and z directions. */
@@ -207,24 +209,38 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   /* First, we calculate some variables (see the next comment for an
   explanation) */
-  const double sub_cuboid_x_dim = (x_max - x_min)/Nx;
-  const double sub_cuboid_y_dim = (y_max - y_min)/Ny;
-  const double sub_cuboid_z_dim = (y_max - z_min)/Nz;
+  const double cell_x_dim = (x_max - x_min)/Nx;
+  const double cell_y_dim = (y_max - y_min)/Ny;
+  const double cell_z_dim = (z_max - z_min)/Nz;
 
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
     /* First, we need to determine which bucket our particle belongs in. Let's
     focus on the x coordinate. Each bucket has an x-dimension length of
-    (x_max - x_min)/Nx, which we call sub_cuboid_x_dim. The x coordinates of
+    (x_max - x_min)/Nx, which we call cell_x_dim. The x coordinates of
     the bucket for the ith particle is the number of units of length
-    sub_cuboid_x_dim that fit between x_min and the x coordinate of the particle
+    cell_x_dim that fit between x_min and the x coordinate of the particle
     (think about it). A little thought reveals that this is precisely
-    floor((Particle[i].x[0] - x_min)/((x_max - x_min)/Nx))
+    floor((Particle[i].x[0] - x_min)/cell_x_dim)
     A similar result holds for y and z. */
     x = Body_A.Particles[i].Get_x();
-    unsigned nx = floor((x[0] - x_min)/sub_cuboid_x_dim);
-    unsigned ny = floor((x[1] - y_min)/sub_cuboid_y_dim);
-    unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
+    unsigned nx = floor((x[0] - x_min)/cell_x_dim);
+    unsigned ny = floor((x[1] - y_min)/cell_y_dim);
+    unsigned nz = floor((x[2] - z_min)/cell_z_dim);
+
+    /* We run into a bit of a problem if a pritlce's x coordinate is equal to
+    x_max. In this case (assuming no roundoff error), nx will evaluate to Nx.
+    This is problematic, because the bucket x coordinates range from 0 to Nx-1
+    (remember, 0 indexing). Really, we want this particle to go into a bucket
+    with x index Nx-1 (which corresponds to the particles with the biggest x
+    coordinates) (think about it). To remedy this, we simply run a check:
+    if nx evaluated to Nx, then correct nx to Nx-1. This is quite literaly an
+    edge case.
+
+    A similar argument holds for ny and nz. */
+    if(nx == Nx) { nx = Nx - 1; }
+    if(ny == Ny) { ny = Ny - 1; }
+    if(nz == Nz) { nz = Nz - 1; }
 
     /* Determine which bucket this particle goes into. Also, increment the
     number of particles of body A that go in that bucket. Note that we need
@@ -232,19 +248,28 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     threads to increment the same bucket element at the same time. */
     Bucket_Indicies_Body_A[i] = nx + ny*Nx + nz*Nx*Ny;
 
+    /* Update that bucket's A counter */
     #pragma omp atomic
       Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
   } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
   #pragma omp for
   for(unsigned i = 0; i < Num_Particles_B; i++) {
+    /* Calculate bucket indicies */
     x = Body_B.Particles[i].Get_x();
-    unsigned nx = floor((x[0] - x_min)/sub_cuboid_x_dim);
-    unsigned ny = floor((x[1] - y_min)/sub_cuboid_y_dim);
-    unsigned nz = floor((x[2] - z_min)/sub_cuboid_z_dim);
+    unsigned nx = floor((x[0] - x_min)/cell_x_dim);
+    unsigned ny = floor((x[1] - y_min)/cell_y_dim);
+    unsigned nz = floor((x[2] - z_min)/cell_z_dim);
 
+    /* Check for edge cases */
+    if(nx == Nx) { nx = Nx - 1; }
+    if(ny == Ny) { ny = Ny - 1; }
+    if(nz == Nz) { nz = Nz - 1; }
+
+    /* We know know which bucket this particle goes into. */
     Bucket_Indicies_Body_B[i] = nx + ny*Nx + nz*Nx*Ny;
 
+    /* Update that bucket's B counter */
     #pragma omp atomic
       Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
@@ -275,6 +300,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
         Buckets[Bucket_Index].Array_A[Buckets[Bucket_Index].Counter_A] = i;
       } // for(unsigned i = 0; i < Num_Particles_A; i++) {
     } // #pragma omp section
+
     #pragma omp section
     {
       /* First, lets set up the Array_B arrays in each bucket (the ith one of
@@ -318,11 +344,12 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   /* This function implements Particle-Particle 'contact'.
   If a particle from body A is within Simulation::Contact_Distance of a particle
-  in body B, then we apply a contact and friction force between those particeles.
+  in body B, then we apply a contact and friction force between those particles.
   The applied force is in the direction of the line between the two particles'
   centers. */
   const double h = Simulation::Contact_Distance;                               //        : mm
   const double h_squared = h*h;                                                //        : mm^2
+  const double Shape_Function_Amp = Body_A.Get_Shape_Function_Amplitude();
   Vector r_ij;                                                                 //        : mm Vector
   Vector Grad_W;                                                               //        : 1/mm^4 Vector
   Vector x_i;                                                                  //        : mm Vector
@@ -463,7 +490,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     for(unsigned i = 0; i < Num_Particles_B; i++) {
       Body_B[i].Force_Contact += Body_B_F_Contact_Local[i];                    //        : N Vector
       Body_B[i].Force_Friction += Body_B_F_Friction_Local[i];                  //        : N Vector
-    } // for(unsignd i = 0; i < Num_Particles_B; i++) {
+    } // for(unsigned i = 0; i < Num_Particles_B; i++) {
   } // if(Contact_Flag == true) {
 
   // Now free any dynamically allocated memory.

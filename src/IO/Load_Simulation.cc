@@ -386,7 +386,7 @@ void IO::Load_Particle(Particle & P_In, std::ifstream & File) {
 
 
   //////////////////////////////////////////////////////////////////////////////
-  // Neighbor paramaters
+  // Neighbor parameters 
 
   // Read in number of neighbors
   P_In.Neighbors_Are_Set = false;

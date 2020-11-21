@@ -156,11 +156,11 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
 
   const double r_Squared = Particles[p].Radius*Particles[p].Radius;            //        : mm^2
 
-  // Particle i (P_j) paramaters
+  // Particle i (P_j) parameters 
   unsigned Pi_ID;                            // ID of P_i
   List<unsigned> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in Particles[p]'s shadow region
 
-  // Particle j (P_j) paramaters
+  // Particle j (P_j) parameters 
   unsigned Pj_ID;                            // ID of P_j
 
   // Rays (Vectors between particle's Reference positions)
@@ -300,7 +300,7 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
     delete [] Particles[Pi_ID].Grad_W;                                         //        : 1/(mm^4) Vector
     delete [] Particles[Pi_ID].Neighbor_IDs;
 
-    // We need to set the 'Neighbors_Are_Set' paramater to false. Otherwise, we
+    // We need to set the 'Neighbors_Are_Set' parameter  to false. Otherwise, we
     // won't be able to reset P_i's neighbors
     Particles[Pi_ID].Neighbors_Are_Set = false;
 

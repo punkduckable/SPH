@@ -421,13 +421,13 @@ void Body::Export_Particle_Positions(void) {
     //E21[i] = E[3*1 + 0];
     //E31[i] = E[3*2 + 0];
     //E32[i] = E[3*2 + 1];
-  } // for(unsinged int i = 0; i < Num_Particles; i++) {
+  } // for(unsigned int i = 0; i < Num_Particles; i++) {
 
   // Now print these values to the file.
   fprintf(File,"POINT_DATA %i\n", Num_Particles);
   char Weight_Name[5];
 
-  /* Damage paramaters */
+  /* Damage parameters  */
 
   std::strcpy(Weight_Name, "LamM");
   Add_Point_Data(File, Weight_Name, Num_Particles, LamM);

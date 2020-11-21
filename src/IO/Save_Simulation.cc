@@ -94,7 +94,7 @@ void IO::Save_Body(const Body & Body_In) {
   } // if(File == nullptr) {
 
 
-  // Let's begin by printing the Body paramaters
+  // Let's begin by printing the Body parameters
   fprintf(File,   "Name:                                   %s\n\n",  Name.c_str());
 
   fprintf(File,   "Is a Box:                               %u\n",    Body_In.Get_Is_Box());
@@ -127,7 +127,7 @@ void IO::Save_Body(const Body & Body_In) {
   fprintf(File,   "       -- Particles --\n");
   fprintf(File,   "Number of particles:                    %u\n\n",    Body_In.Get_Num_Particles());
 
-  // Finally, let's print the Box paramaters (should be removed if not using
+  // Finally, let's print the Box parameters  (should be removed if not using
   // a Box)
   //fprintf(File,   "X Side Length:                %u\n",    Simulation::X_SIDE_LENGTH);
   //fprintf(File,   "Y Side Length:                %u\n",    Simulation::Y_SIDE_LENGTH);
@@ -155,7 +155,7 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
 
   Not storing this information in the File makes the file take up less/easier
   to read. This function assumes that the File has already been setup (with
-  static particle class paramaters). */
+  static particle class parameters ). */
 
   unsigned i;                                // index variable
 
@@ -183,7 +183,7 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
   fprintf(File,   "                                        |%6.3lf %6.3lf %6.3lf|\n", F_1(2,0), F_1(2,1), F_1(2,2));
 
 
-  // Damage paramaters
+  // Damage parameters
   fprintf(File,   "Stretch_H:                              %5lf\n",  P_In.Get_Stretch_H());
   fprintf(File,   "Stretch_M:                              %5lf\n",  P_In.Get_Stretch_M());
   fprintf(File,   "Stretch_Critical:                       %5lf\n",  P_In.Get_Stretch_Critical());
@@ -209,7 +209,7 @@ void IO::Save_Particle(const Particle & P_In, FILE * File) {
   // Now, let's figure out how many neighbors this particle has.
   unsigned Num_Neighbors = P_In.Get_Num_Neighbors();
 
-  // Neighbor paramters
+  // Neighbor parameters
   fprintf(File,   "Number of neighbors:                    %u\n", P_In.Get_Num_Neighbors());
 
   // Print neighbor IDs

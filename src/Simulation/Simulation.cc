@@ -137,7 +137,7 @@ void Simulation::Run(void) {
         for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
           Body::Contact(Bodies[b2], Bodies[b1]);
         } // for(unsigned b2 = b1 + 1; b2 < Num_Bodies; b2++) {
-      } // for(unsinged b1 = 0; b1 < Num_Bodies - 1; b1++) {
+      } // for(unsigned b1 = 0; b1 < Num_Bodies - 1; b1++) {
 
       #pragma omp single nowait
       { contact_time += Time_Since(time2); }
@@ -230,7 +230,7 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
   /* Function Description:
   This function, as the name implies, exports data for each body in a simulation.
   Position data is always printed. Wheather or not we print Force or
-  Net External Force data depends on the simulation paramaters
+  Net External Force data depends on the simulation parameters
   Print_Prticle_Force and Print_Next_External_Forces, respectivly.
 
   Simulation::Run is the only function  that should call this function */

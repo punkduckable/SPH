@@ -41,7 +41,7 @@ void Body::Update_P(const double dt) {
 
 
   // Material parameters
-  const double Lame = Body_Material.Lame;        // Lame paramater                       : Mpa
+  const double Lame = Body_Material.Lame;        // Lame parameter                        : Mpa
   const double mu0 = Body_Material.mu0;          // Shear modulus                        : Mpa
 
   // Let's update each particle's stress tensors, keeping track of which

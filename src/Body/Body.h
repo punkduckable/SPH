@@ -60,7 +60,7 @@ class Body {
     // Hourglass (Hg) correction parameters
     double alpha;                                          // Hg control parameter       : unitless
 
-    // Damage paramaters
+    // Damage parameters
     double Tau;                                            // Damage rate parameter (see eq 26)
     bool Is_Damageable;                                    // If true, allows this Body to take damage.
 
