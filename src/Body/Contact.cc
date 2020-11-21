@@ -232,10 +232,14 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     x_max. In this case (assuming no roundoff error), nx will evaluate to Nx.
     This is problematic, because the bucket x coordinates range from 0 to Nx-1
     (remember, 0 indexing). Really, we want this particle to go into a bucket
-    with x index Nx-1 (which corresponds to the particles with the biggest x
-    coordinates) (think about it). To remedy this, we simply run a check:
-    if nx evaluated to Nx, then correct nx to Nx-1. This is quite literaly an
-    edge case.
+    corresonding to the cell with x index Nx-1 (think about it). To remedy this,
+    we simply run a check: if nx evaluated to Nx, then correct nx to Nx-1.
+
+    This is quite literaly an edge case. It's possible for particles to lie on
+    the boundary of other cells. In those cases, however, it's fine to assign
+    the particle to either cell (think about it). Thus, we only really need to
+    run the check when the code tries to assign a particle to a cell with too
+    big an index.
 
     A similar argument holds for ny and nz. */
     if(nx == Nx) { nx = Nx - 1; }
