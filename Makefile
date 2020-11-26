@@ -1,10 +1,12 @@
 # Compiler stuff
-COMPILER :=        g++-10
+COMPILER :=        g++
 
-CFLAGS :=         -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11
+CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -pg
 
-INC_PATH :=       -iquote ./src \
-                  -iquote ./test
+LNFLAGS  :=        -pg  
+
+INC_PATH :=        -iquote ./src \
+                   -iquote ./test
 
 
 # Object files for compiling + their paths
@@ -46,7 +48,7 @@ VPATH :=     ./bin ./obj \
 compile: bin/SPH
 
 bin/SPH: $(OBJ_PATHS)
-	$(COMPILER) -fopenmp $(OBJ_PATHS) -o $@
+	$(COMPILER) $(LNFLAGS) -fopenmp $(OBJ_PATHS) -o $@
 
 obj/Main.o: Main.cc
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
@@ -174,3 +176,4 @@ help:
 	$(info make clean     - clears all object files (in /obj) and binary files (in \bin))
 	$(info make help      - displays this message)
 	$(info )
+
