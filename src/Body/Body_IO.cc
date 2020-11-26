@@ -29,6 +29,8 @@ void Body::Print_Parameters(void) const {
   // Other
   printf(         "Gravity Enabled:              %u\n",    Gravity_Enabled);
   printf(         "mu (Viscosity):               %lf\n",   mu);
+
+  printf(         "Is damageable:                %u\n",    Is_Damageable);
   if(Is_Damageable == true) {
     printf(       "Tau (Damage rate):            %lf\n\n", Tau);
   } // if(Is_Damageable == true) {
