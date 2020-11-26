@@ -14,18 +14,25 @@ void Body::Print_Parameters(void) const {
     printf(       "Y side length:                %u\n",    Y_SIDE_LENGTH);
     printf(       "Z side length:                %u\n",    Z_SIDE_LENGTH);
   } // if(Is_Box) {
-
   printf(         "Number of particles:          %u\n",    Num_Particles);
-  printf(         "Partciles Array address:      %p\n",    Particles);
-  printf(         "Inter particle spacing:       %lf\n",   Inter_Particle_Spacing);
-  printf(         "Support Radius:               %lf\n",   Support_Radius);
+  printf(         "Particles address:            %p\n",    Particles);
+  printf(         "Inter particle spacing (mm):  %lf\n",   Inter_Particle_Spacing);
+  printf(         "Support Radius (mm):          %lf\n",   Support_Radius);
   printf(         "Shape Function Amplitude:     %lf\n",   Shape_Function_Amplitude);
-  printf(         "Lame:                         %lf\n",   Body_Material.Lame);
-  printf(         "mu0 (Shear modulus):          %lf\n",   Body_Material.mu0);
+
+  // Material parameters
+  printf(         "Lame (Mpa):                   %lf\n",   Body_Material.Lame);
+  printf(         "mu0 (Shear modulus) (Mpa:     %lf\n",   Body_Material.mu0);
+  printf(         "E (Young's modulus) (Mpa):    %lf\n",   Body_Material.E);
+  printf(         "Density (g/mm^3):             %lf\n",   Body_Material.E);
+
+  // Other
   printf(         "Gravity Enabled:              %u\n",    Gravity_Enabled);
   printf(         "mu (Viscosity):               %lf\n",   mu);
-  printf(         "E (Young's modulus):          %lf\n",   Body_Material.E);
-  printf(         "Tau (Damage rate):            %lf\n\n", Tau);
+  if(Is_Damageable == true) {
+    printf(       "Tau (Damage rate):            %lf\n\n", Tau);
+  } // if(Is_Damageable == true) {
+
 } // void Body::Print_Parameters(void) const {
 
 
