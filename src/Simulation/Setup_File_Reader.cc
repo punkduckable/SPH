@@ -39,43 +39,54 @@ Body* Simulation::Load_Setup_File(void) {
   //////////////////////////////////////////////////////////////////////////////
   // IO
   strBuf = IO::read_line_after(File, "Load Simulation from Save:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Load_Simulation_From_Save = true; }
-  else {                                                        Load_Simulation_From_Save = false; }
-  #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Load_Simulation_From_Save as: %s\n", strBuf.c_str());
-  #endif
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Load_Simulation_From_Save = true; }
+  else {                                                        Simulation::Load_Simulation_From_Save = false; }
 
   strBuf = IO::read_line_after(File, "Save Data To File:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Save_Simulation_To_File = true; }
-  else {                                                        Save_Simulation_To_File = false; }
-  #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Save_Simulation_To_File as: %s\n", strBuf.c_str());
-  #endif
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Save_Simulation_To_File = true; }
+  else {                                                        Simulation::Save_Simulation_To_File = false; }
 
   strBuf = IO::read_line_after(File, "Print Particle Forces:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Particle_Forces = true; }
-  else {                                                        Print_Particle_Forces = false; }
-  #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Print_Particle_Forces as: %s\n", strBuf.c_str());
-  #endif
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_Forces = true; }
+  else {                                                        Simulation::Print_Particle_Forces = false; }
 
   strBuf = IO::read_line_after(File, "Print Body Forces:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Body_Forces = true; }
-  else {                                                        Print_Body_Forces = false; }
-  #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Print_Body_Forces as: %s\n", strBuf.c_str());
-  #endif
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Forces = true; }
+  else {                                                        Simulation::Print_Body_Forces = false; }
 
   strBuf = IO::read_line_after(File, "Print Body Torques:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Print_Body_Torques = true; }
-  else {                                                        Print_Body_Torques = false; }
-  #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Print_Body_Torques as: %s\n", strBuf.c_str());
-  #endif
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Torques = true; }
+  else {                                                        Simulation::Print_Body_Torques = false; }
 
   strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::TimeSteps_Between_Prints);
 
+
+  #if defined(SIMULATION_SETUP_MONITOR)
+    printf(  "Read Load_Simulation_From_Save as:      ");
+    if(Simulation::Load_Simulation_From_Save == true) {    printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Save_Simulation_To_File as:        ");
+    if(Simulation::Save_Simulation_To_File == true) {      printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_Forces as:          ");
+    if(Simulation::Print_Particle_Forces == true) {        printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Body_Forces as:              ");
+    if(Simulation::Print_Body_Forces == true) {            printf("true\n");  }
+    else {                                                 printf("flase\n"); }
+
+    printf(  "Read Print_Body_Torques as:             ");
+    if(Simulation::Print_Body_Torques == true) {           printf("true\n");  }
+    else {                                                 printf("flase\n"); }
+
+    printf(  "Read Time_Steps_Between_Prints as:      ");
+    if(Simulation::TimeSteps_Between_Prints == true) {     printf("true\n");  }
+    else {                                                 printf("false\n"); }
+  #endif
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -96,13 +107,12 @@ Body* Simulation::Load_Setup_File(void) {
   strBuf = IO::read_line_after(File, "Friction Coefficient:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Simulation::Friction_Coefficient);
 
-
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read TimeSteps_Between_Prints as:       %u\n",  Simulation::TimeSteps_Between_Prints);
-    printf("Read dt as:                             %lf (s)\n", Simulation::dt);
-    printf("Read Num_Time_Steps as:                 %u\n",  Simulation::Num_Time_Steps);
-    printf("Read Contact_Distance as:               %lf (mm)\n", Simulation::Contact_Distance);
-    printf("Read Friction_Coefficient as:           %lf\n", Simulation::Friction_Coefficient);
+    printf(  "Read TimeSteps_Between_Prints as:       %u\n",  Simulation::TimeSteps_Between_Prints);
+    printf(  "Read dt as:                             %lf (s)\n", Simulation::dt);
+    printf(  "Read Num_Time_Steps as:                 %u\n",  Simulation::Num_Time_Steps);
+    printf(  "Read Contact_Distance as:               %lf (mm)\n", Simulation::Contact_Distance);
+    printf(  "Read Friction_Coefficient as:           %lf\n", Simulation::Friction_Coefficient);
   #endif
 
 
@@ -122,8 +132,9 @@ Body* Simulation::Load_Setup_File(void) {
   // Number of Bodies
   strBuf = IO::read_line_after(File, "Number of Bodies:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::Num_Bodies);
+
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf("Read Number of Bodies as:      %u\n", Simulation::Num_Bodies);
+    printf(  "Read Number of Bodies as:               %u\n", Simulation::Num_Bodies);
   #endif
 
   // We're done reading in the Simulation parameters. We can close the setup file.
@@ -348,8 +359,14 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
   #if defined(SIMULATION_SETUP_MONITOR)
     printf("\n\nRead Name[%3u] as:                      %s\n", i, Body_In.Get_Name().c_str());
-    printf("Read From_FEB_File[%3u] as:             %u\n", i, Simulation::From_FEB_File[i]);
-    printf("Read Is_Box[%3u] as:                    %u\n", i, Is_Box);
+    printf(    "Read From_FEB_File[%3u] as:             ", i);
+    if(Simulation::From_FEB_File[i] == true) {   printf("true\n");  }
+    else {                                       printf("false\n"); }
+
+    printf("Read Is_Box[%3u] as:                    ", i);
+    if(Body_In.Get_Is_Box() == true) {           printf("true\n");  }
+    else {                                       printf("false\n"); }
+
     if(Is_Box == true) {
       printf("Read Dimensions[%3u] as:                {%u, %u, %u}\n", i, Body_In.Get_X_SIDE_LENGTH(), Body_In.Get_Y_SIDE_LENGTH(), Body_In.Get_Z_SIDE_LENGTH());
       printf("Read Body[%3u].x_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.x_plus_BC);
@@ -359,20 +376,26 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
       printf("Read Body[%3u].z_plus_BC as:            ", i); Print_BC(Box_Boundary_Conditions.z_plus_BC);
       printf("Read Body[%3u].z_minus_BC as:           ", i); Print_BC(Box_Boundary_Conditions.z_minus_BC);
     } // if(Is_Box == true) {
-    printf("Read Body[%3u].Is_Fixed as:             %u\n", i, Body_In.Get_Is_Fixed());
-    printf("Read Body[%3u].Is_Damageable as:        %u\n", i, Body_In.Get_Is_Damageable());
+    printf("Read Body[%3u].Is_Fixed as:             ", i);
+    if(Body_In.Get_Is_Fixed() == true) {         printf("true\n");  }
+    else {                                       printf("false\n"); }
+
+    printf("Read Body[%3u].Is_Damageable as:        ", i);
+    if(Body_In.Get_Is_Damageable() == true) {    printf("true\n");  }
+    else {                                       printf("false\n"); }
+
     if(Body_In.Get_Is_Damageable() == true) {
-      printf("Read Body[%3u].Tau as:                  %lf\n", i, Body_In.Get_Tau());
       printf("Read Stretch Critical Mean as:          %lf\n", Stretch_Critical_Mean);
       printf("Read Stretch Critical SD as:            %lf\n", Stretch_Critical_SD);
+      printf("Read Body[%3u].Tau as:                  %lf\n", i, Body_In.Get_Tau());
     } // if(Body_In.Get_Is_Damageable() == true) {
 
-    printf("\nRead Body[%3u].Material.Lame as:        %lf\n", i, Mat.Lame);
-    printf("Read Body[%3u].Material.mu0 as:         %lf\n", i, Mat.mu0);
-    printf("Read Body[%3u].Material.density as:     %lf\n", i, Mat.density);
+    printf("\nRead Body[%3u].Material.Lame as:        %lf (Mpa)\n", i, Mat.Lame);
+    printf(  "Read Body[%3u].Material.mu0 as:         %lf (Mpa)\n", i, Mat.mu0);
+    printf(  "Read Body[%3u].Material.density as:     %lf (g/mm^3)\n", i, Mat.density);
 
-    printf("\nRead Offset[%3u] as:                    {%lf, %lf, %lf}\n", i, Position_Offset[i][0], Position_Offset[i][1], Position_Offset[i][2]);
-    printf("Read Initial_Velocity[%3u] as:          {%lf, %lf, %lf}\n", i, Initial_Velocity[i][0], Initial_Velocity[i][1], Initial_Velocity[i][2]);
+    printf("\nRead Offset[%3u] as:                    {%lf, %lf, %lf} (mm)\n",   i, Position_Offset[i][0], Position_Offset[i][1], Position_Offset[i][2]);
+    printf(  "Read Initial_Velocity[%3u] as:          {%lf, %lf, %lf} (mm/s)\n", i, Initial_Velocity[i][0], Initial_Velocity[i][1], Initial_Velocity[i][2]);
 
     printf("\nRead Number_General_BCs[%3u] as:        %u\n",  i, Number_General_BCs);
     for(unsigned j = 0; j < Number_General_BCs; j++) {
@@ -396,11 +419,14 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
               General_BCs[i][j].Effect_Vector[2]);
     } // for(unsigned j = 0; j < Number_General_BCs; j++) {
 
-    printf("\nRead Bodu[%3u].Gravity_Enabled          %u\n", i, Body_In.Get_Gravity_Enabled());
-    printf("Read Body[%3u].mu as:                   %lf\n",  i, Body_In.Get_mu());
-    printf("Read Body[%3u].alpha as:                %lf\n",  i, Body_In.Get_alpha());
-    printf("Read Body[%3u].IPS as:                  %lf\n",  i, Body_In.Get_Inter_Particle_Spacing());
-    printf("Read Body[%3u].Support_Radius as:       %lf\n",  i, Body_In.Get_Support_Radius());
+    printf("\nRead Bodu[%3u].Gravity_Enabled          ", i);
+    if(Body_In.Get_Gravity_Enabled() == true)    { printf("true\n");  }
+    else                                         { printf("false\n"); }
+
+    printf(  "Read Body[%3u].mu as:                   %lf (Mpa*s)\n", i, Body_In.Get_mu());
+    printf(  "Read Body[%3u].alpha as:                %lf\n",         i, Body_In.Get_alpha());
+    printf(  "Read Body[%3u].IPS as:                  %lf (mm)\n",    i, Body_In.Get_Inter_Particle_Spacing());
+    printf(  "Read Body[%3u].Support_Radius as:       %lf (mm)\n",    i, Body_In.Get_Support_Radius());
   #endif
 
 

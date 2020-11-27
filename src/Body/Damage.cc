@@ -156,11 +156,11 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
 
   const double r_Squared = Particles[p].Radius*Particles[p].Radius;            //        : mm^2
 
-  // Particle i (P_j) parameters 
+  // Particle i (P_j) parameters
   unsigned Pi_ID;                            // ID of P_i
   List<unsigned> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in Particles[p]'s shadow region
 
-  // Particle j (P_j) parameters 
+  // Particle j (P_j) parameters
   unsigned Pj_ID;                            // ID of P_j
 
   // Rays (Vectors between particle's Reference positions)

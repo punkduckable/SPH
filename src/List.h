@@ -1,7 +1,7 @@
 #if !defined(LIST_HEADER)
 #define LIST_HEADER
 
-#include "classes.h"
+#include "Classes.h"
 #include "Errors.h"
 #include <stdio.h>
 

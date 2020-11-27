@@ -23,7 +23,7 @@ namespace Simulation {
 
 // Declare Simulation Parameters
 namespace Simulation {
-  // IO parameters 
+  // IO parameters
   bool Load_Simulation_From_Save;
   bool Save_Simulation_To_File;
   bool Print_Particle_Forces;
@@ -31,7 +31,7 @@ namespace Simulation {
   bool Print_Body_Torques;
   unsigned TimeSteps_Between_Prints;
 
-  // TimeStep parameters 
+  // TimeStep parameters
   double dt;                                     // Time step        : s
   unsigned Num_Time_Steps;                       // Number of time steps
 
@@ -170,7 +170,7 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   unsigned i,j,k;
   TIME_TYPE time1;
 
-  // Particle parameters 
+  // Particle parameters
   const double IPS = Body_In.Get_Inter_Particle_Spacing();                     //        : mm
   const double Particle_Volume = IPS*IPS*IPS;                                  //        : mm^3
   const double Particle_Radius = IPS*.578;                                     //        : mm
@@ -195,7 +195,8 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   /* Store particles in 'Vertical Column' major 'Row' semi-major order
   A vertical column is a set of particles with the same x and z coordinates,
   while a row is a set of particles with the same y and x coordinates. This
-  ordering method places particles with the same */
+  ordering method places particles with the same x coordinate near one another
+  in memory. */
   for(i = 0; i < X_SIDE_LENGTH; i++) {
     for(k = 0; k < Z_SIDE_LENGTH; k++) {
       for(j = 0; j < Y_SIDE_LENGTH; j++) {

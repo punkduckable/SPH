@@ -225,8 +225,8 @@ void Body::Set_Box_Dimensions(const unsigned Dim_x, const unsigned Dim_y, const 
   for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
     for(unsigned k = 0; k < Z_SIDE_LENGTH; k++) {
       for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
-        index++;
         Particles[index].Set_ID(index);
+        index++;
       } // for(unsigned k = 0; k < Z_SIDE_LENGTH; k++) {
     } // for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {

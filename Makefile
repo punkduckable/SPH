@@ -1,5 +1,5 @@
 # Compiler stuff
-COMPILER :=        g++-10
+COMPILER :=        g++
 
 CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -pg
 
@@ -176,3 +176,4 @@ help:
 	$(info make clean     - clears all object files (in /obj) and binary files (in \bin))
 	$(info make help      - displays this message)
 	$(info )
+
