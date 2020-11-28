@@ -1,4 +1,4 @@
-bin/SPH
+bin/*
 *.DS_Store
 *.o
 *.vtk

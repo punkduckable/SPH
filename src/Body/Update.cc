@@ -7,6 +7,14 @@
 #include <math.h>
 #include <assert.h>
 
+// Static prototypes.
+static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,
+                                                  const double V_j,
+                                                  const Tensor & T1,
+                                                  const Tensor & T2,
+                                                  const Tensor & GradW_j);
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Update methods
 
@@ -274,7 +282,7 @@ void Body::Update_x(const double dt) {
 
 
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
-      P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
+      P_j = Particles[Neighbor_ID].Get_P();                                    //        : Mpa Tensor
       Force_Internal += (V_j)*((P_i + P_j)*Grad_W[j]);                         //        : N Vector
       Force_Viscosity += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); //  : N Vector
 
@@ -419,3 +427,30 @@ void Body::Update_x(const double dt) {
   can be sure that all particles have been damaged. Therefore, we don't
   need a barrier. */
 } // void Body::Update_x(const double dt) {
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Helper functions.
+/* These are functions that compute quantities that would otherwise be computed
+using operator overloading and would otherwise incur temporary variables. */
+
+static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,
+                                                  const double V_j,
+                                                  const Tensor & T1,
+                                                  const Tensor & T2,
+                                                  const Tensor & GradW_j) {
+  /* This function computes F += V_j*((T1 + T2)*GradW_j) without any
+  operator overloading. The goal is to eliminate any use of temporary objects
+  and (hopefully) improve runtime. */
+
+  /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
+  rows as infrequently. */
+  for(unsigned i = 0; i < 3; i++) {
+    for(unsigned j = 0; j < 3; j++) {
+      F[i*3 + j] += + V_j*( (T1[i*3 + 0] + T2[i*3 + 0])*GradW_j[0*3 + j] +
+                            (T1[i*3 + 1] + T2[i*3 + 1])*GradW_j[1*3 + j] +
+                            (T1[i*3 + 2] + T2[i*3 + 2])*GradW_j[2*3 + j]);
+    } // for(unsigned j = 0; j < 3; j++) {
+  } // for(unsigned i = 0; i < 3; i++) {
+} // static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,...

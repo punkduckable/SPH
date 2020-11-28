@@ -1,7 +1,7 @@
 # Compiler stuff
 COMPILER :=        g++-10
 
-CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11
+CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -DNDEBUG
 
 LNFLAGS  :=
 
@@ -95,7 +95,7 @@ obj/Main.o: Main.cc
 
 
 # Test
-obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc List_Tests.cc Array_Tests.cc List.h Array.h Errors.h
+obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc List_Tests.cc Array_Tests.cc Body_Tests.cc List.h Array.h Errors.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
