@@ -1,9 +1,9 @@
 # Compiler stuff
-COMPILER :=        g++
+COMPILER :=        g++-10
 
-CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -pg
+CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11
 
-LNFLAGS  :=        -pg  
+LNFLAGS  :=
 
 INC_PATH :=        -iquote ./src \
                    -iquote ./test
@@ -50,10 +50,6 @@ compile: bin/SPH
 bin/SPH: $(OBJ_PATHS)
 	$(COMPILER) $(LNFLAGS) -fopenmp $(OBJ_PATHS) -o $@
 
-obj/Main.o: Main.cc
-	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
-
-
 
 
 ################################################################################
@@ -63,9 +59,6 @@ test: bin/Test
 
 bin/Test: $(TEST_OBJ_PATHS)
 	$(COMPILER) $(TEST_OBJ_PATHS) -o $@
-
-obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc List_Tests.cc Array_Tests.cc List.h Array.h Errors.h
-	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 
@@ -79,8 +72,33 @@ bin/Debug: $(OBJ_PATHS)
 		$(COMPILER) $(OBJ_PATHS) -o $@
 
 
+
+################################################################################
+# Profiling
+
+prof: CFLAGS := -c -Wall -Wsign-compare -Wextra -g -Og -fno-inline -std=c++11
+prof: LNFLAGS := -pg
+prof: bin/Prof
+
+bin/Prof: $(OBJ_PATHS)
+		$(COMPILER) $(LNFLAGS) $(OBJ_PATHS) -o $@
+
+
+
 ################################################################################
 # Object files
+
+# Main
+obj/Main.o: Main.cc
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+
+
+# Test
+obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc List_Tests.cc Array_Tests.cc List.h Array.h Errors.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+
 
 # Vector class.
 obj/Vector.o: Vector.cc Vector.h Tensor.h Errors.h
@@ -159,9 +177,7 @@ obj/IO_Ops.o: IO_Ops.cc IO_Ops.h Vector.h Simulation.h Errors.h
 
 clean:
 	rm ./obj/*.o
-	rm ./bin/Test
-	rm ./bin/SPH
-	rm ./bin/Debug
+	rm ./bin/*
 
 
 
@@ -176,4 +192,3 @@ help:
 	$(info make clean     - clears all object files (in /obj) and binary files (in \bin))
 	$(info make help      - displays this message)
 	$(info )
-
