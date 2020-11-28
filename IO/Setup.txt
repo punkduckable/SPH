@@ -5,8 +5,8 @@
 Load Simulation from Save:                       false
 Save Data To File:                               false
 Print Particle Forces:                           false
-Print Body Forces:                               true
-Print Body Torques:                              true
+Print Body Forces:                               false
+Print Body Torques:                              false
 Time Steps Between Prints:                       100
 
 # Time Step

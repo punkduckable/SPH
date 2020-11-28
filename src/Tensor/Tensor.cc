@@ -856,6 +856,16 @@ void Tensor::Print(void) const {
 } // void Tensor::Print(void) const {
 
 
+const double* Tensor::Get_Ar(void) const {
+  /* This function returns the address of the tensor's internal array.
+
+  This can be used to bypass the operator access methods and, thereby, improve
+  runtime. However, it is extremely risky (no checks at all). Only use this if
+  you know what you're doing. */
+  return Ar;
+}
+
+
 
 
 

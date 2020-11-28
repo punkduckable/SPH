@@ -284,8 +284,8 @@ double Vector::Magnitude(void) const {
   #endif
 
   return sqrt((*this)[0]*(*this)[0] +
-                   (*this)[1]*(*this)[1] +
-                   (*this)[2]*(*this)[2]);
+              (*this)[1]*(*this)[1] +
+              (*this)[2]*(*this)[2]);
 } // double Vector::Magnitude(void) const {
 
 
@@ -297,6 +297,17 @@ double Vector::Max_Component(void) const {
 
   return Max;
 } // double Vetor::Max_Component(void) const {
+
+
+
+const double* Vector::Get_Ar(void) const {
+  /* This function returns the address of the vector's internal array.
+
+  This can be used to bypass the operator access methods and, thereby, improve
+  runtime. However, it is extremely risky (no checks at all). Only use this if
+  you know what you're doing. */
+  return V;
+} // const double* Vector::Get_Ar(void) const {
 
 
 

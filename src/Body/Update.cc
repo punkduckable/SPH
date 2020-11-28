@@ -8,11 +8,11 @@
 #include <assert.h>
 
 // Static prototypes.
-static void Calculate_Internal_Or_Viscosity_Force(Vector & F,
-                                                  const double V_j,
-                                                  const Tensor & T1,
-                                                  const Tensor & T2,
-                                                  const Vector & GradW_j);
+static void Calculate_Force(Vector & F,
+                            const double V_j,
+                            const Tensor & T1,
+                            const Tensor & T2,
+                            const Vector & Grad_Wj);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -283,8 +283,8 @@ void Body::Update_x(const double dt) {
 
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].Get_P();                                    //        : Mpa Tensor
-      Force_Internal += (V_j)*((P_i + P_j)*Grad_W[j]);                         //        : N Vector
-      Force_Viscosity += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); //  : N Vector
+      Calculate_Force(Force_Internal , V_j, P_i , P_j                        , Grad_W[j]);
+      Calculate_Force(Force_Viscosity, V_j, Particles[i].Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -435,20 +435,31 @@ void Body::Update_x(const double dt) {
 /* These are functions that compute quantities that would otherwise be computed
 using operator overloading and would otherwise incur temporary variables. */
 
-static void Calculate_Internal_Or_Viscosity_Force(Vector & F,
-                                                  const double V_j,
-                                                  const Tensor & T1,
-                                                  const Tensor & T2,
-                                                  const Vector & GradW_j) {
+static void Calculate_Force(Vector & F,
+                            const double V_j,
+                            const Tensor & T1,
+                            const Tensor & T2,
+                            const Vector & Grad_Wj) {
   /* This function computes F += V_j*((T1 + T2)*GradW_j) without any
   operator overloading. The goal is to eliminate any use of temporary objects
   and (hopefully) improve runtime. */
 
   /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
   rows as infrequently. */
-  for(unsigned i = 0; i < 3; i++) {
-    F[i] += + V_j*( (T1[i*3 + 0] + T2[i*3 + 0])*GradW_j[0] +
-                    (T1[i*3 + 1] + T2[i*3 + 1])*GradW_j[1] +
-                    (T1[i*3 + 2] + T2[i*3 + 2])*GradW_j[2] );
-  } // for(unsigned i = 0; i < 3; i++) {
-} // static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,...
+  const double * T1_Ar = T1.Get_Ar();
+  const double * T2_Ar = T2.Get_Ar();
+  const double * Grad_Wj_Ar = Grad_Wj.Get_Ar();
+
+
+  F[0] += + V_j*( (T1_Ar[0*3 + 0] + T2_Ar[0*3 + 0])*Grad_Wj_Ar[0] +
+                  (T1_Ar[0*3 + 1] + T2_Ar[0*3 + 1])*Grad_Wj_Ar[1] +
+                  (T1_Ar[0*3 + 2] + T2_Ar[0*3 + 2])*Grad_Wj_Ar[2] );
+
+  F[1] += + V_j*( (T1_Ar[1*3 + 0] + T2_Ar[1*3 + 0])*Grad_Wj_Ar[0] +
+                  (T1_Ar[1*3 + 1] + T2_Ar[1*3 + 1])*Grad_Wj_Ar[1] +
+                  (T1_Ar[1*3 + 2] + T2_Ar[1*3 + 2])*Grad_Wj_Ar[2] );
+
+  F[2] += + V_j*( (T1_Ar[2*3 + 0] + T2_Ar[2*3 + 0])*Grad_Wj_Ar[0] +
+                  (T1_Ar[2*3 + 1] + T2_Ar[2*3 + 1])*Grad_Wj_Ar[1] +
+                  (T1_Ar[2*3 + 2] + T2_Ar[2*3 + 2])*Grad_Wj_Ar[2] );
+} // static void Calculate_Force(Tensor & F,...

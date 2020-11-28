@@ -4,23 +4,34 @@
 #include <stdlib.h>
 #include <time.h>
 
-static void Calculate_Internal_Or_Viscosity_Force(Vector & F,
-                                                  const double V_j,
-                                                  const Tensor & T1,
-                                                  const Tensor & T2,
-                                                  const Vector & GradW_j) {
+static void Calculate_Force(Vector & F,
+                            const double V_j,
+                            const Tensor & T1,
+                            const Tensor & T2,
+                            const Vector & GradW_j) {
   /* This function computes F += V_j*((T1 + T2)*GradW_j) without any
   operator overloading. The goal is to eliminate any use of temporary objects
   and (hopefully) improve runtime. */
 
   /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
   rows as infrequently. */
-  for(unsigned i = 0; i < 3; i++) {
-    F[i] += + V_j*( (T1[i*3 + 0] + T2[i*3 + 0])*GradW_j[0] +
-                    (T1[i*3 + 1] + T2[i*3 + 1])*GradW_j[1] +
-                    (T1[i*3 + 2] + T2[i*3 + 2])*GradW_j[2] );
-  } // for(unsigned i = 0; i < 3; i++) {
-} // static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,...
+  const double * T1_Ar = T1.Get_Ar();
+  const double * T2_Ar = T2.Get_Ar();
+  const double * GradW_j_Ar = GradW_j.Get_Ar();
+
+
+  F[0] += + V_j*( (T1_Ar[0*3 + 0] + T2_Ar[0*3 + 0])*GradW_j_Ar[0] +
+                  (T1_Ar[0*3 + 1] + T2_Ar[0*3 + 1])*GradW_j_Ar[1] +
+                  (T1_Ar[0*3 + 2] + T2_Ar[0*3 + 2])*GradW_j_Ar[2] );
+
+  F[1] += + V_j*( (T1_Ar[1*3 + 0] + T2_Ar[1*3 + 0])*GradW_j_Ar[0] +
+                  (T1_Ar[1*3 + 1] + T2_Ar[1*3 + 1])*GradW_j_Ar[1] +
+                  (T1_Ar[1*3 + 2] + T2_Ar[1*3 + 2])*GradW_j_Ar[2] );
+
+  F[2] += + V_j*( (T1_Ar[2*3 + 0] + T2_Ar[2*3 + 0])*GradW_j_Ar[0] +
+                  (T1_Ar[2*3 + 1] + T2_Ar[2*3 + 1])*GradW_j_Ar[1] +
+                  (T1_Ar[2*3 + 2] + T2_Ar[2*3 + 2])*GradW_j_Ar[2] );
+} // static void Calculate_Force(Tensor & F,...
 
 
 TEST_CASE("Update_x_Optimizations","[Body]") {
@@ -52,7 +63,7 @@ TEST_CASE("Update_x_Optimizations","[Body]") {
 
     // Calculate the product using operator overloading and the specialized function
     F1 += V_j*((T1 + T2)*GradW_j);
-    Calculate_Internal_Or_Viscosity_Force(F2, V_j, T1, T2, GradW_j);
+    Calculate_Force(F2, V_j, T1, T2, GradW_j);
 
     // Check that the two approaches give the same tensor.
     if(F1 != F2) { n_times_not_equal++; }

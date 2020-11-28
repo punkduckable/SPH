@@ -66,6 +66,7 @@ class Vector {
     double Magnitude(void) const;                          // Returns magnitude of vector
     double Max_Component(void) const;                      // Returns maximum component of vector.
     void Print(void) const;                                // Print vector components
+    const double* Get_Ar(void) const;
 }; // class Vector {
 
 
