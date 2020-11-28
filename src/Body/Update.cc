@@ -229,8 +229,6 @@ void Body::Update_x(const double dt) {
   Vector Force_Internal;                         // Internal Force vector                : N Vector
   Vector Force_Hourglass;                        // Hour-glass force                     : N Vector
   Vector Force_Viscosity;                        // Viscosity force.                     : N Vector
-  Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
-  Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Vector a;                                      // acceleration                         : mm/s^2 Vector
 
   // Neighboring (jth) particle properties
@@ -257,8 +255,10 @@ void Body::Update_x(const double dt) {
 
     // Set up current particle properties
     double V_i = Particles[i].Get_Volume();      // volume of current particle           : mm^3
-    F_i = Particles[i].Get_F(F_Index);
-    P_i = Particles[i].Get_P();
+    const Tensor & F_i = Particles[i].Get_F(F_Index);
+    const Tensor & P_i = Particles[i].Get_P();
+    const Tensor & Visc = Particles[i].Visc;
+
     Vector * R = Particles[i].R;                 // Reference displacement array         : mm Vector
     double * Mag_R = Particles[i].Mag_R;         // Mag of reference displacment array   : mm
     double * W = Particles[i].W;                 // Kernel function array                : 1/mm^3
@@ -284,7 +284,7 @@ void Body::Update_x(const double dt) {
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].Get_P();                                    //        : Mpa Tensor
       Calculate_Force(Force_Internal , V_j, P_i , P_j                        , Grad_W[j]);
-      Calculate_Force(Force_Viscosity, V_j, Particles[i].Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);
+      Calculate_Force(Force_Viscosity, V_j, Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
