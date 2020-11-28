@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <time.h>
 
-static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,
+static void Calculate_Internal_Or_Viscosity_Force(Vector & F,
                                                   const double V_j,
                                                   const Tensor & T1,
                                                   const Tensor & T2,
-                                                  const Tensor & GradW_j) {
+                                                  const Vector & GradW_j) {
   /* This function computes F += V_j*((T1 + T2)*GradW_j) without any
   operator overloading. The goal is to eliminate any use of temporary objects
   and (hopefully) improve runtime. */
@@ -16,11 +16,9 @@ static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,
   /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
   rows as infrequently. */
   for(unsigned i = 0; i < 3; i++) {
-    for(unsigned j = 0; j < 3; j++) {
-      F[i*3 + j] += + V_j*( (T1[i*3 + 0] + T2[i*3 + 0])*GradW_j[0*3 + j] +
-                            (T1[i*3 + 1] + T2[i*3 + 1])*GradW_j[1*3 + j] +
-                            (T1[i*3 + 2] + T2[i*3 + 2])*GradW_j[2*3 + j]);
-    } // for(unsigned j = 0; j < 3; j++) {
+    F[i] += + V_j*( (T1[i*3 + 0] + T2[i*3 + 0])*GradW_j[0] +
+                    (T1[i*3 + 1] + T2[i*3 + 1])*GradW_j[1] +
+                    (T1[i*3 + 2] + T2[i*3 + 2])*GradW_j[2] );
   } // for(unsigned i = 0; i < 3; i++) {
 } // static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,...
 
@@ -32,7 +30,8 @@ TEST_CASE("Update_x_Optimizations","[Body]") {
   /* Repeatedly fill some tensor with random values, compute their product and
   then check that the specialized function gives the same result. */
 
-  Tensor F1, F2, T1, T2, GradW_j;
+  Vector F1, F2, GradW_j;
+  Tensor T1, T2;
   double V_j;
   const unsigned n_trials = 10000;
   unsigned n_times_not_equal = 0;
@@ -41,11 +40,12 @@ TEST_CASE("Update_x_Optimizations","[Body]") {
     // Set up F1, F2, T1, T2, GradW_j, and V_j.
     V_j = ((double)rand()/((double)RAND_MAX));
     for(unsigned i = 0; i < 3; i++) {
+      F1[i]      = ((double)rand()/((double)RAND_MAX));
+      GradW_j[i] = ((double)rand()/((double)RAND_MAX));
+
       for(unsigned j = 0; j < 3; j++) {
-        F1[i*3 + j]       = ((double)rand()/((double)RAND_MAX));
-        T1[i*3 + j]       = ((double)rand()/((double)RAND_MAX));
-        T2[i*3 + j]       = ((double)rand()/((double)RAND_MAX));
-        GradW_j[i*3 + j]  = ((double)rand()/((double)RAND_MAX));
+        T1[i*3 + j] = ((double)rand()/((double)RAND_MAX));
+        T2[i*3 + j] = ((double)rand()/((double)RAND_MAX));
       } // for(unsigned j = 0; j < 3; j++) {
     } // for(unsigned i = 0; i < 3; i++) {
     F2 = F1;

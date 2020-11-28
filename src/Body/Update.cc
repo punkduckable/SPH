@@ -8,11 +8,11 @@
 #include <assert.h>
 
 // Static prototypes.
-static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,
+static void Calculate_Internal_Or_Viscosity_Force(Vector & F,
                                                   const double V_j,
                                                   const Tensor & T1,
                                                   const Tensor & T2,
-                                                  const Tensor & GradW_j);
+                                                  const Vector & GradW_j);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +361,7 @@ void Body::Update_x(const double dt) {
       for the latter. The former should be true so long as the bodies were setup
       properly. */
       Force_Hourglass += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*             //        : (1/mm) Vector
-                         (delta_ij + delta_ji))*(rj);
+                         (delta_ij + delta_ji))*rj;
     } // for(unsigned j = 0; j < Num_Neighbors; j++) {
     Force_Hourglass *= -.5*E*V_i*alpha;  // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
     Force_Internal *= V_i;               // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
@@ -435,11 +435,11 @@ void Body::Update_x(const double dt) {
 /* These are functions that compute quantities that would otherwise be computed
 using operator overloading and would otherwise incur temporary variables. */
 
-static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,
+static void Calculate_Internal_Or_Viscosity_Force(Vector & F,
                                                   const double V_j,
                                                   const Tensor & T1,
                                                   const Tensor & T2,
-                                                  const Tensor & GradW_j) {
+                                                  const Vector & GradW_j) {
   /* This function computes F += V_j*((T1 + T2)*GradW_j) without any
   operator overloading. The goal is to eliminate any use of temporary objects
   and (hopefully) improve runtime. */
@@ -447,10 +447,8 @@ static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,
   /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
   rows as infrequently. */
   for(unsigned i = 0; i < 3; i++) {
-    for(unsigned j = 0; j < 3; j++) {
-      F[i*3 + j] += + V_j*( (T1[i*3 + 0] + T2[i*3 + 0])*GradW_j[0*3 + j] +
-                            (T1[i*3 + 1] + T2[i*3 + 1])*GradW_j[1*3 + j] +
-                            (T1[i*3 + 2] + T2[i*3 + 2])*GradW_j[2*3 + j]);
-    } // for(unsigned j = 0; j < 3; j++) {
+    F[i] += + V_j*( (T1[i*3 + 0] + T2[i*3 + 0])*GradW_j[0] +
+                    (T1[i*3 + 1] + T2[i*3 + 1])*GradW_j[1] +
+                    (T1[i*3 + 2] + T2[i*3 + 2])*GradW_j[2] );
   } // for(unsigned i = 0; i < 3; i++) {
 } // static void Calculate_Internal_Or_Viscosity_Force(Tensor & F,...
