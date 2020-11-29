@@ -25,7 +25,7 @@ const double Vector_Epsilon = 1e-16;
 
 class Vector {
   private:
-    double V[3];                                           // Holds the three components of the Vector
+    double Ar[3];                                         // Holds the three components of the Vector
 
   public:
     // Constructors, destructor
