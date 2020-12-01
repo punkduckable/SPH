@@ -7,6 +7,14 @@
 #include <math.h>
 #include <assert.h>
 
+// Static prototypes.
+static void Calculate_Force(Vector & F,
+                            const double V_j,
+                            const Tensor & T1,
+                            const Tensor & T2,
+                            const Vector & Grad_Wj);
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Update methods
 
@@ -221,8 +229,6 @@ void Body::Update_x(const double dt) {
   Vector Force_Internal;                         // Internal Force vector                : N Vector
   Vector Force_Hourglass;                        // Hour-glass force                     : N Vector
   Vector Force_Viscosity;                        // Viscosity force.                     : N Vector
-  Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
-  Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Vector a;                                      // acceleration                         : mm/s^2 Vector
 
   // Neighboring (jth) particle properties
@@ -249,8 +255,10 @@ void Body::Update_x(const double dt) {
 
     // Set up current particle properties
     double V_i = Particles[i].Get_Volume();      // volume of current particle           : mm^3
-    F_i = Particles[i].Get_F(F_Index);
-    P_i = Particles[i].Get_P();
+    const Tensor & F_i = Particles[i].Get_F(F_Index);
+    const Tensor & P_i = Particles[i].Get_P();
+    const Tensor & Visc = Particles[i].Visc;
+
     Vector * R = Particles[i].R;                 // Reference displacement array         : mm Vector
     double * Mag_R = Particles[i].Mag_R;         // Mag of reference displacment array   : mm
     double * W = Particles[i].W;                 // Kernel function array                : 1/mm^3
@@ -274,9 +282,9 @@ void Body::Update_x(const double dt) {
 
 
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
-      P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
-      Force_Internal += (V_j)*((P_i + P_j)*Grad_W[j]);                         //        : N Vector
-      Force_Viscosity += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); //  : N Vector
+      P_j = Particles[Neighbor_ID].Get_P();                                    //        : Mpa Tensor
+      Calculate_Force(Force_Internal , V_j, P_i , P_j                        , Grad_W[j]);
+      Calculate_Force(Force_Viscosity, V_j, Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -353,7 +361,7 @@ void Body::Update_x(const double dt) {
       for the latter. The former should be true so long as the bodies were setup
       properly. */
       Force_Hourglass += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*             //        : (1/mm) Vector
-                         (delta_ij + delta_ji))*(rj);
+                         (delta_ij + delta_ji))*rj;
     } // for(unsigned j = 0; j < Num_Neighbors; j++) {
     Force_Hourglass *= -.5*E*V_i*alpha;  // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
     Force_Internal *= V_i;               // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
@@ -419,3 +427,39 @@ void Body::Update_x(const double dt) {
   can be sure that all particles have been damaged. Therefore, we don't
   need a barrier. */
 } // void Body::Update_x(const double dt) {
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Helper functions.
+/* These are functions that compute quantities that would otherwise be computed
+using operator overloading and would otherwise incur temporary variables. */
+
+static void Calculate_Force(Vector & F,
+                            const double V_j,
+                            const Tensor & T1,
+                            const Tensor & T2,
+                            const Vector & Grad_Wj) {
+  /* This function computes F += V_j*((T1 + T2)*GradW_j) without any
+  operator overloading. The goal is to eliminate any use of temporary objects
+  and (hopefully) improve runtime. */
+
+  /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
+  rows as infrequently. */
+  const double * T1_Ar = T1.Get_Ar();
+  const double * T2_Ar = T2.Get_Ar();
+  const double * Grad_Wj_Ar = Grad_Wj.Get_Ar();
+
+
+  F[0] += + V_j*( (T1_Ar[0*3 + 0] + T2_Ar[0*3 + 0])*Grad_Wj_Ar[0] +
+                  (T1_Ar[0*3 + 1] + T2_Ar[0*3 + 1])*Grad_Wj_Ar[1] +
+                  (T1_Ar[0*3 + 2] + T2_Ar[0*3 + 2])*Grad_Wj_Ar[2] );
+
+  F[1] += + V_j*( (T1_Ar[1*3 + 0] + T2_Ar[1*3 + 0])*Grad_Wj_Ar[0] +
+                  (T1_Ar[1*3 + 1] + T2_Ar[1*3 + 1])*Grad_Wj_Ar[1] +
+                  (T1_Ar[1*3 + 2] + T2_Ar[1*3 + 2])*Grad_Wj_Ar[2] );
+
+  F[2] += + V_j*( (T1_Ar[2*3 + 0] + T2_Ar[2*3 + 0])*Grad_Wj_Ar[0] +
+                  (T1_Ar[2*3 + 1] + T2_Ar[2*3 + 1])*Grad_Wj_Ar[1] +
+                  (T1_Ar[2*3 + 2] + T2_Ar[2*3 + 2])*Grad_Wj_Ar[2] );
+} // static void Calculate_Force(Tensor & F,...

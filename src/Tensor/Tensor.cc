@@ -51,17 +51,17 @@ Tensor::Tensor(const Tensor & Tensor_In) {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  Ar[3*0 + 0] = Tensor_In[0*3 + 0];                    // i = 0, j = 0
-  Ar[3*0 + 1] = Tensor_In[0*3 + 1];                    // i = 0, j = 1
-  Ar[3*0 + 2] = Tensor_In[0*3 + 2];                    // i = 0, j = 2
+  (*this).Ar[3*0 + 0] = Tensor_In[0*3 + 0];                    // i = 0, j = 0
+  (*this).Ar[3*0 + 1] = Tensor_In[0*3 + 1];                    // i = 0, j = 1
+  (*this).Ar[3*0 + 2] = Tensor_In[0*3 + 2];                    // i = 0, j = 2
 
-  Ar[3*1 + 0] = Tensor_In[1*3 + 0];                    // i = 1, j = 0
-  Ar[3*1 + 1] = Tensor_In[1*3 + 1];                    // i = 1, j = 1
-  Ar[3*1 + 2] = Tensor_In[1*3 + 2];                    // i = 1, j = 2
+  (*this).Ar[3*1 + 0] = Tensor_In[1*3 + 0];                    // i = 1, j = 0
+  (*this).Ar[3*1 + 1] = Tensor_In[1*3 + 1];                    // i = 1, j = 1
+  (*this).Ar[3*1 + 2] = Tensor_In[1*3 + 2];                    // i = 1, j = 2
 
-  Ar[3*2 + 0] = Tensor_In[2*3 + 0];                    // i = 2, j = 0
-  Ar[3*2 + 1] = Tensor_In[2*3 + 1];                    // i = 2, j = 1
-  Ar[3*2 + 2] = Tensor_In[2*3 + 2];                    // i = 2, j = 2
+  (*this).Ar[3*2 + 0] = Tensor_In[2*3 + 0];                    // i = 2, j = 0
+  (*this).Ar[3*2 + 1] = Tensor_In[2*3 + 1];                    // i = 2, j = 1
+  (*this).Ar[3*2 + 2] = Tensor_In[2*3 + 2];                    // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::T_Copy_Constructor++;                // Increment operator count
@@ -89,17 +89,17 @@ Tensor & Tensor::operator=(const Tensor & Tensor_In) {
   To make this a little  more readible, I have included a comment with each
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
-  (*this)[3*0 + 0] = Tensor_In[3*0 + 0];                    // i = 0, j = 0
-  (*this)[3*0 + 1] = Tensor_In[3*0 + 1];                    // i = 0, j = 1
-  (*this)[3*0 + 2] = Tensor_In[3*0 + 2];                    // i = 0, j = 1
+  (*this).Ar[3*0 + 0] = Tensor_In.Ar[3*0 + 0];             // i = 0, j = 0
+  (*this).Ar[3*0 + 1] = Tensor_In.Ar[3*0 + 1];             // i = 0, j = 1
+  (*this).Ar[3*0 + 2] = Tensor_In.Ar[3*0 + 2];             // i = 0, j = 1
 
-  (*this)[3*1 + 0] = Tensor_In[3*1 + 0];                    // i = 1, j = 0
-  (*this)[3*1 + 1] = Tensor_In[3*1 + 1];                    // i = 1, j = 1
-  (*this)[3*1 + 2] = Tensor_In[3*1 + 2];                    // i = 1, j = 2
+  (*this).Ar[3*1 + 0] = Tensor_In.Ar[3*1 + 0];             // i = 1, j = 0
+  (*this).Ar[3*1 + 1] = Tensor_In.Ar[3*1 + 1];             // i = 1, j = 1
+  (*this).Ar[3*1 + 2] = Tensor_In.Ar[3*1 + 2];             // i = 1, j = 2
 
-  (*this)[3*2 + 0] = Tensor_In[3*2 + 0];                    // i = 2, j = 0
-  (*this)[3*2 + 1] = Tensor_In[3*2 + 1];                    // i = 2, j = 1
-  (*this)[3*2 + 2] = Tensor_In[3*2 + 2];                    // i = 2, j = 2
+  (*this).Ar[3*2 + 0] = Tensor_In.Ar[3*2 + 0];             // i = 2, j = 0
+  (*this).Ar[3*2 + 1] = Tensor_In.Ar[3*2 + 1];             // i = 2, j = 1
+  (*this).Ar[3*2 + 2] = Tensor_In.Ar[3*2 + 2];             // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::T_Equality++;                        // Increment operator count
@@ -129,17 +129,17 @@ Tensor Tensor::operator+(const Tensor & Tensor_In) const {
   I included comments that specify which loop iteration a given statement would
   correspond to (with i as the row index, j as the column index  */
 
-  Sum[0*3 + 0] = (*this)[3*0 + 0] + Tensor_In[0*3 + 0];     // i = 0, j = 0
-  Sum[0*3 + 1] = (*this)[3*0 + 1] + Tensor_In[0*3 + 1];     // i = 0, j = 1
-  Sum[0*3 + 2] = (*this)[3*0 + 2] + Tensor_In[0*3 + 2];     // i = 0, j = 2
+  Sum.Ar[0*3 + 0] = (*this).Ar[3*0 + 0] + Tensor_In.Ar[0*3 + 0];     // i = 0, j = 0
+  Sum.Ar[0*3 + 1] = (*this).Ar[3*0 + 1] + Tensor_In.Ar[0*3 + 1];     // i = 0, j = 1
+  Sum.Ar[0*3 + 2] = (*this).Ar[3*0 + 2] + Tensor_In.Ar[0*3 + 2];     // i = 0, j = 2
 
-  Sum[1*3 + 0] = (*this)[3*1 + 0] + Tensor_In[1*3 + 0];     // i = 1, j = 0
-  Sum[1*3 + 1] = (*this)[3*1 + 1] + Tensor_In[1*3 + 1];     // i = 1, j = 1
-  Sum[1*3 + 2] = (*this)[3*1 + 2] + Tensor_In[1*3 + 2];     // i = 1, j = 2
+  Sum.Ar[1*3 + 0] = (*this).Ar[3*1 + 0] + Tensor_In.Ar[1*3 + 0];     // i = 1, j = 0
+  Sum.Ar[1*3 + 1] = (*this).Ar[3*1 + 1] + Tensor_In.Ar[1*3 + 1];     // i = 1, j = 1
+  Sum.Ar[1*3 + 2] = (*this).Ar[3*1 + 2] + Tensor_In.Ar[1*3 + 2];     // i = 1, j = 2
 
-  Sum[2*3 + 0] = (*this)[3*2 + 0] + Tensor_In[2*3 + 0];     // i = 2, j = 0
-  Sum[2*3 + 1] = (*this)[3*2 + 1] + Tensor_In[2*3 + 1];     // i = 2, j = 1
-  Sum[2*3 + 2] = (*this)[3*2 + 2] + Tensor_In[2*3 + 2];     // i = 2, j = 2
+  Sum.Ar[2*3 + 0] = (*this).Ar[3*2 + 0] + Tensor_In.Ar[2*3 + 0];     // i = 2, j = 0
+  Sum.Ar[2*3 + 1] = (*this).Ar[3*2 + 1] + Tensor_In.Ar[2*3 + 1];     // i = 2, j = 1
+  Sum.Ar[2*3 + 2] = (*this).Ar[3*2 + 2] + Tensor_In.Ar[2*3 + 2];     // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::T_T_Addition++;                      // Increment operator count
@@ -163,17 +163,17 @@ Tensor Tensor::operator-(const Tensor & Tensor_In) const {
   I included comments that specify which loop iteration a given statement would
   correspond to (with i as the row index, j as the column index  */
 
-  Diff[0*3 + 0] = (*this)[3*0 + 0] - Tensor_In[0*3 + 0];     // i = 0, j = 0
-  Diff[0*3 + 1] = (*this)[3*0 + 1] - Tensor_In[0*3 + 1];     // i = 0, j = 1
-  Diff[0*3 + 2] = (*this)[3*0 + 2] - Tensor_In[0*3 + 2];     // i = 0, j = 2
+  Diff.Ar[0*3 + 0] = (*this).Ar[3*0 + 0] - Tensor_In.Ar[0*3 + 0];    // i = 0, j = 0
+  Diff.Ar[0*3 + 1] = (*this).Ar[3*0 + 1] - Tensor_In.Ar[0*3 + 1];    // i = 0, j = 1
+  Diff.Ar[0*3 + 2] = (*this).Ar[3*0 + 2] - Tensor_In.Ar[0*3 + 2];    // i = 0, j = 2
 
-  Diff[1*3 + 0] = (*this)[3*1 + 0] - Tensor_In[1*3 + 0];     // i = 1, j = 0
-  Diff[1*3 + 1] = (*this)[3*1 + 1] - Tensor_In[1*3 + 1];     // i = 1, j = 1
-  Diff[1*3 + 2] = (*this)[3*1 + 2] - Tensor_In[1*3 + 2];     // i = 1, j = 2
+  Diff.Ar[1*3 + 0] = (*this).Ar[3*1 + 0] - Tensor_In.Ar[1*3 + 0];    // i = 1, j = 0
+  Diff.Ar[1*3 + 1] = (*this).Ar[3*1 + 1] - Tensor_In.Ar[1*3 + 1];    // i = 1, j = 1
+  Diff.Ar[1*3 + 2] = (*this).Ar[3*1 + 2] - Tensor_In.Ar[1*3 + 2];    // i = 1, j = 2
 
-  Diff[2*3 + 0] = (*this)[3*2 + 0] - Tensor_In[2*3 + 0];     // i = 2, j = 0
-  Diff[2*3 + 1] = (*this)[3*2 + 1] - Tensor_In[2*3 + 1];     // i = 2, j = 1
-  Diff[2*3 + 2] = (*this)[3*2 + 2] - Tensor_In[2*3 + 2];     // i = 2, j = 2
+  Diff.Ar[2*3 + 0] = (*this).Ar[3*2 + 0] - Tensor_In.Ar[2*3 + 0];    // i = 2, j = 0
+  Diff.Ar[2*3 + 1] = (*this).Ar[3*2 + 1] - Tensor_In.Ar[2*3 + 1];    // i = 2, j = 1
+  Diff.Ar[2*3 + 2] = (*this).Ar[3*2 + 2] - Tensor_In.Ar[2*3 + 2];    // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::T_T_Subtraction++;                   // Increment operator count
@@ -223,45 +223,45 @@ Tensor Tensor::operator*(const Tensor & Tensor_In) const{
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod[3*0 + 0] = (*this)[3*0 + 0]*Tensor_In[3*0 + 0];      // i = 0, j = 0, p = 0
-  Prod[3*0 + 1] = (*this)[3*0 + 0]*Tensor_In[3*0 + 1];      // i = 0, j = 1, p = 0
-  Prod[3*0 + 2] = (*this)[3*0 + 0]*Tensor_In[3*0 + 2];      // i = 0, j = 2, p = 0
+  Prod.Ar[3*0 + 0] = (*this).Ar[3*0 + 0]*Tensor_In.Ar[3*0 + 0];      // i = 0, j = 0, p = 0
+  Prod.Ar[3*0 + 1] = (*this).Ar[3*0 + 0]*Tensor_In.Ar[3*0 + 1];      // i = 0, j = 1, p = 0
+  Prod.Ar[3*0 + 2] = (*this).Ar[3*0 + 0]*Tensor_In.Ar[3*0 + 2];      // i = 0, j = 2, p = 0
 
-  Prod[3*0 + 0] += (*this)[3*0 + 1]*Tensor_In[3*1 + 0];     // i = 0, j = 0, p = 1
-  Prod[3*0 + 1] += (*this)[3*0 + 1]*Tensor_In[3*1 + 1];     // i = 0, j = 1, p = 1
-  Prod[3*0 + 2] += (*this)[3*0 + 1]*Tensor_In[3*1 + 2];     // i = 0, j = 2, p = 1
+  Prod.Ar[3*0 + 0] += (*this).Ar[3*0 + 1]*Tensor_In.Ar[3*1 + 0];     // i = 0, j = 0, p = 1
+  Prod.Ar[3*0 + 1] += (*this).Ar[3*0 + 1]*Tensor_In.Ar[3*1 + 1];     // i = 0, j = 1, p = 1
+  Prod.Ar[3*0 + 2] += (*this).Ar[3*0 + 1]*Tensor_In.Ar[3*1 + 2];     // i = 0, j = 2, p = 1
 
-  Prod[3*0 + 0] += (*this)[3*0 + 2]*Tensor_In[3*2 + 0];     // i = 0, j = 0, p = 2
-  Prod[3*0 + 1] += (*this)[3*0 + 2]*Tensor_In[3*2 + 1];     // i = 0, j = 1, p = 2
-  Prod[3*0 + 2] += (*this)[3*0 + 2]*Tensor_In[3*2 + 2];     // i = 0, j = 2, p = 2
+  Prod.Ar[3*0 + 0] += (*this).Ar[3*0 + 2]*Tensor_In.Ar[3*2 + 0];     // i = 0, j = 0, p = 2
+  Prod.Ar[3*0 + 1] += (*this).Ar[3*0 + 2]*Tensor_In.Ar[3*2 + 1];     // i = 0, j = 1, p = 2
+  Prod.Ar[3*0 + 2] += (*this).Ar[3*0 + 2]*Tensor_In.Ar[3*2 + 2];     // i = 0, j = 2, p = 2
 
 
   /* i = 1 (2nd row of C) */
-  Prod[3*1 + 0] = (*this)[3*1 + 0]*Tensor_In[3*0 + 0];      // i = 1, j = 0, p = 0
-  Prod[3*1 + 1] = (*this)[3*1 + 0]*Tensor_In[3*0 + 1];      // i = 1, j = 1, p = 0
-  Prod[3*1 + 2] = (*this)[3*1 + 0]*Tensor_In[3*0 + 2];      // i = 1, j = 2, p = 0
+  Prod.Ar[3*1 + 0] = (*this).Ar[3*1 + 0]*Tensor_In.Ar[3*0 + 0];      // i = 1, j = 0, p = 0
+  Prod.Ar[3*1 + 1] = (*this).Ar[3*1 + 0]*Tensor_In.Ar[3*0 + 1];      // i = 1, j = 1, p = 0
+  Prod.Ar[3*1 + 2] = (*this).Ar[3*1 + 0]*Tensor_In.Ar[3*0 + 2];      // i = 1, j = 2, p = 0
 
-  Prod[3*1 + 0] += (*this)[3*1 + 1]*Tensor_In[3*1 + 0];     // i = 1, j = 0, p = 1
-  Prod[3*1 + 1] += (*this)[3*1 + 1]*Tensor_In[3*1 + 1];     // i = 1, j = 1, p = 1
-  Prod[3*1 + 2] += (*this)[3*1 + 1]*Tensor_In[3*1 + 2];     // i = 1, j = 2, p = 1
+  Prod.Ar[3*1 + 0] += (*this).Ar[3*1 + 1]*Tensor_In.Ar[3*1 + 0];     // i = 1, j = 0, p = 1
+  Prod.Ar[3*1 + 1] += (*this).Ar[3*1 + 1]*Tensor_In.Ar[3*1 + 1];     // i = 1, j = 1, p = 1
+  Prod.Ar[3*1 + 2] += (*this).Ar[3*1 + 1]*Tensor_In.Ar[3*1 + 2];     // i = 1, j = 2, p = 1
 
-  Prod[3*1 + 0] += (*this)[3*1 + 2]*Tensor_In[3*2 + 0];     // i = 1, j = 0, p = 2
-  Prod[3*1 + 1] += (*this)[3*1 + 2]*Tensor_In[3*2 + 1];     // i = 1, j = 1, p = 2
-  Prod[3*1 + 2] += (*this)[3*1 + 2]*Tensor_In[3*2 + 2];     // i = 1, j = 2, p = 2
+  Prod.Ar[3*1 + 0] += (*this).Ar[3*1 + 2]*Tensor_In.Ar[3*2 + 0];     // i = 1, j = 0, p = 2
+  Prod.Ar[3*1 + 1] += (*this).Ar[3*1 + 2]*Tensor_In.Ar[3*2 + 1];     // i = 1, j = 1, p = 2
+  Prod.Ar[3*1 + 2] += (*this).Ar[3*1 + 2]*Tensor_In.Ar[3*2 + 2];     // i = 1, j = 2, p = 2
 
 
   /* i = 2 (3rd row) */
-  Prod[3*2 + 0] = (*this)[3*2 + 0]*Tensor_In[3*0 + 0];      // i = 2, j = 0, p = 0
-  Prod[3*2 + 1] = (*this)[3*2 + 0]*Tensor_In[3*0 + 1];      // i = 2, j = 1, p = 0
-  Prod[3*2 + 2] = (*this)[3*2 + 0]*Tensor_In[3*0 + 2];      // i = 2, j = 2, p = 0
+  Prod.Ar[3*2 + 0] = (*this).Ar[3*2 + 0]*Tensor_In.Ar[3*0 + 0];      // i = 2, j = 0, p = 0
+  Prod.Ar[3*2 + 1] = (*this).Ar[3*2 + 0]*Tensor_In.Ar[3*0 + 1];      // i = 2, j = 1, p = 0
+  Prod.Ar[3*2 + 2] = (*this).Ar[3*2 + 0]*Tensor_In.Ar[3*0 + 2];      // i = 2, j = 2, p = 0
 
-  Prod[3*2 + 0] += (*this)[3*2 + 1]*Tensor_In[3*1 + 0];     // i = 2, j = 0, p = 1
-  Prod[3*2 + 1] += (*this)[3*2 + 1]*Tensor_In[3*1 + 1];     // i = 2, j = 1, p = 1
-  Prod[3*2 + 2] += (*this)[3*2 + 1]*Tensor_In[3*1 + 2];     // i = 2, j = 2, p = 1
+  Prod.Ar[3*2 + 0] += (*this).Ar[3*2 + 1]*Tensor_In.Ar[3*1 + 0];     // i = 2, j = 0, p = 1
+  Prod.Ar[3*2 + 1] += (*this).Ar[3*2 + 1]*Tensor_In.Ar[3*1 + 1];     // i = 2, j = 1, p = 1
+  Prod.Ar[3*2 + 2] += (*this).Ar[3*2 + 1]*Tensor_In.Ar[3*1 + 2];     // i = 2, j = 2, p = 1
 
-  Prod[3*2 + 0] += (*this)[3*2 + 2]*Tensor_In[3*2 + 0];     // i = 2, j = 0, p = 2
-  Prod[3*2 + 1] += (*this)[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
-  Prod[3*2 + 2] += (*this)[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
+  Prod.Ar[3*2 + 0] += (*this).Ar[3*2 + 2]*Tensor_In.Ar[3*2 + 0];     // i = 2, j = 0, p = 2
+  Prod.Ar[3*2 + 1] += (*this).Ar[3*2 + 2]*Tensor_In.Ar[3*2 + 1];     // i = 2, j = 1, p = 2
+  Prod.Ar[3*2 + 2] += (*this).Ar[3*2 + 2]*Tensor_In.Ar[3*2 + 2];     // i = 2, j = 2, p = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::T_T_Multiplication++;                // Increment operator count
@@ -282,17 +282,17 @@ Vector Tensor::operator*(const Vector & V_In) const {
   eliminate this overhead, I have written what would have been the loop
   iterations as a series of statements.*/
 
-  Prod[0] =   (*this)[3*0 + 0]*V_In[0] +
-              (*this)[3*0 + 1]*V_In[1] +
-              (*this)[3*0 + 2]*V_In[2];
+  Prod[0] =   (*this).Ar[3*0 + 0]*V_In[0] +
+              (*this).Ar[3*0 + 1]*V_In[1] +
+              (*this).Ar[3*0 + 2]*V_In[2];
 
-  Prod[1] =   (*this)[3*1 + 0]*V_In[0] +
-              (*this)[3*1 + 1]*V_In[1] +
-              (*this)[3*1 + 2]*V_In[2];
+  Prod[1] =   (*this).Ar[3*1 + 0]*V_In[0] +
+              (*this).Ar[3*1 + 1]*V_In[1] +
+              (*this).Ar[3*1 + 2]*V_In[2];
 
-  Prod[2] =   (*this)[3*2 + 0]*V_In[0] +
-              (*this)[3*2 + 1]*V_In[1] +
-              (*this)[3*2 + 2]*V_In[2];
+  Prod[2] =   (*this).Ar[3*2 + 0]*V_In[0] +
+              (*this).Ar[3*2 + 1]*V_In[1] +
+              (*this).Ar[3*2 + 2]*V_In[2];
 
   #ifdef OPERATION_COUNT
     OP_Count::T_V_Multiplication++;                // Increment operator count
@@ -316,17 +316,17 @@ Tensor Tensor::operator*(const double c) const {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  Prod[0*3 + 0] = (*this)[3*0 + 0]*c;                  // i = 0, j = 0
-  Prod[0*3 + 1] = (*this)[3*0 + 1]*c;                  // i = 0, j = 1
-  Prod[0*3 + 2] = (*this)[3*0 + 2]*c;                  // i = 0, j = 2
+  Prod.Ar[0*3 + 0] = (*this).Ar[3*0 + 0]*c;                // i = 0, j = 0
+  Prod.Ar[0*3 + 1] = (*this).Ar[3*0 + 1]*c;                // i = 0, j = 1
+  Prod.Ar[0*3 + 2] = (*this).Ar[3*0 + 2]*c;                // i = 0, j = 2
 
-  Prod[1*3 + 0] = (*this)[3*1 + 0]*c;                  // i = 1, j = 0
-  Prod[1*3 + 1] = (*this)[3*1 + 1]*c;                  // i = 1, j = 1
-  Prod[1*3 + 2] = (*this)[3*1 + 2]*c;                  // i = 1, j = 2
+  Prod.Ar[1*3 + 0] = (*this).Ar[3*1 + 0]*c;                // i = 1, j = 0
+  Prod.Ar[1*3 + 1] = (*this).Ar[3*1 + 1]*c;                // i = 1, j = 1
+  Prod.Ar[1*3 + 2] = (*this).Ar[3*1 + 2]*c;                // i = 1, j = 2
 
-  Prod[2*3 + 0] = (*this)[3*2 + 0]*c;                  // i = 2, j = 0
-  Prod[2*3 + 1] = (*this)[3*2 + 1]*c;                  // i = 2, j = 1
-  Prod[2*3 + 2] = (*this)[3*2 + 2]*c;                  // i = 2, j = 2
+  Prod.Ar[2*3 + 0] = (*this).Ar[3*2 + 0]*c;                // i = 2, j = 0
+  Prod.Ar[2*3 + 1] = (*this).Ar[3*2 + 1]*c;                // i = 2, j = 1
+  Prod.Ar[2*3 + 2] = (*this).Ar[3*2 + 2]*c;                // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::T_S_Multiplication++;                // Increment operator count
@@ -374,17 +374,17 @@ Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  (*this)[3*0 + 0] += Tensor_In[3*0 + 0];       // i = 0, j = 0
-  (*this)[3*0 + 1] += Tensor_In[3*0 + 1];       // i = 0, j = 1
-  (*this)[3*0 + 2] += Tensor_In[3*0 + 2];       // i = 0, j = 2
+  (*this).Ar[3*0 + 0] += Tensor_In.Ar[3*0 + 0];       // i = 0, j = 0
+  (*this).Ar[3*0 + 1] += Tensor_In.Ar[3*0 + 1];       // i = 0, j = 1
+  (*this).Ar[3*0 + 2] += Tensor_In.Ar[3*0 + 2];       // i = 0, j = 2
 
-  (*this)[3*1 + 0] += Tensor_In[3*1 + 0];       // i = 1, j = 0
-  (*this)[3*1 + 1] += Tensor_In[3*1 + 1];       // i = 1, j = 1
-  (*this)[3*1 + 2] += Tensor_In[3*1 + 2];       // i = 1, j = 2
+  (*this).Ar[3*1 + 0] += Tensor_In.Ar[3*1 + 0];       // i = 1, j = 0
+  (*this).Ar[3*1 + 1] += Tensor_In.Ar[3*1 + 1];       // i = 1, j = 1
+  (*this).Ar[3*1 + 2] += Tensor_In.Ar[3*1 + 2];       // i = 1, j = 2
 
-  (*this)[3*2 + 0] += Tensor_In[3*2 + 0];       // i = 2, j = 0
-  (*this)[3*2 + 1] += Tensor_In[3*2 + 1];       // i = 2, j = 1
-  (*this)[3*2 + 2] += Tensor_In[3*2 + 2];       // i = 2, j = 2
+  (*this).Ar[3*2 + 0] += Tensor_In.Ar[3*2 + 0];       // i = 2, j = 0
+  (*this).Ar[3*2 + 1] += Tensor_In.Ar[3*2 + 1];       // i = 2, j = 1
+  (*this).Ar[3*2 + 2] += Tensor_In.Ar[3*2 + 2];       // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::Compound_T_T_Addition++;             // Increment operator count
@@ -407,17 +407,17 @@ Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  (*this)[3*0 + 0] -= Tensor_In[3*0 + 0];       // i = 0, j = 0
-  (*this)[3*0 + 1] -= Tensor_In[3*0 + 1];       // i = 0, j = 1
-  (*this)[3*0 + 2] -= Tensor_In[3*0 + 2];       // i = 0, j = 2
+  (*this).Ar[3*0 + 0] -= Tensor_In.Ar[3*0 + 0];       // i = 0, j = 0
+  (*this).Ar[3*0 + 1] -= Tensor_In.Ar[3*0 + 1];       // i = 0, j = 1
+  (*this).Ar[3*0 + 2] -= Tensor_In.Ar[3*0 + 2];       // i = 0, j = 2
 
-  (*this)[3*1 + 0] -= Tensor_In[3*1 + 0];       // i = 1, j = 0
-  (*this)[3*1 + 1] -= Tensor_In[3*1 + 1];       // i = 1, j = 1
-  (*this)[3*1 + 2] -= Tensor_In[3*1 + 2];       // i = 1, j = 2
+  (*this).Ar[3*1 + 0] -= Tensor_In.Ar[3*1 + 0];       // i = 1, j = 0
+  (*this).Ar[3*1 + 1] -= Tensor_In.Ar[3*1 + 1];       // i = 1, j = 1
+  (*this).Ar[3*1 + 2] -= Tensor_In.Ar[3*1 + 2];       // i = 1, j = 2
 
-  (*this)[3*2 + 0] -= Tensor_In[3*2 + 0];       // i = 2, j = 0
-  (*this)[3*2 + 1] -= Tensor_In[3*2 + 1];       // i = 2, j = 1
-  (*this)[3*2 + 2] -= Tensor_In[3*2 + 2];       // i = 2, j = 2
+  (*this).Ar[3*2 + 0] -= Tensor_In.Ar[3*2 + 0];       // i = 2, j = 0
+  (*this).Ar[3*2 + 1] -= Tensor_In.Ar[3*2 + 1];       // i = 2, j = 1
+  (*this).Ar[3*2 + 2] -= Tensor_In.Ar[3*2 + 2];       // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::Compound_T_T_Subtraction++;          // Increment operator count
@@ -468,45 +468,45 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
   statement would have corresponded to (which value of the i,j,p indicies) */
 
   /* i = 0 (1st row of C) */
-  Prod[3*0 + 0] = (*this)[3*0 + 0]*Tensor_In[3*0 + 0];      // i = 0, j = 0, p = 0
-  Prod[3*0 + 1] = (*this)[3*0 + 0]*Tensor_In[3*0 + 1];      // i = 0, j = 1, p = 0
-  Prod[3*0 + 2] = (*this)[3*0 + 0]*Tensor_In[3*0 + 2];      // i = 0, j = 2, p = 0
+  Prod.Ar[3*0 + 0] = (*this).Ar[3*0 + 0]*Tensor_In.Ar[3*0 + 0];      // i = 0, j = 0, p = 0
+  Prod.Ar[3*0 + 1] = (*this).Ar[3*0 + 0]*Tensor_In.Ar[3*0 + 1];      // i = 0, j = 1, p = 0
+  Prod.Ar[3*0 + 2] = (*this).Ar[3*0 + 0]*Tensor_In.Ar[3*0 + 2];      // i = 0, j = 2, p = 0
 
-  Prod[3*0 + 0] += (*this)[3*0 + 1]*Tensor_In[3*1 + 0];     // i = 0, j = 0, p = 1
-  Prod[3*0 + 1] += (*this)[3*0 + 1]*Tensor_In[3*1 + 1];     // i = 0, j = 1, p = 1
-  Prod[3*0 + 2] += (*this)[3*0 + 1]*Tensor_In[3*1 + 2];     // i = 0, j = 2, p = 1
+  Prod.Ar[3*0 + 0] += (*this).Ar[3*0 + 1]*Tensor_In.Ar[3*1 + 0];     // i = 0, j = 0, p = 1
+  Prod.Ar[3*0 + 1] += (*this).Ar[3*0 + 1]*Tensor_In.Ar[3*1 + 1];     // i = 0, j = 1, p = 1
+  Prod.Ar[3*0 + 2] += (*this).Ar[3*0 + 1]*Tensor_In.Ar[3*1 + 2];     // i = 0, j = 2, p = 1
 
-  Prod[3*0 + 0] += (*this)[3*0 + 2]*Tensor_In[3*2 + 0];     // i = 0, j = 0, p = 2
-  Prod[3*0 + 1] += (*this)[3*0 + 2]*Tensor_In[3*2 + 1];     // i = 0, j = 1, p = 2
-  Prod[3*0 + 2] += (*this)[3*0 + 2]*Tensor_In[3*2 + 2];     // i = 0, j = 2, p = 2
+  Prod.Ar[3*0 + 0] += (*this).Ar[3*0 + 2]*Tensor_In.Ar[3*2 + 0];     // i = 0, j = 0, p = 2
+  Prod.Ar[3*0 + 1] += (*this).Ar[3*0 + 2]*Tensor_In.Ar[3*2 + 1];     // i = 0, j = 1, p = 2
+  Prod.Ar[3*0 + 2] += (*this).Ar[3*0 + 2]*Tensor_In.Ar[3*2 + 2];     // i = 0, j = 2, p = 2
 
 
   /* i = 1 (2nd row of C) */
-  Prod[3*1 + 0] = (*this)[3*1 + 0]*Tensor_In[3*0 + 0];      // i = 1, j = 0, p = 0
-  Prod[3*1 + 1] = (*this)[3*1 + 0]*Tensor_In[3*0 + 1];      // i = 1, j = 1, p = 0
-  Prod[3*1 + 2] = (*this)[3*1 + 0]*Tensor_In[3*0 + 2];      // i = 1, j = 2, p = 0
+  Prod.Ar[3*1 + 0] = (*this).Ar[3*1 + 0]*Tensor_In.Ar[3*0 + 0];      // i = 1, j = 0, p = 0
+  Prod.Ar[3*1 + 1] = (*this).Ar[3*1 + 0]*Tensor_In.Ar[3*0 + 1];      // i = 1, j = 1, p = 0
+  Prod.Ar[3*1 + 2] = (*this).Ar[3*1 + 0]*Tensor_In.Ar[3*0 + 2];      // i = 1, j = 2, p = 0
 
-  Prod[3*1 + 0] += (*this)[3*1 + 1]*Tensor_In[3*1 + 0];     // i = 1, j = 0, p = 1
-  Prod[3*1 + 1] += (*this)[3*1 + 1]*Tensor_In[3*1 + 1];     // i = 1, j = 1, p = 1
-  Prod[3*1 + 2] += (*this)[3*1 + 1]*Tensor_In[3*1 + 2];     // i = 1, j = 2, p = 1
+  Prod.Ar[3*1 + 0] += (*this).Ar[3*1 + 1]*Tensor_In.Ar[3*1 + 0];     // i = 1, j = 0, p = 1
+  Prod.Ar[3*1 + 1] += (*this).Ar[3*1 + 1]*Tensor_In.Ar[3*1 + 1];     // i = 1, j = 1, p = 1
+  Prod.Ar[3*1 + 2] += (*this).Ar[3*1 + 1]*Tensor_In.Ar[3*1 + 2];     // i = 1, j = 2, p = 1
 
-  Prod[3*1 + 0] += (*this)[3*1 + 2]*Tensor_In[3*2 + 0];     // i = 1, j = 0, p = 2
-  Prod[3*1 + 1] += (*this)[3*1 + 2]*Tensor_In[3*2 + 1];     // i = 1, j = 1, p = 2
-  Prod[3*1 + 2] += (*this)[3*1 + 2]*Tensor_In[3*2 + 2];     // i = 1, j = 2, p = 2
+  Prod.Ar[3*1 + 0] += (*this).Ar[3*1 + 2]*Tensor_In.Ar[3*2 + 0];     // i = 1, j = 0, p = 2
+  Prod.Ar[3*1 + 1] += (*this).Ar[3*1 + 2]*Tensor_In.Ar[3*2 + 1];     // i = 1, j = 1, p = 2
+  Prod.Ar[3*1 + 2] += (*this).Ar[3*1 + 2]*Tensor_In.Ar[3*2 + 2];     // i = 1, j = 2, p = 2
 
 
   /* i = 2 (3rd row) */
-  Prod[3*2 + 0] = (*this)[3*2 + 0]*Tensor_In[3*0 + 0];      // i = 2, j = 0, p = 0
-  Prod[3*2 + 1] = (*this)[3*2 + 0]*Tensor_In[3*0 + 1];      // i = 2, j = 1, p = 0
-  Prod[3*2 + 2] = (*this)[3*2 + 0]*Tensor_In[3*0 + 2];      // i = 2, j = 2, p = 0
+  Prod.Ar[3*2 + 0] = (*this).Ar[3*2 + 0]*Tensor_In.Ar[3*0 + 0];      // i = 2, j = 0, p = 0
+  Prod.Ar[3*2 + 1] = (*this).Ar[3*2 + 0]*Tensor_In.Ar[3*0 + 1];      // i = 2, j = 1, p = 0
+  Prod.Ar[3*2 + 2] = (*this).Ar[3*2 + 0]*Tensor_In.Ar[3*0 + 2];      // i = 2, j = 2, p = 0
 
-  Prod[3*2 + 0] += (*this)[3*2 + 1]*Tensor_In[3*1 + 0];     // i = 2, j = 0, p = 1
-  Prod[3*2 + 1] += (*this)[3*2 + 1]*Tensor_In[3*1 + 1];     // i = 2, j = 1, p = 1
-  Prod[3*2 + 2] += (*this)[3*2 + 1]*Tensor_In[3*1 + 2];     // i = 2, j = 2, p = 1
+  Prod.Ar[3*2 + 0] += (*this).Ar[3*2 + 1]*Tensor_In.Ar[3*1 + 0];     // i = 2, j = 0, p = 1
+  Prod.Ar[3*2 + 1] += (*this).Ar[3*2 + 1]*Tensor_In.Ar[3*1 + 1];     // i = 2, j = 1, p = 1
+  Prod.Ar[3*2 + 2] += (*this).Ar[3*2 + 1]*Tensor_In.Ar[3*1 + 2];     // i = 2, j = 2, p = 1
 
-  Prod[3*2 + 0] += (*this)[3*2 + 2]*Tensor_In[3*2 + 0];     // i = 2, j = 0, p = 2
-  Prod[3*2 + 1] += (*this)[3*2 + 2]*Tensor_In[3*2 + 1];     // i = 2, j = 1, p = 2
-  Prod[3*2 + 2] += (*this)[3*2 + 2]*Tensor_In[3*2 + 2];     // i = 2, j = 2, p = 2
+  Prod.Ar[3*2 + 0] += (*this).Ar[3*2 + 2]*Tensor_In.Ar[3*2 + 0];     // i = 2, j = 0, p = 2
+  Prod.Ar[3*2 + 1] += (*this).Ar[3*2 + 2]*Tensor_In.Ar[3*2 + 1];     // i = 2, j = 1, p = 2
+  Prod.Ar[3*2 + 2] += (*this).Ar[3*2 + 2]*Tensor_In.Ar[3*2 + 2];     // i = 2, j = 2, p = 2
 
   /* Copy Prod to this Tensor. To do this normally would require two
   nested loops (one for the rows and one for the cols). However, as before, we
@@ -515,17 +515,17 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
   the 9 iterations. To make the code a little more readible, I included the
   origional iteration numbers as comments. */
 
-  (*this)[3*0 + 0] = Prod[3*0 + 0];                    // i = 0, j = 0
-  (*this)[3*0 + 1] = Prod[3*0 + 1];                    // i = 0, j = 1
-  (*this)[3*0 + 2] = Prod[3*0 + 2];                    // i = 0, j = 1
+  (*this).Ar[3*0 + 0] = Prod.Ar[3*0 + 0];                    // i = 0, j = 0
+  (*this).Ar[3*0 + 1] = Prod.Ar[3*0 + 1];                    // i = 0, j = 1
+  (*this).Ar[3*0 + 2] = Prod.Ar[3*0 + 2];                    // i = 0, j = 1
 
-  (*this)[3*1 + 0] = Prod[3*1 + 0];                    // i = 1, j = 0
-  (*this)[3*1 + 1] = Prod[3*1 + 1];                    // i = 1, j = 1
-  (*this)[3*1 + 2] = Prod[3*1 + 2];                    // i = 1, j = 2
+  (*this).Ar[3*1 + 0] = Prod.Ar[3*1 + 0];                    // i = 1, j = 0
+  (*this).Ar[3*1 + 1] = Prod.Ar[3*1 + 1];                    // i = 1, j = 1
+  (*this).Ar[3*1 + 2] = Prod.Ar[3*1 + 2];                    // i = 1, j = 2
 
-  (*this)[3*2 + 0] = Prod[3*2 + 0];                    // i = 2, j = 0
-  (*this)[3*2 + 1] = Prod[3*2 + 1];                    // i = 2, j = 1
-  (*this)[3*2 + 2] = Prod[3*2 + 2];                    // i = 2, j = 2
+  (*this).Ar[3*2 + 0] = Prod.Ar[3*2 + 0];                    // i = 2, j = 0
+  (*this).Ar[3*2 + 1] = Prod.Ar[3*2 + 1];                    // i = 2, j = 1
+  (*this).Ar[3*2 + 2] = Prod.Ar[3*2 + 2];                    // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::Compound_T_T_Multiplication++;       // Increment operator count
@@ -549,7 +549,7 @@ double & Tensor::operator()(const unsigned row, const unsigned col) {
   assert(col < 3);
 
   // Return the specified element (treat it like matirx notation)
-  return (*this)[3*row + col];
+  return (*this).Ar[3*row + col];
 } // double & Tensor::operator()(const unsigned row, const unsigned col) {
 
 
@@ -572,7 +572,7 @@ double Tensor::operator()( const unsigned row, const unsigned col) const {
   assert(col < 3);
 
   // Return the specified element (treat it like matirx notation)
-  return (*this)[3*row + col];
+  return (*this).Ar[3*row + col];
 } // double Tensor::operator()(const unsigned row, const unsigned col) const {
 
 
@@ -596,7 +596,7 @@ bool Tensor::operator==(const Tensor & T_In) const {
   /* First, check if any components are more than Tensor Epsilon apart. If so
   then return false */
   for(unsigned i = 0; i < 9; i++) {
-    double d = (*this)[i] - T_In[i];
+    double d = (*this).Ar[i] - T_In.Ar[i];
     if(d < -Tensor_Epsilon || d > Tensor_Epsilon) { return false; }
   }
 
@@ -657,32 +657,32 @@ Tensor Tensor::Inverse(void) const{
     throw Singular_Matrix(Error_Message_Buffer);
   } // if(Det_S == 0) {
 
-  Tensor_Inv[3*0 + 0] = -(*this)[2*3 + 1]*(*this)[1*3 + 2]
-                        +(*this)[1*3 + 1]*(*this)[2*3 + 2];      // -hf + ei
+  Tensor_Inv.Ar[3*0 + 0] = -(*this).Ar[2*3 + 1]*(*this).Ar[1*3 + 2]
+                           +(*this).Ar[1*3 + 1]*(*this).Ar[2*3 + 2]; // -hf + ei
 
-  Tensor_Inv[3*0 + 1] =  (*this)[0*3 + 2]*(*this)[2*3 + 1]
-                        -(*this)[0*3 + 1]*(*this)[2*3 + 2];      // ch - bi
+  Tensor_Inv.Ar[3*0 + 1] =  (*this).Ar[0*3 + 2]*(*this).Ar[2*3 + 1]
+                           -(*this).Ar[0*3 + 1]*(*this).Ar[2*3 + 2]; // ch - bi
 
-  Tensor_Inv[3*0 + 2] = -(*this)[0*3 + 2]*(*this)[1*3 + 1]
-                        +(*this)[0*3 + 1]*(*this)[1*3 + 2];      // -ce + bf
+  Tensor_Inv.Ar[3*0 + 2] = -(*this).Ar[0*3 + 2]*(*this).Ar[1*3 + 1]
+                           +(*this).Ar[0*3 + 1]*(*this).Ar[1*3 + 2]; // -ce + bf
 
-  Tensor_Inv[3*1 + 0] =  (*this)[1*3 + 2]*(*this)[2*3 + 0]
-                        -(*this)[1*3 + 0]*(*this)[2*3 + 2];      // fg - di
+  Tensor_Inv.Ar[3*1 + 0] =  (*this).Ar[1*3 + 2]*(*this).Ar[2*3 + 0]
+                           -(*this).Ar[1*3 + 0]*(*this).Ar[2*3 + 2]; // fg - di
 
-  Tensor_Inv[3*1 + 1] = -(*this)[0*3 + 2]*(*this)[2*3 + 0]
-                        +(*this)[0*3 + 0]*(*this)[2*3 + 2];      // -cg + ai
+  Tensor_Inv.Ar[3*1 + 1] = -(*this).Ar[0*3 + 2]*(*this).Ar[2*3 + 0]
+                           +(*this).Ar[0*3 + 0]*(*this).Ar[2*3 + 2]; // -cg + ai
 
-  Tensor_Inv[3*1 + 2] =  (*this)[0*3 + 2]*(*this)[1*3 + 0]
-                        -(*this)[0*0 + 0]*(*this)[1*3 + 2];      // cd - af
+  Tensor_Inv.Ar[3*1 + 2] =  (*this).Ar[0*3 + 2]*(*this).Ar[1*3 + 0]
+                           -(*this).Ar[0*0 + 0]*(*this).Ar[1*3 + 2]; // cd - af
 
-  Tensor_Inv[3*2 + 0] = -(*this)[1*3 + 1]*(*this)[2*3 + 0]
-                        +(*this)[1*3 + 0]*(*this)[2*3 + 1];      // -eg + dh
+  Tensor_Inv.Ar[3*2 + 0] = -(*this).Ar[1*3 + 1]*(*this).Ar[2*3 + 0]
+                           +(*this).Ar[1*3 + 0]*(*this).Ar[2*3 + 1]; // -eg + dh
 
-  Tensor_Inv[3*2 + 1] =  (*this)[0*3 + 1]*(*this)[2*3 + 0]
-                        -(*this)[0*3 + 0]*(*this)[2*3 + 1];      // bg - ah
+  Tensor_Inv.Ar[3*2 + 1] =  (*this).Ar[0*3 + 1]*(*this).Ar[2*3 + 0]
+                           -(*this).Ar[0*3 + 0]*(*this).Ar[2*3 + 1]; // bg - ah
 
-  Tensor_Inv[3*2 + 2] = -(*this)[0*3 + 1]*(*this)[1*3 + 0]
-                        +(*this)[0*3 + 0]*(*this)[1*3 + 1];      // -bd + ae
+  Tensor_Inv.Ar[3*2 + 2] = -(*this).Ar[0*3 + 1]*(*this).Ar[1*3 + 0]
+                           +(*this).Ar[0*3 + 0]*(*this).Ar[1*3 + 1]; // -bd + ae
 
   Tensor_Inv = (1/Det_S)*Tensor_Inv;
 
@@ -738,12 +738,12 @@ double Tensor::Determinant(void) const {
     OP_Count::T_Determinant++;                     // Increment operator count
   #endif
 
-  return ((*this)[0*3 + 0]*((*this)[1*3 + 1]*(*this)[2*3 + 2]
-                           -(*this)[2*3 + 1]*(*this)[1*3 + 2])
-         +(*this)[0*3 + 1]*((*this)[2*3 + 0]*(*this)[1*3 + 2]
-                           -(*this)[1*3 + 0]*(*this)[2*3 + 2])
-         +(*this)[0*3 + 2]*((*this)[1*3 + 0]*(*this)[2*3 + 1]
-                           -(*this)[2*3 + 0]*(*this)[1*3 + 1]));
+  return ((*this).Ar[0*3 + 0]*((*this).Ar[1*3 + 1]*(*this).Ar[2*3 + 2]
+                              -(*this).Ar[2*3 + 1]*(*this).Ar[1*3 + 2])
+         +(*this).Ar[0*3 + 1]*((*this).Ar[2*3 + 0]*(*this).Ar[1*3 + 2]
+                              -(*this).Ar[1*3 + 0]*(*this).Ar[2*3 + 2])
+         +(*this).Ar[0*3 + 2]*((*this).Ar[1*3 + 0]*(*this).Ar[2*3 + 1]
+                              -(*this).Ar[2*3 + 0]*(*this).Ar[1*3 + 1]));
 } // double Tensor::Determinant(void) const {
 
 
@@ -762,17 +762,17 @@ Tensor Tensor::Transpose(void) const {
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
 
-  T_Transpose[3*0 + 0] = (*this)[3*0 + 0];             // i = 0, j = 0
-  T_Transpose[3*0 + 1] = (*this)[3*1 + 0];             // i = 0, j = 1
-  T_Transpose[3*0 + 2] = (*this)[3*2 + 0];             // i = 0, j = 2
+  T_Transpose.Ar[3*0 + 0] = (*this).Ar[3*0 + 0];           // i = 0, j = 0
+  T_Transpose.Ar[3*0 + 1] = (*this).Ar[3*1 + 0];           // i = 0, j = 1
+  T_Transpose.Ar[3*0 + 2] = (*this).Ar[3*2 + 0];           // i = 0, j = 2
 
-  T_Transpose[3*1 + 0] = (*this)[3*0 + 1];             // i = 1, j = 0
-  T_Transpose[3*1 + 1] = (*this)[3*1 + 1];             // i = 1, j = 1
-  T_Transpose[3*1 + 2] = (*this)[3*2 + 1];             // i = 1, j = 2
+  T_Transpose.Ar[3*1 + 0] = (*this).Ar[3*0 + 1];           // i = 1, j = 0
+  T_Transpose.Ar[3*1 + 1] = (*this).Ar[3*1 + 1];           // i = 1, j = 1
+  T_Transpose.Ar[3*1 + 2] = (*this).Ar[3*2 + 1];           // i = 1, j = 2
 
-  T_Transpose[3*2 + 0] = (*this)[3*0 + 2];             // i = 2, j = 0
-  T_Transpose[3*2 + 1] = (*this)[3*1 + 2];             // i = 2, j = 1
-  T_Transpose[3*2 + 2] = (*this)[3*2 + 2];             // i = 2, j = 2
+  T_Transpose.Ar[3*2 + 0] = (*this).Ar[3*0 + 2];           // i = 2, j = 0
+  T_Transpose.Ar[3*2 + 1] = (*this).Ar[3*1 + 2];           // i = 2, j = 1
+  T_Transpose.Ar[3*2 + 2] = (*this).Ar[3*2 + 2];           // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
     OP_Count::T_Transpose++;                       // Increment operator count
@@ -792,24 +792,24 @@ const Vector Tensor::Eigenvalues(void) const {
               0,0,1};
 
   // First, calculate p1
-  p1 = (*this)[3*0 + 1]*(*this)[3*0 + 1]
-     + (*this)[3*0 + 2]*(*this)[3*0 + 2]
-     + (*this)[3*1 + 2]*(*this)[3*1 + 2];
+  p1 = (*this).Ar[3*0 + 1]*(*this).Ar[3*0 + 1]
+     + (*this).Ar[3*0 + 2]*(*this).Ar[3*0 + 2]
+     + (*this).Ar[3*1 + 2]*(*this).Ar[3*1 + 2];
 
   /* If p1 == 0 then the Tensor is diagional . In this case, the eivenvalues are
   simply the diagional entris of the tensor */
   if(p1 == 0) {
-    Eig_Values[0] = (*this)[3*0 + 0];
-    Eig_Values[1] = (*this)[3*1 + 1];
-    Eig_Values[2] = (*this)[3*2 + 2];
+    Eig_Values[0] = (*this).Ar[3*0 + 0];
+    Eig_Values[1] = (*this).Ar[3*1 + 1];
+    Eig_Values[2] = (*this).Ar[3*2 + 2];
   } // if(p1 == 0) {
 
   else {
-    q = (1./3.)*((*this)[3*0 + 0] + (*this)[3*1 + 1] + (*this)[3*2 + 2]);
+    q = (1./3.)*((*this).Ar[3*0 + 0] + (*this).Ar[3*1 + 1] + (*this).Ar[3*2 + 2]);
 
-    p2 = ((*this)[3*0 + 0] - q)*((*this)[3*0 + 0] - q) +
-         ((*this)[3*1 + 1] - q)*((*this)[3*1 + 1] - q) +
-         ((*this)[3*2 + 2] - q)*((*this)[3*2 + 2] - q) +
+    p2 = ((*this).Ar[3*0 + 0] - q)*((*this).Ar[3*0 + 0] - q) +
+         ((*this).Ar[3*1 + 1] - q)*((*this).Ar[3*1 + 1] - q) +
+         ((*this).Ar[3*2 + 2] - q)*((*this).Ar[3*2 + 2] - q) +
          2*p1;
 
     p = sqrt(p2/6.);
@@ -852,8 +852,18 @@ const Vector Tensor::Eigenvalues(void) const {
 
 void Tensor::Print(void) const {
   for(unsigned i = 0; i < 3; i++)
-    printf("| %9.2e %9.2e %9.2e |\n",(*this)[i*3], (*this)[i*3 + 1], (*this)[i*3 + 2]);
+    printf("| %9.2e %9.2e %9.2e |\n",(*this).Ar[i*3], (*this).Ar[i*3 + 1], (*this).Ar[i*3 + 2]);
 } // void Tensor::Print(void) const {
+
+
+const double* Tensor::Get_Ar(void) const {
+  /* This function returns the address of the tensor's internal array.
+
+  This can be used to bypass the operator access methods and, thereby, improve
+  runtime. However, it is extremely risky (no checks at all). Only use this if
+  you know what you're doing. */
+  return Ar;
+} // const double* Tensor::Get_Ar(void) const {
 
 
 

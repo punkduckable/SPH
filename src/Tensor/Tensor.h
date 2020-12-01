@@ -83,6 +83,7 @@ class Tensor {
     Tensor Transpose(void) const;                 // Tensor Transpose. Returns T^T  (Tranpose of T)
     const Vector Eigenvalues(void) const;         // Returns eigenvalues of the Tensor
     void Print(void) const;                       // Print tensor components
+    const double* Get_Ar(void) const;             // Get direct access to the tensor's array. Only use if you know what you're doing
 }; // class Tensor {
 
 // Functions of a tensor

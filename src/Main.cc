@@ -1,4 +1,3 @@
-//#define NDEBUG
 #include "Simulation/Simulation.h"
 #include "Errors.h"
 

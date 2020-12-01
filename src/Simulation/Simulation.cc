@@ -50,7 +50,7 @@ void Simulation::Run(void) {
   time1 = Get_Time();
 
   // time step loop.
-  #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints) num_threads(1)
+  #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
     for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
       //////////////////////////////////////////////////////////////////////////
@@ -197,21 +197,21 @@ void Simulation::Run(void) {
     printf(       "%lfs to print data to files\n", Print_time);
 
   #else
-    unsigned long MS_Iter,                                           // These are used to store the number of miliseconds that
+    unsigned long MS_Sim,                                            // These are used to store the number of miliseconds that
                   MS_BC,                                             // it took to execute each of the major operations in
                   MS_P,                                              // the code. These are only used the the code is executed
                   MS_Contact,                                        // sequentially
                   MS_x,
                   MS_Print;
 
-    MS_Iter = (unsigned long)((double)time1 / (double)CLOCKS_PER_MS);
+    MS_Sim = (unsigned long)((double)simulation_time / (double)CLOCKS_PER_MS);
     MS_BC = (unsigned long)((double)update_BC_time / (double)CLOCKS_PER_MS);
     MS_P = (unsigned long)((double)update_P_time / (double)CLOCKS_PER_MS);
     MS_Contact = (unsigned long)((double)contact_time / (double)CLOCKS_PER_MS);
     MS_x = (unsigned long)((double)update_x_time / (double)CLOCKS_PER_MS);
     MS_Print = (unsigned long)((double)Print_time / (double)CLOCKS_PER_MS);
 
-    printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Iter, Num_Time_Steps);
+    printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Sim, Num_Time_Steps);
     printf(         "%lums to update BC's\n", MS_BC);
     printf(         "%lums to update P\n", MS_P);
     printf(         "%lums for Contact\n", MS_Contact);

@@ -25,7 +25,7 @@ const double Vector_Epsilon = 1e-16;
 
 class Vector {
   private:
-    double V[3];                                           // Holds the three components of the Vector
+    double Ar[3];                                         // Holds the three components of the Vector
 
   public:
     // Constructors, destructor
@@ -66,6 +66,7 @@ class Vector {
     double Magnitude(void) const;                          // Returns magnitude of vector
     double Max_Component(void) const;                      // Returns maximum component of vector.
     void Print(void) const;                                // Print vector components
+    const double* Get_Ar(void) const;
 }; // class Vector {
 
 
