@@ -1,5 +1,5 @@
 # Compiler stuff
-COMPILER :=        g++-10
+COMPILER :=        g++
 
 CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -DNDEBUG
 
@@ -76,12 +76,12 @@ bin/Debug: $(OBJ_PATHS)
 ################################################################################
 # Profiling
 
-prof: CFLAGS := -c -Wall -Wsign-compare -Wextra -g -Og -fno-inline -std=c++11
+prof: CFLAGS := -c -Wall -Wsign-compare -Wextra -pg -O0 -fno-inline -std=c++11 -fopenmp
 prof: LNFLAGS := -pg
 prof: bin/Prof
 
 bin/Prof: $(OBJ_PATHS)
-		$(COMPILER) $(LNFLAGS) $(OBJ_PATHS) -o $@
+		$(COMPILER) $(LNFLAGS) -fopenmp $(OBJ_PATHS) -o $@
 
 
 

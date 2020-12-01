@@ -1,0 +1,1556 @@
+This gprof profile corresponds to the old version of the code (before the contact algorithm was updated) run with -O0 and 1 thread. 
+
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 20.55     23.04    23.04 10723559432     0.00     0.00  Vector::operator[](unsigned int) const
+ 20.49     46.01    22.97 10236335118     0.00     0.00  Tensor::operator[](unsigned int) const
+  8.77     55.84     9.83 5684826690     0.00     0.00  Tensor::operator[](unsigned int)
+  7.59     64.35     8.51 364184000     0.00     0.00  Tensor::operator*(Vector const&) const
+  6.78     71.95     7.60     1000     7.60    77.79  Body::Update_x(double)
+  5.81     78.46     6.51 4443848283     0.00     0.00  Vector::operator[](unsigned int)
+  3.35     82.21     3.75 278739547     0.00     0.00  Vector::operator+=(Vector const&)
+  2.89     85.45     3.24 91137046     0.00     0.00  Tensor::operator+=(Tensor const&)
+  2.76     88.54     3.09 91137046     0.00     0.00  Dyadic_Product(Vector const&, Vector const&)
+  1.97     90.75     2.21     1000     2.21    28.30  Body::Update_P(double)
+  1.96     92.94     2.20 187416000     0.00     0.00  Tensor::operator+(Tensor const&) const
+  1.86     95.02     2.08 368549395     0.00     0.00  Vector::operator*(double) const
+  1.54     96.75     1.73 215640294     0.00     0.00  Dot_Product(Vector const&, Vector const&)
+  1.33     98.25     1.50 202059660     0.00     0.00  Tensor::operator=(Tensor const&)
+  1.26     99.66     1.41 958093529     0.00     0.00  Vector::Vector()
+  1.08    100.87     1.21                             Vector::operator()(unsigned int)
+  1.07    102.07     1.20 215759490     0.00     0.00  Vector::operator-(Vector const&) const
+  1.04    103.24     1.17  3993000     0.00     0.00  Vector::operator*=(double)
+  0.98    104.34     1.10 91176616     0.00     0.00  Vector::Magnitude() const
+  0.74    105.16     0.83                             Tensor::operator()(unsigned int, unsigned int) const
+  0.71    105.96     0.80 368428495     0.00     0.00  operator*(double, Vector const&)
+  0.71    106.76     0.80 233001626     0.00     0.00  Vector::operator=(Vector const&)
+  0.67    107.51     0.76  7986000     0.00     0.00  Tensor::operator*(Tensor const&) const
+  0.62    108.20     0.69 967475217     0.00     0.00  Vector::~Vector()
+  0.54    108.81     0.61                             Tensor::operator()(unsigned int, unsigned int)
+  0.52    109.39     0.58 91059190     0.00     0.00  Magnitude(Vector const&)
+  0.35    109.78     0.39 314504148     0.00     0.00  Tensor::Tensor()
+  0.23    110.04     0.26  1331000     0.00     0.00  Tensor::operator*=(Tensor const&)
+  0.21    110.28     0.24      798     0.30     0.30  Vector::Vector(Vector const&)
+  0.18    110.48     0.20                             Exception::what() const
+  0.16    110.66     0.18 317173925     0.00     0.00  Tensor::~Tensor()
+  0.14    110.82     0.16 14642329     0.00     0.00  Tensor::operator*(double) const
+  0.14    110.98     0.16  6656329     0.00     0.00  Tensor::Determinant() const
+  0.13    111.13     0.15  3994331     0.00     0.00  Tensor::Inverse() const
+  0.12    111.27     0.14     1000     0.14     2.28  Body::Contact(Body&, Body&)
+  0.12    111.41     0.14                             Tensor::Tensor(Tensor const&)
+  0.08    111.50     0.09   120900     0.00     0.00  Vector::operator/(double) const
+  0.07    111.58     0.08                             Quick_Math::cos(double)
+  0.06    111.65     0.07                             Tensor::operator/(double) const
+  0.05    111.71     0.06  1356000     0.00     0.00  Particle::Apply_BCs()
+  0.04    111.76     0.05  1331000     0.00     0.00  Vector::Max_Component() const
+  0.04    111.81     0.05    89496     0.00     0.00  Cross_Product(Vector const&, Vector const&)
+  0.04    111.85     0.04  9380891     0.00     0.00  Vector::Vector(double, double, double)
+  0.04    111.89     0.04  3993000     0.00     0.00  Vector::operator+(Vector const&) const
+  0.04    111.93     0.04  2661998     0.00     0.00  Tensor::operator-(Tensor const&) const
+  0.04    111.97     0.04  1331000     0.00     0.00  Tensor::Eigenvalues() const
+  0.02    111.99     0.02 14642329     0.00     0.00  operator*(double, Tensor const&)
+  0.02    112.01     0.02  5579784     0.00     0.00  Body::operator[](unsigned int)
+  0.02    112.03     0.02  1360832     0.00     0.00  Particle::Get_Mass() const
+  0.02    112.05     0.02        1    20.00   128.25  Body::Find_Neighbors_Box()
+  0.01    112.06     0.01  6656331     0.00     0.00  Tensor::operator^(int)
+  0.01    112.07     0.01  3993000     0.00     0.00  Tensor::Transpose() const
+  0.01    112.08     0.01  2669777     0.00     0.00  Tensor::Tensor(double, double, double, double, double, double, double, double, double)
+  0.01    112.09     0.01  1331000     0.00     0.00  Max_Component(Vector const&)
+  0.01    112.10     0.01                             Particle::Get_ID() const
+  0.00    112.10     0.01                             Vector::operator=(double const*)
+  0.00    112.10     0.00  3993000     0.00     0.00  std::isnan(double)
+  0.00    112.10     0.00  1400748     0.00     0.00  Particle::Get_x() const
+  0.00    112.10     0.00  1370916     0.00     0.00  Particle::Get_D() const
+  0.00    112.10     0.00  1369190     0.00     0.00  Particle::Get_Volume() const
+  0.00    112.10     0.00  1331000     0.00     0.00  Determinant(Tensor const&)
+  0.00    112.10     0.00  1331000     0.00     0.00  Eigenvalues(Tensor const&)
+  0.00    112.10     0.00  1331000     0.00     0.00  Particle::Get_F(unsigned int) const
+  0.00    112.10     0.00  1331000     0.00     0.00  Particle::Get_P() const
+  0.00    112.10     0.00   546588     0.00     0.00  Particle::Get_X() const
+  0.00    112.10     0.00   273294     0.00     0.00  Body::Are_Neighbors(unsigned int, unsigned int) const
+  0.00    112.10     0.00    91046     0.00     0.00  List<unsigned int>::Pop_Front()
+  0.00    112.10     0.00    91046     0.00     0.00  List<unsigned int>::Push_Back(unsigned int)
+  0.00    112.10     0.00    91046     0.00     0.00  Array<unsigned int>::operator[](unsigned int) const
+  0.00    112.10     0.00    91046     0.00     0.00  Particle::Get_Neighbor_IDs(unsigned int) const
+  0.00    112.10     0.00    29832     0.00     0.00  Particle::Get_Force_Contact() const
+  0.00    112.10     0.00    29832     0.00     0.00  Particle::Get_Force_Friction() const
+  0.00    112.10     0.00    29832     0.00     0.00  Particle::Get_Force_Internal() const
+  0.00    112.10     0.00    29832     0.00     0.00  Particle::Get_Force_Hourglass() const
+  0.00    112.10     0.00    29832     0.00     0.00  Particle::Get_Force_Viscosity() const
+  0.00    112.10     0.00    29832     0.00     0.00  Particle::Get_a() const
+  0.00    112.10     0.00    26380     0.00     0.00  Vector::operator-=(Vector const&)
+  0.00    112.10     0.00    14916     0.00     0.00  Particle::Get_Stretch_M() const
+  0.00    112.10     0.00     5005     0.00     0.00  Simulation::Get_Time()
+  0.00    112.10     0.00     5003     0.00     0.00  Simulation::Time_Since(double)
+  0.00    112.10     0.00     4004     0.00     0.00  Body::Get_Is_Fixed() const
+  0.00    112.10     0.00     4002     0.00     0.00  Body::Get_Num_Particles() const
+  0.00    112.10     0.00     3392     0.00     0.00  std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::min()
+  0.00    112.10     0.00     3392     0.00     0.00  std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::operator()()
+  0.00    112.10     0.00     3392     0.00     0.00  std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long)
+  0.00    112.10     0.00     3392     0.00     0.00  unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 16807ul, 0ul>(unsigned long)
+  0.00    112.10     0.00     3331     0.00     0.00  List<unsigned int>::List()
+  0.00    112.10     0.00     3331     0.00     0.00  List<unsigned int>::~List()
+  0.00    112.10     0.00     3331     0.00     0.00  List<unsigned int>::Get_Length() const
+  0.00    112.10     0.00     2000     0.00     0.00  Body::Remove_Damaged_Particles(List<unsigned int>&)
+  0.00    112.10     0.00     2000     0.00     0.03  Body::Apply_BCs()
+  0.00    112.10     0.00     1696     0.00     0.00  std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::operator()()
+  0.00    112.10     0.00     1696     0.00     0.00  double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&)
+  0.00    112.10     0.00     1696     0.00     0.00  unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&)
+  0.00    112.10     0.00     1696     0.00     0.00  unsigned long const& std::min<unsigned long>(unsigned long const&, unsigned long const&)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Set_Radius(double)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Set_Volume(double)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Set_V(Vector const&)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Set_X(Vector const&)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Set_x(Vector const&)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Set_ID(unsigned int)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Set_Mass(double)
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::Particle()
+  0.00    112.10     0.00     1356     0.00     0.00  Particle::~Particle()
+  0.00    112.10     0.00     1331     0.00     0.07  Body::Set_Neighbors(unsigned int, Array<unsigned int> const&)
+  0.00    112.10     0.00     1331     0.00     0.07  Body::Set_Neighbor_Dependent_Members(unsigned int)
+  0.00    112.10     0.00     1331     0.00     0.00  Array<unsigned int>::Private_Setup_From_List(List<unsigned int>&)
+  0.00    112.10     0.00     1331     0.00     0.00  Array<unsigned int>::Array(List<unsigned int>&)
+  0.00    112.10     0.00     1331     0.00     0.00  Array<unsigned int>::~Array()
+  0.00    112.10     0.00     1331     0.00     0.00  Particle::Set_Stretch_Critical(double)
+  0.00    112.10     0.00     1331     0.00     0.00  Array<unsigned int>::Get_Length() const
+  0.00    112.10     0.00     1331     0.00     0.00  Particle::Get_Num_Neighbors() const
+  0.00    112.10     0.00     1331     0.00     0.00  std::normal_distribution<double>::param_type::mean() const
+  0.00    112.10     0.00     1331     0.00     0.00  std::normal_distribution<double>::param_type::stddev() const
+  0.00    112.10     0.00     1331     0.00     0.00  double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&)
+  0.00    112.10     0.00     1331     0.00     0.00  double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&)
+  0.00    112.10     0.00     1331     0.00     0.00  std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::_Adaptor(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&)
+  0.00    112.10     0.00     1000     0.00     0.00  Body::Increment_F_Index()
+  0.00    112.10     0.00     1000     0.00     0.00  Body::Get_Shape_Function_Amplitude() const
+  0.00    112.10     0.00      796     0.00     0.00  Simulation::Set_Box_Particle_BCs(Particle&, Vector)
+  0.00    112.10     0.00      268     0.00     0.00  IO::String_Ops::Index_After_Word(char const*, char const*, bool, unsigned int)
+  0.00    112.10     0.00       62     0.00     0.00  IO::read_line_after[abi:cxx11](std::basic_ifstream<char, std::char_traits<char> >&, char const*, bool)
+  0.00    112.10     0.00       51     0.00     0.00  IO::String_Ops::Contains(char const*, char const*, bool, unsigned int)
+  0.00    112.10     0.00       44     0.00     0.00  Body::Add_Point_Data(_IO_FILE*, char*, unsigned int, double*) const
+  0.00    112.10     0.00       22     0.00     0.64  Body::Export_Body_Forces(unsigned int)
+  0.00    112.10     0.00       22     0.00     3.08  Body::Export_Body_Torques(unsigned int)
+  0.00    112.10     0.00       22     0.00     0.01  Body::Export_Particle_Positions()
+  0.00    112.10     0.00       12     0.00     0.00  Simulation::Parse_BC(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+  0.00    112.10     0.00       12     0.00     0.00  Simulation::Print_BC(Vector&)
+  0.00    112.10     0.00        8     0.00     0.00  Body::Get_Is_Box() const
+  0.00    112.10     0.00        7     0.00     0.00  bool __gnu_cxx::__is_null_pointer<char>(char*)
+  0.00    112.10     0.00        7     0.00     0.00  void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag)
+  0.00    112.10     0.00        7     0.00     0.00  std::iterator_traits<char*>::difference_type std::__distance<char*>(char*, char*, std::random_access_iterator_tag)
+  0.00    112.10     0.00        7     0.00     0.00  std::iterator_traits<char*>::iterator_category std::__iterator_category<char*>(char* const&)
+  0.00    112.10     0.00        7     0.00     0.00  std::iterator_traits<char*>::difference_type std::distance<char*>(char*, char*)
+  0.00    112.10     0.00        6     0.00     0.00  Body::Get_Is_Damageable() const
+  0.00    112.10     0.00        6     0.00     0.00  Body::Get_X_SIDE_LENGTH() const
+  0.00    112.10     0.00        6     0.00     0.00  Body::Get_Y_SIDE_LENGTH() const
+  0.00    112.10     0.00        6     0.00     0.00  Body::Get_Z_SIDE_LENGTH() const
+  0.00    112.10     0.00        5     0.00     0.00  Body::Get_Name[abi:cxx11]() const
+  0.00    112.10     0.00        4     0.00     0.00  Body::Get_Inter_Particle_Spacing() const
+  0.00    112.10     0.00        3     0.00     0.00  std::__detail::_Mod<unsigned long, 2147483647ul, 1ul, 0ul, true, true>::__calc(unsigned long)
+  0.00    112.10     0.00        3     0.00     0.00  unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 1ul, 0ul>(unsigned long)
+  0.00    112.10     0.00        2     0.00   119.71  Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&)
+  0.00    112.10     0.00        2     0.00     0.00  Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&)
+  0.00    112.10     0.00        2     0.00   119.78  Simulation::Load_Body_From_Setup_File(Body&, unsigned int)
+  0.00    112.10     0.00        2     0.00     0.00  Simulation::Box_BCs::Box_BCs()
+  0.00    112.10     0.00        2     0.00     0.00  Simulation::Box_BCs::~Box_BCs()
+  0.00    112.10     0.00        2     0.00    64.51  Simulation::Setup_Box(Body&, unsigned int)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_Is_Fixed(bool)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_Material(Materials::Material const&)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_Is_Damageable(bool)
+  0.00    112.10     0.00        2     0.00     0.06  Body::Set_Box_Dimensions(unsigned int, unsigned int, unsigned int)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_Support_Radius(double)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_Gravity_Enabled(bool)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_Inter_Particle_Spacing(double)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_mu(double)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_Name(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Set_alpha(double)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Body()
+  0.00    112.10     0.00        2     0.00     0.07  Body::~Body()
+  0.00    112.10     0.00        2     0.00     0.00  Array<Simulation::General_Boundary_Condition>::Array()
+  0.00    112.10     0.00        2     0.00     0.00  Array<Simulation::General_Boundary_Condition>::~Array()
+  0.00    112.10     0.00        2     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned long, char const*, __va_list_tag*), unsigned long, char const*, ...)
+  0.00    112.10     0.00        2     0.00     0.00  Body::Get_density() const
+  0.00    112.10     0.00        2     0.00     0.00  Body::Print_Parameters() const
+  0.00    112.10     0.00        2     0.00     0.00  Body::Get_Support_Radius() const
+  0.00    112.10     0.00        2     0.00     0.00  Body::Get_Gravity_Enabled() const
+  0.00    112.10     0.00        2     0.00     0.00  Body::Get_mu() const
+  0.00    112.10     0.00        2     0.00     0.00  Body::Get_alpha() const
+  0.00    112.10     0.00        2     0.00     0.00  Array<Simulation::General_Boundary_Condition>::Get_Length() const
+  0.00    112.10     0.00        2     0.00     0.00  void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*)
+  0.00    112.10     0.00        2     0.00     0.00  void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type)
+  0.00    112.10     0.00        2     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<char*, void>(char*, char*, std::allocator<char> const&)
+  0.00    112.10     0.00        2     0.00     0.00  std::__cxx11::to_string(unsigned int)
+  0.00    112.10     0.00        2     0.00     0.00  __gnu_cxx::__promote_2<double, int, __gnu_cxx::__promote<double, std::__is_integer<double>::__value>::__type, __gnu_cxx::__promote<int, std::__is_integer<int>::__value>::__type>::__type std::pow<double, int>(double, int)
+  0.00    112.10     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN4Body1KE
+  0.00    112.10     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00    112.10     0.00        1     0.00   239.55  Simulation::Load_Setup_File()
+  0.00    112.10     0.00        1     0.00   368.72  Simulation::Run()
+  0.00    112.10     0.00        1     0.00   368.58  Simulation::Setup(Body**)
+  0.00    112.10     0.00        1     0.00     0.00  Body::Set_Particles_Critical_Stretch(double, double)
+  0.00    112.10     0.00        1     0.00     0.00  Body::Set_Tau(double)
+  0.00    112.10     0.00        1     0.00     0.00  Body::Get_Tau() const
+  0.00    112.10     0.00        1     0.00     0.00  std::normal_distribution<double>::param_type::param_type(double, double)
+  0.00    112.10     0.00        1     0.00     0.00  std::normal_distribution<double>::normal_distribution(double, double)
+  0.00    112.10     0.00        1     0.00     0.00  std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::seed(unsigned long)
+  0.00    112.10     0.00        1     0.00     0.00  std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::linear_congruential_engine<unsigned int, void>(unsigned int&)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.01% of 112.10 seconds
+
+index % time    self  children    called     name
+                                  11             Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[1]     96.9    0.00  108.59       0+11      Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+                7.60   70.19    1000/1000        Body::Update_x(double) [2]
+                2.21   26.09    1000/1000        Body::Update_P(double) [3]
+                0.14    2.14    1000/1000        Body::Contact(Body&, Body&) [20]
+                0.00    0.07      22/22          Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.06    2000/2000        Body::Apply_BCs() [63]
+                0.01    0.03 2712000/233001626     Vector::operator=(Vector const&) [18]
+                0.01    0.01 2712000/9380891     Vector::Vector(double, double, double) [56]
+                0.00    0.01      22/22          Body::Export_Body_Forces(unsigned int) [68]
+                0.01    0.00 2712000/5579784     Body::operator[](unsigned int) [66]
+                0.00    0.00 2712000/967475217     Vector::~Vector() [31]
+                0.00    0.00      22/22          Body::Export_Particle_Positions() [74]
+                0.00    0.00    5000/5003        Simulation::Time_Since(double) [116]
+                0.00    0.00    5000/5005        Simulation::Get_Time() [115]
+                0.00    0.00    4000/4004        Body::Get_Is_Fixed() const [117]
+                0.00    0.00    2000/4002        Body::Get_Num_Particles() const [118]
+                0.00    0.00    1000/1000        Body::Increment_F_Index() [146]
+                                  11             Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+-----------------------------------------------
+                7.60   70.19    1000/1000        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[2]     69.4    7.60   70.19    1000         Body::Update_x(double) [2]
+                8.51   16.53 364184000/364184000     Tensor::operator*(Vector const&) const [4]
+                2.13   10.41 182092000/187416000     Tensor::operator+(Tensor const&) const [7]
+                1.37    6.61 184754000/202059660     Tensor::operator=(Tensor const&) [9]
+                3.73    3.00 277131001/278739547     Vector::operator+=(Vector const&) [12]
+                0.60    4.98 277131001/368428495     operator*(double, Vector const&) [11]
+                1.46    2.35 182092000/215640294     Dot_Product(Vector const&, Vector const&) [17]
+                0.58    2.27 91046000/91059190     Magnitude(Vector const&) [19]
+                0.51    1.71 91046000/215759490     Vector::operator-(Vector const&) const [16]
+                0.35    1.10 101694000/233001626     Vector::operator=(Vector const&) [18]
+                1.17    0.02 3993000/3993000     Vector::operator*=(double) [26]
+                0.53    0.00 740352001/967475217     Vector::~Vector() [31]
+                0.04    0.07 3993000/3993000     Vector::operator+(Vector const&) const [52]
+                0.10    0.00 182096000/317173925     Tensor::~Tensor() [47]
+                0.02    0.02 3993000/9380891     Vector::Vector(double, double, double) [56]
+                0.02    0.00 1331000/1360832     Particle::Get_Mass() const [67]
+                0.01    0.00 3993000/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00    5000/958093529     Vector::Vector() [23]
+                0.00    0.00    4000/314504148     Tensor::Tensor() [36]
+                0.00    0.00 3993000/3993000     std::isnan(double) [97]
+                0.00    0.00 1331000/1370916     Particle::Get_D() const [99]
+                0.00    0.00 1331000/1369190     Particle::Get_Volume() const [100]
+                0.00    0.00 1331000/1331000     Particle::Get_F(unsigned int) const [101]
+                0.00    0.00 1331000/1331000     Particle::Get_P() const [102]
+                0.00    0.00    1000/3331        List<unsigned int>::List() [123]
+                0.00    0.00    1000/2000        Body::Remove_Damaged_Particles(List<unsigned int>&) [126]
+                0.00    0.00    1000/3331        List<unsigned int>::~List() [124]
+-----------------------------------------------
+                2.21   26.09    1000/1000        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[3]     25.2    2.21   26.09    1000         Body::Update_P(double) [3]
+                3.09    5.05 91046000/91137046     Dyadic_Product(Vector const&, Vector const&) [10]
+                3.24    3.26 91046000/91137046     Tensor::operator+=(Tensor const&) [15]
+                0.51    1.71 91046000/215759490     Vector::operator-(Vector const&) const [16]
+                0.76    1.35 7986000/7986000     Tensor::operator*(Tensor const&) const [22]
+                0.20    1.63 91046000/368428495     operator*(double, Vector const&) [11]
+                0.01    1.30 6655000/6656331     Tensor::operator^(int) [24]
+                0.31    0.99 91046000/233001626     Vector::operator=(Vector const&) [18]
+                0.09    0.43 11979000/202059660     Tensor::operator=(Tensor const&) [9]
+                0.26    0.25 1331000/1331000     Tensor::operator*=(Tensor const&) [33]
+                0.01    0.45 9317000/14642329     operator*(double, Tensor const&) [29]
+                0.00    0.40 1331000/1331000     Eigenvalues(Tensor const&) [34]
+                0.06    0.30 5324000/187416000     Tensor::operator+(Tensor const&) const [7]
+                0.13    0.00 183424000/967475217     Vector::~Vector() [31]
+                0.02    0.08 1331000/2661998     Tensor::operator-(Tensor const&) const [46]
+                0.00    0.08 1331000/1331000     Determinant(Tensor const&) [58]
+                0.01    0.06 1331000/1331000     Max_Component(Vector const&) [60]
+                0.07    0.00 122997000/317173925     Tensor::~Tensor() [47]
+                0.00    0.00 1332000/2669777     Tensor::Tensor(double, double, double, double, double, double, double, double, double) [70]
+                0.00    0.00    6000/314504148     Tensor::Tensor() [36]
+                0.00    0.00    1000/958093529     Vector::Vector() [23]
+                0.00    0.00    1000/3331        List<unsigned int>::List() [123]
+                0.00    0.00    1000/2000        Body::Remove_Damaged_Particles(List<unsigned int>&) [126]
+                0.00    0.00    1000/3331        List<unsigned int>::~List() [124]
+-----------------------------------------------
+                8.51   16.53 364184000/364184000     Body::Update_x(double) [2]
+[4]     22.3    8.51   16.53 364184000         Tensor::operator*(Vector const&) const [4]
+                7.35    0.00 3277656000/10236335118     Tensor::operator[](unsigned int) const [6]
+                7.04    0.00 3277656000/10723559432     Vector::operator[](unsigned int) const [5]
+                1.60    0.00 1092552000/4443848283     Vector::operator[](unsigned int) [14]
+                0.54    0.00 364184000/958093529     Vector::Vector() [23]
+-----------------------------------------------
+                0.00    0.00    2394/10723559432     Vector::Vector(Vector const&) [41]
+                0.00    0.00   79140/10723559432     Vector::operator-=(Vector const&) [73]
+                0.00    0.00 1073952/10723559432     Cross_Product(Vector const&, Vector const&) [65]
+                0.01    0.00 3993014/10723559432     Vector::Max_Component() const [64]
+                0.05    0.00 23958000/10723559432     Vector::operator+(Vector const&) const [52]
+                1.18    0.00 547059696/10723559432     Vector::Magnitude() const [21]
+                1.50    0.00 699004878/10723559432     Vector::operator=(Vector const&) [18]
+                1.80    0.00 836218641/10723559432     Vector::operator+=(Vector const&) [12]
+                2.38    0.00 1105648185/10723559432     Vector::operator*(double) const [13]
+                2.78    0.00 1293841764/10723559432     Dot_Product(Vector const&, Vector const&) [17]
+                2.78    0.00 1294556940/10723559432     Vector::operator-(Vector const&) const [16]
+                3.52    0.00 1640466828/10723559432     Dyadic_Product(Vector const&, Vector const&) [10]
+                7.04    0.00 3277656000/10723559432     Tensor::operator*(Vector const&) const [4]
+[5]     20.6   23.04    0.00 10723559432         Vector::operator[](unsigned int) const [5]
+-----------------------------------------------
+                0.04    0.00 19964988/10236335118     Tensor::Eigenvalues() const [35]
+                0.08    0.00 35937000/10236335118     Tensor::operator*=(Tensor const&) [33]
+                0.08    0.00 35937000/10236335118     Tensor::Transpose() const [48]
+                0.11    0.00 47915964/10236335118     Tensor::operator-(Tensor const&) const [46]
+                0.22    0.00 99844935/10236335118     Tensor::Determinant() const [37]
+                0.30    0.00 131780961/10236335118     Tensor::operator*(double) const [30]
+                0.32    0.00 143795916/10236335118     Tensor::Inverse() const [27]
+                0.97    0.00 431244000/10236335118     Tensor::operator*(Tensor const&) const [22]
+                1.84    0.00 820233414/10236335118     Tensor::operator+=(Tensor const&) [15]
+                4.08    0.00 1818536940/10236335118     Tensor::operator=(Tensor const&) [9]
+                7.35    0.00 3277656000/10236335118     Tensor::operator*(Vector const&) const [4]
+                7.57    0.00 3373488000/10236335118     Tensor::operator+(Tensor const&) const [7]
+[6]     20.5   22.97    0.00 10236335118         Tensor::operator[](unsigned int) const [6]
+-----------------------------------------------
+                0.06    0.30 5324000/187416000     Body::Update_P(double) [3]
+                2.13   10.41 182092000/187416000     Body::Update_x(double) [2]
+[7]     11.5    2.20   10.72 187416000         Tensor::operator+(Tensor const&) const [7]
+                7.57    0.00 3373488000/10236335118     Tensor::operator[](unsigned int) const [6]
+                2.92    0.00 1686744000/5684826690     Tensor::operator[](unsigned int) [8]
+                0.23    0.00 187416000/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                0.04    0.00 23957982/5684826690     Tensor::operator-(Tensor const&) const [46]
+                0.06    0.00 35937000/5684826690     Tensor::Transpose() const [48]
+                0.06    0.00 35948979/5684826690     Tensor::Inverse() const [27]
+                0.17    0.00 95832000/5684826690     Tensor::operator*=(Tensor const&) [33]
+                0.23    0.00 131780961/5684826690     Tensor::operator*(double) const [30]
+                0.37    0.00 215622000/5684826690     Tensor::operator*(Tensor const&) const [22]
+                1.42    0.00 820233414/5684826690     Dyadic_Product(Vector const&, Vector const&) [10]
+                1.42    0.00 820233414/5684826690     Tensor::operator+=(Tensor const&) [15]
+                2.92    0.00 1686744000/5684826690     Tensor::operator+(Tensor const&) const [7]
+                3.14    0.00 1818536940/5684826690     Tensor::operator=(Tensor const&) [9]
+[8]      8.8    9.83    0.00 5684826690         Tensor::operator[](unsigned int) [8]
+-----------------------------------------------
+                0.00    0.00    1331/202059660     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.01    0.05 1330998/202059660     Tensor::Eigenvalues() const [35]
+                0.03    0.14 3994331/202059660     Tensor::Inverse() const [27]
+                0.09    0.43 11979000/202059660     Body::Update_P(double) [3]
+                1.37    6.61 184754000/202059660     Body::Update_x(double) [2]
+[9]      7.8    1.50    7.22 202059660         Tensor::operator=(Tensor const&) [9]
+                4.08    0.00 1818536940/10236335118     Tensor::operator[](unsigned int) const [6]
+                3.14    0.00 1818536940/5684826690     Tensor::operator[](unsigned int) [8]
+-----------------------------------------------
+                0.00    0.01   91046/91137046     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                3.09    5.05 91046000/91137046     Body::Update_P(double) [3]
+[10]     7.3    3.09    5.06 91137046         Dyadic_Product(Vector const&, Vector const&) [10]
+                3.52    0.00 1640466828/10723559432     Vector::operator[](unsigned int) const [5]
+                1.42    0.00 820233414/5684826690     Tensor::operator[](unsigned int) [8]
+                0.11    0.00 91137046/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                0.00    0.00   14916/368428495     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/368428495     Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.00   39570/368428495     Body::Contact(Body&, Body&) [20]
+                0.00    0.00  182092/368428495     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.20    1.63 91046000/368428495     Body::Update_P(double) [3]
+                0.60    4.98 277131001/368428495     Body::Update_x(double) [2]
+[11]     6.6    0.80    6.62 368428495         operator*(double, Vector const&) [11]
+                2.08    4.54 368428495/368549395     Vector::operator*(double) const [13]
+-----------------------------------------------
+                0.00    0.00    1356/278739547     Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00   89496/278739547     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00  104412/278739547     Body::Export_Body_Torques(unsigned int) [61]
+                0.02    0.02 1413282/278739547     Body::Contact(Body&, Body&) [20]
+                3.73    3.00 277131001/278739547     Body::Update_x(double) [2]
+[12]     6.0    3.75    3.02 278739547         Vector::operator+=(Vector const&) [12]
+                1.80    0.00 836218641/10723559432     Vector::operator[](unsigned int) const [5]
+                1.23    0.00 836218641/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.00    0.00  120900/368549395     Vector::operator/(double) const [55]
+                2.08    4.54 368428495/368549395     operator*(double, Vector const&) [11]
+[13]     5.9    2.08    4.54 368549395         Vector::operator*(double) const [13]
+                2.38    0.00 1105648185/10723559432     Vector::operator[](unsigned int) const [5]
+                1.62    0.00 1105648185/4443848283     Vector::operator[](unsigned int) [14]
+                0.54    0.00 368549395/958093529     Vector::Vector() [23]
+-----------------------------------------------
+                0.00    0.00      24/4443848283     Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.00      36/4443848283     Simulation::Parse_BC(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [83]
+                0.00    0.00      36/4443848283     Simulation::Print_BC(Vector&) [84]
+                0.00    0.00     396/4443848283     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00     396/4443848283     Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.00    2388/4443848283     Simulation::Set_Box_Particle_BCs(Particle&, Vector) [82]
+                0.00    0.00    2394/4443848283     Vector::Vector(Vector const&) [41]
+                0.00    0.00   44748/4443848283     Body::Export_Particle_Positions() [74]
+                0.00    0.00   79140/4443848283     Vector::operator-=(Vector const&) [73]
+                0.00    0.00  268488/4443848283     Cross_Product(Vector const&, Vector const&) [65]
+                0.01    0.00 3993000/4443848283     Body::Update_x(double) [2]
+                0.01    0.00 6654390/4443848283     Tensor::Eigenvalues() const [35]
+                0.02    0.00 11979000/4443848283     Vector::operator+(Vector const&) const [52]
+                0.02    0.00 11979000/4443848283     Vector::operator*=(double) [26]
+                0.04    0.00 28142673/4443848283     Vector::Vector(double, double, double) [56]
+                0.95    0.00 647278470/4443848283     Vector::operator-(Vector const&) const [16]
+                1.02    0.00 699004878/4443848283     Vector::operator=(Vector const&) [18]
+                1.23    0.00 836218641/4443848283     Vector::operator+=(Vector const&) [12]
+                1.60    0.00 1092552000/4443848283     Tensor::operator*(Vector const&) const [4]
+                1.62    0.00 1105648185/4443848283     Vector::operator*(double) const [13]
+[14]     5.8    6.51    0.00 4443848283         Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.00    0.00   91046/91137046     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                3.24    3.26 91046000/91137046     Body::Update_P(double) [3]
+[15]     5.8    3.24    3.26 91137046         Tensor::operator+=(Tensor const&) [15]
+                1.84    0.00 820233414/10236335118     Tensor::operator[](unsigned int) const [6]
+                1.42    0.00 820233414/5684826690     Tensor::operator[](unsigned int) [8]
+-----------------------------------------------
+                0.00    0.00      22/215759490     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14938/215759490     Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.00   91046/215759490     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.00    0.01  273294/215759490     Body::Are_Neighbors(unsigned int, unsigned int) const [69]
+                0.19    0.62 33288190/215759490     Body::Contact(Body&, Body&) [20]
+                0.51    1.71 91046000/215759490     Body::Update_P(double) [3]
+                0.51    1.71 91046000/215759490     Body::Update_x(double) [2]
+[16]     4.7    1.20    4.05 215759490         Vector::operator-(Vector const&) const [16]
+                2.78    0.00 1294556940/10723559432     Vector::operator[](unsigned int) const [5]
+                0.95    0.00 647278470/4443848283     Vector::operator[](unsigned int) [14]
+                0.32    0.00 215759490/958093529     Vector::Vector() [23]
+-----------------------------------------------
+                0.00    0.00  273294/215640294     Body::Are_Neighbors(unsigned int, unsigned int) const [69]
+                0.27    0.43 33275000/215640294     Body::Contact(Body&, Body&) [20]
+                1.46    2.35 182092000/215640294     Body::Update_x(double) [2]
+[17]     4.0    1.73    2.78 215640294         Dot_Product(Vector const&, Vector const&) [17]
+                2.78    0.00 1293841764/10723559432     Vector::operator[](unsigned int) const [5]
+-----------------------------------------------
+                0.00    0.00      12/233001626     Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.00      22/233001626     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00      44/233001626     Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.00    1356/233001626     Particle::Set_X(Vector const&) [80]
+                0.00    0.00    1356/233001626     Particle::Set_x(Vector const&) [81]
+                0.00    0.00    1356/233001626     Particle::Set_V(Vector const&) [79]
+                0.00    0.00    2712/233001626     Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00   14916/233001626     Body::Export_Particle_Positions() [74]
+                0.00    0.00  182092/233001626     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.01    0.03 2712000/233001626     Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+                0.13    0.40 37345760/233001626     Body::Contact(Body&, Body&) [20]
+                0.31    0.99 91046000/233001626     Body::Update_P(double) [3]
+                0.35    1.10 101694000/233001626     Body::Update_x(double) [2]
+[18]     3.0    0.80    2.53 233001626         Vector::operator=(Vector const&) [18]
+                1.50    0.00 699004878/10723559432     Vector::operator[](unsigned int) const [5]
+                1.02    0.00 699004878/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.00    0.00   13190/91059190     Body::Contact(Body&, Body&) [20]
+                0.58    2.27 91046000/91059190     Body::Update_x(double) [2]
+[19]     2.5    0.58    2.27 91059190         Magnitude(Vector const&) [19]
+                1.10    1.17 91059190/91176616     Vector::Magnitude() const [21]
+-----------------------------------------------
+                0.14    2.14    1000/1000        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[20]     2.0    0.14    2.14    1000         Body::Contact(Body&, Body&) [20]
+                0.19    0.62 33288190/215759490     Vector::operator-(Vector const&) const [16]
+                0.27    0.43 33275000/215640294     Dot_Product(Vector const&, Vector const&) [17]
+                0.13    0.40 37345760/233001626     Vector::operator=(Vector const&) [18]
+                0.02    0.02 1413282/278739547     Vector::operator+=(Vector const&) [12]
+                0.03    0.00 39988760/967475217     Vector::~Vector() [31]
+                0.01    0.01 2662000/9380891     Vector::Vector(double, double, double) [56]
+                0.01    0.00 2858852/5579784     Body::operator[](unsigned int) [66]
+                0.01    0.00 3999000/958093529     Vector::Vector() [23]
+                0.00    0.00   39570/368428495     operator*(double, Vector const&) [11]
+                0.00    0.00   26380/91176616     Vector::Magnitude() const [21]
+                0.00    0.00   13190/91059190     Magnitude(Vector const&) [19]
+                0.00    0.00   26380/26380       Vector::operator-=(Vector const&) [73]
+                0.00    0.00 1356000/1400748     Particle::Get_x() const [98]
+                0.00    0.00   38190/1369190     Particle::Get_Volume() const [100]
+                0.00    0.00   25000/1370916     Particle::Get_D() const [99]
+                0.00    0.00    2000/4002        Body::Get_Num_Particles() const [118]
+                0.00    0.00    1000/1000        Body::Get_Shape_Function_Amplitude() const [147]
+-----------------------------------------------
+                0.00    0.00   26380/91176616     Body::Contact(Body&, Body&) [20]
+                0.00    0.00   91046/91176616     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                1.10    1.17 91059190/91176616     Magnitude(Vector const&) [19]
+[21]     2.0    1.10    1.18 91176616         Vector::Magnitude() const [21]
+                1.18    0.00 547059696/10723559432     Vector::operator[](unsigned int) const [5]
+-----------------------------------------------
+                0.76    1.35 7986000/7986000     Body::Update_P(double) [3]
+[22]     1.9    0.76    1.35 7986000         Tensor::operator*(Tensor const&) const [22]
+                0.97    0.00 431244000/10236335118     Tensor::operator[](unsigned int) const [6]
+                0.37    0.00 215622000/5684826690     Tensor::operator[](unsigned int) [8]
+                0.01    0.00 7986000/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                0.00    0.00       2/958093529     Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&) [90]
+                0.00    0.00       4/958093529     Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00       4/958093529     Simulation::Load_Setup_File() [42]
+                0.00    0.00      12/958093529     Simulation::Parse_BC(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [83]
+                0.00    0.00      12/958093529     Simulation::Box_BCs::Box_BCs() [85]
+                0.00    0.00      22/958093529     Body::Export_Particle_Positions() [74]
+                0.00    0.00    1000/958093529     Body::Update_P(double) [3]
+                0.00    0.00    5000/958093529     Body::Update_x(double) [2]
+                0.00    0.00   89496/958093529     Cross_Product(Vector const&, Vector const&) [65]
+                0.00    0.00  182092/958093529     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.00    0.00 1331000/958093529     Tensor::Eigenvalues() const [35]
+                0.01    0.00 3993000/958093529     Vector::operator+(Vector const&) const [52]
+                0.01    0.00 3999000/958093529     Body::Contact(Body&, Body&) [20]
+                0.32    0.00 215759490/958093529     Vector::operator-(Vector const&) const [16]
+                0.54    0.00 364184000/958093529     Tensor::operator*(Vector const&) const [4]
+                0.54    0.00 368549395/958093529     Vector::operator*(double) const [13]
+[23]     1.3    1.41    0.00 958093529         Vector::Vector() [23]
+-----------------------------------------------
+                0.00    0.00    1331/6656331     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.01    1.30 6655000/6656331     Body::Update_P(double) [3]
+[24]     1.2    0.01    1.30 6656331         Tensor::operator^(int) [24]
+                0.15    0.99 3994331/3994331     Tensor::Inverse() const [27]
+                0.01    0.15 3993000/3993000     Tensor::Transpose() const [48]
+                0.00    0.00 1331000/317173925     Tensor::~Tensor() [47]
+-----------------------------------------------
+                                                 <spontaneous>
+[25]     1.1    1.21    0.00                 Vector::operator()(unsigned int) [25]
+-----------------------------------------------
+                1.17    0.02 3993000/3993000     Body::Update_x(double) [2]
+[26]     1.1    1.17    0.02 3993000         Vector::operator*=(double) [26]
+                0.02    0.00 11979000/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.15    0.99 3994331/3994331     Tensor::operator^(int) [24]
+[27]     1.0    0.15    0.99 3994331         Tensor::Inverse() const [27]
+                0.32    0.00 143795916/10236335118     Tensor::operator[](unsigned int) const [6]
+                0.10    0.13 3994331/6656329     Tensor::Determinant() const [37]
+                0.01    0.19 3994331/14642329     operator*(double, Tensor const&) [29]
+                0.03    0.14 3994331/202059660     Tensor::operator=(Tensor const&) [9]
+                0.06    0.00 35948979/5684826690     Tensor::operator[](unsigned int) [8]
+                0.00    0.00 3994331/314504148     Tensor::Tensor() [36]
+                0.00    0.00 3994331/317173925     Tensor::~Tensor() [47]
+-----------------------------------------------
+                                                 <spontaneous>
+[28]     0.7    0.83    0.00                 Tensor::operator()(unsigned int, unsigned int) const [28]
+-----------------------------------------------
+                0.00    0.06 1330998/14642329     Tensor::Eigenvalues() const [35]
+                0.01    0.19 3994331/14642329     Tensor::Inverse() const [27]
+                0.01    0.45 9317000/14642329     Body::Update_P(double) [3]
+[29]     0.6    0.02    0.70 14642329         operator*(double, Tensor const&) [29]
+                0.16    0.54 14642329/14642329     Tensor::operator*(double) const [30]
+-----------------------------------------------
+                0.16    0.54 14642329/14642329     operator*(double, Tensor const&) [29]
+[30]     0.6    0.16    0.54 14642329         Tensor::operator*(double) const [30]
+                0.30    0.00 131780961/10236335118     Tensor::operator[](unsigned int) const [6]
+                0.23    0.00 131780961/5684826690     Tensor::operator[](unsigned int) [8]
+                0.02    0.00 14642329/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                0.00    0.00       2/967475217     Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&) [90]
+                0.00    0.00       4/967475217     Simulation::Setup(Body**) [40]
+                0.00    0.00      12/967475217     Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.00      12/967475217     Simulation::Box_BCs::~Box_BCs() [89]
+                0.00    0.00      22/967475217     Body::Export_Particle_Positions() [74]
+                0.00    0.00     796/967475217     Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.00    0.00    1362/967475217     Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00   30008/967475217     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00  134464/967475217     Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.00  194296/967475217     Particle::~Particle() [75]
+                0.00    0.00  273294/967475217     Body::Are_Neighbors(unsigned int, unsigned int) const [69]
+                0.00    0.00  364184/967475217     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.00    0.00 2712000/967475217     Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+                0.03    0.00 39988760/967475217     Body::Contact(Body&, Body&) [20]
+                0.13    0.00 183424000/967475217     Body::Update_P(double) [3]
+                0.53    0.00 740352001/967475217     Body::Update_x(double) [2]
+[31]     0.6    0.69    0.00 967475217         Vector::~Vector() [31]
+-----------------------------------------------
+                                                 <spontaneous>
+[32]     0.5    0.61    0.00                 Tensor::operator()(unsigned int, unsigned int) [32]
+-----------------------------------------------
+                0.26    0.25 1331000/1331000     Body::Update_P(double) [3]
+[33]     0.5    0.26    0.25 1331000         Tensor::operator*=(Tensor const&) [33]
+                0.17    0.00 95832000/5684826690     Tensor::operator[](unsigned int) [8]
+                0.08    0.00 35937000/10236335118     Tensor::operator[](unsigned int) const [6]
+                0.00    0.00 1331000/314504148     Tensor::Tensor() [36]
+                0.00    0.00 1331000/317173925     Tensor::~Tensor() [47]
+-----------------------------------------------
+                0.00    0.40 1331000/1331000     Body::Update_P(double) [3]
+[34]     0.4    0.00    0.40 1331000         Eigenvalues(Tensor const&) [34]
+                0.04    0.36 1331000/1331000     Tensor::Eigenvalues() const [35]
+-----------------------------------------------
+                0.04    0.36 1331000/1331000     Eigenvalues(Tensor const&) [34]
+[35]     0.4    0.04    0.36 1331000         Tensor::Eigenvalues() const [35]
+                0.02    0.08 1330998/2661998     Tensor::operator-(Tensor const&) const [46]
+                0.03    0.04 1330998/6656329     Tensor::Determinant() const [37]
+                0.00    0.06 1330998/14642329     operator*(double, Tensor const&) [29]
+                0.01    0.05 1330998/202059660     Tensor::operator=(Tensor const&) [9]
+                0.04    0.00 19964988/10236335118     Tensor::operator[](unsigned int) const [6]
+                0.01    0.00 6654390/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00 1331000/2669777     Tensor::Tensor(double, double, double, double, double, double, double, double, double) [70]
+                0.00    0.00 5323996/317173925     Tensor::~Tensor() [47]
+                0.00    0.00 1331000/958093529     Vector::Vector() [23]
+                0.00    0.00 1331000/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                0.00    0.00      88/314504148     Body::Export_Particle_Positions() [74]
+                0.00    0.00    1356/314504148     Particle::Particle() [77]
+                0.00    0.00    4000/314504148     Body::Update_x(double) [2]
+                0.00    0.00    6000/314504148     Body::Update_P(double) [3]
+                0.00    0.00 1331000/314504148     Tensor::operator*=(Tensor const&) [33]
+                0.00    0.00 1331000/314504148     Tensor::Eigenvalues() const [35]
+                0.00    0.00 2661998/314504148     Tensor::operator-(Tensor const&) const [46]
+                0.00    0.00 3993000/314504148     Tensor::Transpose() const [48]
+                0.00    0.00 3994331/314504148     Tensor::Inverse() const [27]
+                0.01    0.00 7986000/314504148     Tensor::operator*(Tensor const&) const [22]
+                0.02    0.00 14642329/314504148     Tensor::operator*(double) const [30]
+                0.11    0.00 91137046/314504148     Dyadic_Product(Vector const&, Vector const&) [10]
+                0.23    0.00 187416000/314504148     Tensor::operator+(Tensor const&) const [7]
+[36]     0.3    0.39    0.00 314504148         Tensor::Tensor() [36]
+-----------------------------------------------
+                0.03    0.04 1330998/6656329     Tensor::Eigenvalues() const [35]
+                0.03    0.04 1331000/6656329     Determinant(Tensor const&) [58]
+                0.10    0.13 3994331/6656329     Tensor::Inverse() const [27]
+[37]     0.3    0.16    0.22 6656329         Tensor::Determinant() const [37]
+                0.22    0.00 99844935/10236335118     Tensor::operator[](unsigned int) const [6]
+-----------------------------------------------
+                                                 <spontaneous>
+[38]     0.3    0.00    0.37                 main [38]
+                0.00    0.37       1/1           Simulation::Run() [39]
+-----------------------------------------------
+                0.00    0.37       1/1           main [38]
+[39]     0.3    0.00    0.37       1         Simulation::Run() [39]
+                0.00    0.37       1/1           Simulation::Setup(Body**) [40]
+                0.00    0.00       2/2           Body::~Body() [76]
+                0.00    0.00       1/5005        Simulation::Get_Time() [115]
+                0.00    0.00       1/5003        Simulation::Time_Since(double) [116]
+-----------------------------------------------
+                0.00    0.37       1/1           Simulation::Run() [39]
+[40]     0.3    0.00    0.37       1         Simulation::Setup(Body**) [40]
+                0.00    0.24       1/1           Simulation::Load_Setup_File() [42]
+                0.00    0.13       2/2           Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00       2/2           Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&) [90]
+                0.00    0.00       4/967475217     Vector::~Vector() [31]
+                0.00    0.00       6/8           Body::Get_Is_Box() const [152]
+                0.00    0.00       2/2           Body::Print_Parameters() const [180]
+                0.00    0.00       2/2           Array<Simulation::General_Boundary_Condition>::~Array() [177]
+                0.00    0.00       1/5005        Simulation::Get_Time() [115]
+                0.00    0.00       1/5003        Simulation::Time_Since(double) [116]
+-----------------------------------------------
+                0.00    0.00       2/798         Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.24    0.00     796/798         Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+[41]     0.2    0.24    0.00     798         Vector::Vector(Vector const&) [41]
+                0.00    0.00    2394/10723559432     Vector::operator[](unsigned int) const [5]
+                0.00    0.00    2394/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.00    0.24       1/1           Simulation::Setup(Body**) [40]
+[42]     0.2    0.00    0.24       1         Simulation::Load_Setup_File() [42]
+                0.00    0.24       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.00       4/958093529     Vector::Vector() [23]
+                0.00    0.00      11/62          IO::read_line_after[abi:cxx11](std::basic_ifstream<char, std::char_traits<char> >&, char const*, bool) [149]
+                0.00    0.00       5/51          IO::String_Ops::Contains(char const*, char const*, bool, unsigned int) [150]
+                0.00    0.00       2/2           Body::Body() [175]
+                0.00    0.00       2/2           Array<Simulation::General_Boundary_Condition>::Array() [176]
+-----------------------------------------------
+                0.00    0.24       2/2           Simulation::Load_Setup_File() [42]
+[43]     0.2    0.00    0.24       2         Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.24       2/2           Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.00    0.00       2/2           Body::Set_Box_Dimensions(unsigned int, unsigned int, unsigned int) [78]
+                0.00    0.00      12/233001626     Vector::operator=(Vector const&) [18]
+                0.00    0.00      12/12          Simulation::Parse_BC(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [83]
+                0.00    0.00      12/12          Simulation::Print_BC(Vector&) [84]
+                0.00    0.00      24/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00       2/2           Simulation::Box_BCs::Box_BCs() [85]
+                0.00    0.00      12/967475217     Vector::~Vector() [31]
+                0.00    0.00       2/2           Simulation::Box_BCs::~Box_BCs() [89]
+                0.00    0.00      51/62          IO::read_line_after[abi:cxx11](std::basic_ifstream<char, std::char_traits<char> >&, char const*, bool) [149]
+                0.00    0.00      10/51          IO::String_Ops::Contains(char const*, char const*, bool, unsigned int) [150]
+                0.00    0.00       6/6           Body::Get_Is_Damageable() const [158]
+                0.00    0.00       2/2           std::__cxx11::to_string(unsigned int) [189]
+                0.00    0.00       2/2           Body::Set_Name(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [173]
+                0.00    0.00       2/2           Body::Set_Is_Fixed(bool) [166]
+                0.00    0.00       2/2           Body::Set_Is_Damageable(bool) [168]
+                0.00    0.00       2/2           Body::Set_Material(Materials::Material const&) [167]
+                0.00    0.00       2/2           Body::Set_Gravity_Enabled(bool) [170]
+                0.00    0.00       2/2           Body::Set_mu(double) [172]
+                0.00    0.00       2/2           Body::Set_alpha(double) [174]
+                0.00    0.00       2/2           Body::Set_Inter_Particle_Spacing(double) [171]
+                0.00    0.00       2/2           Body::Set_Support_Radius(double) [169]
+                0.00    0.00       2/5           Body::Get_Name[abi:cxx11]() const [162]
+                0.00    0.00       2/6           Body::Get_Z_SIDE_LENGTH() const [161]
+                0.00    0.00       2/6           Body::Get_Y_SIDE_LENGTH() const [160]
+                0.00    0.00       2/6           Body::Get_X_SIDE_LENGTH() const [159]
+                0.00    0.00       2/4004        Body::Get_Is_Fixed() const [117]
+                0.00    0.00       2/2           Body::Get_Gravity_Enabled() const [182]
+                0.00    0.00       2/2           Body::Get_mu() const [183]
+                0.00    0.00       2/2           Body::Get_alpha() const [184]
+                0.00    0.00       2/4           Body::Get_Inter_Particle_Spacing() const [163]
+                0.00    0.00       2/2           Body::Get_Support_Radius() const [181]
+                0.00    0.00       1/1           Body::Set_Particles_Critical_Stretch(double, double) [191]
+                0.00    0.00       1/1           Body::Set_Tau(double) [192]
+                0.00    0.00       1/1           Body::Get_Tau() const [193]
+-----------------------------------------------
+                0.00    0.24       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[44]     0.2    0.00    0.24       2         Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.24    0.00     796/798         Vector::Vector(Vector const&) [41]
+                0.00    0.00     796/796         Simulation::Set_Box_Particle_BCs(Particle&, Vector) [82]
+                0.00    0.00     796/5579784     Body::operator[](unsigned int) [66]
+                0.00    0.00     796/967475217     Vector::~Vector() [31]
+                0.00    0.00       2/8           Body::Get_Is_Box() const [152]
+                0.00    0.00       2/6           Body::Get_X_SIDE_LENGTH() const [159]
+                0.00    0.00       2/6           Body::Get_Y_SIDE_LENGTH() const [160]
+                0.00    0.00       2/6           Body::Get_Z_SIDE_LENGTH() const [161]
+-----------------------------------------------
+                                                 <spontaneous>
+[45]     0.2    0.20    0.00                 Exception::what() const [45]
+-----------------------------------------------
+                0.02    0.08 1330998/2661998     Tensor::Eigenvalues() const [35]
+                0.02    0.08 1331000/2661998     Body::Update_P(double) [3]
+[46]     0.2    0.04    0.15 2661998         Tensor::operator-(Tensor const&) const [46]
+                0.11    0.00 47915964/10236335118     Tensor::operator[](unsigned int) const [6]
+                0.04    0.00 23957982/5684826690     Tensor::operator[](unsigned int) [8]
+                0.00    0.00 2661998/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                0.00    0.00     110/317173925     Body::Export_Particle_Positions() [74]
+                0.00    0.00    6780/317173925     Particle::~Particle() [75]
+                0.00    0.00   93708/317173925     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.00    0.00 1331000/317173925     Tensor::operator*=(Tensor const&) [33]
+                0.00    0.00 1331000/317173925     Tensor::operator^(int) [24]
+                0.00    0.00 3994331/317173925     Tensor::Inverse() const [27]
+                0.00    0.00 5323996/317173925     Tensor::Eigenvalues() const [35]
+                0.07    0.00 122997000/317173925     Body::Update_P(double) [3]
+                0.10    0.00 182096000/317173925     Body::Update_x(double) [2]
+[47]     0.2    0.18    0.00 317173925         Tensor::~Tensor() [47]
+-----------------------------------------------
+                0.01    0.15 3993000/3993000     Tensor::operator^(int) [24]
+[48]     0.1    0.01    0.15 3993000         Tensor::Transpose() const [48]
+                0.08    0.00 35937000/10236335118     Tensor::operator[](unsigned int) const [6]
+                0.06    0.00 35937000/5684826690     Tensor::operator[](unsigned int) [8]
+                0.00    0.00 3993000/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                                                 <spontaneous>
+[49]     0.1    0.14    0.00                 Tensor::Tensor(Tensor const&) [49]
+-----------------------------------------------
+                0.00    0.13       2/2           Simulation::Setup(Body**) [40]
+[50]     0.1    0.00    0.13       2         Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.02    0.11       1/1           Body::Find_Neighbors_Box() [51]
+                0.00    0.00       2/798         Vector::Vector(Vector const&) [41]
+                0.00    0.00    2712/233001626     Vector::operator=(Vector const&) [18]
+                0.00    0.00    1356/278739547     Vector::operator+=(Vector const&) [12]
+                0.00    0.00    8136/5579784     Body::operator[](unsigned int) [66]
+                0.00    0.00    1356/1356        Particle::Set_X(Vector const&) [80]
+                0.00    0.00    1356/1356        Particle::Set_x(Vector const&) [81]
+                0.00    0.00    1356/1356        Particle::Set_V(Vector const&) [79]
+                0.00    0.00    1356/9380891     Vector::Vector(double, double, double) [56]
+                0.00    0.00    1362/967475217     Vector::~Vector() [31]
+                0.00    0.00       4/958093529     Vector::Vector() [23]
+                0.00    0.00    1356/1356        Particle::Set_Mass(double) [134]
+                0.00    0.00    1356/1356        Particle::Set_Volume(double) [132]
+                0.00    0.00    1356/1356        Particle::Set_Radius(double) [131]
+                0.00    0.00       3/5           Body::Get_Name[abi:cxx11]() const [162]
+                0.00    0.00       3/5005        Simulation::Get_Time() [115]
+                0.00    0.00       2/4           Body::Get_Inter_Particle_Spacing() const [163]
+                0.00    0.00       2/2           Body::Get_density() const [179]
+                0.00    0.00       2/6           Body::Get_X_SIDE_LENGTH() const [159]
+                0.00    0.00       2/6           Body::Get_Y_SIDE_LENGTH() const [160]
+                0.00    0.00       2/6           Body::Get_Z_SIDE_LENGTH() const [161]
+                0.00    0.00       2/4004        Body::Get_Is_Fixed() const [117]
+                0.00    0.00       1/5003        Simulation::Time_Since(double) [116]
+-----------------------------------------------
+                0.02    0.11       1/1           Simulation::Setup_Box(Body&, unsigned int) [50]
+[51]     0.1    0.02    0.11       1         Body::Find_Neighbors_Box() [51]
+                0.00    0.10    1331/1331        Body::Set_Neighbors(unsigned int, Array<unsigned int> const&) [53]
+                0.00    0.01  273294/273294      Body::Are_Neighbors(unsigned int, unsigned int) const [69]
+                0.00    0.00   91046/91046       List<unsigned int>::Push_Back(unsigned int) [105]
+                0.00    0.00    1331/3331        List<unsigned int>::List() [123]
+                0.00    0.00    1331/1331        Array<unsigned int>::Array(List<unsigned int>&) [136]
+                0.00    0.00    1331/3331        List<unsigned int>::~List() [124]
+                0.00    0.00    1331/1331        Array<unsigned int>::~Array() [137]
+-----------------------------------------------
+                0.04    0.07 3993000/3993000     Body::Update_x(double) [2]
+[52]     0.1    0.04    0.07 3993000         Vector::operator+(Vector const&) const [52]
+                0.05    0.00 23958000/10723559432     Vector::operator[](unsigned int) const [5]
+                0.02    0.00 11979000/4443848283     Vector::operator[](unsigned int) [14]
+                0.01    0.00 3993000/958093529     Vector::Vector() [23]
+-----------------------------------------------
+                0.00    0.10    1331/1331        Body::Find_Neighbors_Box() [51]
+[53]     0.1    0.00    0.10    1331         Body::Set_Neighbors(unsigned int, Array<unsigned int> const&) [53]
+                0.00    0.10    1331/1331        Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.00    0.00   91046/91046       Array<unsigned int>::operator[](unsigned int) const [106]
+                0.00    0.00    1331/1331        Array<unsigned int>::Get_Length() const [139]
+-----------------------------------------------
+                0.00    0.10    1331/1331        Body::Set_Neighbors(unsigned int, Array<unsigned int> const&) [53]
+[54]     0.1    0.00    0.10    1331         Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.07    0.00   91046/120900      Vector::operator/(double) const [55]
+                0.00    0.01   91046/91137046     Dyadic_Product(Vector const&, Vector const&) [10]
+                0.00    0.00   91046/91137046     Tensor::operator+=(Tensor const&) [15]
+                0.00    0.00  182092/368428495     operator*(double, Vector const&) [11]
+                0.00    0.00  182092/233001626     Vector::operator=(Vector const&) [18]
+                0.00    0.00   91046/91176616     Vector::Magnitude() const [21]
+                0.00    0.00   91046/215759490     Vector::operator-(Vector const&) const [16]
+                0.00    0.00  182092/958093529     Vector::Vector() [23]
+                0.00    0.00    1331/6656331     Tensor::operator^(int) [24]
+                0.00    0.00  364184/967475217     Vector::~Vector() [31]
+                0.00    0.00    1331/202059660     Tensor::operator=(Tensor const&) [9]
+                0.00    0.00   93708/317173925     Tensor::~Tensor() [47]
+                0.00    0.00    1331/2669777     Tensor::Tensor(double, double, double, double, double, double, double, double, double) [70]
+                0.00    0.00   91046/91046       Particle::Get_Neighbor_IDs(unsigned int) const [107]
+                0.00    0.00    1331/1331        Particle::Get_Num_Neighbors() const [140]
+-----------------------------------------------
+                0.01    0.00   14916/120900      Body::Export_Body_Forces(unsigned int) [68]
+                0.01    0.00   14938/120900      Body::Export_Body_Torques(unsigned int) [61]
+                0.07    0.00   91046/120900      Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+[55]     0.1    0.09    0.00  120900         Vector::operator/(double) const [55]
+                0.00    0.00  120900/368549395     Vector::operator*(double) const [13]
+-----------------------------------------------
+                0.00    0.00       1/9380891     __static_initialization_and_destruction_0(int, int) [87]
+                0.00    0.00     154/9380891     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00     176/9380891     Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.00    1356/9380891     Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00   12204/9380891     Particle::Particle() [77]
+                0.01    0.01 2662000/9380891     Body::Contact(Body&, Body&) [20]
+                0.01    0.01 2712000/9380891     Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+                0.02    0.02 3993000/9380891     Body::Update_x(double) [2]
+[56]     0.1    0.04    0.04 9380891         Vector::Vector(double, double, double) [56]
+                0.04    0.00 28142673/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                                                 <spontaneous>
+[57]     0.1    0.08    0.00                 Quick_Math::cos(double) [57]
+-----------------------------------------------
+                0.00    0.08 1331000/1331000     Body::Update_P(double) [3]
+[58]     0.1    0.00    0.08 1331000         Determinant(Tensor const&) [58]
+                0.03    0.04 1331000/6656329     Tensor::Determinant() const [37]
+-----------------------------------------------
+                                                 <spontaneous>
+[59]     0.1    0.07    0.00                 Tensor::operator/(double) const [59]
+-----------------------------------------------
+                0.01    0.06 1331000/1331000     Body::Update_P(double) [3]
+[60]     0.1    0.01    0.06 1331000         Max_Component(Vector const&) [60]
+                0.05    0.01 1331000/1331000     Vector::Max_Component() const [64]
+-----------------------------------------------
+                0.00    0.07      22/22          Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[61]     0.1    0.00    0.07      22         Body::Export_Body_Torques(unsigned int) [61]
+                0.05    0.00   89496/89496       Cross_Product(Vector const&, Vector const&) [65]
+                0.01    0.00   14938/120900      Vector::operator/(double) const [55]
+                0.00    0.00  104412/278739547     Vector::operator+=(Vector const&) [12]
+                0.00    0.00   14938/215759490     Vector::operator-(Vector const&) const [16]
+                0.00    0.00   14916/368428495     operator*(double, Vector const&) [11]
+                0.00    0.00   14916/1360832     Particle::Get_Mass() const [67]
+                0.00    0.00  134464/967475217     Vector::~Vector() [31]
+                0.00    0.00     176/9380891     Vector::Vector(double, double, double) [56]
+                0.00    0.00      44/233001626     Vector::operator=(Vector const&) [18]
+                0.00    0.00     396/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00   29832/1400748     Particle::Get_x() const [98]
+                0.00    0.00   14916/29832       Particle::Get_Force_Internal() const [110]
+                0.00    0.00   14916/29832       Particle::Get_Force_Viscosity() const [112]
+                0.00    0.00   14916/29832       Particle::Get_Force_Contact() const [108]
+                0.00    0.00   14916/29832       Particle::Get_Force_Friction() const [109]
+                0.00    0.00   14916/29832       Particle::Get_Force_Hourglass() const [111]
+                0.00    0.00   14916/29832       Particle::Get_a() const [113]
+-----------------------------------------------
+                0.06    0.00 1356000/1356000     Body::Apply_BCs() [63]
+[62]     0.1    0.06    0.00 1356000         Particle::Apply_BCs() [62]
+-----------------------------------------------
+                0.00    0.06    2000/2000        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[63]     0.1    0.00    0.06    2000         Body::Apply_BCs() [63]
+                0.06    0.00 1356000/1356000     Particle::Apply_BCs() [62]
+-----------------------------------------------
+                0.05    0.01 1331000/1331000     Max_Component(Vector const&) [60]
+[64]     0.1    0.05    0.01 1331000         Vector::Max_Component() const [64]
+                0.01    0.00 3993014/10723559432     Vector::operator[](unsigned int) const [5]
+-----------------------------------------------
+                0.05    0.00   89496/89496       Body::Export_Body_Torques(unsigned int) [61]
+[65]     0.0    0.05    0.00   89496         Cross_Product(Vector const&, Vector const&) [65]
+                0.00    0.00 1073952/10723559432     Vector::operator[](unsigned int) const [5]
+                0.00    0.00  268488/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00   89496/958093529     Vector::Vector() [23]
+-----------------------------------------------
+                0.00    0.00     796/5579784     Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.00    0.00    8136/5579784     Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.01    0.00 2712000/5579784     Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+                0.01    0.00 2858852/5579784     Body::Contact(Body&, Body&) [20]
+[66]     0.0    0.02    0.00 5579784         Body::operator[](unsigned int) [66]
+-----------------------------------------------
+                0.00    0.00   14916/1360832     Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/1360832     Body::Export_Body_Torques(unsigned int) [61]
+                0.02    0.00 1331000/1360832     Body::Update_x(double) [2]
+[67]     0.0    0.02    0.00 1360832         Particle::Get_Mass() const [67]
+-----------------------------------------------
+                0.00    0.01      22/22          Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[68]     0.0    0.00    0.01      22         Body::Export_Body_Forces(unsigned int) [68]
+                0.01    0.00   14916/120900      Vector::operator/(double) const [55]
+                0.00    0.00   89496/278739547     Vector::operator+=(Vector const&) [12]
+                0.00    0.00   14916/368428495     operator*(double, Vector const&) [11]
+                0.00    0.00   14916/1360832     Particle::Get_Mass() const [67]
+                0.00    0.00   30008/967475217     Vector::~Vector() [31]
+                0.00    0.00     154/9380891     Vector::Vector(double, double, double) [56]
+                0.00    0.00     396/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00      22/215759490     Vector::operator-(Vector const&) const [16]
+                0.00    0.00      22/233001626     Vector::operator=(Vector const&) [18]
+                0.00    0.00   14916/29832       Particle::Get_Force_Internal() const [110]
+                0.00    0.00   14916/29832       Particle::Get_Force_Viscosity() const [112]
+                0.00    0.00   14916/29832       Particle::Get_Force_Contact() const [108]
+                0.00    0.00   14916/29832       Particle::Get_Force_Friction() const [109]
+                0.00    0.00   14916/29832       Particle::Get_Force_Hourglass() const [111]
+                0.00    0.00   14916/29832       Particle::Get_a() const [113]
+-----------------------------------------------
+                0.00    0.01  273294/273294      Body::Find_Neighbors_Box() [51]
+[69]     0.0    0.00    0.01  273294         Body::Are_Neighbors(unsigned int, unsigned int) const [69]
+                0.00    0.01  273294/215759490     Vector::operator-(Vector const&) const [16]
+                0.00    0.00  273294/215640294     Dot_Product(Vector const&, Vector const&) [17]
+                0.00    0.00  273294/967475217     Vector::~Vector() [31]
+                0.00    0.00  546588/546588      Particle::Get_X() const [103]
+-----------------------------------------------
+                0.00    0.00      22/2669777     Body::Export_Particle_Positions() [74]
+                0.00    0.00    1331/2669777     Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+                0.00    0.00    5424/2669777     Particle::Particle() [77]
+                0.00    0.00 1331000/2669777     Tensor::Eigenvalues() const [35]
+                0.00    0.00 1332000/2669777     Body::Update_P(double) [3]
+[70]     0.0    0.01    0.00 2669777         Tensor::Tensor(double, double, double, double, double, double, double, double, double) [70]
+-----------------------------------------------
+                                                 <spontaneous>
+[71]     0.0    0.01    0.00                 Particle::Get_ID() const [71]
+-----------------------------------------------
+                                                 <spontaneous>
+[72]     0.0    0.01    0.00                 Vector::operator=(double const*) [72]
+-----------------------------------------------
+                0.00    0.00   26380/26380       Body::Contact(Body&, Body&) [20]
+[73]     0.0    0.00    0.00   26380         Vector::operator-=(Vector const&) [73]
+                0.00    0.00   79140/10723559432     Vector::operator[](unsigned int) const [5]
+                0.00    0.00   79140/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.00    0.00      22/22          Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[74]     0.0    0.00    0.00      22         Body::Export_Particle_Positions() [74]
+                0.00    0.00   14916/233001626     Vector::operator=(Vector const&) [18]
+                0.00    0.00   44748/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00      88/314504148     Tensor::Tensor() [36]
+                0.00    0.00      22/2669777     Tensor::Tensor(double, double, double, double, double, double, double, double, double) [70]
+                0.00    0.00     110/317173925     Tensor::~Tensor() [47]
+                0.00    0.00      22/958093529     Vector::Vector() [23]
+                0.00    0.00      22/967475217     Vector::~Vector() [31]
+                0.00    0.00   14916/1400748     Particle::Get_x() const [98]
+                0.00    0.00   14916/14916       Particle::Get_Stretch_M() const [114]
+                0.00    0.00   14916/1370916     Particle::Get_D() const [99]
+                0.00    0.00      44/44          Body::Add_Point_Data(_IO_FILE*, char*, unsigned int, double*) const [151]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Body::~Body() [76]
+[75]     0.0    0.00    0.00    1356         Particle::~Particle() [75]
+                0.00    0.00  194296/967475217     Vector::~Vector() [31]
+                0.00    0.00    6780/317173925     Tensor::~Tensor() [47]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Run() [39]
+[76]     0.0    0.00    0.00       2         Body::~Body() [76]
+                0.00    0.00    1356/1356        Particle::~Particle() [75]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Body::Set_Box_Dimensions(unsigned int, unsigned int, unsigned int) [78]
+[77]     0.0    0.00    0.00    1356         Particle::Particle() [77]
+                0.00    0.00   12204/9380891     Vector::Vector(double, double, double) [56]
+                0.00    0.00    5424/2669777     Tensor::Tensor(double, double, double, double, double, double, double, double, double) [70]
+                0.00    0.00    1356/314504148     Tensor::Tensor() [36]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[78]     0.0    0.00    0.00       2         Body::Set_Box_Dimensions(unsigned int, unsigned int, unsigned int) [78]
+                0.00    0.00    1356/1356        Particle::Particle() [77]
+                0.00    0.00    1356/1356        Particle::Set_ID(unsigned int) [133]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Simulation::Setup_Box(Body&, unsigned int) [50]
+[79]     0.0    0.00    0.00    1356         Particle::Set_V(Vector const&) [79]
+                0.00    0.00    1356/233001626     Vector::operator=(Vector const&) [18]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Simulation::Setup_Box(Body&, unsigned int) [50]
+[80]     0.0    0.00    0.00    1356         Particle::Set_X(Vector const&) [80]
+                0.00    0.00    1356/233001626     Vector::operator=(Vector const&) [18]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Simulation::Setup_Box(Body&, unsigned int) [50]
+[81]     0.0    0.00    0.00    1356         Particle::Set_x(Vector const&) [81]
+                0.00    0.00    1356/233001626     Vector::operator=(Vector const&) [18]
+-----------------------------------------------
+                0.00    0.00     796/796         Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+[82]     0.0    0.00    0.00     796         Simulation::Set_Box_Particle_BCs(Particle&, Vector) [82]
+                0.00    0.00    2388/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.00    0.00      12/12          Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[83]     0.0    0.00    0.00      12         Simulation::Parse_BC(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [83]
+                0.00    0.00      36/4443848283     Vector::operator[](unsigned int) [14]
+                0.00    0.00      12/958093529     Vector::Vector() [23]
+                0.00    0.00      36/51          IO::String_Ops::Contains(char const*, char const*, bool, unsigned int) [150]
+-----------------------------------------------
+                0.00    0.00      12/12          Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[84]     0.0    0.00    0.00      12         Simulation::Print_BC(Vector&) [84]
+                0.00    0.00      36/4443848283     Vector::operator[](unsigned int) [14]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[85]     0.0    0.00    0.00       2         Simulation::Box_BCs::Box_BCs() [85]
+                0.00    0.00      12/958093529     Vector::Vector() [23]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [88]
+[86]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN4Body1KE [86]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [87]
+-----------------------------------------------
+                0.00    0.00       1/1           _GLOBAL__sub_I__ZN4Body1KE [86]
+[87]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [87]
+                0.00    0.00       1/9380891     Vector::Vector(double, double, double) [56]
+-----------------------------------------------
+                                                 <spontaneous>
+[88]     0.0    0.00    0.00                 __libc_csu_init [88]
+                0.00    0.00       1/1           _GLOBAL__sub_I__ZN4Body1KE [86]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[89]     0.0    0.00    0.00       2         Simulation::Box_BCs::~Box_BCs() [89]
+                0.00    0.00      12/967475217     Vector::~Vector() [31]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Setup(Body**) [40]
+[90]     0.0    0.00    0.00       2         Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&) [90]
+                0.00    0.00       2/958093529     Vector::Vector() [23]
+                0.00    0.00       2/967475217     Vector::~Vector() [31]
+                0.00    0.00       2/2           Array<Simulation::General_Boundary_Condition>::Get_Length() const [185]
+                0.00    0.00       2/4002        Body::Get_Num_Particles() const [118]
+-----------------------------------------------
+                0.00    0.00 3993000/3993000     Body::Update_x(double) [2]
+[97]     0.0    0.00    0.00 3993000         std::isnan(double) [97]
+-----------------------------------------------
+                0.00    0.00   14916/1400748     Body::Export_Particle_Positions() [74]
+                0.00    0.00   29832/1400748     Body::Export_Body_Torques(unsigned int) [61]
+                0.00    0.00 1356000/1400748     Body::Contact(Body&, Body&) [20]
+[98]     0.0    0.00    0.00 1400748         Particle::Get_x() const [98]
+-----------------------------------------------
+                0.00    0.00   14916/1370916     Body::Export_Particle_Positions() [74]
+                0.00    0.00   25000/1370916     Body::Contact(Body&, Body&) [20]
+                0.00    0.00 1331000/1370916     Body::Update_x(double) [2]
+[99]     0.0    0.00    0.00 1370916         Particle::Get_D() const [99]
+-----------------------------------------------
+                0.00    0.00   38190/1369190     Body::Contact(Body&, Body&) [20]
+                0.00    0.00 1331000/1369190     Body::Update_x(double) [2]
+[100]    0.0    0.00    0.00 1369190         Particle::Get_Volume() const [100]
+-----------------------------------------------
+                0.00    0.00 1331000/1331000     Body::Update_x(double) [2]
+[101]    0.0    0.00    0.00 1331000         Particle::Get_F(unsigned int) const [101]
+-----------------------------------------------
+                0.00    0.00 1331000/1331000     Body::Update_x(double) [2]
+[102]    0.0    0.00    0.00 1331000         Particle::Get_P() const [102]
+-----------------------------------------------
+                0.00    0.00  546588/546588      Body::Are_Neighbors(unsigned int, unsigned int) const [69]
+[103]    0.0    0.00    0.00  546588         Particle::Get_X() const [103]
+-----------------------------------------------
+                0.00    0.00   91046/91046       Array<unsigned int>::Private_Setup_From_List(List<unsigned int>&) [135]
+[104]    0.0    0.00    0.00   91046         List<unsigned int>::Pop_Front() [104]
+-----------------------------------------------
+                0.00    0.00   91046/91046       Body::Find_Neighbors_Box() [51]
+[105]    0.0    0.00    0.00   91046         List<unsigned int>::Push_Back(unsigned int) [105]
+-----------------------------------------------
+                0.00    0.00   91046/91046       Body::Set_Neighbors(unsigned int, Array<unsigned int> const&) [53]
+[106]    0.0    0.00    0.00   91046         Array<unsigned int>::operator[](unsigned int) const [106]
+-----------------------------------------------
+                0.00    0.00   91046/91046       Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+[107]    0.0    0.00    0.00   91046         Particle::Get_Neighbor_IDs(unsigned int) const [107]
+-----------------------------------------------
+                0.00    0.00   14916/29832       Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/29832       Body::Export_Body_Torques(unsigned int) [61]
+[108]    0.0    0.00    0.00   29832         Particle::Get_Force_Contact() const [108]
+-----------------------------------------------
+                0.00    0.00   14916/29832       Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/29832       Body::Export_Body_Torques(unsigned int) [61]
+[109]    0.0    0.00    0.00   29832         Particle::Get_Force_Friction() const [109]
+-----------------------------------------------
+                0.00    0.00   14916/29832       Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/29832       Body::Export_Body_Torques(unsigned int) [61]
+[110]    0.0    0.00    0.00   29832         Particle::Get_Force_Internal() const [110]
+-----------------------------------------------
+                0.00    0.00   14916/29832       Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/29832       Body::Export_Body_Torques(unsigned int) [61]
+[111]    0.0    0.00    0.00   29832         Particle::Get_Force_Hourglass() const [111]
+-----------------------------------------------
+                0.00    0.00   14916/29832       Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/29832       Body::Export_Body_Torques(unsigned int) [61]
+[112]    0.0    0.00    0.00   29832         Particle::Get_Force_Viscosity() const [112]
+-----------------------------------------------
+                0.00    0.00   14916/29832       Body::Export_Body_Forces(unsigned int) [68]
+                0.00    0.00   14916/29832       Body::Export_Body_Torques(unsigned int) [61]
+[113]    0.0    0.00    0.00   29832         Particle::Get_a() const [113]
+-----------------------------------------------
+                0.00    0.00   14916/14916       Body::Export_Particle_Positions() [74]
+[114]    0.0    0.00    0.00   14916         Particle::Get_Stretch_M() const [114]
+-----------------------------------------------
+                0.00    0.00       1/5005        Simulation::Run() [39]
+                0.00    0.00       1/5005        Simulation::Setup(Body**) [40]
+                0.00    0.00       3/5005        Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00    5000/5005        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[115]    0.0    0.00    0.00    5005         Simulation::Get_Time() [115]
+-----------------------------------------------
+                0.00    0.00       1/5003        Simulation::Run() [39]
+                0.00    0.00       1/5003        Simulation::Setup(Body**) [40]
+                0.00    0.00       1/5003        Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00    5000/5003        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[116]    0.0    0.00    0.00    5003         Simulation::Time_Since(double) [116]
+-----------------------------------------------
+                0.00    0.00       2/4004        Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00       2/4004        Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.00    4000/4004        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[117]    0.0    0.00    0.00    4004         Body::Get_Is_Fixed() const [117]
+-----------------------------------------------
+                0.00    0.00       2/4002        Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&) [90]
+                0.00    0.00    2000/4002        Body::Contact(Body&, Body&) [20]
+                0.00    0.00    2000/4002        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[118]    0.0    0.00    0.00    4002         Body::Get_Num_Particles() const [118]
+-----------------------------------------------
+                0.00    0.00    3392/3392        double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [128]
+[119]    0.0    0.00    0.00    3392         std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::min() [119]
+-----------------------------------------------
+                0.00    0.00    3392/3392        double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [128]
+[120]    0.0    0.00    0.00    3392         std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::operator()() [120]
+                0.00    0.00    3392/3392        unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 16807ul, 0ul>(unsigned long) [122]
+-----------------------------------------------
+                0.00    0.00    3392/3392        unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 16807ul, 0ul>(unsigned long) [122]
+[121]    0.0    0.00    0.00    3392         std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long) [121]
+-----------------------------------------------
+                0.00    0.00    3392/3392        std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::operator()() [120]
+[122]    0.0    0.00    0.00    3392         unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 16807ul, 0ul>(unsigned long) [122]
+                0.00    0.00    3392/3392        std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long) [121]
+-----------------------------------------------
+                0.00    0.00    1000/3331        Body::Update_P(double) [3]
+                0.00    0.00    1000/3331        Body::Update_x(double) [2]
+                0.00    0.00    1331/3331        Body::Find_Neighbors_Box() [51]
+[123]    0.0    0.00    0.00    3331         List<unsigned int>::List() [123]
+-----------------------------------------------
+                0.00    0.00    1000/3331        Body::Update_P(double) [3]
+                0.00    0.00    1000/3331        Body::Update_x(double) [2]
+                0.00    0.00    1331/3331        Body::Find_Neighbors_Box() [51]
+[124]    0.0    0.00    0.00    3331         List<unsigned int>::~List() [124]
+-----------------------------------------------
+                0.00    0.00    1331/3331        Array<unsigned int>::Private_Setup_From_List(List<unsigned int>&) [135]
+                0.00    0.00    2000/3331        Body::Remove_Damaged_Particles(List<unsigned int>&) [126]
+[125]    0.0    0.00    0.00    3331         List<unsigned int>::Get_Length() const [125]
+-----------------------------------------------
+                0.00    0.00    1000/2000        Body::Update_P(double) [3]
+                0.00    0.00    1000/2000        Body::Update_x(double) [2]
+[126]    0.0    0.00    0.00    2000         Body::Remove_Damaged_Particles(List<unsigned int>&) [126]
+                0.00    0.00    2000/3331        List<unsigned int>::Get_Length() const [125]
+-----------------------------------------------
+                0.00    0.00    1696/1696        double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&) [144]
+[127]    0.0    0.00    0.00    1696         std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::operator()() [127]
+                0.00    0.00    1696/1696        double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [128]
+-----------------------------------------------
+                0.00    0.00    1696/1696        std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::operator()() [127]
+[128]    0.0    0.00    0.00    1696         double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [128]
+                0.00    0.00    3392/3392        std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::min() [119]
+                0.00    0.00    3392/3392        std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::operator()() [120]
+                0.00    0.00    1696/1696        unsigned long const& std::min<unsigned long>(unsigned long const&, unsigned long const&) [130]
+                0.00    0.00    1696/1696        unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&) [129]
+-----------------------------------------------
+                0.00    0.00    1696/1696        double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [128]
+[129]    0.0    0.00    0.00    1696         unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&) [129]
+-----------------------------------------------
+                0.00    0.00    1696/1696        double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [128]
+[130]    0.0    0.00    0.00    1696         unsigned long const& std::min<unsigned long>(unsigned long const&, unsigned long const&) [130]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Simulation::Setup_Box(Body&, unsigned int) [50]
+[131]    0.0    0.00    0.00    1356         Particle::Set_Radius(double) [131]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Simulation::Setup_Box(Body&, unsigned int) [50]
+[132]    0.0    0.00    0.00    1356         Particle::Set_Volume(double) [132]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Body::Set_Box_Dimensions(unsigned int, unsigned int, unsigned int) [78]
+[133]    0.0    0.00    0.00    1356         Particle::Set_ID(unsigned int) [133]
+-----------------------------------------------
+                0.00    0.00    1356/1356        Simulation::Setup_Box(Body&, unsigned int) [50]
+[134]    0.0    0.00    0.00    1356         Particle::Set_Mass(double) [134]
+-----------------------------------------------
+                0.00    0.00    1331/1331        Array<unsigned int>::Array(List<unsigned int>&) [136]
+[135]    0.0    0.00    0.00    1331         Array<unsigned int>::Private_Setup_From_List(List<unsigned int>&) [135]
+                0.00    0.00   91046/91046       List<unsigned int>::Pop_Front() [104]
+                0.00    0.00    1331/3331        List<unsigned int>::Get_Length() const [125]
+-----------------------------------------------
+                0.00    0.00    1331/1331        Body::Find_Neighbors_Box() [51]
+[136]    0.0    0.00    0.00    1331         Array<unsigned int>::Array(List<unsigned int>&) [136]
+                0.00    0.00    1331/1331        Array<unsigned int>::Private_Setup_From_List(List<unsigned int>&) [135]
+-----------------------------------------------
+                0.00    0.00    1331/1331        Body::Find_Neighbors_Box() [51]
+[137]    0.0    0.00    0.00    1331         Array<unsigned int>::~Array() [137]
+-----------------------------------------------
+                0.00    0.00    1331/1331        Body::Set_Particles_Critical_Stretch(double, double) [191]
+[138]    0.0    0.00    0.00    1331         Particle::Set_Stretch_Critical(double) [138]
+-----------------------------------------------
+                0.00    0.00    1331/1331        Body::Set_Neighbors(unsigned int, Array<unsigned int> const&) [53]
+[139]    0.0    0.00    0.00    1331         Array<unsigned int>::Get_Length() const [139]
+-----------------------------------------------
+                0.00    0.00    1331/1331        Body::Set_Neighbor_Dependent_Members(unsigned int) [54]
+[140]    0.0    0.00    0.00    1331         Particle::Get_Num_Neighbors() const [140]
+-----------------------------------------------
+                0.00    0.00    1331/1331        double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&) [144]
+[141]    0.0    0.00    0.00    1331         std::normal_distribution<double>::param_type::mean() const [141]
+-----------------------------------------------
+                0.00    0.00    1331/1331        double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&) [144]
+[142]    0.0    0.00    0.00    1331         std::normal_distribution<double>::param_type::stddev() const [142]
+-----------------------------------------------
+                0.00    0.00    1331/1331        Body::Set_Particles_Critical_Stretch(double, double) [191]
+[143]    0.0    0.00    0.00    1331         double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [143]
+                0.00    0.00    1331/1331        double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&) [144]
+-----------------------------------------------
+                0.00    0.00    1331/1331        double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [143]
+[144]    0.0    0.00    0.00    1331         double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&) [144]
+                0.00    0.00    1696/1696        std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::operator()() [127]
+                0.00    0.00    1331/1331        std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::_Adaptor(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [145]
+                0.00    0.00    1331/1331        std::normal_distribution<double>::param_type::stddev() const [142]
+                0.00    0.00    1331/1331        std::normal_distribution<double>::param_type::mean() const [141]
+-----------------------------------------------
+                0.00    0.00    1331/1331        double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&) [144]
+[145]    0.0    0.00    0.00    1331         std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::_Adaptor(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [145]
+-----------------------------------------------
+                0.00    0.00    1000/1000        Simulation::Export_Bodies_Data(Body*, unsigned int, unsigned int) [1]
+[146]    0.0    0.00    0.00    1000         Body::Increment_F_Index() [146]
+-----------------------------------------------
+                0.00    0.00    1000/1000        Body::Contact(Body&, Body&) [20]
+[147]    0.0    0.00    0.00    1000         Body::Get_Shape_Function_Amplitude() const [147]
+-----------------------------------------------
+                0.00    0.00      51/268         IO::String_Ops::Contains(char const*, char const*, bool, unsigned int) [150]
+                0.00    0.00     217/268         IO::read_line_after[abi:cxx11](std::basic_ifstream<char, std::char_traits<char> >&, char const*, bool) [149]
+[148]    0.0    0.00    0.00     268         IO::String_Ops::Index_After_Word(char const*, char const*, bool, unsigned int) [148]
+-----------------------------------------------
+                0.00    0.00      11/62          Simulation::Load_Setup_File() [42]
+                0.00    0.00      51/62          Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[149]    0.0    0.00    0.00      62         IO::read_line_after[abi:cxx11](std::basic_ifstream<char, std::char_traits<char> >&, char const*, bool) [149]
+                0.00    0.00     217/268         IO::String_Ops::Index_After_Word(char const*, char const*, bool, unsigned int) [148]
+-----------------------------------------------
+                0.00    0.00       5/51          Simulation::Load_Setup_File() [42]
+                0.00    0.00      10/51          Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.00      36/51          Simulation::Parse_BC(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [83]
+[150]    0.0    0.00    0.00      51         IO::String_Ops::Contains(char const*, char const*, bool, unsigned int) [150]
+                0.00    0.00      51/268         IO::String_Ops::Index_After_Word(char const*, char const*, bool, unsigned int) [148]
+-----------------------------------------------
+                0.00    0.00      44/44          Body::Export_Particle_Positions() [74]
+[151]    0.0    0.00    0.00      44         Body::Add_Point_Data(_IO_FILE*, char*, unsigned int, double*) const [151]
+-----------------------------------------------
+                0.00    0.00       2/8           Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.00    0.00       6/8           Simulation::Setup(Body**) [40]
+[152]    0.0    0.00    0.00       8         Body::Get_Is_Box() const [152]
+-----------------------------------------------
+                0.00    0.00       7/7           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag) [154]
+[153]    0.0    0.00    0.00       7         bool __gnu_cxx::__is_null_pointer<char>(char*) [153]
+-----------------------------------------------
+                0.00    0.00       2/7           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type) [187]
+                0.00    0.00       5/7           Body::Get_Name[abi:cxx11]() const [162]
+[154]    0.0    0.00    0.00       7         void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag) [154]
+                0.00    0.00       7/7           bool __gnu_cxx::__is_null_pointer<char>(char*) [153]
+                0.00    0.00       7/7           std::iterator_traits<char*>::difference_type std::distance<char*>(char*, char*) [157]
+-----------------------------------------------
+                0.00    0.00       7/7           std::iterator_traits<char*>::difference_type std::distance<char*>(char*, char*) [157]
+[155]    0.0    0.00    0.00       7         std::iterator_traits<char*>::difference_type std::__distance<char*>(char*, char*, std::random_access_iterator_tag) [155]
+-----------------------------------------------
+                0.00    0.00       7/7           std::iterator_traits<char*>::difference_type std::distance<char*>(char*, char*) [157]
+[156]    0.0    0.00    0.00       7         std::iterator_traits<char*>::iterator_category std::__iterator_category<char*>(char* const&) [156]
+-----------------------------------------------
+                0.00    0.00       7/7           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag) [154]
+[157]    0.0    0.00    0.00       7         std::iterator_traits<char*>::difference_type std::distance<char*>(char*, char*) [157]
+                0.00    0.00       7/7           std::iterator_traits<char*>::iterator_category std::__iterator_category<char*>(char* const&) [156]
+                0.00    0.00       7/7           std::iterator_traits<char*>::difference_type std::__distance<char*>(char*, char*, std::random_access_iterator_tag) [155]
+-----------------------------------------------
+                0.00    0.00       6/6           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[158]    0.0    0.00    0.00       6         Body::Get_Is_Damageable() const [158]
+-----------------------------------------------
+                0.00    0.00       2/6           Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00       2/6           Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.00    0.00       2/6           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[159]    0.0    0.00    0.00       6         Body::Get_X_SIDE_LENGTH() const [159]
+-----------------------------------------------
+                0.00    0.00       2/6           Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00       2/6           Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.00    0.00       2/6           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[160]    0.0    0.00    0.00       6         Body::Get_Y_SIDE_LENGTH() const [160]
+-----------------------------------------------
+                0.00    0.00       2/6           Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00       2/6           Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [44]
+                0.00    0.00       2/6           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[161]    0.0    0.00    0.00       6         Body::Get_Z_SIDE_LENGTH() const [161]
+-----------------------------------------------
+                0.00    0.00       2/5           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+                0.00    0.00       3/5           Simulation::Setup_Box(Body&, unsigned int) [50]
+[162]    0.0    0.00    0.00       5         Body::Get_Name[abi:cxx11]() const [162]
+                0.00    0.00       5/7           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag) [154]
+-----------------------------------------------
+                0.00    0.00       2/4           Simulation::Setup_Box(Body&, unsigned int) [50]
+                0.00    0.00       2/4           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[163]    0.0    0.00    0.00       4         Body::Get_Inter_Particle_Spacing() const [163]
+-----------------------------------------------
+                0.00    0.00       3/3           unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 1ul, 0ul>(unsigned long) [165]
+[164]    0.0    0.00    0.00       3         std::__detail::_Mod<unsigned long, 2147483647ul, 1ul, 0ul, true, true>::__calc(unsigned long) [164]
+-----------------------------------------------
+                0.00    0.00       3/3           std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::seed(unsigned long) [196]
+[165]    0.0    0.00    0.00       3         unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 1ul, 0ul>(unsigned long) [165]
+                0.00    0.00       3/3           std::__detail::_Mod<unsigned long, 2147483647ul, 1ul, 0ul, true, true>::__calc(unsigned long) [164]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[166]    0.0    0.00    0.00       2         Body::Set_Is_Fixed(bool) [166]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[167]    0.0    0.00    0.00       2         Body::Set_Material(Materials::Material const&) [167]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[168]    0.0    0.00    0.00       2         Body::Set_Is_Damageable(bool) [168]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[169]    0.0    0.00    0.00       2         Body::Set_Support_Radius(double) [169]
+                0.00    0.00       2/2           __gnu_cxx::__promote_2<double, int, __gnu_cxx::__promote<double, std::__is_integer<double>::__value>::__type, __gnu_cxx::__promote<int, std::__is_integer<int>::__value>::__type>::__type std::pow<double, int>(double, int) [190]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[170]    0.0    0.00    0.00       2         Body::Set_Gravity_Enabled(bool) [170]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[171]    0.0    0.00    0.00       2         Body::Set_Inter_Particle_Spacing(double) [171]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[172]    0.0    0.00    0.00       2         Body::Set_mu(double) [172]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[173]    0.0    0.00    0.00       2         Body::Set_Name(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [173]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[174]    0.0    0.00    0.00       2         Body::Set_alpha(double) [174]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Setup_File() [42]
+[175]    0.0    0.00    0.00       2         Body::Body() [175]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Setup_File() [42]
+[176]    0.0    0.00    0.00       2         Array<Simulation::General_Boundary_Condition>::Array() [176]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Setup(Body**) [40]
+[177]    0.0    0.00    0.00       2         Array<Simulation::General_Boundary_Condition>::~Array() [177]
+-----------------------------------------------
+                0.00    0.00       2/2           std::__cxx11::to_string(unsigned int) [189]
+[178]    0.0    0.00    0.00       2         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned long, char const*, __va_list_tag*), unsigned long, char const*, ...) [178]
+                0.00    0.00       2/2           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<char*, void>(char*, char*, std::allocator<char> const&) [188]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Setup_Box(Body&, unsigned int) [50]
+[179]    0.0    0.00    0.00       2         Body::Get_density() const [179]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Setup(Body**) [40]
+[180]    0.0    0.00    0.00       2         Body::Print_Parameters() const [180]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[181]    0.0    0.00    0.00       2         Body::Get_Support_Radius() const [181]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[182]    0.0    0.00    0.00       2         Body::Get_Gravity_Enabled() const [182]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[183]    0.0    0.00    0.00       2         Body::Get_mu() const [183]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[184]    0.0    0.00    0.00       2         Body::Get_alpha() const [184]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&) [90]
+[185]    0.0    0.00    0.00       2         Array<Simulation::General_Boundary_Condition>::Get_Length() const [185]
+-----------------------------------------------
+                0.00    0.00       2/2           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<char*, void>(char*, char*, std::allocator<char> const&) [188]
+[186]    0.0    0.00    0.00       2         void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*) [186]
+                0.00    0.00       2/2           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type) [187]
+-----------------------------------------------
+                0.00    0.00       2/2           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*) [186]
+[187]    0.0    0.00    0.00       2         void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type) [187]
+                0.00    0.00       2/7           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag) [154]
+-----------------------------------------------
+                0.00    0.00       2/2           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned long, char const*, __va_list_tag*), unsigned long, char const*, ...) [178]
+[188]    0.0    0.00    0.00       2         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<char*, void>(char*, char*, std::allocator<char> const&) [188]
+                0.00    0.00       2/2           void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*) [186]
+-----------------------------------------------
+                0.00    0.00       2/2           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[189]    0.0    0.00    0.00       2         std::__cxx11::to_string(unsigned int) [189]
+                0.00    0.00       2/2           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned long, char const*, __va_list_tag*), unsigned long, char const*, ...) [178]
+-----------------------------------------------
+                0.00    0.00       2/2           Body::Set_Support_Radius(double) [169]
+[190]    0.0    0.00    0.00       2         __gnu_cxx::__promote_2<double, int, __gnu_cxx::__promote<double, std::__is_integer<double>::__value>::__type, __gnu_cxx::__promote<int, std::__is_integer<int>::__value>::__type>::__type std::pow<double, int>(double, int) [190]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[191]    0.0    0.00    0.00       1         Body::Set_Particles_Critical_Stretch(double, double) [191]
+                0.00    0.00    1331/1331        Particle::Set_Stretch_Critical(double) [138]
+                0.00    0.00    1331/1331        double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&) [143]
+                0.00    0.00       1/1           std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::linear_congruential_engine<unsigned int, void>(unsigned int&) [197]
+                0.00    0.00       1/1           std::normal_distribution<double>::normal_distribution(double, double) [195]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[192]    0.0    0.00    0.00       1         Body::Set_Tau(double) [192]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [43]
+[193]    0.0    0.00    0.00       1         Body::Get_Tau() const [193]
+-----------------------------------------------
+                0.00    0.00       1/1           std::normal_distribution<double>::normal_distribution(double, double) [195]
+[194]    0.0    0.00    0.00       1         std::normal_distribution<double>::param_type::param_type(double, double) [194]
+-----------------------------------------------
+                0.00    0.00       1/1           Body::Set_Particles_Critical_Stretch(double, double) [191]
+[195]    0.0    0.00    0.00       1         std::normal_distribution<double>::normal_distribution(double, double) [195]
+                0.00    0.00       1/1           std::normal_distribution<double>::param_type::param_type(double, double) [194]
+-----------------------------------------------
+                0.00    0.00       1/1           std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::linear_congruential_engine<unsigned int, void>(unsigned int&) [197]
+[196]    0.0    0.00    0.00       1         std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::seed(unsigned long) [196]
+                0.00    0.00       3/3           unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 1ul, 0ul>(unsigned long) [165]
+-----------------------------------------------
+                0.00    0.00       1/1           Body::Set_Particles_Critical_Stretch(double, double) [191]
+[197]    0.0    0.00    0.00       1         std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::linear_congruential_engine<unsigned int, void>(unsigned int&) [197]
+                0.00    0.00       1/1           std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::seed(unsigned long) [196]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [86] _GLOBAL__sub_I__ZN4Body1KE [49] Tensor::Tensor(Tensor const&) [6] Tensor::operator[](unsigned int) const
+  [58] Determinant(Tensor const&) [70] Tensor::Tensor(double, double, double, double, double, double, double, double, double) [46] Tensor::operator-(Tensor const&) const
+  [17] Dot_Product(Vector const&, Vector const&) [36] Tensor::Tensor() [4] Tensor::operator*(Vector const&) const
+  [34] Eigenvalues(Tensor const&) [47] Tensor::~Tensor()  [22] Tensor::operator*(Tensor const&) const
+  [65] Cross_Product(Vector const&, Vector const&) [9] Tensor::operator=(Tensor const&) [30] Tensor::operator*(double) const
+  [60] Max_Component(Vector const&) [32] Tensor::operator()(unsigned int, unsigned int) [7] Tensor::operator+(Tensor const&) const
+  [10] Dyadic_Product(Vector const&, Vector const&) [24] Tensor::operator^(int) [64] Vector::Max_Component() const
+  [87] __static_initialization_and_destruction_0(int, int) [8] Tensor::operator[](unsigned int) [21] Vector::Magnitude() const
+  [19] Magnitude(Vector const&) [33] Tensor::operator*=(Tensor const&) [55] Vector::operator/(double) const
+  [57] Quick_Math::cos(double) [15] Tensor::operator+=(Tensor const&) [5] Vector::operator[](unsigned int) const
+ [116] Simulation::Time_Since(double) [41] Vector::Vector(Vector const&) [16] Vector::operator-(Vector const&) const
+  [44] Simulation::Set_Box_BCs(Body&, Simulation::Box_BCs&) [56] Vector::Vector(double, double, double) [13] Vector::operator*(double) const
+  [42] Simulation::Load_Setup_File() [23] Vector::Vector() [52] Vector::operator+(Vector const&) const
+  [90] Simulation::Set_General_BCs(Body&, Array<Simulation::General_Boundary_Condition>&) [31] Vector::~Vector() [100] Particle::Get_Volume() const
+  [82] Simulation::Set_Box_Particle_BCs(Particle&, Vector) [72] Vector::operator=(double const*) [114] Particle::Get_Stretch_M() const
+  [43] Simulation::Load_Body_From_Setup_File(Body&, unsigned int) [18] Vector::operator=(Vector const&) [107] Particle::Get_Neighbor_IDs(unsigned int) const
+  [39] Simulation::Run()      [25] Vector::operator()(unsigned int) [108] Particle::Get_Force_Contact() const
+  [40] Simulation::Setup(Body**) [14] Vector::operator[](unsigned int) [140] Particle::Get_Num_Neighbors() const
+  [85] Simulation::Box_BCs::Box_BCs() [73] Vector::operator-=(Vector const&) [109] Particle::Get_Force_Friction() const
+  [89] Simulation::Box_BCs::~Box_BCs() [26] Vector::operator*=(double) [110] Particle::Get_Force_Internal() const
+ [115] Simulation::Get_Time() [12] Vector::operator+=(Vector const&) [111] Particle::Get_Force_Hourglass() const
+  [83] Simulation::Parse_BC(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [131] Particle::Set_Radius(double) [112] Particle::Get_Force_Viscosity() const
+  [84] Simulation::Print_BC(Vector&) [132] Particle::Set_Volume(double) [99] Particle::Get_D() const
+  [50] Simulation::Setup_Box(Body&, unsigned int) [138] Particle::Set_Stretch_Critical(double) [101] Particle::Get_F(unsigned int) const
+ [148] IO::String_Ops::Index_After_Word(char const*, char const*, bool, unsigned int) [79] Particle::Set_V(Vector const&) [102] Particle::Get_P() const
+ [150] IO::String_Ops::Contains(char const*, char const*, bool, unsigned int) [80] Particle::Set_X(Vector const&) [103] Particle::Get_X() const
+ [149] IO::read_line_after[abi:cxx11](std::basic_ifstream<char, std::char_traits<char> >&, char const*, bool) [81] Particle::Set_x(Vector const&) [113] Particle::Get_a() const
+ [166] Body::Set_Is_Fixed(bool) [133] Particle::Set_ID(unsigned int) [98] Particle::Get_x() const
+ [167] Body::Set_Material(Materials::Material const&) [134] Particle::Set_Mass(double) [71] Particle::Get_ID() const
+  [53] Body::Set_Neighbors(unsigned int, Array<unsigned int> const&) [62] Particle::Apply_BCs() [67] Particle::Get_Mass() const
+ [146] Body::Increment_F_Index() [77] Particle::Particle() [45] Exception::what() const
+ [168] Body::Set_Is_Damageable(bool) [75] Particle::~Particle() [141] std::normal_distribution<double>::param_type::mean() const
+  [68] Body::Export_Body_Forces(unsigned int) [178] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned long, char const*, __va_list_tag*), unsigned long, char const*, ...) [142] std::normal_distribution<double>::param_type::stddev() const
+  [51] Body::Find_Neighbors_Box() [153] bool __gnu_cxx::__is_null_pointer<char>(char*) [194] std::normal_distribution<double>::param_type::param_type(double, double)
+  [78] Body::Set_Box_Dimensions(unsigned int, unsigned int, unsigned int) [152] Body::Get_Is_Box() const [195] std::normal_distribution<double>::normal_distribution(double, double)
+ [169] Body::Set_Support_Radius(double) [179] Body::Get_density() const [143] double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&)
+  [61] Body::Export_Body_Torques(unsigned int) [117] Body::Get_Is_Fixed() const [144] double std::normal_distribution<double>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<double>::param_type const&)
+ [170] Body::Set_Gravity_Enabled(bool) [69] Body::Are_Neighbors(unsigned int, unsigned int) const [119] std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::min()
+ [126] Body::Remove_Damaged_Particles(List<unsigned int>&) [151] Body::Add_Point_Data(_IO_FILE*, char*, unsigned int, double*) const [196] std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::seed(unsigned long)
+  [74] Body::Export_Particle_Positions() [180] Body::Print_Parameters() const [197] std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::linear_congruential_engine<unsigned int, void>(unsigned int&)
+ [171] Body::Set_Inter_Particle_Spacing(double) [158] Body::Get_Is_Damageable() const [120] std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>::operator()()
+  [54] Body::Set_Neighbor_Dependent_Members(unsigned int) [118] Body::Get_Num_Particles() const [186] void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*)
+ [191] Body::Set_Particles_Critical_Stretch(double, double) [159] Body::Get_X_SIDE_LENGTH() const [154] void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct<char*>(char*, char*, std::forward_iterator_tag)
+ [172] Body::Set_mu(double)  [160] Body::Get_Y_SIDE_LENGTH() const [187] void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type)
+  [20] Body::Contact(Body&, Body&) [161] Body::Get_Z_SIDE_LENGTH() const [188] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<char*, void>(char*, char*, std::allocator<char> const&)
+ [192] Body::Set_Tau(double) [181] Body::Get_Support_Radius() const [189] std::__cxx11::to_string(unsigned int)
+ [173] Body::Set_Name(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [182] Body::Get_Gravity_Enabled() const [121] std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long)
+   [3] Body::Update_P(double) [163] Body::Get_Inter_Particle_Spacing() const [164] std::__detail::_Mod<unsigned long, 2147483647ul, 1ul, 0ul, true, true>::__calc(unsigned long)
+   [2] Body::Update_x(double) [147] Body::Get_Shape_Function_Amplitude() const [122] unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 16807ul, 0ul>(unsigned long)
+  [63] Body::Apply_BCs()     [183] Body::Get_mu() const  [165] unsigned long std::__detail::__mod<unsigned long, 2147483647ul, 1ul, 0ul>(unsigned long)
+ [174] Body::Set_alpha(double) [193] Body::Get_Tau() const [145] std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::_Adaptor(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&)
+ [175] Body::Body()          [162] Body::Get_Name[abi:cxx11]() const [127] std::__detail::_Adaptor<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>, double>::operator()()
+  [76] Body::~Body()         [184] Body::Get_alpha() const [155] std::iterator_traits<char*>::difference_type std::__distance<char*>(char*, char*, std::random_access_iterator_tag)
+  [66] Body::operator[](unsigned int) [125] List<unsigned int>::Get_Length() const [128] double std::generate_canonical<double, 53ul, std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&)
+ [104] List<unsigned int>::Pop_Front() [185] Array<Simulation::General_Boundary_Condition>::Get_Length() const [156] std::iterator_traits<char*>::iterator_category std::__iterator_category<char*>(char* const&)
+ [105] List<unsigned int>::Push_Back(unsigned int) [139] Array<unsigned int>::Get_Length() const [129] unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&)
+ [123] List<unsigned int>::List() [106] Array<unsigned int>::operator[](unsigned int) const [130] unsigned long const& std::min<unsigned long>(unsigned long const&, unsigned long const&)
+ [124] List<unsigned int>::~List() [37] Tensor::Determinant() const [190] __gnu_cxx::__promote_2<double, int, __gnu_cxx::__promote<double, std::__is_integer<double>::__value>::__type, __gnu_cxx::__promote<int, std::__is_integer<int>::__value>::__type>::__type std::pow<double, int>(double, int)
+ [176] Array<Simulation::General_Boundary_Condition>::Array() [35] Tensor::Eigenvalues() const [97] std::isnan(double)
+ [177] Array<Simulation::General_Boundary_Condition>::~Array() [27] Tensor::Inverse() const [157] std::iterator_traits<char*>::difference_type std::distance<char*>(char*, char*)
+ [135] Array<unsigned int>::Private_Setup_From_List(List<unsigned int>&) [48] Tensor::Transpose() const [29] operator*(double, Tensor const&)
+ [136] Array<unsigned int>::Array(List<unsigned int>&) [28] Tensor::operator()(unsigned int, unsigned int) const [11] operator*(double, Vector const&)
+ [137] Array<unsigned int>::~Array() [59] Tensor::operator/(double) const
