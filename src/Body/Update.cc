@@ -14,6 +14,12 @@ static void Calculate_Force(Vector & F,
                             const Tensor & T2,
                             const Vector & Grad_Wj);
 
+static double Calculate_Delta(const Tensor & F,
+                              const Vector & R_j,
+                              const Vector & r_j,
+                              const double Mag_rj);
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Update methods
@@ -318,7 +324,7 @@ void Body::Update_x(const double dt) {
                 (*this).Name.c_str(), (*this).Name.c_str(), Neighbor_ID, i);
         throw Divide_By_Zero(Buf);
       } // if(Mag_rj == 0) {
-      double delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
+      double delta_ij = Calculate_Delta(F_i, R[j], rj, Mag_rj);
 
       /* Here we calculate delta_ji.
             delta_ji = ( Error_ji dot r_ji )/|r_ji|
@@ -349,7 +355,7 @@ void Body::Update_x(const double dt) {
       Note: this calculation requires that Mag_rj != 0. We check for this
       condition above, however. */
       F_j = Particles[Neighbor_ID].F[F_Index];                                 //        : unitless Tensor
-      double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
+      double delta_ji = Calculate_Delta(F_j, R[j], rj, Mag_rj);
 
       /* Finally, we calculate the hour glass force. However, it should be
       noted that each term of Force_Hourglass is multiplied by -(1/2), E, alpha,
@@ -440,9 +446,17 @@ static void Calculate_Force(Vector & F,
                             const Tensor & T1,
                             const Tensor & T2,
                             const Vector & Grad_Wj) {
-  /* This function computes F += V_j*((T1 + T2)*GradW_j) without any
-  operator overloading. The goal is to eliminate any use of temporary objects
-  and (hopefully) improve runtime. */
+  /* This function is used to calculate Force_Internal and Force_Viscosity due
+  to one of a particle's neighbors. These quantities are calculated by the
+  following expression:
+      Force_Internal  += V_j*((P_i + P_j)*Grad_W[j])
+      Force_Viscosity += V_j*((Visc + Particles[Neighbor_ID].Visc)*Grad_W[j])
+  Thus, this function computes the following:
+      F += V_j*((T1 + T2)*GradW_j) without any
+  The goal is to eliminate any use of temporary objects and (hopefully) improve
+  runtime.
+
+  update_x is the only thing that should call this function. */
 
   /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
   rows as infrequently. */
@@ -463,3 +477,30 @@ static void Calculate_Force(Vector & F,
                   (T1_Ar[2*3 + 1] + T2_Ar[2*3 + 1])*Grad_Wj_Ar[1] +
                   (T1_Ar[2*3 + 2] + T2_Ar[2*3 + 2])*Grad_Wj_Ar[2] );
 } // static void Calculate_Force(Tensor & F,...
+
+
+
+static double Calculate_Delta(const Tensor & F,
+                              const Vector & R_j,
+                              const Vector & rj,
+                              const double Mag_rj) {
+  /* This function computes delta_ij and delta_ji. By definition,
+        delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj
+        delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj
+  Thus, this function returns the following quantity:
+        Dot_Product(F*R_j, rj)/(Mag_rj) - Mag_rj
+  The goal is to eliminate any use of temporary objects.
+
+  update_x is the ONLY thing that should call this function. */
+
+  const double * F_Ar  = F.Get_Ar();
+  const double * Rj_Ar = R_j.Get_Ar();
+  const double * rj_Ar = rj.Get_Ar();
+
+
+  double FRj_0 = F_Ar[0*3 + 0]*Rj_Ar[0] + F_Ar[0*3 + 1]*Rj_Ar[1] + F_Ar[0*3 + 2]*Rj_Ar[2];
+  double FRj_1 = F_Ar[1*3 + 0]*Rj_Ar[0] + F_Ar[1*3 + 1]*Rj_Ar[1] + F_Ar[1*3 + 2]*Rj_Ar[2];
+  double FRj_2 = F_Ar[2*3 + 0]*Rj_Ar[0] + F_Ar[2*3 + 1]*Rj_Ar[1] + F_Ar[2*3 + 2]*Rj_Ar[2];
+
+  return (FRj_0*rj_Ar[0] + FRj_1*rj_Ar[1] + FRj_2*rj_Ar[2])/(Mag_rj) - Mag_rj;
+} // static double Calculate_Delta(const Tensor & F,
