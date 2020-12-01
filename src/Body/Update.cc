@@ -289,8 +289,12 @@ void Body::Update_x(const double dt) {
 
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
       P_j = Particles[Neighbor_ID].Get_P();                                    //        : Mpa Tensor
-      Calculate_Force(Force_Internal , V_j, P_i , P_j                        , Grad_W[j]);
-      Calculate_Force(Force_Viscosity, V_j, Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);
+
+      // Force_Internal += V_j*((P_i + P_j)*Grad_W[j]);
+      Calculate_Force(Force_Internal , V_j, P_i , P_j                        , Grad_W[j]);         // N Vector
+
+      // Force_Viscosity += V_j*((Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
+      Calculate_Force(Force_Viscosity, V_j, Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);         // N Vector
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -324,7 +328,9 @@ void Body::Update_x(const double dt) {
                 (*this).Name.c_str(), (*this).Name.c_str(), Neighbor_ID, i);
         throw Divide_By_Zero(Buf);
       } // if(Mag_rj == 0) {
-      double delta_ij = Calculate_Delta(F_i, R[j], rj, Mag_rj);
+
+      // double delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;
+      double delta_ij = Calculate_Delta(F_i, R[j], rj, Mag_rj);                //        : mm
 
       /* Here we calculate delta_ji.
             delta_ji = ( Error_ji dot r_ji )/|r_ji|
@@ -355,7 +361,9 @@ void Body::Update_x(const double dt) {
       Note: this calculation requires that Mag_rj != 0. We check for this
       condition above, however. */
       F_j = Particles[Neighbor_ID].F[F_Index];                                 //        : unitless Tensor
-      double delta_ji = Calculate_Delta(F_j, R[j], rj, Mag_rj);
+
+      // double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;
+      double delta_ji = Calculate_Delta(F_j, R[j], rj, Mag_rj);                //        : mm
 
       /* Finally, we calculate the hour glass force. However, it should be
       noted that each term of Force_Hourglass is multiplied by -(1/2), E, alpha,
