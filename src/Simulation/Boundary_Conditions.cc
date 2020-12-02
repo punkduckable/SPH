@@ -77,7 +77,15 @@ void Simulation::Set_Box_BCs(Body & Box, Box_BCs & Boundary_Conditions) {
   the +x and -x directions, respectivly. */
 
   // This body must be a box.
-  assert(Box.Get_Is_Box() == true);
+  if(Box.Get_Is_Box() == false) {
+    char Buf[500];
+    sprintf(Buf,
+            "Not A Box Exception: thrown by Body::Set_Box_BCs\n"
+            "Body %s tried to use this function, but %s is not a box! This function\n"
+            "can only be called by boxes!\n",
+            Box.Get_Name().c_str(), Box.Get_Name().c_str());
+    throw Cant_Open_File(Buf);
+  } // if((*this).Is_Box == false) {
 
   // Determine side lengths
   unsigned X_SIDE_LENGTH = Box.Get_X_SIDE_LENGTH();

@@ -3,6 +3,7 @@
 #include "Vector/Vector.h"
 #include "List.h"
 #include "Array.h"
+#include "Errors.h"
 #include <assert.h>
 #include <math.h>
 
@@ -155,7 +156,15 @@ void Body::Find_Neighbors(void) {
 
 
 void Body::Find_Neighbors_Box(void) {
-  assert(Is_Box == true);
+  if((*this).Is_Box == false) {
+    char Buf[500];
+    sprintf(Buf,
+            "Not A Box Exception: thrown by Body::Find_Neighbors_Box\n"
+            "Body %s tried to use this function, but %s is not a box! This function\n"
+            "can only be called by boxes!\n",
+            (*this).Name.c_str(), (*this).Name.c_str());
+    throw Cant_Open_File(Buf);
+  } // if((*this).Is_Box == false) {
 
   /* This function is a modified version of the Neighbor List generating
   function that is specialized for Box particle geometries.
