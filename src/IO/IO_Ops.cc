@@ -11,7 +11,7 @@ std::string IO::read_line_after(std::ifstream & File, const char* Word, bool Cas
   word (or the end of file is reached)
 
   The optional Case_Sensitive argument specifies if this function ignores
-  case in Word/Buffer. (see Index_After_Word description).   */
+  case in Word/Buffer. (see Index_After_Word description).  */
   assert(File.is_open() == true);
 
 
@@ -20,7 +20,7 @@ std::string IO::read_line_after(std::ifstream & File, const char* Word, bool Cas
   int index;
   while(true) {
     File.getline(Line_Buffer, Buffer_Size);
-    Line_Buffer[Buffer_Size-1] = '\0';           // Make sur that Line_Buffer is a null-terminated string.
+    Line_Buffer[Buffer_Size-1] = '\0';           // Make sure that Line_Buffer is a null-terminated string.
     index = IO::String_Ops::Index_After_Word(Line_Buffer, Word, Case_Sensitive);
 
     /* If Word is not in the Line then index will be equal to -1. If not, then

@@ -12,10 +12,8 @@
 
 // Prototypes for functions that are local to this file
 namespace Simulation {
-  void Setup_Box(Body & Body_In, const unsigned m);
-  void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
-  void Bodies_Setup(void);                                 // Set up Body/Needle simulation
-  void Set_Body_Members(Body & Body_In);                   // Set default body members
+  static void Setup_Box(Body & Body_In, const unsigned m);
+  static void Setup_FEB_Body(Body & FEB_Body, const unsigned m);
 } // namespace Simulation {
 
 
@@ -157,14 +155,12 @@ void Simulation::Setup(Body ** Bodies) {
 
 
 
-
-
-void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
+static void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   /* Function Description:
 
-  This function sets up Body_In as a box using the parameters corresponding
-  to body m in Bodies_Setup. This function should NOT be used if you're loading
-  from a save.
+  This function sets up the initial position, velocity, etc. of the particles in
+  Body_In. The parameter m is used to fetch the initial velocity and offset
+  of the body. This function should NOT be used if you're loading from a save.
 
   Simulation::Setup is the only thing that should call this function. */
 
@@ -252,13 +248,11 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
     } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < 3; i++) {
   */
-} // void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
+} // static void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
 
 
-
-
-void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
+static void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
   /* Function description:
   This function sets up a Body by reading in information from a FEB file.
 
@@ -306,4 +300,4 @@ void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
 
   // Now free X.
   delete [] X;
-} // void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {
+} // static void Simulation::Setup_FEB_Body(Body & FEB_Body, const unsigned m) {

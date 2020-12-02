@@ -155,7 +155,6 @@ class Particle {
   // Friends, Printing
   friend void Particle_Tests(void);
   friend void Simulation::Run(void);
-  friend void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC);
   friend void IO::Load_Particle(Particle & P_In,
                                 std::ifstream & File);
 

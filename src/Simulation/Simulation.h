@@ -44,7 +44,7 @@ namespace Simulation {
 
   //////////////////////////////////////////////////////////////////////////////
   // Setup file function
-  // Defined in Setup_File.cc
+  // Defined in Setup_File_Reader.cc
 
   Body* Load_Setup_File(void);
 
@@ -157,8 +157,6 @@ namespace Simulation {
                        Array<General_Boundary_Condition> & BCs_In);  // The BCs being applied
   void Set_Box_BCs(Body & Box,                             // Reference to the box body
                    Box_BCs & Boundary_Conditions);         // Box's parameters
-  void Set_Box_Particle_BCs(Particle & P_In,               // Particle that we're applying the BC to
-                            Vector BC);                    // The BC that's being applied
 } // namespace Simulation {
 
 #endif

@@ -11,9 +11,9 @@
 
 // Prototypes for functions that are local to this file
 namespace Simulation {
-  void Export_Bodies_Data(Body * Bodies,
-                          const unsigned Num_Bodies,
-                          const unsigned time_steps);
+  static void Export_Bodies_Data(Body * Bodies,
+                                 const unsigned Num_Bodies,
+                                 const unsigned time_steps);
 } // namespace Simulation {
 
 
@@ -224,9 +224,7 @@ void Simulation::Run(void) {
 
 
 
-
-
-void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned time_steps) {
+static void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned time_steps) {
   /* Function Description:
   This function, as the name implies, exports data for each body in a simulation.
   Position data is always printed. Wheather or not we print Force or
@@ -251,4 +249,4 @@ void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const un
       abort();
     } // catch(Exception & Error_In) {
   } // for(unsigned b = 0; b < Num_Bodies; b++ ) {
-} // void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned time_steps) {
+} // static void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned time_steps) {

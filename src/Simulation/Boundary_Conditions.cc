@@ -5,6 +5,13 @@
 #include "Array.h"
 #include <assert.h>
 
+// Static Function prototypes.
+namespace Simulation {
+  static void Set_Box_Particle_BCs(Particle & P_In,        // Particle that we're applying the BC to
+                                   Vector BC);             // The BC that's being applied
+} // namespace Simulation {
+
+
 void Simulation::Set_General_BCs(Body & Body_In, Array<General_Boundary_Condition> & BCs_In) {
   /* Cycle through the components of the BC array */
   unsigned Num_BCs = BCs_In.Get_Length();
@@ -149,9 +156,9 @@ void Simulation::Set_Box_BCs(Body & Box, Box_BCs & Boundary_Conditions) {
 
 
 
-void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC) {
+static void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC) {
   for(unsigned i = 0; i < 3; i++) {
     if(BC[i] == Simulation::FREE) { continue; }
     else { P_In.Set_BC(i, BC[i]); }
   } // for(unsigned i = 0; i < 3; i++) {
-} // void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC) {
+} // static void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC) {
