@@ -3,6 +3,7 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "List.h"
+#include "Diagnostics/Operation_Count.h"
 #include "Errors.h"
 #include <math.h>
 #include <assert.h>
@@ -484,6 +485,12 @@ static void Calculate_Force(Vector & F,
   F[2] += + V_j*( (T1_Ar[2*3 + 0] + T2_Ar[2*3 + 0])*Grad_Wj_Ar[0] +
                   (T1_Ar[2*3 + 1] + T2_Ar[2*3 + 1])*Grad_Wj_Ar[1] +
                   (T1_Ar[2*3 + 2] + T2_Ar[2*3 + 2])*Grad_Wj_Ar[2] );
+
+  #ifdef OPERATION_COUNT
+    /* Each component above uses 6 additions and 4 multiplications */
+    OP_Count::Multiplication += 12;
+    OP_Count::Addition += 18;
+  #endif
 } // static void Calculate_Force(Tensor & F,...
 
 
@@ -509,6 +516,14 @@ static double Calculate_Delta(const Tensor & F,
   double FRj_0 = F_Ar[0*3 + 0]*Rj_Ar[0] + F_Ar[0*3 + 1]*Rj_Ar[1] + F_Ar[0*3 + 2]*Rj_Ar[2];
   double FRj_1 = F_Ar[1*3 + 0]*Rj_Ar[0] + F_Ar[1*3 + 1]*Rj_Ar[1] + F_Ar[1*3 + 2]*Rj_Ar[2];
   double FRj_2 = F_Ar[2*3 + 0]*Rj_Ar[0] + F_Ar[2*3 + 1]*Rj_Ar[1] + F_Ar[2*3 + 2]*Rj_Ar[2];
+
+  #ifdef OPERATION_COUNT
+    // This includes the calculations above and below (return statement)
+    OP_Count::Multiplication += 12;
+    OP_Count::Addition += 8;
+    OP_Count::Division += 1;
+    OP_Count::Subtraction += 1;
+  #endif
 
   return (FRj_0*rj_Ar[0] + FRj_1*rj_Ar[1] + FRj_2*rj_Ar[2])/(Mag_rj) - Mag_rj;
 } // static double Calculate_Delta(const Tensor & F,

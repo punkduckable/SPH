@@ -4,6 +4,7 @@
 #include "Vector/Vector.h"
 #include "IO/Save_Simulation.h"
 #include "IO/Load_Simulation.h"
+#include "Diagnostics/Operation_Count.h"
 #include "Errors.h"
 #if defined(_OPENMP)
   #include <omp.h>
@@ -54,11 +55,13 @@ void Simulation::Run(void) {
   // time step loop.
   #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
+    // Start timer2.
+    #pragma omp single nowait
+    { time2 = Get_Time(); }
+
     for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
       //////////////////////////////////////////////////////////////////////////
       // Export Bodies data
-      #pragma omp single nowait
-      { time2 = Get_Time(); }
 
       if(time_step%Simulation::TimeSteps_Between_Prints == 0) {
         #pragma omp single nowait
@@ -68,28 +71,29 @@ void Simulation::Run(void) {
       } // if(t%TimeSteps_Between_Prints == 0) {
 
       #pragma omp single nowait
-      { Print_time += Time_Since(time2); }
+      {
+        Print_time += Time_Since(time2);
+        time2 = Get_Time();
+      } // #pragma omp single nowait
 
 
 
       //////////////////////////////////////////////////////////////////////////
       // Apply Boundary conditions
-      #pragma omp single nowait
-      { time2 = Get_Time(); }
 
       // Note: apply BCs uses a parallel for loop
       for(b = 0; b < Num_Bodies; b++) { Bodies[b].Apply_BCs();  }
 
       #pragma omp single nowait
-      { update_BC_time += Time_Since(time2); }
+      {
+        update_BC_time += Time_Since(time2);
+        time2 = Get_Time();
+      }
 
 
 
       //////////////////////////////////////////////////////////////////////////
       // Update Stress tensor (P)
-
-      #pragma omp single nowait
-      { time2 = Get_Time(); }
 
       for(b = 0; b < Num_Bodies; b++) {
         // Note: We don't update P for Bodys that are fixed in place
@@ -107,7 +111,10 @@ void Simulation::Run(void) {
       } // for(b = 0; b < Num_Bodies; b++) {
 
       #pragma omp single nowait
-      { update_P_time += Time_Since(time2); }
+      {
+        update_P_time += Time_Since(time2);
+        time2 = Get_Time();
+      }
 
 
 
@@ -118,9 +125,6 @@ void Simulation::Run(void) {
       in contact with any of the particles in the ith body for i > m. We only
       use i > m so that we only run the contact algorithm on each part of
       Bodys once. */
-
-      #pragma omp single nowait
-      { time2 = Get_Time(); }
 
       /* First, we need to set each particle's contact force to zero. */
       for(b = 0; b < Num_Bodies; b++) {
@@ -142,15 +146,15 @@ void Simulation::Run(void) {
       } // for(unsigned b1 = 0; b1 < Num_Bodies - 1; b1++) {
 
       #pragma omp single nowait
-      { contact_time += Time_Since(time2); }
+      {
+        contact_time += Time_Since(time2);
+        time2 = Get_Time();
+      }
 
 
 
       //////////////////////////////////////////////////////////////////////////
       // Update Position (x)
-
-      #pragma omp single nowait
-      { time2 = Get_Time(); }
 
       for(b = 0; b < Num_Bodies; b++) {
         // Note: we don't update P for Bodies that are fixed in place
@@ -168,7 +172,10 @@ void Simulation::Run(void) {
       } // for(b = 0; b < Num_Bodies; b++) {
 
       #pragma omp single nowait
-      { update_x_time += Time_Since(time2); }
+      {
+        update_x_time += Time_Since(time2);
+        time2 = Get_Time();
+      }
     } // for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
 
 
@@ -189,6 +196,11 @@ void Simulation::Run(void) {
   // If saving is enabled, save particle data to file
   if(Save_Simulation_To_File == 1) { IO::Save_Simulation(Bodies, Num_Bodies); }
 
+  // If OPERATION_COUNT is defined, print FLOP data.
+  #ifdef OPERATION_COUNT
+    OP_Count::Print();
+  #endif
+
   // Print timing data
   #if defined(_OPENMP)
     printf(       "\nIt took %lf s to perform %u Particle time steps \n",simulation_time, Num_Time_Steps);
@@ -206,12 +218,12 @@ void Simulation::Run(void) {
                   MS_x,
                   MS_Print;
 
-    MS_Sim = (unsigned long)((double)simulation_time / (double)CLOCKS_PER_MS);
-    MS_BC = (unsigned long)((double)update_BC_time / (double)CLOCKS_PER_MS);
-    MS_P = (unsigned long)((double)update_P_time / (double)CLOCKS_PER_MS);
-    MS_Contact = (unsigned long)((double)contact_time / (double)CLOCKS_PER_MS);
-    MS_x = (unsigned long)((double)update_x_time / (double)CLOCKS_PER_MS);
-    MS_Print = (unsigned long)((double)Print_time / (double)CLOCKS_PER_MS);
+    MS_Sim     = (unsigned long)((double)simulation_time / (double)CLOCKS_PER_MS);
+    MS_BC      = (unsigned long)((double)update_BC_time  / (double)CLOCKS_PER_MS);
+    MS_P       = (unsigned long)((double)update_P_time   / (double)CLOCKS_PER_MS);
+    MS_Contact = (unsigned long)((double)contact_time    / (double)CLOCKS_PER_MS);
+    MS_x       = (unsigned long)((double)update_x_time   / (double)CLOCKS_PER_MS);
+    MS_Print   = (unsigned long)((double)Print_time      / (double)CLOCKS_PER_MS);
 
     printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Sim, Num_Time_Steps);
     printf(         "%lums to update BC's\n", MS_BC);

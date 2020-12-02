@@ -1,6 +1,7 @@
 #include "Tensor.h"
 #include "Vector/Vector.h"
 #include "Errors.h"
+#include "Diagnostics/Operation_Count.h"
 #include "Quick_Math.h"
 #include <stdio.h>
 #include <assert.h>
@@ -16,11 +17,7 @@ element away from each other. Therefore, Ar[3*i+j] is the same as T(i,j). */
 ////////////////////////////////////////////////////////////////////////////////
 // Constuctors and destructor
 
-Tensor::Tensor(void) {
-  #ifdef OPERATION_COUNT
-    OP_Count::T_Default_Constructor++;             // Increment operator count
-  #endif
-} // Tensor::Tensor(void) {
+Tensor::Tensor(void) { }
 
 
 
@@ -32,10 +29,6 @@ Tensor::Tensor(double t11, double t12, double t13,
   Ar[0] = t11; Ar[1] = t12; Ar[2] = t13; // Row 1
   Ar[3] = t21; Ar[4] = t22; Ar[5] = t23; // Row 2
   Ar[6] = t31; Ar[7] = t32; Ar[8] = t33; // Row 3
-
-  #ifdef OPERATION_COUNT
-    OP_Count::T_Component_Constructor++;         // Increment operator count
-  #endif
 } // Tensor:Tensor(double t11,.... double t33) {
 
 
@@ -62,10 +55,6 @@ Tensor::Tensor(const Tensor & Tensor_In) {
   (*this).Ar[3*2 + 0] = Tensor_In[2*3 + 0];                    // i = 2, j = 0
   (*this).Ar[3*2 + 1] = Tensor_In[2*3 + 1];                    // i = 2, j = 1
   (*this).Ar[3*2 + 2] = Tensor_In[2*3 + 2];                    // i = 2, j = 2
-
-  #ifdef OPERATION_COUNT
-    OP_Count::T_Copy_Constructor++;                // Increment operator count
-  #endif
 } // Tensor::Tensor(const Tensor & Tensor_In) {
 
 
@@ -100,10 +89,6 @@ Tensor & Tensor::operator=(const Tensor & Tensor_In) {
   (*this).Ar[3*2 + 0] = Tensor_In.Ar[3*2 + 0];             // i = 2, j = 0
   (*this).Ar[3*2 + 1] = Tensor_In.Ar[3*2 + 1];             // i = 2, j = 1
   (*this).Ar[3*2 + 2] = Tensor_In.Ar[3*2 + 2];             // i = 2, j = 2
-
-  #ifdef OPERATION_COUNT
-    OP_Count::T_Equality++;                        // Increment operator count
-  #endif
 
   // return this tensor (element wise equality is done)
   return *this;
@@ -142,7 +127,8 @@ Tensor Tensor::operator+(const Tensor & Tensor_In) const {
   Sum.Ar[2*3 + 2] = (*this).Ar[3*2 + 2] + Tensor_In.Ar[2*3 + 2];     // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::T_T_Addition++;                      // Increment operator count
+    // 9 additions in the calculations above.
+    OP_Count::Addition += 9;
   #endif
 
   return Sum;
@@ -176,7 +162,8 @@ Tensor Tensor::operator-(const Tensor & Tensor_In) const {
   Diff.Ar[2*3 + 2] = (*this).Ar[3*2 + 2] - Tensor_In.Ar[2*3 + 2];    // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::T_T_Subtraction++;                   // Increment operator count
+    // 9 subtractions in the calculations above.
+    OP_Count::Subtraction += 9;
   #endif
 
   return Diff;
@@ -264,7 +251,9 @@ Tensor Tensor::operator*(const Tensor & Tensor_In) const{
   Prod.Ar[3*2 + 2] += (*this).Ar[3*2 + 2]*Tensor_In.Ar[3*2 + 2];     // i = 2, j = 2, p = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::T_T_Multiplication++;                // Increment operator count
+    // 18 additions, 27 multiplications in the calculations above.
+    OP_Count::Multiplication += 27;
+    OP_Count::Addition += 18;
   #endif
 
   return Prod;
@@ -295,7 +284,9 @@ Vector Tensor::operator*(const Vector & V_In) const {
               (*this).Ar[3*2 + 2]*V_In[2];
 
   #ifdef OPERATION_COUNT
-    OP_Count::T_V_Multiplication++;                // Increment operator count
+    // 9 multiplications,  6 additions in the calculations above.
+    OP_Count::Multiplication += 9;
+    OP_Count::Addition += 6;
   #endif
 
   return Prod;
@@ -329,7 +320,8 @@ Tensor Tensor::operator*(const double c) const {
   Prod.Ar[2*3 + 2] = (*this).Ar[3*2 + 2]*c;                // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::T_S_Multiplication++;                // Increment operator count
+    // 9 multiplications in the calculations above.
+    OP_Count::Multiplication += 9;
   #endif
 
   return Prod;
@@ -348,8 +340,9 @@ Tensor Tensor::operator/(const double c) const {
 
 
   #ifdef OPERATION_COUNT
-    OP_Count::T_S_Multiplication--;                // This prevents double counting. /s uses *s
-    OP_Count::T_S_Division++;                      // Increment operator count
+    /* 1 division in the calculation below (the multiplication is
+    operator overloading and is counted elsewhere) */
+    OP_Count::Division += 1;
   #endif
 
   /* To improve performance, we return (*this)*(1/c). One division (to
@@ -389,7 +382,8 @@ Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
   (*this).Ar[3*2 + 2] += Tensor_In.Ar[3*2 + 2];       // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::Compound_T_T_Addition++;             // Increment operator count
+    // 9 additions in the calculations above.
+    OP_Count::Addition += 9;
   #endif
 
   // Return this tensor (element wise summation is done)
@@ -422,7 +416,8 @@ Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
   (*this).Ar[3*2 + 2] -= Tensor_In.Ar[3*2 + 2];       // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::Compound_T_T_Subtraction++;          // Increment operator count
+    // 9 subtractions in the calculations above.
+    OP_Count::Subtraction += 9;
   #endif
 
   // Return this tensor (element wise subtraction is done)
@@ -530,7 +525,9 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
   (*this).Ar[3*2 + 2] = Prod.Ar[3*2 + 2];                    // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::Compound_T_T_Multiplication++;       // Increment operator count
+    // 27 multiplications, 18 additions in the calculations above.
+    OP_Count::Multiplication += 27;
+    OP_Count::Addition += 18;
   #endif
 
   return *this;
@@ -600,7 +597,12 @@ bool Tensor::operator==(const Tensor & T_In) const {
   for(unsigned i = 0; i < 9; i++) {
     double d = (*this).Ar[i] - T_In.Ar[i];
     if(d < -Tensor_Epsilon || d > Tensor_Epsilon) { return false; }
-  }
+  } // for(unsigned i = 0; i < 9; i++) {
+
+  #ifdef OPERATION_COUNT
+    // 9 subtractions in the loop above.
+    OP_Count::Subtraction += 9;
+  #endif
 
   // If all components are sufficiently close together then return true.
   return true;
@@ -686,10 +688,19 @@ Tensor Tensor::Inverse(void) const{
   Tensor_Inv.Ar[3*2 + 2] = -(*this).Ar[0*3 + 1]*(*this).Ar[1*3 + 0]
                            +(*this).Ar[0*3 + 0]*(*this).Ar[1*3 + 1]; // -bd + ae
 
-  Tensor_Inv = (1/Det_S)*Tensor_Inv;
+  Tensor_Inv = (1./Det_S)*Tensor_Inv;
 
   #ifdef OPERATION_COUNT
-    OP_Count::T_Inverse++;                         // Increment operator count
+    /* This one looks weirder than it is.
+    Each component involves 1 subtraction and 2 multiplications (there's funny
+    buisness with the - signs because of the way that determinants work, but
+    there isn't really multiplication by -1 and addition in half of the
+    above lines).
+
+    Thus, in total, 18 multiplications, 9 subtractions, and 1 division. */
+    OP_Count::Multiplication += 18;
+    OP_Count::Subtraction += 9;
+    OP_Count::Division += 1;
   #endif
 
   return Tensor_Inv;
@@ -737,7 +748,10 @@ Tensor Tensor::operator^(const int exp) {
 
 double Tensor::Determinant(void) const {
   #ifdef OPERATION_COUNT
-    OP_Count::T_Determinant++;                     // Increment operator count
+    // 9 multiplications, 3 subtractions, 2 additions below
+    OP_Count::Multiplication += 9;
+    OP_Count::Addition += 2;
+    OP_Count::Subtraction += 3;
   #endif
 
   return ((*this).Ar[0*3 + 0]*((*this).Ar[1*3 + 1]*(*this).Ar[2*3 + 2]
@@ -776,10 +790,6 @@ Tensor Tensor::Transpose(void) const {
   T_Transpose.Ar[3*2 + 1] = (*this).Ar[3*1 + 2];           // i = 2, j = 1
   T_Transpose.Ar[3*2 + 2] = (*this).Ar[3*2 + 2];           // i = 2, j = 2
 
-  #ifdef OPERATION_COUNT
-    OP_Count::T_Transpose++;                       // Increment operator count
-  #endif
-
   return T_Transpose;
 } // Tensor Tensor::Transpose(void) const {
 
@@ -797,6 +807,12 @@ const Vector Tensor::Eigenvalues(void) const {
   p1 = (*this).Ar[3*0 + 1]*(*this).Ar[3*0 + 1]
      + (*this).Ar[3*0 + 2]*(*this).Ar[3*0 + 2]
      + (*this).Ar[3*1 + 2]*(*this).Ar[3*1 + 2];
+
+  #ifdef OPERATION_COUNT
+    // 3 multiplications, 2 additions in the calculation above
+    OP_Count::Addition += 2;
+    OP_Count::Multiplication += 3;
+  #endif
 
   /* If p1 == 0 then the Tensor is diagional . In this case, the eivenvalues are
   simply the diagional entris of the tensor */
@@ -819,6 +835,20 @@ const Vector Tensor::Eigenvalues(void) const {
     B = (*this) - q*I;
     r = (.5)*(p_inv)*(p_inv)*(p_inv)*B.Determinant();
 
+    #ifdef OPERATION_COUNT
+      /* q:  2 additions, 1 multiplication (1/3 uses only constants/is computed at compile time)
+      p2:    6 subtractions, 4 multiplications, 3 additions
+      p:     1 sqrt, 1 division
+      p_inv: 1 division
+      B:     no computations, everything here is operator overloading (which is counted elsewhere)
+      r:     4 multiplications */
+      OP_Count::Multiplication += 9;
+      OP_Count::Addition += 5;
+      OP_Count::Subtraction += 6;
+      OP_Count::Division += 2;
+      OP_Count::Sqrt += 1;
+    #endif
+
     /* In theory, r should be in (-1,1). However, because of floating point
     rounding errors, it is possible for r to be bigger than 1 or smaller
     than -1. However, we need r to be in -1,1 to use our acos function. Thus,
@@ -826,24 +856,51 @@ const Vector Tensor::Eigenvalues(void) const {
     if(r >= 1) {
       /* This corresponds to phi = 0. However, if phi = 0, then cos(phi) = 1
       and cos(phi + 2*pi/3) = -1/2. */
-      Eig_Values[0] = q + 2*p;
+      Eig_Values[0] = q + 2.*p;
       Eig_Values[1] = q - p;
       Eig_Values[2] = Eig_Values[1];
+
+      #ifdef OPERATION_COUNT
+        // 1 addition, 1 subtraction, and 1 multiplication in the three lines above
+        OP_Count::Multiplication += 1;
+        OP_Count::Addition += 1;
+        OP_Count::Subtraction += 1;
+      #endif
     } // if(r >= 1) {
 
     else if(r <= -1) {
       /* This corresponds to phi = PI/3. However, if phi = PI/3 then cos(phi) = 1/2
       and cos(phi + 2*Pi/3) = -1 */
       Eig_Values[0] = q + p;
-      Eig_Values[1] = q - 2*p;
+      Eig_Values[1] = q - 2.*p;
       Eig_Values[2] = Eig_Values[0];
+
+      #ifdef OPERATION_COUNT
+        // The three lines above contain 1 addition, 1 subtraction, and 1 multiplication
+        OP_Count::Multiplication += 1;
+        OP_Count::Addition += 1;
+        OP_Count::Subtraction += 1;
+      #endif
     } // else if(r <= -1) {
 
     else {
       phi = (1./3.)*acos(r);
-      Eig_Values[0] = q + 2*p*cos(phi);
-      Eig_Values[1] = q + 2*p*cos(phi + 2.*PI/3.);
-      Eig_Values[2] = 3*q - Eig_Values[0] - Eig_Values[1];
+      Eig_Values[0] = q + 2.*p*cos(phi);
+      Eig_Values[1] = q + 2.*p*cos(phi + 2.*PI/3.);
+      Eig_Values[2] = 3.*q - Eig_Values[0] - Eig_Values[1];
+
+      #ifdef OPERATION_COUNT
+        /* phi:        1 multiplication, 1 acos (1/3 uses costants/is calculated at compile time)
+        Eig_Values[0]: 1 addition, 2 multiplications, 1 cos
+        Eig_Values[1]: 2 additions, 2 multiplications, 1 cos (2.*PI/3 uses all constants/is calculated at compile time)
+        Eig_Values[2]: 1 multiplication, 2 subtractions. */
+
+        OP_Count::Multiplication += 6;
+        OP_Count::Addition += 3;
+        OP_Count::Subtraction += 2;
+        OP_Count::Cos += 2;
+        OP_Count::Acos += 1;
+      #endif
     } // else {
   } // else {
 
@@ -890,13 +947,14 @@ double Dot_Product(const Tensor & T1, const Tensor & T2) {
   /* This returns T1:T2, the tensor dot product of T1 and T2. This is given by
   T1(0,0)*T2(0,0) + T1(0,1)*T2(0,1) + .... T1(2,2)*T2(2,2) */
 
-  #ifdef OPERATION_COUNT
-    OP_Count::T_Dot_Product++;                     // Increment operator count
-  #endif
-
   const double * T1_Ar = T1.Get_Ar();
   const double * T2_Ar = T2.Get_Ar();
 
+  #ifdef OPERATION_COUNT
+    // 9 multiplications, 8 additions below.
+    OP_Count::Multiplication += 9;
+    OP_Count::Addition += 8;
+  #endif
 
   return T1_Ar[0]*T2_Ar[0] +
          T1_Ar[1]*T2_Ar[1] +
