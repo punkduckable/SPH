@@ -27,8 +27,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   First, we partition the spatial domain. To do this, we first determine the
   maximum and minimum x, y, and z coordinates of the live (damage < 1) particles
-  This gives us a cuboid in which the particles of the two bodies live. We
-  then divide the x, y, and z dimensions of this cuboid into smaller cuboids,
+  This gives us a box in which the particles of the two bodies live. We
+  then divide the x, y, and z dimensions of this box into smaller boxes,
   called cells, each one of which has a side length that is barely greater than
   the contact distance. We then allocate an array of buckets with one bucket per
   cell. We then cycle through the particles of A and B, determining which bucket

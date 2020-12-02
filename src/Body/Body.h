@@ -33,7 +33,7 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Body parameters
 
-    // Particle array name
+    // Body name
     std::string Name;
 
     // The array of particles
@@ -79,6 +79,7 @@ class Body {
     // Printing Parameters
     unsigned Times_Printed_Body_Forces = 0;
     unsigned Times_Printed_Body_Torques = 0;
+    unsigned Times_Printed_Box_Boundary_Forces = 0;
     unsigned Times_Printed_Particle_Forces = 0;
     unsigned Times_Printed_Particle_Positions = 0;
 
@@ -230,6 +231,7 @@ class Body {
     void Print_Parameters(void) const;                               // Prints to command line
     void Export_Body_Forces(const unsigned time_steps);              // Prints to file
     void Export_Body_Torques(const unsigned time_steps);             // Prints to file
+    void Export_Box_Boundary_Forces(const unsigned time_steps);      // Prints to file
     void Export_Particle_Forces(void);                               // Prints to file
     void Export_Particle_Positions(void);                            // Prints to file
 

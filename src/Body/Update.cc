@@ -165,7 +165,7 @@ void Body::Update_P(const double dt) {
     gradient. To get O(h^2) accuracy, we use a three point approximation for
     calculating this derivative. To use this three point derivative, we need
     to know the last two deformation gradients. These are stored in each particle
-    in the 'F' array. The 'F_Index in the current particle array keeps track
+    in the 'F' array. The 'F_Index' in the body keeps track
     of which member of this array was last updated (therefore telling us which
     element of the array is F from the last time step, F(t-dt), and which is from two
     time steps ago, F(t-2*dt)). The current deformation gradient, F(t), is stored
@@ -422,11 +422,11 @@ void Body::Update_x(const double dt) {
     Particles[i].V += (dt)*a;                    // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
 
-    if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques) {
+    if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
       Particles[i].Force_Internal = Force_Internal;     // update Internal force                : N Vector
       Particles[i].Force_Hourglass = Force_Hourglass;   // update Hourglassing force            : N Vector
       Particles[i].Force_Viscosity = Force_Viscosity;   // update Viscosity force               : N Vector
-    } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques) {
+    } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one

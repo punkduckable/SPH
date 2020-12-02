@@ -127,7 +127,7 @@ void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
   } // if(Num_Particles_In == 0) {
 
   if((*this).Particles_Set_Up == true) {
-    printf("This particle array has already been setup!!!\n");
+    printf("This Body has already been setup!!!\n");
     printf("You can't change the number of particles in a Body!!!\n");
     return;
   } // if((*this).Particles_Set_Up == true) {

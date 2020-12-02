@@ -58,6 +58,10 @@ Body* Simulation::Load_Setup_File(void) {
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Torques = true; }
   else {                                                        Simulation::Print_Body_Torques = false; }
 
+  strBuf = IO::read_line_after(File, "Print Box Boundary Forces:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Box_Boundary_Forces = true; }
+  else {                                                        Simulation::Print_Box_Boundary_Forces = false; }
+
   strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::TimeSteps_Between_Prints);
 
@@ -81,6 +85,10 @@ Body* Simulation::Load_Setup_File(void) {
 
     printf(  "Read Print_Body_Torques as:             ");
     if(Simulation::Print_Body_Torques == true) {           printf("true\n");  }
+    else {                                                 printf("flase\n"); }
+
+    printf(  "Read Print_Box_Boundary_Forces as:      ");
+    if(Simulation::Print_Box_Boundary_Forces == true) {    printf("true\n");  }
     else {                                                 printf("flase\n"); }
 
     printf(  "Read Time_Steps_Between_Prints as:      ");

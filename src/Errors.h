@@ -155,6 +155,29 @@ class No_BC : public Particle_Exception {
 
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+/* Body exceptions
+Body_Exception: Base Particle exception class
+
+Not_A_Box: This is thrown whenever a non-box body tries to do something that
+only boxes can do (call functions that only work for boxes, for example). */
+
+class Body_Exception : public Exception {
+  public:
+    Body_Exception(const char* Message_In) : Exception(Message_In) {}
+}; // class Body_Exception : Public Exception {
+
+
+class Not_A_Box : public Body_Exception {
+  public:
+    Not_A_Box(const char* Message_In) : Body_Exception(Message_In) {}
+}; // class Not_A_Box : public Body_Exception {
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /* IO Exceptions
 IO_Exception: Base input/output exception class
@@ -191,7 +214,7 @@ class Bad_Read : public IO_Exception {
 Simulation_Exception: Base Simulation_Exception class.
 
 Bad_Body_Setup: This exception is thrown whenever the bodies are set up
-improperly (such as when a body is designated as both a cuboid and from file) */
+improperly (such as when a body is designated as both a box and from file) */
 
 class Simulation_Exception : public Exception {
   public:

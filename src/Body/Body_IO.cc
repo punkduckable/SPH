@@ -127,7 +127,7 @@ void Body::Export_Body_Forces(const unsigned time_steps) {
   fclose(File);
 
   // Increment the number of times that we're printed Body force data.
-  Times_Printed_Body_Forces++;
+  (*this).Times_Printed_Body_Forces++;
 } // void Body::Export_Body_Forces(const unsigned time_steps) {
 
 
@@ -178,7 +178,7 @@ void Body::Export_Body_Torques(const unsigned time_steps) {
   Hourglass forces. To do this, we add up the corresponding Torques in
   each particle in the body. */
   Vector Internal_Torque  = {0, 0, 0};
-  Vector Elastic_Torque  = {0, 0, 0};
+  Vector Elastic_Torque   = {0, 0, 0};
   Vector Viscosity_Torque = {0, 0, 0};
   Vector Contact_Torque   = {0, 0, 0};
   Vector Friction_Torque  = {0, 0, 0};
@@ -232,12 +232,155 @@ void Body::Export_Body_Torques(const unsigned time_steps) {
   fclose(File);
 
   // Increment the number of times that we're printed Body force data.
-  Times_Printed_Body_Torques++;
+  (*this).Times_Printed_Body_Torques++;
 } // void Body::Export_Body_Torques(const unsigned time_steps) {
 
 
 
+void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
+  /* This function is used to print the resultant forces applied to each of
+  a box's six boundaries. Since this information only really makes sense for
+  boxes, this function is only available to boxes. */
+
+  #if defined(IO_MONITOR)
+    printf("Exporting Boundary Forces for %s\n",(*this).Name.c_str());
+  #endif
+
+  // Verify that this is a box!
+  if((*this).Is_Box == false) {
+    char Buf[500];
+    sprintf(Buf,
+            "Not A Box Exception: thrown by Body::Export_Box_Boundary_Forces\n"
+            "Body %s tried to use this function, but %s is not a box! This function\n"
+            "can only be called by boxes!\n",
+            (*this).Name.c_str(), (*this).Name.c_str());
+    throw Cant_Open_File(Buf);
+  } // if((*this).Is_Box == false) {
+
+  // First, open the file.
+  std::string File_Path = "./IO/Force_Files/";
+  File_Path += (*this).Name.c_str();
+  File_Path +=  "_Boundary_Forces.txt";
+
+  FILE * File;
+  if(Times_Printed_Box_Boundary_Forces == 0) { File = fopen(File_Path.c_str(),"w"); }
+  else {                                       File = fopen(File_Path.c_str(),"a"); }
+
+  // Make sure we could open the file.
+  if(File == nullptr) {
+    char Buf[500];
+    sprintf(Buf,
+            "Cant Open File Exception: Thrown by Body::Export_Box_Boundary_Forces\n"
+            "For some reason, ./IO/Force_Files/%s_Boundary_Forces.txt wouldn't open :(\n",
+            (*this).Name.c_str());
+    throw Cant_Open_File(Buf);
+  } // if(File == nullptr) {
+
+  /* Next, we need to find the net forces applied to each of the six boundaries
+  of the box. To do this, we add up the net force applied to each particle in
+  each of the 6 boundaries.
+
+  Note: to calculate the total force, we use a, which is in units of mm/s^2,
+  and the particle's mass, which is in units of grams. We need some conversion
+  factors to make this work. */
+  Vector Force_x_plus  = {0, 0, 0};
+  Vector Force_x_minus = {0, 0, 0};
+  Vector Force_y_plus  = {0, 0, 0};
+  Vector Force_y_minus = {0, 0, 0};
+  Vector Force_z_plus  = {0, 0, 0};
+  Vector Force_z_minus = {0, 0, 0};
+
+  unsigned i,j,k;
+
+  // +x face (i = X_SIDE_LENGTH-1)
+  i = (*this).X_SIDE_LENGTH-1;
+  for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+    for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
+      unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
+      Force_x_plus  += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+    } // for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
+  } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+
+  // -x face (i = 0)
+  i = 0;
+  for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+    for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
+      unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
+      Force_x_minus += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+  } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+
+  // +y face (j = y_Side_len-1)
+  j = (*this).Y_SIDE_LENGTH-1;
+  for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+    for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
+      unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
+      Force_y_plus  += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+    } //for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
+  } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+
+  // -y face (j = 0)
+  j = 0;
+  for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+    for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
+      unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
+      Force_y_minus += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+    } // for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
+  } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+
+  // +z face (k = Z_SIDE_LENGTH-1)
+  k = (*this).Z_SIDE_LENGTH-1;
+  for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+    for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+      unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
+      Force_z_plus  += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+    } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+  } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+
+  // -z face (k = 0)
+  k = 0;
+  for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+    for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+      unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
+      Force_z_minus += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+    } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
+  } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
+
+  /* Print the results to file. If we're on the first time step, then we need
+  to print a header. Otherwise, just print the forces! */
+  if(Times_Printed_Box_Boundary_Forces == 0) {
+    fprintf(File,"Time Steps |");
+    fprintf(File,"          x+ Boundary Force (N)           |");
+    fprintf(File,"          x- Boundary Force (N)           |");
+    fprintf(File,"          y+ Boundary Force (N)           |");
+    fprintf(File,"          y- Boundary Force (N)           |");
+    fprintf(File,"          z+ Boundary Force (N)           |");
+    fprintf(File,"          z- Boundary Force (N)          \n");
+  } //   if(Times_Printed_Box_Boundary_Forces == 0) {
+
+  fprintf(File,"%10d | ", time_steps);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Force_x_plus[0],  Force_x_plus[1],  Force_x_plus[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Force_x_minus[0], Force_x_minus[1], Force_x_minus[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Force_y_plus[0],  Force_y_plus[1],  Force_y_plus[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Force_y_minus[0], Force_y_minus[1], Force_y_minus[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e> | ",  Force_z_plus[0],  Force_z_plus[1],  Force_z_plus[2]);
+  fprintf(File,"<%12.5e,%12.5e,%12.5e>\n",   Force_z_minus[0], Force_z_minus[1], Force_z_minus[2]);
+
+  // Now close the file.
+  fclose(File);
+
+  // Increment the number of times that we're printed Body force data.
+  (*this).Times_Printed_Box_Boundary_Forces++;
+} // void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
+
+
+
 void Body::Export_Particle_Forces(void) {
+  /* This function is used to print the forces applied to each particle in a
+  body.
+
+  This function can NOT be called by multiple threads at once (this
+  function is not thread safe). */
+
   #if defined(IO_MONITOR)
     printf("Exporting particle forces for %s\n",(*this).Name.c_str());
   #endif
@@ -264,7 +407,7 @@ void Body::Export_Particle_Forces(void) {
   } // if(File == nullptr) {
 
   // Increment the number of times that we're printed particle force data.
-  Times_Printed_Particle_Forces++;
+  (*this).Times_Printed_Particle_Forces++;
 
   // Print header.
   fprintf(File,"  ID  |");

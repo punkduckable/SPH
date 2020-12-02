@@ -29,6 +29,7 @@ namespace Simulation {
   bool Print_Particle_Forces;
   bool Print_Body_Forces;
   bool Print_Body_Torques;
+  bool Print_Box_Boundary_Forces;
   unsigned TimeSteps_Between_Prints;
 
   // TimeStep parameters
