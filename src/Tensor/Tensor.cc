@@ -338,7 +338,9 @@ Tensor Tensor::operator*(const double c) const {
 
 
 Tensor Tensor::operator/(const double c) const {
-  // Check that quotient is non-zero
+  /* Check that quotient is non-zero
+  Note: we keep this as an exception rather than an assertion because dividing
+  by zero can happen in particular simulations (rather than just in buggy code). */
   if(c == 0) {
     throw Divide_By_Zero("Divide by Zero Exception: thrown by Tensor::operator/\n"
                          "You tried dividing a tensor by zero. Bad!\n");
@@ -892,13 +894,17 @@ double Dot_Product(const Tensor & T1, const Tensor & T2) {
     OP_Count::T_Dot_Product++;                     // Increment operator count
   #endif
 
-  return T1[0]*T2[0] +
-         T1[1]*T2[1] +
-         T1[2]*T2[2] +
-         T1[3]*T2[3] +
-         T1[4]*T2[4] +
-         T1[5]*T2[5] +
-         T1[6]*T2[6] +
-         T1[7]*T2[7] +
-         T1[8]*T2[8];
+  const double * T1_Ar = T1.Get_Ar();
+  const double * T2_Ar = T2.Get_Ar();
+
+
+  return T1_Ar[0]*T2_Ar[0] +
+         T1_Ar[1]*T2_Ar[1] +
+         T1_Ar[2]*T2_Ar[2] +
+         T1_Ar[3]*T2_Ar[3] +
+         T1_Ar[4]*T2_Ar[4] +
+         T1_Ar[5]*T2_Ar[5] +
+         T1_Ar[6]*T2_Ar[6] +
+         T1_Ar[7]*T2_Ar[7] +
+         T1_Ar[8]*T2_Ar[8];
 } // double Dot_Product(const Tensor & T1, const Tensor & T2) {

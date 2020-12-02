@@ -146,7 +146,9 @@ Vector Vector::operator*(const double c) const {
 
 
 Vector Vector::operator/(const double c) const {
-  // Check for divide by zero
+  /* Check for divide by zero
+  Note: we keep this as an exception rather than an assertion because dividing
+  by zero can happen in particular simulations (rather than just in buggy code). */
   if(c == 0) {
     throw Divide_By_Zero("Divide by Zero exception: Thrown by Vector::operator/\n"
                          "You tried to divide a vector by zero. Bad!\n");

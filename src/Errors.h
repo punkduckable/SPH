@@ -128,9 +128,6 @@ class Undefined_Exponent : public Tensor_Exception {
 /* Particle exceptions
 Particle_Exception: Base Particle exception class
 
-Bad_Neighbor_Index: This is thrown whenever the user tries to access a particle's
-jth neighbor, when j is greater than the particle's number of neighbors
-
 No_BC: This is thrown whenever the user tries to access the ith component of a
 particle's boundary condition, but the particle has no boundary condition for
 that component. */
@@ -139,12 +136,6 @@ class Particle_Exception : public Exception {
   public:
     Particle_Exception(const char* Message_In) : Exception(Message_In) {}
 }; // class Particle_Exception : Public Exception {
-
-
-class Bad_Neighbor_Index : public Particle_Exception {
-  public:
-    Bad_Neighbor_Index(const char* Message_In) : Particle_Exception(Message_In) {}
-}; // class Bad_Neighbor_ID : public Particle_Exception {
 
 
 class No_BC : public Particle_Exception {

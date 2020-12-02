@@ -84,7 +84,7 @@ void Simulation::Set_Box_BCs(Body & Box, Box_BCs & Boundary_Conditions) {
             "Body %s tried to use this function, but %s is not a box! This function\n"
             "can only be called by boxes!\n",
             Box.Get_Name().c_str(), Box.Get_Name().c_str());
-    throw Cant_Open_File(Buf);
+    throw Not_A_Box(Buf);
   } // if((*this).Is_Box == false) {
 
   // Determine side lengths

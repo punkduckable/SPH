@@ -163,7 +163,7 @@ void Body::Find_Neighbors_Box(void) {
             "Body %s tried to use this function, but %s is not a box! This function\n"
             "can only be called by boxes!\n",
             (*this).Name.c_str(), (*this).Name.c_str());
-    throw Cant_Open_File(Buf);
+    throw Not_A_Box(Buf);
   } // if((*this).Is_Box == false) {
 
   /* This function is a modified version of the Neighbor List generating
