@@ -17,6 +17,9 @@ namespace IO {
 
 
 void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
+  /* This function loads a simulation from a save. It stores the bodies
+  in that simulation in the Bodies_Ptr. */
+
   // First, open up the Particle_data file
   std::ifstream File;
   File.open("./IO/Saves/Simulation_Data.txt");

@@ -13,6 +13,8 @@ namespace Simulation {
 
 
 void Simulation::Set_General_BCs(Body & Body_In, Array<General_Boundary_Condition> & BCs_In) {
+  /* This function is used to set "General BCs" for the Body_In Body. */
+
   /* Cycle through the components of the BC array */
   unsigned Num_BCs = BCs_In.Get_Length();
   Vector Position;
@@ -157,6 +159,11 @@ void Simulation::Set_Box_BCs(Body & Box, Box_BCs & Boundary_Conditions) {
 
 
 static void Simulation::Set_Box_Particle_BCs(Particle & P_In, Vector BC) {
+  /* This function sets the BCs for a particular particle, which is assumed
+  to be in a box type body.
+
+  Simulation::Set_Box_BCs is the only function that shluld call this one. */
+
   for(unsigned i = 0; i < 3; i++) {
     if(BC[i] == Simulation::FREE) { continue; }
     else { P_In.Set_BC(i, BC[i]); }

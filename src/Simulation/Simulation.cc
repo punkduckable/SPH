@@ -19,6 +19,8 @@ namespace Simulation {
 
 
 void Simulation::Run(void) {
+  /* This function runs a simulation! */
+
   //////////////////////////////////////////////////////////////////////////////
   // Simulation variables
 
@@ -227,7 +229,7 @@ void Simulation::Run(void) {
 static void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, const unsigned time_steps) {
   /* Function Description:
   This function, as the name implies, exports data for each body in a simulation.
-  Position data is always printed. Wheather or not we print Force or
+  Position data is always printed. Whether or not we print Force or
   Net External Force data depends on the simulation parameters
   Print_Prticle_Force and Print_Next_External_Forces, respectivly.
 

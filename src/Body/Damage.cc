@@ -38,6 +38,10 @@ void Body::Set_Particles_Critical_Stretch(const double Stretch_Critical_Mean, co
 
 
 void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
+  /* This function removes the particles in the Damated_Particles_List from
+  the Body (makes them damaged/removes them from every other particle's neighbor
+  list so that the damage particles no longer impact the body)  */
+
   while(Damaged_Particle_List.Get_Length() != 0) {
 
   unsigned p = Damaged_Particle_List.Pop_Back();

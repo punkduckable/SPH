@@ -168,6 +168,8 @@ double Particle::Get_BC(unsigned Component) const {
 // Printing functions
 
 void Particle::Print(void) const {
+  /* This function prints out the members of tthe (*this) particle. */
+
   // Print basic particle parameters.
   printf("ID:       %u\n",(*this).ID);
 

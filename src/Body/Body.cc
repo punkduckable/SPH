@@ -34,6 +34,9 @@ Body::Body(void) {
 
 
 Body::Body(const unsigned Num_Particles_In) {
+  /* This constructor sets up the Particles array with a specified number
+  of particles. */
+
   if(Num_Particles == 0) {
     printf("An array of particles must have AT LEAST 1 particle\n");
     return;
@@ -61,9 +64,7 @@ Body::Body(const unsigned Num_Particles_In) {
 
 
 
-Body::~Body(void) {
-  delete [] Particles;
-}
+Body::~Body(void) { delete [] Particles; }
 
 
 
@@ -100,7 +101,11 @@ const Particle & Body::operator[](const unsigned i) const {
 // Boundary Conditions
 
 void Body::Apply_BCs(void) {
-  // Using this function only makes sense if the particles array has been set up.
+  /* This function runs the "Apply_BCs" function on every particle in (*this)'s
+  particles array.
+
+  Thus, using this function only makes sense if the particles array has been set
+  up. */
   assert(Particles_Set_Up);
 
   // For each particle in this body, apply its BCs.

@@ -6,7 +6,18 @@
 #include <cstring>
 #include <string>
 
+// Static function Prototypes
+static void Add_Point_Data(FILE * File,
+                           char * Weight_Name,
+                           unsigned Num_Particles,
+                           double * Data);
+
 void Body::Print_Parameters(void) const {
+  /* This function prints some of the key parameters about this body.
+
+  This function is called by Simulation::Setup to check that everything ran
+  correctly. */
+
   printf(         "Name:                         %s\n",    Name.c_str());
   printf(         "Is a Box:                     %u\n",    (unsigned)Is_Box);
   if(Is_Box == true) {
@@ -436,6 +447,11 @@ void Body::Export_Particle_Forces(void) {
 
 
 void Body::Export_Particle_Positions(void) {
+  /* This function prints (to a file) the position of every particle in (*this).
+  This is used to visualize what the simulation is doing.
+
+  This file SHOULD NOT be called by multiple threads. It is NOT thread safe. */
+
   #if defined(IO_MONITOR)
     printf("Exporting particle positions for %s\n",(*this).Name.c_str());
   #endif
@@ -667,7 +683,11 @@ void Body::Export_Particle_Positions(void) {
 
 
 
-void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) const {
+static void Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) {
+  /* This function adds some data to a vtk type file. This function exists
+  because VTK expects a particular format, and I thought it'd be better to write
+  one function that does that rather than to have a bunch. */
+
   // Print header.
   fprintf(File, "SCALARS ");
   fprintf(File, Weight_Name);
@@ -678,4 +698,4 @@ void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particle
   for(unsigned i = 0; i < Num_Particles; i++) {
     fprintf(File,"\t %8.3f\n", Data[i]);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
-} // void Body::Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) const {
+} // static void Add_Point_Data(FILE * File, char * Weight_Name, unsigned Num_Particles, double * Data) const {

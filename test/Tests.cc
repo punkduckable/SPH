@@ -12,5 +12,6 @@
 #include "Array_Tests.cc"
 #include "IO_Tests.cc"
 #include "Body_Tests.cc"
+#include "Timing_Tests.cc"
 
 #endif

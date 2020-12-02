@@ -85,14 +85,6 @@ class Body {
 
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Private methods
-    void Add_Point_Data(FILE * File,             // Defined in Body_IO.cc
-                        char * Weight_Name,      // Helps Export_Particle_Positions.
-                        unsigned Num_Particles,
-                        double * Data) const;
-
-
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors, destructor

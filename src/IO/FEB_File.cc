@@ -3,6 +3,10 @@
 #include "Errors.h"
 
 void IO::Read_FEB_File(const std::string & File_Name, Vector ** X_Ptr, unsigned & Num_Nodes) {
+  /* This function, as the name suggests, is used to read in an FEB file. It
+  reads in the position of the nodes in that body and then stores them in the
+  X_Ptr pointer. */
+
   // First, we need to get the path to the Febio file. Now we can open the file
   std::string File_Path = "./IO/Files/";
   File_Path += File_Name;                        // Add file name
