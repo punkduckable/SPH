@@ -121,7 +121,7 @@ obj/Particle.o: Particle.cc Particle.h Simulation.h Vector.h Tensor.h Errors.h B
 
 
 # Body class
-obj/Body.o: Body.cc Body.h Vector.h Particle.h Load_Simulation.h Save_Simulation.h Operation_Count.h
+obj/Body.o: Body.cc Body.h Vector.h Particle.h Load_Simulation.h Save_Simulation.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Neighbors.o: Neighbors.cc Body.h Particle.h Vector.h List.h Array.h

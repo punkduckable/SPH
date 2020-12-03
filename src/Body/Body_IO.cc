@@ -292,8 +292,8 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
   each of the 6 boundaries.
 
   Note: to calculate the total force, we use a, which is in units of mm/s^2,
-  and the particle's mass, which is in units of grams. We need some conversion
-  factors to make this work. */
+  and the particle's mass, which is in units of grams. We need to divide the
+  acceleration by 1,000,000 to make the units work. */
   Vector Force_x_plus  = {0, 0, 0};
   Vector Force_x_minus = {0, 0, 0};
   Vector Force_y_plus  = {0, 0, 0};
@@ -308,7 +308,7 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
   for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
     for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
       unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
-      Force_x_plus  += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+      Force_x_plus  += Particles[index].Get_Mass()*(Particles[index].Get_a()/1000000.);
     } // for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
   } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
 
@@ -317,7 +317,8 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
   for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
     for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
       unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
-      Force_x_minus += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
+      Force_x_minus += Particles[index].Get_Mass()*(Particles[index].Get_a()/1000000.);
+    } // for(k = 0; k < Z_SIDE_LENGTH; k++) {
   } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
 
   // +y face (j = y_Side_len-1)
@@ -325,7 +326,7 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
   for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
     for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
       unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
-      Force_y_plus  += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+      Force_y_plus  += Particles[index].Get_Mass()*(Particles[index].Get_a()/1000000.);
     } //for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
 
@@ -334,7 +335,7 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
   for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
     for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
       unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
-      Force_y_minus += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+      Force_y_minus += Particles[index].Get_Mass()*(Particles[index].Get_a()/1000000.);
     } // for(k = 0; k < (*this).Z_SIDE_LENGTH; k++) {
   } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
 
@@ -343,7 +344,7 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
   for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
     for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
       unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
-      Force_z_plus  += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+      Force_z_plus  += Particles[index].Get_Mass()*(Particles[index].Get_a()/1000000.);
     } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
   } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
 
@@ -352,7 +353,7 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
   for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
     for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
       unsigned index = i*(*this).Y_SIDE_LENGTH*(*this).Z_SIDE_LENGTH + k*(*this).Y_SIDE_LENGTH + j;
-      Force_z_minus += (Particles[index].Get_Mass()/1000.)*(Particles[index].Get_a()/1000.);
+      Force_z_minus += Particles[index].Get_Mass()*(Particles[index].Get_a()/1000000.);
     } // for(j = 0; j < (*this).Y_SIDE_LENGTH; j++) {
   } // for(i = 0; i < (*this).X_SIDE_LENGTH; i++) {
 

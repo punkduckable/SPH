@@ -23,7 +23,7 @@ void OP_Count::Print(void) {
     return;
   #endif
 
-  printf("\nOperation count:\n\n");
+  printf("\nOperation count:\n");
   printf("Addition:           %lu\n", OP_Count::Addition);
   printf("Subtraction:        %lu\n", OP_Count::Subtraction);
   printf("Multiplication:     %lu\n", OP_Count::Multiplication);

@@ -1,7 +1,6 @@
 #include "Body.h"
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
-#include "Diagnostics/Operation_Count.h"
 #include <assert.h>
 #include <math.h>
 #if defined(_OPENMP)
@@ -172,14 +171,6 @@ void Body::Set_Support_Radius(const double SR_In) {
 
   (*this).Support_Radius = SR_In;
   (*this).Shape_Function_Amplitude =  15./(PI*pow(SR_In,6));
-
-  #ifdef OPERATION_COUNT
-    // The above calculation involves 1 division and 6 multiplications (in the denominator)
-    #pragma omp atomic update
-    OP_Count::Multiplication += 6;
-    #pragma omp atomic update
-    OP_Count::Division += 1;
-  #endif
 } // void Body::Set_Support_Radius(const double SR_In) {
 
 
@@ -194,16 +185,6 @@ void Body::Set_Material(const Materials::Material & Mat_In) {
             E = mu0*(3*Lame + 2*mu0)/(Lame + mu0)
   */
   Body_Material.E = (Mat_In.mu0)*(3.*Mat_In.Lame + 2.*Mat_In.mu0)/(Mat_In.Lame + Mat_In.mu0);
-
-  #ifdef OPERATION_COUNT
-    // 3 multiplications, 2 additions, and 1 division in the calculation above
-    #pragma omp atomic update
-    OP_Count::Multiplication += 3;
-    #pragma omp atomic update
-    OP_Count::Addition += 2;
-    #pragma omp atomic update
-    OP_Count::Division += 1;
-  #endif
 } // void Body::Set_Material(const Materials::Material & Mat_In) {
 void Body::Set_mu(const double mu_In) { mu = mu_In; }
 void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }

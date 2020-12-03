@@ -53,7 +53,7 @@ void Simulation::Run(void) {
   time1 = Get_Time();
 
   // time step loop.
-  #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) num_threads(1) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
     for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
       #pragma omp single nowait
@@ -175,11 +175,13 @@ void Simulation::Run(void) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Export the bodies data for the final configuration of the simulation
+    // Since Export_Bodies_Data is not thread safe, only one thread can do this!
 
     #pragma omp single nowait
-    { printf("%d time steps complete\n", time_step); }
-
-    Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
+    {
+      printf("%d time steps complete\n", time_step);
+      Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
+    } // #pragma omp single nowait
   } // #pragma omp parallel
 
 

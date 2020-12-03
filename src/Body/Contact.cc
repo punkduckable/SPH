@@ -186,7 +186,9 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     // 3 subtractions, 3 divisions in the computations above.
     #pragma omp single nowait
     {
+      #pragma omp atomic update
       OP_Count::Subtraction += 3;
+      #pragma omp atomic update
       OP_Count::Division += 3;
     } // #pragma omp single nowait
   #endif
@@ -227,7 +229,9 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     // 3 subtractions, 3 divisions in the computations above.
     #pragma omp single nowait
     {
+      #pragma omp atomic update
       OP_Count::Subtraction += 3;
+      #pragma omp atomic update
       OP_Count::Division += 3;
     } // #pragma omp single nowait
   #endif
@@ -273,7 +277,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
     /* Update that bucket's A counter */
     #pragma omp atomic
-      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
+    Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
   } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
   #pragma omp for
@@ -294,14 +298,16 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
     /* Update that bucket's B counter */
     #pragma omp atomic
-      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
+    Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
 
   #ifdef OPERATION_COUNT
     // 3 subractions, 3 divisions per cycle of both loops above.
     #pragma omp single nowait
     {
+      #pragma omp atomic update
       OP_Count::Subtraction += 3*(Num_Particles_A + Num_Particles_B);
+      #pragma omp atomic update
       OP_Count::Division += 3*(Num_Particles_A + Num_Particles_B);
     } // #pragma omp single
   #endif
