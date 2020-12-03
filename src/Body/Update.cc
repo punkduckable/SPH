@@ -116,7 +116,15 @@ void Body::Update_P(const double dt) {
       if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
         /* Note: Set_Tau requires that Tau != 0. Therefore, dividing by Tau
         should be well defined. */
-        Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1;
+        Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1.;
+
+        #ifdef OPERATION_COUNT
+          // 3 subtractions, 2 multiplications, 1 division, and one exp in the calculation above.
+          OP_Count::Subtraction += 3;
+          OP_Count::Multiplication += 2;
+          OP_Count::Division += 1;
+          OP_Count::Exp += 1;
+        #endif
       } // if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
 
       // If particle is fully damaged, add this particle to the damaged list
@@ -159,6 +167,17 @@ void Body::Update_P(const double dt) {
     then det(C) != 0, and C^(-1) is well defined. */
     S = (1 - Particles[i].D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));       //        : Mpa Tensor
 
+    #ifdef OPERATION_COUNT
+      /* 1 addition, 1 subtraction, 1 log, 2 multiplications in the calculation above.
+      There are many other operations in there, but they're all done with operator
+      overloading and are, therefore, counted elsewhere. */
+      OP_Count::Subtraction += 1;
+      OP_Count::Addition += 1;
+      OP_Count::Log += 1;
+      OP_Count::Multiplication += 2;
+    #endif
+
+
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate viscosity tensor:
@@ -193,6 +212,13 @@ void Body::Update_P(const double dt) {
     F_Prime = (1./(2.*dt))*(3*F - 4*Particles[i].F[i_dt] + Particles[i].F[i_2dt]);      // 1/s Tensor
     L = F_Prime*(F^(-1));                                                      //        : 1/s Tensor
     Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                      //        : Mpa Tensor
+
+    #ifdef OPERATION_COUNT
+      /* F_Prime : 1 division, 1 multiplication (all other operations use operator overloading)
+      Visc       : 1 multiplication (other operations use operator overloading) */
+      OP_Count::Multiplication += 2;
+      OP_Count::Division += 1;
+    #endif
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate P (First Piola-Kirchhoff stress tensor). Here we also update
@@ -377,6 +403,15 @@ void Body::Update_x(const double dt) {
       properly. */
       Force_Hourglass += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*             //        : (1/mm) Vector
                          (delta_ij + delta_ji))*rj;
+
+
+      #ifdef OPERATION_COUNT
+        /* 3 multiplications, 1 division, 1 addition in the calculation above
+        (the other multiplication uses operator overloading) */
+        OP_Count::Multiplication += 3;
+        OP_Count::Division += 1;
+        OP_Count::Addition += 1;
+      #endif
     } // for(unsigned j = 0; j < Num_Neighbors; j++) {
     Force_Hourglass *= -.5*E*V_i*alpha;  // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
     Force_Internal *= V_i;               // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
@@ -399,12 +434,25 @@ void Body::Update_x(const double dt) {
     /* If gravity is enabled, add that in. */
     if((*this).Gravity_Enabled == true) { a += Body::g; }
 
+    #ifdef OPERATION_COUNT
+      /* Force_Hourglass : 3 multiplications
+      a                  : 1 division, 1 multiplication (eveything else is operator oveloading)*/
+      OP_Count::Multiplication += 4;
+      OP_Count::Division += 1;
+    #endif
+
     /* Now update the velocity, position vectors. This is done using the
     'leap-frog' integration scheme. However, during the first step of this
     scheme, we need to use forward euler to get the initial velocity.*/
     if(First_Time_Step == true) {
       First_Time_Step = false;
       Particles[i].V += (dt/2.)*a;                                             // velocity starts at t_i+1/2           : mm/s Vector
+
+      #ifdef OPERATION_COUNT
+        /* 1 multiplication to calculate V above (multiplication by a uses
+        operator oveloading) */
+        OP_Count::Division += 1;
+      #endif
     } // if(First_Time_Step == true) {
 
     /* Before updating the velocity/position, let's check if the particle has
@@ -424,7 +472,7 @@ void Body::Update_x(const double dt) {
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
 
     if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
-      Particles[i].Force_Internal = Force_Internal;     // update Internal force                : N Vector
+      Particles[i].Force_Internal  = Force_Internal;    // update Internal force                : N Vector
       Particles[i].Force_Hourglass = Force_Hourglass;   // update Hourglassing force            : N Vector
       Particles[i].Force_Viscosity = Force_Viscosity;   // update Viscosity force               : N Vector
     } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {

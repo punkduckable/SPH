@@ -12,6 +12,7 @@ namespace OP_Count {
   extern unsigned long Modulus;
   extern unsigned long Sqrt;
   extern unsigned long Exp;
+  extern unsigned long Log;
   extern unsigned long Cos;
   extern unsigned long Acos;
 

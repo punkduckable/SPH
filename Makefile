@@ -1,7 +1,7 @@
 # Compiler stuff
 COMPILER :=        g++-10
 
-CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -DNDEBUG
+CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -Ofast -march=native -std=c++11 -DNDEBUG
 
 LNFLAGS  :=
 
@@ -121,7 +121,7 @@ obj/Particle.o: Particle.cc Particle.h Simulation.h Vector.h Tensor.h Errors.h B
 
 
 # Body class
-obj/Body.o: Body.cc Body.h Vector.h Particle.h Load_Simulation.h Save_Simulation.h
+obj/Body.o: Body.cc Body.h Vector.h Particle.h Load_Simulation.h Save_Simulation.h Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Neighbors.o: Neighbors.cc Body.h Particle.h Vector.h List.h Array.h
@@ -133,7 +133,7 @@ obj/Update.o: Update.cc Body.h Simulation.h Particle.h Vector.h List.h Operation
 obj/Damage.o: Damage.cc Body.h Particle.h Vector.h List.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Contact.o: Contact.cc Body.h Simulation.h Particle.h Vector.h
+obj/Contact.o: Contact.cc Body.h Simulation.h Particle.h Vector.h Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h Errors.h

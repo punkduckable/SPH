@@ -18,7 +18,6 @@ namespace Simulation {
 
 
 
-
 // Declare Simulation Parameters
 namespace Simulation {
   // IO parameters

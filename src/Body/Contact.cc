@@ -2,6 +2,7 @@
 #include "Simulation/Simulation.h"
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
+#include "Diagnostics/Operation_Count.h"
 #include "List.h"
 #include "Array.h"
 #include <math.h>
@@ -181,6 +182,12 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   const unsigned Ny = floor((y_max - y_min)/Simulation::Contact_Distance);
   const unsigned Nz = floor((z_max - z_min)/Simulation::Contact_Distance);
 
+  #ifdef OPERATION_COUNT
+    // 3 subtractions, 3 divisions in the computations above.
+    OP_Count::Subtraction += 3;
+    OP_Count::Division += 3;
+  #endif
+
   /* Now that we know the number of buckets in each direction, one thread can
   allocate the global arrays */
   #pragma omp single
@@ -212,6 +219,12 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   const double cell_x_dim = (x_max - x_min)/Nx;
   const double cell_y_dim = (y_max - y_min)/Ny;
   const double cell_z_dim = (z_max - z_min)/Nz;
+
+  #ifdef OPERATION_COUNT
+    // 3 subtractions, 3 divisions in the computations above.
+    OP_Count::Subtraction += 3;
+    OP_Count::Division += 3;
+  #endif
 
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
@@ -277,6 +290,12 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     #pragma omp atomic
       Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
+  #ifdef OPERATION_COUNT
+    // 3 subractions, 3 divisions per cycle of both loops above.
+    OP_Count::Subtraction += 3*(Num_Particles_A + Num_Particles_B);
+    OP_Count::Division += 3*(Num_Particles_A + Num_Particles_B);
+  #endif
 
 
 
@@ -439,7 +458,15 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                     double V_j = Body_B[j].Get_Volume();                       //        : mm^3
                     double Mag_r_ij = Magnitude(r_ij);                         //        : mm
                     double h_minus_Mag_r_ij = h - Mag_r_ij;                    //        : mm
-                    Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
+                    Grad_W = (-3.*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
+
+                    #ifdef OPERATION_COUNT
+                      /* 3 multiplications, 1 division to calculate Grad_W (the
+                      final multiplication uses operator overloading and is
+                      counted elsewhere. */
+                      OP_Count::Multiplication += 3;
+                      OP_Count::Division += 1;
+                    #endif
 
                     /* Now apply the force to the two interacting bodies (Note
                     the forces are equal and opposite). We have to apply the
@@ -475,6 +502,13 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                     F_Friction = ((-1*Simulation::Friction_Coefficient*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
                     Body_A[i].Force_Friction += F_Friction;                    //        : N Vector
                     Body_B_F_Friction_Local[j] -= F_Friction;                  //        : N Vector
+
+                    #ifdef OPERATION_COUNT
+                      /* F_Contact: 1 multiplication (multiplication by Grad_W uses operator overloading)
+                      F_Friction:   2 multiplications, 1 division (multiplycatiom by Relative_Velocity uses operator overloading) */
+                      OP_Count::Multiplication += 3;
+                      OP_Count::Division += 1;
+                    #endif
                   } // if(Magnitude(r_ij) < h) {
                 } // for(unsigned B_Particle_index = 0; B_Particle_index < Num_Particles_B_Bucket; B_Particle_index++) {
               } // for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {

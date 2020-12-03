@@ -10,6 +10,7 @@ namespace OP_Count {
   unsigned long Modulus        = 0;
   unsigned long Sqrt           = 0;
   unsigned long Exp            = 0;
+  unsigned long Log            = 0;
   unsigned long Cos            = 0;
   unsigned long Acos           = 0;
 } // namespace OP_Count {
@@ -30,6 +31,7 @@ void OP_Count::Print(void) {
   printf("Modulus:            %lu\n", OP_Count::Modulus);
   printf("Sqrt:               %lu\n", OP_Count::Sqrt);
   printf("Exp:                %lu\n", OP_Count::Exp);
+  printf("Log:                %lu\n", OP_Count::Log);
   printf("Cos:                %lu\n", OP_Count::Cos);
   printf("Acos:               %lu\n", OP_Count::Acos);
   printf("\n");

@@ -55,26 +55,22 @@ void Simulation::Run(void) {
   // time step loop.
   #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
-    // Start timer2.
-    #pragma omp single nowait
-    { time2 = Get_Time(); }
-
     for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
+      #pragma omp single nowait
+      { time2 = Get_Time(); }
+
       //////////////////////////////////////////////////////////////////////////
       // Export Bodies data
 
       if(time_step%Simulation::TimeSteps_Between_Prints == 0) {
         #pragma omp single nowait
-        { printf("%d time steps complete\n", time_step); }
-
-        Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
+        {
+          printf("%d time steps complete\n", time_step);
+          Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
+          Print_time += Time_Since(time2);
+          time2 = Get_Time();
+        } // #pragma omp single nowait
       } // if(t%TimeSteps_Between_Prints == 0) {
-
-      #pragma omp single nowait
-      {
-        Print_time += Time_Since(time2);
-        time2 = Get_Time();
-      } // #pragma omp single nowait
 
 
 
@@ -172,10 +168,7 @@ void Simulation::Run(void) {
       } // for(b = 0; b < Num_Bodies; b++) {
 
       #pragma omp single nowait
-      {
-        update_x_time += Time_Since(time2);
-        time2 = Get_Time();
-      }
+      { update_x_time += Time_Since(time2); }
     } // for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
 
 
@@ -245,8 +238,9 @@ static void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, c
   Net External Force data depends on the simulation parameters
   Print_Prticle_Force and Print_Next_External_Forces, respectivly.
 
+  Note: this function is NOT threadsafe. Only one thread should call it. 
+
   Simulation::Run is the only function  that should call this function */
-  #pragma omp for nowait
   for(unsigned b = 0; b < Num_Bodies; b++) {
     try {
                                                       Bodies[b].Export_Particle_Positions();
