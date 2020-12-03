@@ -1,7 +1,7 @@
 #if !defined(OPERATION_COUNT_HEADER)
 #define OPERATION_COUNT_HEADER
 
-#define OPERATION_COUNT
+//#define OPERATION_COUNT
 
 namespace OP_Count {
   /* Floating point Operation counters */

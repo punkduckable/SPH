@@ -53,7 +53,7 @@ void Simulation::Run(void) {
   time1 = Get_Time();
 
   // time step loop.
-  #pragma omp parallel default(shared) num_threads(1) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
   {
     for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
       #pragma omp single nowait
