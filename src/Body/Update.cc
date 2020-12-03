@@ -120,9 +120,13 @@ void Body::Update_P(const double dt) {
 
         #ifdef OPERATION_COUNT
           // 3 subtractions, 2 multiplications, 1 division, and one exp in the calculation above.
+          #pragma omp atomic update
           OP_Count::Subtraction += 3;
+          #pragma omp atomic update
           OP_Count::Multiplication += 2;
+          #pragma omp atomic update
           OP_Count::Division += 1;
+          #pragma omp atomic update
           OP_Count::Exp += 1;
         #endif
       } // if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
@@ -171,9 +175,13 @@ void Body::Update_P(const double dt) {
       /* 1 addition, 1 subtraction, 1 log, 2 multiplications in the calculation above.
       There are many other operations in there, but they're all done with operator
       overloading and are, therefore, counted elsewhere. */
+      #pragma omp atomic update
       OP_Count::Subtraction += 1;
+      #pragma omp atomic update
       OP_Count::Addition += 1;
+      #pragma omp atomic update
       OP_Count::Log += 1;
+      #pragma omp atomic update
       OP_Count::Multiplication += 2;
     #endif
 
@@ -216,7 +224,9 @@ void Body::Update_P(const double dt) {
     #ifdef OPERATION_COUNT
       /* F_Prime : 1 division, 1 multiplication (all other operations use operator overloading)
       Visc       : 1 multiplication (other operations use operator overloading) */
+      #pragma omp atomic update
       OP_Count::Multiplication += 2;
+      #pragma omp atomic update
       OP_Count::Division += 1;
     #endif
 
@@ -408,8 +418,11 @@ void Body::Update_x(const double dt) {
       #ifdef OPERATION_COUNT
         /* 3 multiplications, 1 division, 1 addition in the calculation above
         (the other multiplication uses operator overloading) */
+        #pragma omp atomic update
         OP_Count::Multiplication += 3;
+        #pragma omp atomic update
         OP_Count::Division += 1;
+        #pragma omp atomic update
         OP_Count::Addition += 1;
       #endif
     } // for(unsigned j = 0; j < Num_Neighbors; j++) {
@@ -436,8 +449,10 @@ void Body::Update_x(const double dt) {
 
     #ifdef OPERATION_COUNT
       /* Force_Hourglass : 3 multiplications
-      a                  : 1 division, 1 multiplication (eveything else is operator oveloading)*/
+      a                  : 1 division, 1 multiplication (eveything else is operator oveloading) */
+      #pragma omp atomic update
       OP_Count::Multiplication += 4;
+      #pragma omp atomic update
       OP_Count::Division += 1;
     #endif
 
@@ -451,6 +466,7 @@ void Body::Update_x(const double dt) {
       #ifdef OPERATION_COUNT
         /* 1 multiplication to calculate V above (multiplication by a uses
         operator oveloading) */
+        #pragma omp atomic update
         OP_Count::Division += 1;
       #endif
     } // if(First_Time_Step == true) {
@@ -536,7 +552,9 @@ static void Calculate_Force(Vector & F,
 
   #ifdef OPERATION_COUNT
     /* Each component above uses 6 additions and 4 multiplications */
+    #pragma omp atomic update
     OP_Count::Multiplication += 12;
+    #pragma omp atomic update
     OP_Count::Addition += 18;
   #endif
 } // static void Calculate_Force(Tensor & F,...
@@ -567,9 +585,13 @@ static double Calculate_Delta(const Tensor & F,
 
   #ifdef OPERATION_COUNT
     // This includes the calculations above and below (return statement)
+    #pragma omp atomic update
     OP_Count::Multiplication += 12;
+    #pragma omp atomic update
     OP_Count::Addition += 8;
+    #pragma omp atomic update
     OP_Count::Division += 1;
+    #pragma omp atomic update
     OP_Count::Subtraction += 1;
   #endif
 

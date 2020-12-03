@@ -175,7 +175,9 @@ void Body::Set_Support_Radius(const double SR_In) {
 
   #ifdef OPERATION_COUNT
     // The above calculation involves 1 division and 6 multiplications (in the denominator)
+    #pragma omp atomic update
     OP_Count::Multiplication += 6;
+    #pragma omp atomic update
     OP_Count::Division += 1;
   #endif
 } // void Body::Set_Support_Radius(const double SR_In) {
@@ -195,8 +197,11 @@ void Body::Set_Material(const Materials::Material & Mat_In) {
 
   #ifdef OPERATION_COUNT
     // 3 multiplications, 2 additions, and 1 division in the calculation above
+    #pragma omp atomic update
     OP_Count::Multiplication += 3;
+    #pragma omp atomic update
     OP_Count::Addition += 2;
+    #pragma omp atomic update
     OP_Count::Division += 1;
   #endif
 } // void Body::Set_Material(const Materials::Material & Mat_In) {

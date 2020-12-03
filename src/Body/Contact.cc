@@ -184,8 +184,11 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   #ifdef OPERATION_COUNT
     // 3 subtractions, 3 divisions in the computations above.
-    OP_Count::Subtraction += 3;
-    OP_Count::Division += 3;
+    #pragma omp single nowait
+    {
+      OP_Count::Subtraction += 3;
+      OP_Count::Division += 3;
+    } // #pragma omp single nowait
   #endif
 
   /* Now that we know the number of buckets in each direction, one thread can
@@ -222,8 +225,11 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   #ifdef OPERATION_COUNT
     // 3 subtractions, 3 divisions in the computations above.
-    OP_Count::Subtraction += 3;
-    OP_Count::Division += 3;
+    #pragma omp single nowait
+    {
+      OP_Count::Subtraction += 3;
+      OP_Count::Division += 3;
+    } // #pragma omp single nowait
   #endif
 
   #pragma omp for nowait
@@ -293,8 +299,11 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   #ifdef OPERATION_COUNT
     // 3 subractions, 3 divisions per cycle of both loops above.
-    OP_Count::Subtraction += 3*(Num_Particles_A + Num_Particles_B);
-    OP_Count::Division += 3*(Num_Particles_A + Num_Particles_B);
+    #pragma omp single nowait
+    {
+      OP_Count::Subtraction += 3*(Num_Particles_A + Num_Particles_B);
+      OP_Count::Division += 3*(Num_Particles_A + Num_Particles_B);
+    } // #pragma omp single
   #endif
 
 
@@ -464,7 +473,9 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                       /* 3 multiplications, 1 division to calculate Grad_W (the
                       final multiplication uses operator overloading and is
                       counted elsewhere. */
+                      #pragma omp atomic update
                       OP_Count::Multiplication += 3;
+                      #pragma omp atomic update
                       OP_Count::Division += 1;
                     #endif
 
@@ -506,7 +517,9 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                     #ifdef OPERATION_COUNT
                       /* F_Contact: 1 multiplication (multiplication by Grad_W uses operator overloading)
                       F_Friction:   2 multiplications, 1 division (multiplycatiom by Relative_Velocity uses operator overloading) */
+                      #pragma omp atomic update
                       OP_Count::Multiplication += 3;
+                      #pragma omp atomic update
                       OP_Count::Division += 1;
                     #endif
                   } // if(Magnitude(r_ij) < h) {

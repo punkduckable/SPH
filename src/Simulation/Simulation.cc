@@ -238,7 +238,7 @@ static void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, c
   Net External Force data depends on the simulation parameters
   Print_Prticle_Force and Print_Next_External_Forces, respectivly.
 
-  Note: this function is NOT threadsafe. Only one thread should call it. 
+  Note: this function is NOT threadsafe. Only one thread should call it.
 
   Simulation::Run is the only function  that should call this function */
   for(unsigned b = 0; b < Num_Bodies; b++) {

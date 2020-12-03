@@ -84,6 +84,7 @@ Vector Vector::operator+(const Vector & V_In) const {
 
   #ifdef OPERATION_COUNT
     // 3 additions
+    #pragma omp atomic update
     OP_Count::Addition += 3;
   #endif
 
@@ -102,6 +103,7 @@ Vector Vector::operator-(const Vector & V_In) const{
 
   #ifdef OPERATION_COUNT
     // 3 subtractions
+    #pragma omp atomic update
     OP_Count::Subtraction += 3;
   #endif
 
@@ -121,6 +123,7 @@ Vector Vector::operator*(const double c) const {
 
   #ifdef OPERATION_COUNT
     // 1 multiplication
+    #pragma omp atomic update
     OP_Count::Multiplication += 3;
   #endif
 
@@ -140,6 +143,7 @@ Vector Vector::operator/(const double c) const {
 
   #ifdef OPERATION_COUNT
     // 1 division (the multiplication uses operator overloading and is counted elsewhere)
+    #pragma omp atomic update
     OP_Count::Division += 1;
   #endif
 
@@ -160,6 +164,7 @@ Vector & Vector::operator+=(const Vector & V_In) {
 
   #ifdef OPERATION_COUNT
     // 3 additions.
+    #pragma omp atomic update
     OP_Count::Addition += 3;
   #endif
 
@@ -176,6 +181,7 @@ Vector & Vector::operator-=(const Vector & V_In) {
 
   #ifdef OPERATION_COUNT
     // 3 subtractions
+    #pragma omp atomic update
     OP_Count::Subtraction += 3;        // Increment operator count
   #endif
 
@@ -192,6 +198,7 @@ Vector & Vector::operator*=(const double c) {
 
   #ifdef OPERATION_COUNT
     // 3 multiplications
+    #pragma omp atomic update
     OP_Count::Multiplication += 3;
   #endif
 
@@ -245,6 +252,7 @@ bool Vector::operator==(const Vector & V_In) const {
 
   #ifdef OPERATION_COUNT
     // 3 subtractions in the loop above.
+    #pragma omp atomic update
     OP_Count::Subtraction += 3;
   #endif
 
@@ -275,8 +283,11 @@ void Vector::Print(void) const {
 double Vector::Magnitude(void) const {
   #ifdef OPERATION_COUNT
     // 3 multiplications, 2 additions, and 1 sqrt (see below)
+    #pragma omp atomic update
     OP_Count::Multiplication += 3;
+    #pragma omp atomic update
     OP_Count::Addition += 2;
+    #pragma omp atomic update
     OP_Count::Sqrt += 1;
   #endif
 
@@ -332,7 +343,9 @@ void Print(const Vector & V_In) { V_In.Print(); }
 double Dot_Product(const Vector & V1, const Vector & V2) {
   #ifdef OPERATION_COUNT
     // 2 additions, 3 multiplications (see below)
+    #pragma omp atomic update
     OP_Count::Multiplication += 3;
+    #pragma omp atomic update
     OP_Count::Addition += 2;
   #endif
 
@@ -352,7 +365,9 @@ Vector Cross_Product(const Vector & V1, const Vector & V2) {
 
   #ifdef OPERATION_COUNT
     // 6 Multiplications, 3 subtractions above.
+    #pragma omp atomic update
     OP_Count::Multiplication += 6;
+    #pragma omp atomic update
     OP_Count::Subtraction += 3;
   #endif
 
@@ -393,6 +408,7 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
 
   #ifdef OPERATION_COUNT
     // 9 multiplications in the loop above.
+    #pragma omp atomic update
     OP_Count::Multiplication += 9;
   #endif
 

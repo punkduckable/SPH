@@ -128,6 +128,7 @@ Tensor Tensor::operator+(const Tensor & Tensor_In) const {
 
   #ifdef OPERATION_COUNT
     // 9 additions in the calculations above.
+    #pragma omp atomic update
     OP_Count::Addition += 9;
   #endif
 
@@ -163,6 +164,7 @@ Tensor Tensor::operator-(const Tensor & Tensor_In) const {
 
   #ifdef OPERATION_COUNT
     // 9 subtractions in the calculations above.
+    #pragma omp atomic update
     OP_Count::Subtraction += 9;
   #endif
 
@@ -252,7 +254,9 @@ Tensor Tensor::operator*(const Tensor & Tensor_In) const{
 
   #ifdef OPERATION_COUNT
     // 18 additions, 27 multiplications in the calculations above.
+    #pragma omp atomic update
     OP_Count::Multiplication += 27;
+    #pragma omp atomic update
     OP_Count::Addition += 18;
   #endif
 
@@ -285,7 +289,9 @@ Vector Tensor::operator*(const Vector & V_In) const {
 
   #ifdef OPERATION_COUNT
     // 9 multiplications,  6 additions in the calculations above.
+    #pragma omp atomic update
     OP_Count::Multiplication += 9;
+    #pragma omp atomic update
     OP_Count::Addition += 6;
   #endif
 
@@ -321,6 +327,7 @@ Tensor Tensor::operator*(const double c) const {
 
   #ifdef OPERATION_COUNT
     // 9 multiplications in the calculations above.
+    #pragma omp atomic update
     OP_Count::Multiplication += 9;
   #endif
 
@@ -342,6 +349,7 @@ Tensor Tensor::operator/(const double c) const {
   #ifdef OPERATION_COUNT
     /* 1 division in the calculation below (the multiplication is
     operator overloading and is counted elsewhere) */
+    #pragma omp atomic update
     OP_Count::Division += 1;
   #endif
 
@@ -383,6 +391,7 @@ Tensor & Tensor::operator+=(const Tensor & Tensor_In) {
 
   #ifdef OPERATION_COUNT
     // 9 additions in the calculations above.
+    #pragma omp atomic update
     OP_Count::Addition += 9;
   #endif
 
@@ -417,6 +426,7 @@ Tensor & Tensor::operator-=(const Tensor & Tensor_In) {
 
   #ifdef OPERATION_COUNT
     // 9 subtractions in the calculations above.
+    #pragma omp atomic update
     OP_Count::Subtraction += 9;
   #endif
 
@@ -526,7 +536,9 @@ Tensor & Tensor::operator*=(const Tensor & Tensor_In) {
 
   #ifdef OPERATION_COUNT
     // 27 multiplications, 18 additions in the calculations above.
+    #pragma omp atomic update
     OP_Count::Multiplication += 27;
+    #pragma omp atomic update
     OP_Count::Addition += 18;
   #endif
 
@@ -601,6 +613,7 @@ bool Tensor::operator==(const Tensor & T_In) const {
 
   #ifdef OPERATION_COUNT
     // 9 subtractions in the loop above.
+    #pragma omp atomic update
     OP_Count::Subtraction += 9;
   #endif
 
@@ -698,8 +711,11 @@ Tensor Tensor::Inverse(void) const{
     above lines).
 
     Thus, in total, 18 multiplications, 9 subtractions, and 1 division. */
+    #pragma omp atomic update
     OP_Count::Multiplication += 18;
+    #pragma omp atomic update
     OP_Count::Subtraction += 9;
+    #pragma omp atomic update
     OP_Count::Division += 1;
   #endif
 
@@ -749,8 +765,11 @@ Tensor Tensor::operator^(const int exp) {
 double Tensor::Determinant(void) const {
   #ifdef OPERATION_COUNT
     // 9 multiplications, 3 subtractions, 2 additions below
+    #pragma omp atomic update
     OP_Count::Multiplication += 9;
+    #pragma omp atomic update
     OP_Count::Addition += 2;
+    #pragma omp atomic update
     OP_Count::Subtraction += 3;
   #endif
 
@@ -810,7 +829,9 @@ const Vector Tensor::Eigenvalues(void) const {
 
   #ifdef OPERATION_COUNT
     // 3 multiplications, 2 additions in the calculation above
+    #pragma omp atomic update
     OP_Count::Addition += 2;
+    #pragma omp atomic update
     OP_Count::Multiplication += 3;
   #endif
 
@@ -842,10 +863,15 @@ const Vector Tensor::Eigenvalues(void) const {
       p_inv: 1 division
       B:     no computations, everything here is operator overloading (which is counted elsewhere)
       r:     4 multiplications */
+      #pragma omp atomic update
       OP_Count::Multiplication += 9;
+      #pragma omp atomic update
       OP_Count::Addition += 5;
+      #pragma omp atomic update
       OP_Count::Subtraction += 6;
+      #pragma omp atomic update
       OP_Count::Division += 2;
+      #pragma omp atomic update
       OP_Count::Sqrt += 1;
     #endif
 
@@ -862,8 +888,11 @@ const Vector Tensor::Eigenvalues(void) const {
 
       #ifdef OPERATION_COUNT
         // 1 addition, 1 subtraction, and 1 multiplication in the three lines above
+        #pragma omp atomic update
         OP_Count::Multiplication += 1;
+        #pragma omp atomic update
         OP_Count::Addition += 1;
+        #pragma omp atomic update
         OP_Count::Subtraction += 1;
       #endif
     } // if(r >= 1) {
@@ -877,8 +906,11 @@ const Vector Tensor::Eigenvalues(void) const {
 
       #ifdef OPERATION_COUNT
         // The three lines above contain 1 addition, 1 subtraction, and 1 multiplication
+        #pragma omp atomic update
         OP_Count::Multiplication += 1;
+        #pragma omp atomic update
         OP_Count::Addition += 1;
+        #pragma omp atomic update
         OP_Count::Subtraction += 1;
       #endif
     } // else if(r <= -1) {
@@ -894,11 +926,15 @@ const Vector Tensor::Eigenvalues(void) const {
         Eig_Values[0]: 1 addition, 2 multiplications, 1 cos
         Eig_Values[1]: 2 additions, 2 multiplications, 1 cos (2.*PI/3 uses all constants/is calculated at compile time)
         Eig_Values[2]: 1 multiplication, 2 subtractions. */
-
+        #pragma omp atomic update
         OP_Count::Multiplication += 6;
+        #pragma omp atomic update
         OP_Count::Addition += 3;
+        #pragma omp atomic update
         OP_Count::Subtraction += 2;
+        #pragma omp atomic update
         OP_Count::Cos += 2;
+        #pragma omp atomic update
         OP_Count::Acos += 1;
       #endif
     } // else {
@@ -952,7 +988,9 @@ double Dot_Product(const Tensor & T1, const Tensor & T2) {
 
   #ifdef OPERATION_COUNT
     // 9 multiplications, 8 additions below.
+    #pragma omp atomic update
     OP_Count::Multiplication += 9;
+    #pragma omp atomic update
     OP_Count::Addition += 8;
   #endif
 
