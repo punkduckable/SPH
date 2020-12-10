@@ -1,5 +1,5 @@
 # Compiler stuff
-COMPILER :=        g++
+COMPILER :=        g++-10
 
 CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -DNDEBUG
 
