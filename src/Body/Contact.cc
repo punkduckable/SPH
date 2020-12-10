@@ -169,12 +169,12 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   /* We want the dimension (in all three coordinate directions) of the
   cell to be >= the contact distance. By doing this, particles
-  can only compe into contact with particles in their bucket or in buckets
+  can only come into contact with particles in their bucket or in buckets
   that are adjacent to their bucket. In general, we want the buckets to be as
   small as possible (so that there are as few particles to check for contact as
   possible). Let's focus on the x coordinate. Let Nx denote the number of
   cell in the x direction. We want Nx to be the largest natural number
-  such that Contact_Distance <= (x_max - x_min)/Nx. A little though reveals
+  such that Contact_Distance <= (x_max - x_min)/Nx. A little thought reveals
   that this occurs precisely when Nx = floor((x_max - x_min)/Contact_Distance).
   A similar result holds for the y and z directions. */
   const unsigned Nx = floor((x_max - x_min)/Simulation::Contact_Distance);
@@ -228,7 +228,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     unsigned ny = floor((x[1] - y_min)/cell_y_dim);
     unsigned nz = floor((x[2] - z_min)/cell_z_dim);
 
-    /* We run into a bit of a problem if a pritlce's x coordinate is equal to
+    /* We run into a bit of a problem if a particle's x coordinate is equal to
     x_max. In this case (assuming no roundoff error), nx will evaluate to Nx.
     This is problematic, because the bucket x coordinates range from 0 to Nx-1
     (remember, 0 indexing). Really, we want this particle to go into a bucket
@@ -296,7 +296,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
       which bucket particle i of body A belongs in. We, therefore, add its
       index to the corresponding bucket's Array_A array. Importantly, we use the
       Counter_A member of the corresponding bucket to keep track of where we
-      should put the particle index in the corresponding bucker's Array_A array
+      should put the particle index in the corresponding bucket's Array_A array
       (remember 0 indexing!) */
       for(unsigned i = 0; i < Num_Particles_A; i++) {
         const unsigned Bucket_Index = Bucket_Indicies_Body_A[i];
@@ -443,10 +443,10 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
                     /* Now apply the force to the two interacting bodies (Note
                     the forces are equal and opposite). We have to apply the
-                    contact force on B using a critical region. The reson for
+                    contact force on B using a critical region. The reason for
                     this is that multiple threads may try to update the same
                     particle's contact force at the same time. Because different
-                    thereads operate on different buckets of particles of A, and
+                    threads operate on different buckets of particles of A, and
                     each particle is in just one bucket, this issue can not
                     happen for particles in body A. However, since different
                     threads can work with the same buckets of B particles, it is
