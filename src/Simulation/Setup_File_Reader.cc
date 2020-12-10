@@ -10,9 +10,9 @@
 
 // Prototypes for functions that are local to this file.
 namespace Simulation {
-  void Load_Body_From_Setup_File(Body & Body_In, const unsigned i);
-  Vector Parse_BC(std::string & Line);
-  void Print_BC(Vector & BC_In);
+  static void Load_Body_From_Setup_File(Body & Body_In, const unsigned i);
+  static Vector Parse_BC(std::string & Line);
+  static void Print_BC(Vector & BC_In);
 } // namespace Simulation {
 
 
@@ -58,6 +58,10 @@ Body* Simulation::Load_Setup_File(void) {
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Torques = true; }
   else {                                                        Simulation::Print_Body_Torques = false; }
 
+  strBuf = IO::read_line_after(File, "Print Box Boundary Forces:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Box_Boundary_Forces = true; }
+  else {                                                        Simulation::Print_Box_Boundary_Forces = false; }
+
   strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::TimeSteps_Between_Prints);
 
@@ -81,6 +85,10 @@ Body* Simulation::Load_Setup_File(void) {
 
     printf(  "Read Print_Body_Torques as:             ");
     if(Simulation::Print_Body_Torques == true) {           printf("true\n");  }
+    else {                                                 printf("flase\n"); }
+
+    printf(  "Read Print_Box_Boundary_Forces as:      ");
+    if(Simulation::Print_Box_Boundary_Forces == true) {    printf("true\n");  }
     else {                                                 printf("flase\n"); }
 
     printf(  "Read Time_Steps_Between_Prints as:      ");
@@ -158,9 +166,7 @@ Body* Simulation::Load_Setup_File(void) {
 
 
 
-
-
-void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
+static void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   /* Function description:
   This function reads in the ith body from Setup.txt.
 
@@ -432,13 +438,11 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
   // All done. Close file
   File.close();
-} // void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
+} // static void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
 
 
-
-
-Vector Simulation::Parse_BC(std::string & Line) {
+static Vector Simulation::Parse_BC(std::string & Line) {
   /* Function description:
   This function is designed to take a line of the form " {BCx, BCy, BCz} and
   return the vector <BCx, BCy, BCz>, where BCx/y/z is either a double or "free".
@@ -466,11 +470,11 @@ Vector Simulation::Parse_BC(std::string & Line) {
   } // for(unsigned i = 0; i < 3; i++) {
 
   return Parsed_BC;
-} // void Simulation::Parse_BC(std::string & Line) {
+} // static void Simulation::Parse_BC(std::string & Line) {
 
 
 
-void Simulation::Print_BC(Vector & BC_In) {
+static void Simulation::Print_BC(Vector & BC_In) {
   /* Function description:
   This function is for testing only. It exists only to eliminate code repetition */
   printf("{");
@@ -481,4 +485,4 @@ void Simulation::Print_BC(Vector & BC_In) {
     if(j == 2) { printf("}\n"); }
     else { printf(", "); }
   } // for(unsigned j = 0; j < 3; j++) {
-} // void Simulation::Print_BC(Vector & BC_In) {
+} // static void Simulation::Print_BC(Vector & BC_In) {

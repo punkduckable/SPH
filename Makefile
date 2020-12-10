@@ -1,7 +1,7 @@
 # Compiler stuff
 COMPILER :=        g++-10
 
-CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -O2 -std=c++11 -DNDEBUG
+CFLAGS   :=        -c -Wall -Wsign-compare -Wextra -fopenmp -Ofast -march=native -std=c++11 -DNDEBUG
 
 LNFLAGS  :=
 
@@ -14,6 +14,7 @@ OBJS :=            Main.o \
 					         Vector.o \
 	                 Tensor.o \
 									 Particle.o \
+									 Operation_Count.o \
 									 Body.o Neighbors.o Update.o Damage.o Contact.o Body_IO.o \
 									 Simulation.o Simulation_Setup.o Timing.o Boundary_Conditions.o Setup_File_Reader.o \
 									 Save_Simulation.o Load_Simulation.o FEB_File.o IO_Ops.o
@@ -36,6 +37,7 @@ VPATH :=     ./bin ./obj \
              ./src/Vector ./src/Tensor \
 						 ./src/Particle ./src/Body \
 						 ./src/IO \
+						 ./src/Diagnostics \
 						 ./src/Simulation \
 						 ./test
 
@@ -101,13 +103,13 @@ obj/Tests.o: Tests.cc Vector_Tests.cc Tensor_Tests.cc IO_Tests.cc List_Tests.cc 
 
 
 # Vector class.
-obj/Vector.o: Vector.cc Vector.h Tensor.h Errors.h
+obj/Vector.o: Vector.cc Vector.h Tensor.h Errors.h Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
 
 # Tensor class.
-obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h
+obj/Tensor.o: Tensor.cc Tensor.h Vector.h Errors.h Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 
@@ -125,13 +127,13 @@ obj/Body.o: Body.cc Body.h Vector.h Particle.h Load_Simulation.h Save_Simulation
 obj/Neighbors.o: Neighbors.cc Body.h Particle.h Vector.h List.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Update.o: Update.cc Body.h Simulation.h Particle.h Vector.h List.h
+obj/Update.o: Update.cc Body.h Simulation.h Particle.h Vector.h List.h Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Damage.o: Damage.cc Body.h Particle.h Vector.h List.h Array.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
-obj/Contact.o: Contact.cc Body.h Simulation.h Particle.h Vector.h
+obj/Contact.o: Contact.cc Body.h Simulation.h Particle.h Vector.h Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h Errors.h
@@ -140,7 +142,7 @@ obj/Body_IO.o: Body_IO.cc Body.h Particle.h Vector.h Errors.h
 
 
 # Simulation
-obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Vector.h Load_Simulation.h Save_Simulation.h Errors.h
+obj/Simulation.o: Simulation.cc Simulation.h Body.h Particle.h Vector.h Load_Simulation.h Save_Simulation.h Errors.h Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/Simulation_Setup.o: Simulation_Setup.cc Simulation.h Body.h Particle.h Vector.h FEB_File.h Array.h Errors.h
@@ -168,6 +170,12 @@ obj/FEB_File.o: FEB_File.cc FEB_File.h Particle.h Body.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 obj/IO_Ops.o: IO_Ops.cc IO_Ops.h Vector.h Simulation.h Errors.h
+	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
+
+
+
+# Operation Counts
+obj/Operation_Count.o: Operation_Count.cc Operation_Count.h
 	$(COMPILER) $(CFLAGS) $(INC_PATH) $< -o $@
 
 

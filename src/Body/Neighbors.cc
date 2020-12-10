@@ -3,6 +3,7 @@
 #include "Vector/Vector.h"
 #include "List.h"
 #include "Array.h"
+#include "Errors.h"
 #include <assert.h>
 #include <math.h>
 
@@ -20,6 +21,8 @@ static double Buffer[6];
 // Neighbor methods!
 
 void Body::Set_Neighbors(const unsigned i, const Array<unsigned> & Neighbor_IDs_In) {
+  /* This function is used to set the neighbors for each particle in a body. */
+
   /* First check if this particle already has neighbors. This function should
   only be called if the neighbors have not been set. The reason for this is
   that this method allocates pointers. If the pointers have already been set,
@@ -458,6 +461,8 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 //old Find_Neighbors function
 /*
 void Body::Find_Neighbors(void) {
+  /* This function finds the neighbors for each particle in the (*this) body. */
+
   unsigned i,j;                              // Loop index variables
   List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
 
@@ -487,8 +492,6 @@ void Body::Find_Neighbors(void) {
 
 
 void Body::Find_Neighbors_Box(void) {
-  assert(Is_Box == true);
-
   /* This function is a modified version of the Neighbor List generating
   function that is specialized for Box particle geometries.
 
@@ -526,6 +529,16 @@ void Body::Find_Neighbors_Box(void) {
   particles in a vertical column then Z_SIDE_LENGTH is p. For a 100x50x200
   Box of particles, X_SIDE_LENGTH is 100, Y_SIDE_LENGTH is 50, and
   Z_SIDE_LENGTH is 200 */
+
+  if((*this).Is_Box == false) {
+    char Buf[500];
+    sprintf(Buf,
+            "Not A Box Exception: thrown by Body::Find_Neighbors_Box\n"
+            "Body %s tried to use this function, but %s is not a box! This function\n"
+            "can only be called by boxes!\n",
+            (*this).Name.c_str(), (*this).Name.c_str());
+    throw Not_A_Box(Buf);
+  } // if((*this).Is_Box == false) {
 
   const unsigned d_max = floor((*this).Support_Radius / (*this).Inter_Particle_Spacing);
 
@@ -596,7 +609,7 @@ void Body::Find_Neighbors_Box(void) {
 
 
 void Body::Remove_Neighbor(const unsigned i, const unsigned Remove_Neighbor_ID) {
-  // This function is used to remove 1 neighbor from an existing particle.
+  /* This function is used to remove a neighbor from a particle. */
 
   // To be able to remove a neighbor, the particle in question must have neighbors!
   if(Particles[i].Neighbors_Are_Set == false || Particles[i].Num_Neighbors == 0) {

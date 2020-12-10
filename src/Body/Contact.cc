@@ -2,6 +2,7 @@
 #include "Simulation/Simulation.h"
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
+#include "Diagnostics/Operation_Count.h"
 #include "List.h"
 #include "Array.h"
 #include <math.h>
@@ -27,8 +28,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   First, we partition the spatial domain. To do this, we first determine the
   maximum and minimum x, y, and z coordinates of the live (damage < 1) particles
-  This gives us a cuboid in which the particles of the two bodies live. We
-  then divide the x, y, and z dimensions of this cuboid into smaller cuboids,
+  This gives us a box in which the particles of the two bodies live. We
+  then divide the x, y, and z dimensions of this box into smaller boxes,
   called cells, each one of which has a side length that is barely greater than
   the contact distance. We then allocate an array of buckets with one bucket per
   cell. We then cycle through the particles of A and B, determining which bucket
@@ -181,6 +182,17 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   const unsigned Ny = floor((y_max - y_min)/Simulation::Contact_Distance);
   const unsigned Nz = floor((z_max - z_min)/Simulation::Contact_Distance);
 
+  #ifdef OPERATION_COUNT
+    // 3 subtractions, 3 divisions in the computations above.
+    #pragma omp single nowait
+    {
+      #pragma omp atomic update
+      OP_Count::Subtraction += 3;
+      #pragma omp atomic update
+      OP_Count::Division += 3;
+    } // #pragma omp single nowait
+  #endif
+
   /* Now that we know the number of buckets in each direction, one thread can
   allocate the global arrays */
   #pragma omp single
@@ -212,6 +224,17 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   const double cell_x_dim = (x_max - x_min)/Nx;
   const double cell_y_dim = (y_max - y_min)/Ny;
   const double cell_z_dim = (z_max - z_min)/Nz;
+
+  #ifdef OPERATION_COUNT
+    // 3 subtractions, 3 divisions in the computations above.
+    #pragma omp single nowait
+    {
+      #pragma omp atomic update
+      OP_Count::Subtraction += 3;
+      #pragma omp atomic update
+      OP_Count::Division += 3;
+    } // #pragma omp single nowait
+  #endif
 
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
@@ -254,7 +277,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
     /* Update that bucket's A counter */
     #pragma omp atomic
-      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
+    Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
   } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
   #pragma omp for
@@ -275,8 +298,19 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
     /* Update that bucket's B counter */
     #pragma omp atomic
-      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
+    Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
+  #ifdef OPERATION_COUNT
+    // 3 subractions, 3 divisions per cycle of both loops above.
+    #pragma omp single nowait
+    {
+      #pragma omp atomic update
+      OP_Count::Subtraction += 3*(Num_Particles_A + Num_Particles_B);
+      #pragma omp atomic update
+      OP_Count::Division += 3*(Num_Particles_A + Num_Particles_B);
+    } // #pragma omp single
+  #endif
 
 
 
@@ -439,7 +473,17 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                     double V_j = Body_B[j].Get_Volume();                       //        : mm^3
                     double Mag_r_ij = Magnitude(r_ij);                         //        : mm
                     double h_minus_Mag_r_ij = h - Mag_r_ij;                    //        : mm
-                    Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
+                    Grad_W = (-3.*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
+
+                    #ifdef OPERATION_COUNT
+                      /* 3 multiplications, 1 division to calculate Grad_W (the
+                      final multiplication uses operator overloading and is
+                      counted elsewhere. */
+                      #pragma omp atomic update
+                      OP_Count::Multiplication += 3;
+                      #pragma omp atomic update
+                      OP_Count::Division += 1;
+                    #endif
 
                     /* Now apply the force to the two interacting bodies (Note
                     the forces are equal and opposite). We have to apply the
@@ -475,6 +519,15 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                     F_Friction = ((-1*Simulation::Friction_Coefficient*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
                     Body_A[i].Force_Friction += F_Friction;                    //        : N Vector
                     Body_B_F_Friction_Local[j] -= F_Friction;                  //        : N Vector
+
+                    #ifdef OPERATION_COUNT
+                      /* F_Contact: 1 multiplication (multiplication by Grad_W uses operator overloading)
+                      F_Friction:   2 multiplications, 1 division (multiplycatiom by Relative_Velocity uses operator overloading) */
+                      #pragma omp atomic update
+                      OP_Count::Multiplication += 3;
+                      #pragma omp atomic update
+                      OP_Count::Division += 1;
+                    #endif
                   } // if(Magnitude(r_ij) < h) {
                 } // for(unsigned B_Particle_index = 0; B_Particle_index < Num_Particles_B_Bucket; B_Particle_index++) {
               } // for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {

@@ -128,9 +128,6 @@ class Undefined_Exponent : public Tensor_Exception {
 /* Particle exceptions
 Particle_Exception: Base Particle exception class
 
-Bad_Neighbor_Index: This is thrown whenever the user tries to access a particle's
-jth neighbor, when j is greater than the particle's number of neighbors
-
 No_BC: This is thrown whenever the user tries to access the ith component of a
 particle's boundary condition, but the particle has no boundary condition for
 that component. */
@@ -141,16 +138,33 @@ class Particle_Exception : public Exception {
 }; // class Particle_Exception : Public Exception {
 
 
-class Bad_Neighbor_Index : public Particle_Exception {
-  public:
-    Bad_Neighbor_Index(const char* Message_In) : Particle_Exception(Message_In) {}
-}; // class Bad_Neighbor_ID : public Particle_Exception {
-
-
 class No_BC : public Particle_Exception {
   public:
     No_BC(const char* Message_In) : Particle_Exception(Message_In) {}
 }; // class No_BC : public Particle_Exception {
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+/* Body exceptions
+Body_Exception: Base Particle exception class
+
+Not_A_Box: This is thrown whenever a non-box body tries to do something that
+only boxes can do (call functions that only work for boxes, for example). */
+
+class Body_Exception : public Exception {
+  public:
+    Body_Exception(const char* Message_In) : Exception(Message_In) {}
+}; // class Body_Exception : Public Exception {
+
+
+class Not_A_Box : public Body_Exception {
+  public:
+    Not_A_Box(const char* Message_In) : Body_Exception(Message_In) {}
+}; // class Not_A_Box : public Body_Exception {
+
 
 
 
@@ -191,7 +205,7 @@ class Bad_Read : public IO_Exception {
 Simulation_Exception: Base Simulation_Exception class.
 
 Bad_Body_Setup: This exception is thrown whenever the bodies are set up
-improperly (such as when a body is designated as both a cuboid and from file) */
+improperly (such as when a body is designated as both a box and from file) */
 
 class Simulation_Exception : public Exception {
   public:

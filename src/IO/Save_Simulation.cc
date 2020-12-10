@@ -6,10 +6,10 @@
 
 // Prototypes for functions that are local to this file
 namespace IO {
-  void Save_Body(const Body & Body_In);
+  static void Save_Body(const Body & Body_In);
 
-  void Save_Particle(const Particle & P_In,
-                     FILE * File);
+  static void Save_Particle(const Particle & P_In,
+                            FILE * File);
 } // namespace IO {
 
 
@@ -64,7 +64,7 @@ void IO::Save_Simulation(const Body * Bodies, const unsigned Num_Bodies) {
 
 
 
-void IO::Save_Body(const Body & Body_In) {
+static void IO::Save_Body(const Body & Body_In) {
   /* This function prints all data needed to reconstruct a particular
   Body. This information is printed to a file named after the
   Body that it's printing from. This prints the basic material
@@ -144,7 +144,7 @@ void IO::Save_Body(const Body & Body_In) {
 
 
 
-void IO::Save_Particle(const Particle & P_In, FILE * File) {
+static void IO::Save_Particle(const Particle & P_In, FILE * File) {
   /* This function prints all the information that is needed to re-create the
   input particle. Notably, this means that we do NOT need to print the first
   Piola Kirchoff stress tensor (P), the deformation gradient (F), any of the

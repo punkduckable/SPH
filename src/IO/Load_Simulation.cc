@@ -11,12 +11,15 @@
 
 // Prototypes for functions that are local to this file.
 namespace IO {
-  void Load_Body(Body & Body_In);
+  static void Load_Body(Body & Body_In);
 } // namespace IO {
 
 
 
 void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
+  /* This function loads a simulation from a save. It stores the bodies
+  in that simulation in the Bodies_Ptr. */
+
   // First, open up the Particle_data file
   std::ifstream File;
   File.open("./IO/Saves/Simulation_Data.txt");
@@ -151,7 +154,7 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
 
 
 
-void IO::Load_Body(Body & Body_In) {
+static void IO::Load_Body(Body & Body_In) {
   /* This function is designed to read in particle and use it to create a Body */
 
   // First, open up the desired file.
@@ -316,7 +319,7 @@ void IO::Load_Body(Body & Body_In) {
 
   // All done, close the file.
   File.close();
-} // void IO::Load_Body(Body & Body_In) {
+} // static void IO::Load_Body(Body & Body_In) {
 
 
 
@@ -386,7 +389,7 @@ void IO::Load_Particle(Particle & P_In, std::ifstream & File) {
 
 
   //////////////////////////////////////////////////////////////////////////////
-  // Neighbor parameters 
+  // Neighbor parameters
 
   // Read in number of neighbors
   P_In.Neighbors_Are_Set = false;
