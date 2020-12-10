@@ -25,9 +25,6 @@ OBJ_PATHS :=       $(patsubst %,obj/%,$(OBJS))
 # Object files for tests + their paths
 TEST_OBJS :=       Vector.o \
                    Tensor.o \
-									 Body.o \
-									 Neighbors.o \
-									 Particle.o \
 									 IO_Ops.o \
 									 Tests.o
 TEST_OBJ_PATHS := $(patsubst %,obj/%,$(TEST_OBJS))

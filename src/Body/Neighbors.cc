@@ -17,6 +17,8 @@ static Neighbor_Particle_Bucket * Buckets;        // Array of buckets
 static unsigned * Bucket_Indicies;        // Which bucket each particle of the body goes to.
 static double Buffer[6];
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Neighbor methods!
 
@@ -115,6 +117,7 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
   // Now that neighbors have been set, we set 'Neighbors_Are_Set' to true
   Particles[i].Neighbors_Are_Set = true;
 } // void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
+
 
 
 void Body::Find_Neighbors_New(void){

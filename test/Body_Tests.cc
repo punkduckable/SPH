@@ -1,7 +1,5 @@
 #include "Tensor/Tensor.h"
 #include "Vector/Vector.h"
-#include "Body/Body.h"
-#include "Particle/Particle.h"
 #include "Errors.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -256,74 +254,3 @@ TEST_CASE("Calculate_Delta_Speed", "[Body][Speed]") {
   printf("New Runtime: %lu ms\n", MS_New);
   printf("sum = %lf\n", sum);
 } // TEST_CASE("Calculate_Delta_Speed", "[Body][Speed]") {
-
-
-
-TEST_CASE("Neighbor_Finder","[Body][Neighbor]") {
-  /* Create two identical bodies. Set on body's neighbors using the old
-  neighbors function, the other with the new one. */
-
-  /* First, we need to set up two identical bodies. The minimum information that
-  the body needs to run the neighbor functions is the particle volumes, the
-  particle positions, the body's name, and the body's support radius. */
-  Body Body[2];
-
-  Body[0].Set_Name("zero");
-  Body[1].Set_Name("one");
-
-  Body[0].Set_Support_Radius(3.0);
-  Body[1].Set_Support_Radius(3.0);
-
-  const unsigned X_Dim = 7;
-  const unsigned Y_Dim = 13;
-  const unsigned Z_Dim = 19;
-  const double IPS = 1.0;
-  Vector X;
-
-  Body[0].Set_Inter_Particle_Spacing(IPS);
-  Body[1].Set_Inter_Particle_Spacing(IPS);
-
-
-  Body[0].Set_Box_Dimensions(X_Dim, Y_Dim, Z_Dim);
-  Body[1].Set_Box_Dimensions(X_Dim, Y_Dim, Z_Dim);
-
-  for(unsigned i = 0; i < X_Dim; i++) {
-    for(unsigned j = 0; j < Y_Dim; j++) {
-      for(unsigned k = 0; k < Z_Dim; k++) {
-        unsigned index = i*(Y_Dim*Z_Dim) + k*Y_Dim + j;
-
-        Body[0][index].Set_Volume(1);
-        Body[1][index].Set_Volume(1);
-
-        X = {i*IPS, j*IPS, k*IPS};
-        Body[0][index].Set_X(X);
-        Body[1][index].Set_X(X);
-        Body[0][index].Set_x(X);
-        Body[1][index].Set_x(X);
-      } // for(unsigned k = 0; k < Z_Dim; k++) {
-    } // for(unsigned k = 0; k < Z_Dim; k++) {
-  } // for(unsigned i = 0; i < X_Dim; i++) {
-
-  Body[0].Find_Neighbors_New();
-  Body[1].Find_Neighbors_Box();
-
-  for(unsigned i = 0; i < X_Dim; i++) {
-    for(unsigned j = 0; j < Y_Dim; j++) {
-      for(unsigned k = 0; k < Z_Dim; k++) {
-        unsigned index = i*(Y_Dim*Z_Dim) + k*Y_Dim + j;
-
-        unsigned Num_Neighbors_0 = Body[0][index].Get_Num_Neighbors();
-        unsigned Num_Neighbors_1 = Body[1][index].Get_Num_Neighbors();
-
-        if(Num_Neighbors_0 != Num_Neighbors_1) {
-          printf("\n(%d, %d, %d): Neighbors Old: %d, Neighbos New: %d\n", i, j, k, Num_Neighbors_1, Num_Neighbors_0);
-          printf("Body 0: (new function)\n");
-          for(unsigned p = 0; p < Num_Neighbors_0; p++) { printf("%d: %d\n", p, Body[0][index].Get_Neighbor_IDs(p)); }
-
-          printf("Body 1: (old function)\n");
-          for(unsigned p = 0; p < Num_Neighbors_1; p++) { printf("%d: %d\n", p, Body[1][index].Get_Neighbor_IDs(p)); }
-        } // if(Num_Neighbors_0 != Num_Neighbors_1) {
-      } // for(unsigned k = 0; k < Z_Dim; k++) {
-    } // for(unsigned k = 0; k < Z_Dim; k++) {
-  } // for(unsigned i = 0; i < X_Dim; i++) {
-} // TEST_CASE("Neighbor_Finder","[Body][Neighbor]") {
