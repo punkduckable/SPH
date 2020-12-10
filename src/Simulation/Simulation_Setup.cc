@@ -231,7 +231,8 @@ void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   if(Body_In.Get_Is_Fixed() == false) {
     printf(         "Generating %s's neighbor lists...", Body_In.Get_Name().c_str());
     time1 = Get_Time();
-    Body_In.Find_Neighbors_Box();
+    //Body_In.Find_Neighbors_Box();
+    Body_In.Find_Neighbors();
 
     time1 = Time_Since(time1);
     #if defined(_OPENMP)
