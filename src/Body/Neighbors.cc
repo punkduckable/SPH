@@ -10,7 +10,7 @@
 struct Neighbor_Particle_Bucket {
   Array<unsigned> Indices_Array{}; //holds the indices of the particles which are in this bucket
   unsigned Counter = 0;
-}; // typdef struct Neighbor_Particle_Bucket 
+}; // typdef struct Neighbor_Particle_Bucket
 
 /* Global (shared) variables for the buckets. */
 static Neighbor_Particle_Bucket * Buckets;        // Array of buckets
@@ -117,8 +117,8 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 } // void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 
 
-void Body::Find_Neighbors(void){
-    /* This function finds the neighbors for each particle and stores them in a 
+void Body::Find_Neighbors_New(void){
+    /* This function finds the neighbors for each particle and stores them in a
     linked list.
 
     First, we partition the spatial domain. To do this, we first determine the
@@ -128,7 +128,12 @@ void Body::Find_Neighbors(void){
     called cells, each one of which has a side length that is barely greater than
     the support radius. We then allocate an array of buckets with one bucket per
     cell. We then cycle through the particles of A and B, determining which bucket
-    each particle belongs to. */
+    each particle belongs to.
+
+    This function assumes that each particle in (*this) has had it's position
+    and volume set (these are used to determine neighbors and set neighbor
+    dependent members). It also assumes that the body's support radius has
+    been set (which is used to find neighbors) */
 
     //////////////////////////////////////////////////////////////////////////////
     /* Determine how many buckets we need */
@@ -359,10 +364,10 @@ void Body::Find_Neighbors(void){
   //////////////////////////////////////////////////////////////////////////////
   /* Finally, let's find the neighbors! */
 
-  /* A particle is considered to be neighbors with another particle if they are 
+  /* A particle is considered to be neighbors with another particle if they are
   in the same body and the distance between them is less than the support radius.*/
-  const double h_squared = h*h; 
-  Vector Rij; 
+  const double h_squared = h*h;
+  Vector Rij;
   List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
 
   //loop over the buckets
@@ -392,51 +397,49 @@ void Body::Find_Neighbors(void){
         unsigned jb_max = (jb == Ny - 1) ? jb : jb + 1;
         unsigned kb_max = (kb == Nz - 1) ? kb : kb + 1;
 
-        /* Cycle through the buckets that neighbors may be in. */
-        for(unsigned rb = kb_min; rb <= kb_max; rb++) {
-          for(unsigned qb = jb_min; qb <= jb_max; qb++) {
-            for(unsigned pb = ib_min; pb <= ib_max; pb++) {
+        /*Cycle through particles in main bucket*/
+        for(unsigned int Main_particle_index = 0; Main_particle_index < Num_Particles; Main_particle_index++) {
+          unsigned int i = Indices_Array[Main_particle_index]; //index of particle whose neighbors we are trying to find
 
-              Array<unsigned> & Neighbors_Array = Buckets[pb + qb*Nx + rb*Nx*Ny].Indices_Array;
-              const unsigned Num_Particles_Neighbor_Bucket = Neighbors_Array.Get_Length();
-              if(Num_Particles_Neighbor_Bucket == 0) { continue; }
+          /* Cycle through the buckets that neighbors may be in. */
+          for(unsigned rb = kb_min; rb <= kb_max; rb++) {
+            for(unsigned qb = jb_min; qb <= jb_max; qb++) {
+              for(unsigned pb = ib_min; pb <= ib_max; pb++) {
 
-              /*Cycle through particles in main bucket*/
-              for(unsigned int Main_particle_index = 0; Main_particle_index < Num_Particles; Main_particle_index++){
-                unsigned int i = Indices_Array[Main_particle_index]; //index of particle whose neighbors we are trying to find
+                Array<unsigned> & Neighbors_Array = Buckets[pb + qb*Nx + rb*Nx*Ny].Indices_Array;
+                const unsigned Num_Particles_Neighbor_Bucket = Neighbors_Array.Get_Length();
+                if(Num_Particles_Neighbor_Bucket == 0) { continue; }
 
                 /*cycle through particles in Neighbors_Array (corresponding to bucket pb + qb*Nx + rb*Nx*Ny) */
-                for(unsigned int Neighbor_particle_index = 0; Neighbor_particle_index < Num_Particles_Neighbor_Bucket; Neighbor_particle_index++){
+                for(unsigned int Neighbor_particle_index = 0; Neighbor_particle_index < Num_Particles_Neighbor_Bucket; Neighbor_particle_index++) {
                   unsigned int j = Neighbors_Array[Neighbor_particle_index]; //index of neighbor particle
 
-                  //make sure that i and j don't correspond to the same particle 
+                  //make sure that i and j don't correspond to the same particle
                   //(a particle can't be its own neighbor)
-                  if (i != j){
+                  if (i != j) {
                     Rij = (*this).Particles[i].Get_X() - (*this).Particles[j].Get_X();
                     /* If |Rij| < h then i and j are neighbors */
-                    if (h_squared > Dot_Product(Rij, Rij)){
-                      Particle_Neighbor_List.Push_Back(j);
-                    }
-                  }   
-
+                    if (h_squared > Dot_Product(Rij, Rij)){Particle_Neighbor_List.Push_Back(j); }
+                  } // if (i != j) {
                 } //for(unsigned int Neighbor_particle_index = 0; Neighbor_particle_index < Num_Particles_Neighbor_Bucket; Neighbor_particle_index++)
-                 
-                /* Now that we have the neighbor ID list, we can make it into an array.
-                This is done using the Array class' list constructor. This will also empty 
-                the Particle_Neighbor_list so that it is ready for the next i. See Array.h */
-                Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
+              } //for(unsigned pb = ib_min; pb <= ib_max; pb++)
+            } //for(unsigned qb = jb_min; qb <= jb_max; qb++)
+          } //for(unsigned rb = kb_min; rb <= kb_max; rb++)
 
-                // Now send the Neighbor list to the particle
-                Set_Neighbors(i, Neighbor_IDs);
+          /* Now that we have the neighbor ID list, we can make it into an array.
+          This is done using the Array class' list constructor. This will also empty
+          the Particle_Neighbor_list so that it is ready for the next i. See Array.h */
+          Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
 
-              } //for(unsigned int Main_particle_index = 0; Main_particle_index < Num_Particles; Main_particle_index++)
-            } //for(unsigned pb = ib_min; pb <= ib_max; pb++)
-          } //for(unsigned qb = jb_min; qb <= jb_max; qb++)
-        } //for(unsigned rb = kb_min; rb <= kb_max; rb++)
+          // Now send the Neighbor list to the particle
+          Set_Neighbors(i, Neighbor_IDs);
+        } // for(unsigned int Main_particle_index = 0; Main_particle_index < Num_Particles; Main_particle_index++) {
       } //for(unsigned ib = 0; ib < Nx; ib++)
     } //for(unsigned jb = 0; jb < Ny; jb++)
   } //for(unsigned kb = 0; kb < Nz; kb++)
-}
+} // void Body::Find_Neighbors_New(void){
+
+
 
 bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
   /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
@@ -459,9 +462,9 @@ bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 
 
 //old Find_Neighbors function
-/*
 void Body::Find_Neighbors(void) {
-  /* This function finds the neighbors for each particle in the (*this) body. */
+  /* This function finds the neighbors for each particle in the (*this) body.
+  It assumes that the particles in (*this) have had their positions set. */
 
   unsigned i,j;                              // Loop index variables
   List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
@@ -469,7 +472,7 @@ void Body::Find_Neighbors(void) {
   // Cycle through the particles
   for(i = 0; i < Num_Particles; i++) {
 
-    // For each particle, cycle through the potential neighbors (every particle) 
+    // For each particle, cycle through the potential neighbors (every particle)
     for(j = 0; j < Num_Particles; j++) {
       // ith particle is not its own neighbor.
       if(j == i) { continue; }
@@ -480,14 +483,13 @@ void Body::Find_Neighbors(void) {
     } // for(unsigned j = 0; j < Num_Particles; j++) {
 
     // Now that we have the neighbor ID list, we can make it into an array.
-    // This is done using the Array class' list constructor. See Array.h 
+    // This is done using the Array class' list constructor. See Array.h
     Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
 
     // Now sent the Neighbor list to the particle
     Set_Neighbors(i, Neighbor_IDs);
   } // for(unsigned i = 0; i < Num_Particles; i++) {
 } // void Body::Find_Neighbors(void) {
-*/
 
 
 

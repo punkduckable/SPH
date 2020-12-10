@@ -161,6 +161,11 @@ static void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
   Body_In. The parameter m is used to fetch the initial velocity and offset
   of the body. This function should NOT be used if you're loading from a save.
 
+  This function should not be called until the body's Inter_Particle_Spacing,
+  Density, Name and X/Y/Z Side Lengths have been set and the offsets and initial
+  velocty for this body has been set (as global variables in the Simulation
+  namespace).
+
   Simulation::Setup is the only thing that should call this function. */
 
   unsigned i,j,k;
