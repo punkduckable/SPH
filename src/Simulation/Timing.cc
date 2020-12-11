@@ -15,7 +15,7 @@ TIME_TYPE Simulation::Get_Time(void) {
   #if defined(_OPENMP)
     return omp_get_wtime();
   #else
-    return clock();
+    return ((double)clock())/((double)CLOCKS_PER_SEC);
   #endif
 } // TIME_TYPE Simulation::Get_Time(void) {
 
@@ -30,6 +30,6 @@ TIME_TYPE Simulation::Time_Since(TIME_TYPE time) {
   #if defined(_OPENMP)
     return (omp_get_wtime() - time);
   #else
-    return (clock() - time);
+    return ( (((double)clock())/((double)CLOCKS_PER_SEC)) - time);
   #endif
 } // TIME_TYPE Simulation::Time_Since(TIME_TYPE time) {

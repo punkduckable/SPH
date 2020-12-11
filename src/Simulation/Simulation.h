@@ -33,11 +33,7 @@ namespace Simulation {
   // Timing functions
   // Defined in Timing.cc
 
-  #if defined(_OPENMP)
-    #define TIME_TYPE double
-  #else
-    #define TIME_TYPE clock_t
-  #endif
+  #define TIME_TYPE double
   TIME_TYPE Get_Time(void);
   TIME_TYPE Time_Since(TIME_TYPE time);
 

@@ -121,62 +121,62 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 
 
 void Body::Find_Neighbors_New(void){
-    /* This function finds the neighbors for each particle and stores them in a
-    linked list.
+  /* This function finds the neighbors for each particle and stores them in a
+  linked list.
 
-    First, we partition the spatial domain. To do this, we first determine the
-    maximum and minimum x, y, and z coordinates of the live (damage < 1) particles
-    This gives us a box in which the particles of the two bodies live. We
-    then divide the x, y, and z dimensions of this box into smaller boxes,
-    called cells, each one of which has a side length that is barely greater than
-    the support radius. We then allocate an array of buckets with one bucket per
-    cell. We then cycle through the particles of A and B, determining which bucket
-    each particle belongs to.
+  First, we partition the spatial domain. To do this, we first determine the
+  maximum and minimum x, y, and z coordinates of the live (damage < 1) particles
+  This gives us a box in which the particles of the two bodies live. We
+  then divide the x, y, and z dimensions of this box into smaller boxes,
+  called cells, each one of which has a side length that is barely greater than
+  the support radius. We then allocate an array of buckets with one bucket per
+  cell. We then cycle through the particles of A and B, determining which bucket
+  each particle belongs to.
 
-    This function assumes that each particle in (*this) has had it's position
-    and volume set (these are used to determine neighbors and set neighbor
-    dependent members). It also assumes that the body's support radius has
-    been set (which is used to find neighbors) */
+  This function assumes that each particle in (*this) has had it's position
+  and volume set (these are used to determine neighbors and set neighbor
+  dependent members). It also assumes that the body's support radius has
+  been set (which is used to find neighbors) */
 
-    //////////////////////////////////////////////////////////////////////////////
-    /* Determine how many buckets we need */
+  //////////////////////////////////////////////////////////////////////////////
+  /* Determine how many buckets we need */
 
-    // Get parameters from the body
-    const unsigned Num_Particles = (*this).Get_Num_Particles();
+  // Get parameters from the body
+  const unsigned Num_Particles = (*this).Get_Num_Particles();
 
-    // Declare some variables.
-    double x_max, x_min;
-    double y_max, y_min;
-    double z_max, z_min;
+  // Declare some variables.
+  double x_max, x_min;
+  double y_max, y_min;
+  double z_max, z_min;
 
-    // Initialize the variables.
-    Vector x = (*this)[0].Get_x();
-    x_max = x[0];
-    x_min = x_max;
-    y_max = x[1];
-    y_min = y_max;
-    z_max = x[2];
-    z_min = z_max;
+  // Initialize the variables.
+  Vector x = (*this)[0].Get_x();
+  x_max = x[0];
+  x_min = x_max;
+  y_max = x[1];
+  y_min = y_max;
+  z_max = x[2];
+  z_min = z_max;
 
-    /* Determine the maximum and minimum x, y, z coordinate of the particles
-    in the body. Each thread only searches through a subset of the
-    particles. Once this is done, we will "reduce" them together in the
-    buffer to determine the global minimum. */
-    #pragma omp for nowait
-    for(unsigned i = 0; i < Num_Particles; i++) {
-      x = (*this)[i].Get_x();
+  /* Determine the maximum and minimum x, y, z coordinate of the particles
+  in the body. Each thread only searches through a subset of the
+  particles. Once this is done, we will "reduce" them together in the
+  buffer to determine the global minimum. */
+  #pragma omp for nowait
+  for(unsigned i = 0; i < Num_Particles; i++) {
+    x = (*this)[i].Get_x();
 
-      /* Note: if x[0] > x_max, then we can't also have x[0] < x_min (this relies
-      on the fact that x_min <= x_max) */
-      if     (x[0] > x_max) { x_max = x[0]; }
-      else if(x[0] < x_min) { x_min = x[0]; }
+    /* Note: if x[0] > x_max, then we can't also have x[0] < x_min (this relies
+    on the fact that x_min <= x_max) */
+    if     (x[0] > x_max) { x_max = x[0]; }
+    else if(x[0] < x_min) { x_min = x[0]; }
 
-      if     (x[1] > y_max) { y_max = x[1]; }
-      else if(x[1] < y_min) { y_min = x[1]; }
+    if     (x[1] > y_max) { y_max = x[1]; }
+    else if(x[1] < y_min) { y_min = x[1]; }
 
-      if     (x[2] > z_max) { z_max = x[2]; }
-      else if(x[2] < z_min) { z_min = x[2]; }
-    } // for(unsigned i = 0; i < Num_Particles_A; i++) {
+    if     (x[2] > z_max) { z_max = x[2]; }
+    else if(x[2] < z_min) { z_min = x[2]; }
+  } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
   /* The static global buffer variable will be used to perform the reduce
   operation. We will associate the 6 elements of the Buffer to perform the
@@ -284,7 +284,7 @@ void Body::Find_Neighbors_New(void){
   const double cell_y_dim = (y_max - y_min)/Ny;
   const double cell_z_dim = (z_max - z_min)/Nz;
 
-  #pragma omp for nowait
+  #pragma omp for
   for(unsigned i = 0; i < Num_Particles; i++) {
     /* First, we need to determine which bucket our particle belongs in. Let's
     focus on the x coordinate. Each bucket has an x-dimension length of
@@ -332,23 +332,23 @@ void Body::Find_Neighbors_New(void){
   /* Sort the particles into their corresponding buckets. */
   #pragma omp single
   {
-      /* First, lets set up the Indices_Array arrays in each bucket (the ith one of
-      these holds the indicies of the particles of Body A that are in the ith
-      bucket). */
-      for(unsigned i = 0; i < Nx*Ny*Nz; i++) { Buckets[i].Indices_Array.Set_Length(Buckets[i].Counter); }
+    /* First, lets set up the Indices_Array arrays in each bucket (the ith one of
+    these holds the indicies of the particles of Body A that are in the ith
+    bucket). */
+    for(unsigned i = 0; i < Nx*Ny*Nz; i++) { Buckets[i].Indices_Array.Set_Length(Buckets[i].Counter); }
 
-      /* Now, cycle through the elements of Bucket_Indicies. Consider
-      the ith iteration of this cycle. The ith element of this array tells us
-      which bucket particle i of body A belongs in. We, therefore, add its
-      index to the corresponding bucket's Indices_Array array. Importantly, we use the
-      Counter member of the corresponding bucket to keep track of where we
-      should put the particle index in the corresponding bucket's Indices_Array array
-      (remember 0 indexing!) */
-      for(unsigned i = 0; i < Num_Particles; i++) {
-        const unsigned Bucket_Index = Bucket_Indicies[i];
-        Buckets[Bucket_Index].Counter--;
-        Buckets[Bucket_Index].Indices_Array[Buckets[Bucket_Index].Counter] = i;
-      } // for(unsigned i = 0; i < Num_Particles; i++) {
+    /* Now, cycle through the elements of Bucket_Indicies. Consider
+    the ith iteration of this cycle. The ith element of this array tells us
+    which bucket particle i of body A belongs in. We, therefore, add its
+    index to the corresponding bucket's Indices_Array array. Importantly, we use the
+    Counter member of the corresponding bucket to keep track of where we
+    should put the particle index in the corresponding bucket's Indices_Array array
+    (remember 0 indexing!) */
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      const unsigned Bucket_Index = Bucket_Indicies[i];
+      Buckets[Bucket_Index].Counter--;
+      Buckets[Bucket_Index].Indices_Array[Buckets[Bucket_Index].Counter] = i;
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
   } // #pragma omp single
 
   #ifdef NEIGHBOR_MONITOR
@@ -400,7 +400,7 @@ void Body::Find_Neighbors_New(void){
         unsigned jb_max = (jb == Ny - 1) ? jb : jb + 1;
         unsigned kb_max = (kb == Nz - 1) ? kb : kb + 1;
 
-        /*Cycle through particles in main bucket*/
+        /* Cycle through particles in main bucket */
         for(unsigned int Main_particle_index = 0; Main_particle_index < Num_Particles; Main_particle_index++) {
           unsigned int i = Indices_Array[Main_particle_index]; //index of particle whose neighbors we are trying to find
 
@@ -473,6 +473,7 @@ void Body::Find_Neighbors(void) {
   List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
 
   // Cycle through the particles
+  #pragma omp for
   for(i = 0; i < Num_Particles; i++) {
 
     // For each particle, cycle through the potential neighbors (every particle)
@@ -535,18 +536,22 @@ void Body::Find_Neighbors_Box(void) {
   Box of particles, X_SIDE_LENGTH is 100, Y_SIDE_LENGTH is 50, and
   Z_SIDE_LENGTH is 200 */
 
-  if((*this).Is_Box == false) {
-    char Buf[500];
-    sprintf(Buf,
-            "Not A Box Exception: thrown by Body::Find_Neighbors_Box\n"
-            "Body %s tried to use this function, but %s is not a box! This function\n"
-            "can only be called by boxes!\n",
-            (*this).Name.c_str(), (*this).Name.c_str());
-    throw Not_A_Box(Buf);
-  } // if((*this).Is_Box == false) {
+  #pragma omp single
+  {
+    if((*this).Is_Box == false) {
+      char Buf[500];
+      sprintf(Buf,
+              "Not A Box Exception: thrown by Body::Find_Neighbors_Box\n"
+              "Body %s tried to use this function, but %s is not a box! This function\n"
+              "can only be called by boxes!\n",
+              (*this).Name.c_str(), (*this).Name.c_str());
+      throw Not_A_Box(Buf);
+    } // if((*this).Is_Box == false) {
+  } // #pragma omp single
 
   const unsigned d_max = floor((*this).Support_Radius / (*this).Inter_Particle_Spacing);
 
+  #pragma omp for collapse(3)
   for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
     for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
       for(unsigned k = 0; k < Z_SIDE_LENGTH; k++) {

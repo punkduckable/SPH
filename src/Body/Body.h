@@ -4,6 +4,7 @@
 #define DAMAGE_MONITOR
 #define IO_MONITOR
 //#define CONTACT_MONITOR
+//#define NEIGHBOR_MONITOR
 
 #include "Materials.h"
 #include "Classes.h"

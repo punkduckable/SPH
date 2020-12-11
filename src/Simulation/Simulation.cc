@@ -41,20 +41,28 @@ void Simulation::Run(void) {
   Body * Bodies;                                 // Will point to the Bodies's for this simulation
 
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Simulation start up.
-  Setup(&Bodies);
-
-
 
   //////////////////////////////////////////////////////////////////////////////
   // Run time steps
-  printf(         "\nRunning %d time steps....\n", Num_Time_Steps);
-  time1 = Get_Time();
 
-  // time step loop.
-  #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints)
+  #pragma omp parallel default(shared) private(b, p, time_step)
   {
+    //////////////////////////////////////////////////////////////////////////////
+    // Simulation set up.
+
+    Setup(&Bodies);
+
+    #pragma omp single
+    {
+      printf(         "\nRunning %d time steps....\n", Num_Time_Steps);
+      time1 = Get_Time();
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Time step loop
+
     for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
       #pragma omp single nowait
       { time2 = Get_Time(); }
@@ -197,36 +205,12 @@ void Simulation::Run(void) {
   #endif
 
   // Print timing data
-  #if defined(_OPENMP)
-    printf(       "\nIt took %lf s to perform %u Particle time steps \n",simulation_time, Num_Time_Steps);
-    printf(       "%lfs to update BC's\n", update_BC_time);
-    printf(       "%lfs to update P\n", update_P_time);
-    printf(       "%lfs for Contact\n", contact_time);
-    printf(       "%lfs to update x\n", update_x_time);
-    printf(       "%lfs to print data to files\n", Print_time);
-
-  #else
-    unsigned long MS_Sim,                                            // These are used to store the number of miliseconds that
-                  MS_BC,                                             // it took to execute each of the major operations in
-                  MS_P,                                              // the code. These are only used the the code is executed
-                  MS_Contact,                                        // sequentially
-                  MS_x,
-                  MS_Print;
-
-    MS_Sim     = (unsigned long)((double)simulation_time / (double)CLOCKS_PER_MS);
-    MS_BC      = (unsigned long)((double)update_BC_time  / (double)CLOCKS_PER_MS);
-    MS_P       = (unsigned long)((double)update_P_time   / (double)CLOCKS_PER_MS);
-    MS_Contact = (unsigned long)((double)contact_time    / (double)CLOCKS_PER_MS);
-    MS_x       = (unsigned long)((double)update_x_time   / (double)CLOCKS_PER_MS);
-    MS_Print   = (unsigned long)((double)Print_time      / (double)CLOCKS_PER_MS);
-
-    printf(         "\nIt took %lu ms to perform %u Particle time steps \n",MS_Sim, Num_Time_Steps);
-    printf(         "%lums to update BC's\n", MS_BC);
-    printf(         "%lums to update P\n", MS_P);
-    printf(         "%lums for Contact\n", MS_Contact);
-    printf(         "%lums to update x\n", MS_x);
-    printf(         "%lums to print data to files\n", MS_Print);
-  #endif
+  printf(       "\nIt took %lf s to perform %u Particle time steps \n",simulation_time, Num_Time_Steps);
+  printf(       "%lfs to update BC's\n", update_BC_time);
+  printf(       "%lfs to update P\n", update_P_time);
+  printf(       "%lfs for Contact\n", contact_time);
+  printf(       "%lfs to update x\n", update_x_time);
+  printf(       "%lfs to print data to files\n", Print_time);
 
   delete [] Bodies;
 } // void Simulation::Run(void) {
