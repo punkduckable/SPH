@@ -43,26 +43,21 @@ void Simulation::Run(void) {
 
 
   //////////////////////////////////////////////////////////////////////////////
+  // Simulation set up.
+
+  #pragma omp parallel
+  { Setup(&Bodies); }
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
   // Run time steps
+  printf(         "\nRunning %d time steps....\n", Num_Time_Steps);
+  time1 = Get_Time();
 
-  #pragma omp parallel default(shared) private(b, p, time_step)
+  // Time step loop
+  #pragma omp parallel default(shared) private(b, p, time_step) firstprivate(Num_Bodies, Num_Time_Steps, dt, TimeSteps_Between_Prints, Friction_Coefficient)
   {
-    //////////////////////////////////////////////////////////////////////////////
-    // Simulation set up.
-
-    Setup(&Bodies);
-
-    #pragma omp single
-    {
-      printf(         "\nRunning %d time steps....\n", Num_Time_Steps);
-      time1 = Get_Time();
-    }
-
-
-
-    //////////////////////////////////////////////////////////////////////////////
-    // Time step loop
-
     for(time_step = 0; time_step < Num_Time_Steps; time_step++) {
       #pragma omp single nowait
       { time2 = Get_Time(); }
@@ -191,7 +186,6 @@ void Simulation::Run(void) {
       Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
     } // #pragma omp single nowait
   } // #pragma omp parallel
-
 
   printf(         "Done!\n");
   simulation_time = Time_Since(time1);

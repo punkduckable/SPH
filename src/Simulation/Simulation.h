@@ -10,7 +10,7 @@
 #include <string>
 #include <ctime>
 
-const double CLOCKS_PER_MS = CLOCKS_PER_SEC/1000.;
+
 
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)

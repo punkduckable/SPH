@@ -120,7 +120,7 @@ void Body::Set_Neighbor_Dependent_Members(const unsigned i) {
 
 
 
-void Body::Find_Neighbors_New(void){
+void Body::Find_Neighbors(void){
   /* This function finds the neighbors for each particle and stores them in a
   linked list.
 
@@ -440,60 +440,7 @@ void Body::Find_Neighbors_New(void){
       } //for(unsigned ib = 0; ib < Nx; ib++)
     } //for(unsigned jb = 0; jb < Ny; jb++)
   } //for(unsigned kb = 0; kb < Nz; kb++)
-} // void Body::Find_Neighbors_New(void){
-
-
-
-bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
-  /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
-  particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
-  h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
-  neighbor of P2.
-
-  It should be noted that, since h and |Rj| are positive numbers, if h>|Rj|
-  then h^2>|Rj|^2. We can compute this second condition using a dot product
-  (which is far easier than finding the magnitude) */
-
-  /* A particle can not be its own neighbor. If i = j, then something went wrong.
-  and we should abort. */
-  assert(i != j);
-
-  const double h = (*this).Support_Radius;
-  const Vector Rj = (*this).Particles[i].Get_X() - (*this).Particles[j].Get_X();
-  return ( h*h > Dot_Product(Rj, Rj) );
-} // bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
-
-
-//old Find_Neighbors function
-void Body::Find_Neighbors(void) {
-  /* This function finds the neighbors for each particle in the (*this) body.
-  It assumes that the particles in (*this) have had their positions set. */
-
-  unsigned i,j;                              // Loop index variables
-  List<unsigned> Particle_Neighbor_List;     // Linked list to store known neighbors
-
-  // Cycle through the particles
-  #pragma omp for
-  for(i = 0; i < Num_Particles; i++) {
-
-    // For each particle, cycle through the potential neighbors (every particle)
-    for(j = 0; j < Num_Particles; j++) {
-      // ith particle is not its own neighbor.
-      if(j == i) { continue; }
-
-      // Test if jth particle is inside support radius of ith particle. If so,
-      // add P_j to P_i's neighbor list.
-      if(Are_Neighbors(i, j)) { Particle_Neighbor_List.Push_Back(j); }
-    } // for(unsigned j = 0; j < Num_Particles; j++) {
-
-    // Now that we have the neighbor ID list, we can make it into an array.
-    // This is done using the Array class' list constructor. See Array.h
-    Array<unsigned> Neighbor_IDs(Particle_Neighbor_List);
-
-    // Now sent the Neighbor list to the particle
-    Set_Neighbors(i, Neighbor_IDs);
-  } // for(unsigned i = 0; i < Num_Particles; i++) {
-} // void Body::Find_Neighbors(void) {
+} // void Body::Find_Neighbors(void){
 
 
 
@@ -615,6 +562,27 @@ void Body::Find_Neighbors_Box(void) {
     } // for(unsigned j = 0; j < Y_SIDE_LENGTH; j++) {
   } // for(unsigned i = 0; i < X_SIDE_LENGTH; i++) {
 } // void Body::Find_Neighbors_Box(void) {
+
+
+
+bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
+  /* This function checks if h > |Rj|. Here, Rj is simply the displacement of
+  particle i relative to particle j: Rj = Xj - Xi. Xj = P1.X, Xi = P2.X. if
+  h > |Rj| then P1 and P2 are in each other's support radius, so P1 is a
+  neighbor of P2.
+
+  It should be noted that, since h and |Rj| are positive numbers, if h>|Rj|
+  then h^2>|Rj|^2. We can compute this second condition using a dot product
+  (which is far easier than finding the magnitude) */
+
+  /* A particle can not be its own neighbor. If i = j, then something went wrong.
+  and we should abort. */
+  assert(i != j);
+
+  const double h = (*this).Support_Radius;
+  const Vector Rj = (*this).Particles[i].Get_X() - (*this).Particles[j].Get_X();
+  return ( h*h > Dot_Product(Rj, Rj) );
+} // bool Body::Are_Neighbors(const unsigned i, const unsigned j) const {
 
 
 
