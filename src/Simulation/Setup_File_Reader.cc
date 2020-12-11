@@ -42,7 +42,7 @@ Body* Simulation::Load_Setup_File(void) {
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Load_Simulation_From_Save = true; }
   else {                                                        Simulation::Load_Simulation_From_Save = false; }
 
-  strBuf = IO::read_line_after(File, "Save Data To File:", false);
+  strBuf = IO::read_line_after(File, "Save Simulation:", false);
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Save_Simulation_To_File = true; }
   else {                                                        Simulation::Save_Simulation_To_File = false; }
 
@@ -425,7 +425,7 @@ static void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned
               General_BCs[i][j].Effect_Vector[2]);
     } // for(unsigned j = 0; j < Number_General_BCs; j++) {
 
-    printf("\nRead Bodu[%3u].Gravity_Enabled          ", i);
+    printf("\nRead Body[%3u].Gravity_Enabled          ", i);
     if(Body_In.Get_Gravity_Enabled() == true)    { printf("true\n");  }
     else                                         { printf("false\n"); }
 

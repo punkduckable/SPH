@@ -199,6 +199,7 @@ static void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
+  
   #pragma omp single nowait
   { printf(         "\nGenerating particles for %s...",Body_In.Get_Name().c_str()); }
   time1 = Get_Time();
@@ -239,6 +240,7 @@ static void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up Neighbors (if the body is not fixed in place)
+
   if(Body_In.Get_Is_Fixed() == false) {
     #pragma omp single nowait
     { printf(         "Generating %s's neighbor lists...", Body_In.Get_Name().c_str()); }

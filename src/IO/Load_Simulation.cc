@@ -5,6 +5,7 @@
 #include "Load_Simulation.h"
 #include "IO_Ops.h"
 #include "Errors.h"
+#include "List.h"
 #include <string>
 #include <fstream>
 #include <stdio.h>
@@ -36,6 +37,10 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
   strBuf = read_line_after(File, "Number of Bodies:");
   sscanf(strBuf.c_str(), " %u \n \n", &Num_Bodies);
 
+  #if defined(LOAD_MONITOR)
+    printf("Read Number of Bodies as                               %u\n", Num_Bodies);
+  #endif
+
   // Now use this information to make the Bodies array
   *Bodies_Ptr = new Body[Num_Bodies];
 
@@ -50,9 +55,9 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     This works by copying over the characters from Buf into the string until
     the null terminating character is encountered. To ensure that this happens
     (which may not be the case if the string is too long), we manually assign
-    the final element of Buf to \0 before doing this (Otherwise, we'd get a segmenetation
-    fault if the name was longer than 100 characters). We then allocate a new
-    body and assign its name to the string. */
+    the final element of Buf to \0 before doing this (Otherwise, we'd get a
+    segmenetation fault if the name was longer than 100 characters). We then
+    allocate a new body and assign its name to the string. */
 
     strBuf = read_line_after(File, "name:");
     unsigned Buf_Length = 256;
@@ -60,10 +65,6 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     sscanf(strBuf.c_str(), " %s \n", Buf);
     Buf[Buf_Length-1] = '\0';          // In case sscanf filled Buf
     strBuf = Buf;
-    #if defined(LOAD_MONITOR)
-      printf("\nRead Body %u's name as                  %s\n", i, Buf);
-    #endif
-
 
     // Set Bodys name.
     (*Bodies_Ptr)[i].Set_Name(strBuf);
@@ -72,9 +73,6 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     // Now determine if this Body is a Box
     strBuf = read_line_after(File, "Is a Box:");
     sscanf(strBuf.c_str()," %u \n", &Is_Box);
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's Is_Box as                %u\n", i, Is_Box);
-    #endif
 
 
     if(Is_Box == true) {
@@ -82,10 +80,6 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
       strBuf = read_line_after(File, "Y_SIDE_LENGTH:"); sscanf(strBuf.c_str()," %u \n", &Dimensions[1]);
       strBuf = read_line_after(File, "Z_SIDE_LENGTH:"); sscanf(strBuf.c_str()," %u \n", &Dimensions[2]);
       (*Bodies_Ptr)[i].Set_Box_Dimensions(Dimensions[0], Dimensions[1], Dimensions[2]);
-
-      #if defined(LOAD_MONITOR)
-        printf("Read Body %u's dimensions as            <%u %u %u>\n", i, Dimensions[0], Dimensions[1], Dimensions[2]);
-      #endif
     } // if(uBuf == true) {
 
 
@@ -93,56 +87,55 @@ void IO::Load_Simulation(Body ** Bodies_Ptr, unsigned & Num_Bodies) {
     strBuf = read_line_after(File, "Is fixed in place:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Set_Is_Fixed(uBuf);
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's Is_Fixed as              %u\n", i, uBuf);
-    #endif
 
 
     // Now read in the 'Is damageable' flag
     strBuf = read_line_after(File, "Is Damageable:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Set_Is_Damageable(uBuf);
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's Is_Damageable as         %u\n", i, uBuf);
-    #endif
 
 
-    // Now read in number of particles and use if this Body is not a Box
+    /* Now read in number of particles and use if this Body is not a Box. If
+    the body is a box, then this was set when we read in the X, Y, and Z side
+    lengths, so trying to set it again would cause an error.  */
     strBuf = read_line_after(File, "Number of particles:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
     if(Is_Box == false) { (*Bodies_Ptr)[i].Set_Num_Particles(uBuf); }
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's Num Particles as         %u\n", i, uBuf);
-    #endif
 
 
     // Finally read in File number information
     strBuf = read_line_after(File, "# times printed Body forces:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Body_Forces = uBuf;
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's # times printed Body forces as %u\n", i, uBuf);
-    #endif
 
     strBuf = read_line_after(File, "# times printed Body torques:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Body_Torques = uBuf;
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's # times printed Body torques as %u\n", i, uBuf);
-    #endif
 
     strBuf = read_line_after(File, "# times printed particle forces:");
     sscanf(strBuf.c_str()," %u \n \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Forces = uBuf;
-    #if defined(LOAD_MONITOR)
-      printf("Read Body %u's # times printed particle forces as %u\n", i, uBuf);
-    #endif
 
     strBuf = read_line_after(File, "# times printed particle positions:");
     sscanf(strBuf.c_str()," %u \n", &uBuf);
     (*Bodies_Ptr)[i].Times_Printed_Particle_Positions = uBuf;
+
     #if defined(LOAD_MONITOR)
-      printf("Read Body %u's # times printed particle positions as %u\n", i, uBuf);
+      printf("\n");
+      printf("Read Body %u's name as                                 %s\n", i, (*Bodies_Ptr)[i].Get_Name().c_str());
+      printf("Read Body %u's Is_Box as                               %u\n", i, (*Bodies_Ptr)[i].Get_Is_Box());
+
+      if((*Bodies_Ptr)[i].Get_Is_Box() == true) {
+      printf("Read Body %u's dimensions as                          <%u %u %u>\n", i, (*Bodies_Ptr)[i].Get_X_SIDE_LENGTH(), (*Bodies_Ptr)[i].Get_Y_SIDE_LENGTH(), (*Bodies_Ptr)[i].Get_Z_SIDE_LENGTH());
+      } // if((*Bodies_Ptr)[i].Get_Is_Box() == true) {
+
+      printf("Read Body %u's Is_Fixed as                             %u\n", i, (*Bodies_Ptr)[i].Get_Is_Fixed());
+      printf("Read Body %u's Is_Damageable as                        %u\n", i, (*Bodies_Ptr)[i].Get_Is_Damageable());
+      printf("Read Body %u's Num Particles as                        %u\n", i, (*Bodies_Ptr)[i].Get_Num_Particles());
+      printf("Read Body %u's # times printed Body forces as          %u\n", i, (*Bodies_Ptr)[i].Times_Printed_Body_Forces);
+      printf("Read Body %u's # times printed Body torques as         %u\n", i, (*Bodies_Ptr)[i].Times_Printed_Body_Torques);
+      printf("Read Body %u's # times printed particle forces as      %u\n", i, (*Bodies_Ptr)[i].Times_Printed_Particle_Forces);
+      printf("Read Body %u's # times printed particle positions as   %u\n", i, (*Bodies_Ptr)[i].Times_Printed_Particle_Positions);
     #endif
   } // for(unsigned i = 0; i < Num_Bodiess; i++) {
 
@@ -200,18 +193,12 @@ static void IO::Load_Body(Body & Body_In) {
   strBuf = IO::read_line_after(File, "Inter Particle Spacing:");
   sscanf(strBuf.c_str(), " %lf \n", &lfBuf);
   Body_In.Set_Inter_Particle_Spacing(lfBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's IPS as:                       %lf\n",Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
   strBuf = IO::read_line_after(File, "Support Radius (mm):");
   sscanf(strBuf.c_str(), " %u \n", &uBuf);
   Body_In.Set_Support_Radius(uBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Support Radius as:            %u\n",Body_In.Get_Name().c_str(), uBuf);
-  #endif
 
-  // Skip these lines (they're redundant)
+  // Skip this line (it's redundant)
   IO::read_line_after(File, "Shape Function Amplitude:");
 
 
@@ -225,33 +212,21 @@ static void IO::Load_Body(Body & Body_In) {
   strBuf = IO::read_line_after(File, "Lame parameter:");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Mat.Lame = lfBuf;
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Lame parameter as:            %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
   // Read in Shear modulus (mu0)
   strBuf = IO::read_line_after(File, "Shear modulus (mu0):");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Mat.mu0 = lfBuf;
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Shear modulus (mu0) as:       %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
   // Read in Young's modulus/Hourglass Stiffness (E)
   strBuf = IO::read_line_after(File, "Young's Modulus/HG Stiffness (E):");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Mat.E = lfBuf;
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Hourglass Stuffness (E) as:   %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
   // Read in Material density
   strBuf = IO::read_line_after(File, "Material density:");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Mat.density = lfBuf;
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's density as:                   %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
   // Our material is now fully characterized, we can set Particle's material
   Body_In.Set_Material(Mat);
@@ -261,50 +236,60 @@ static void IO::Load_Body(Body & Body_In) {
   //////////////////////////////////////////////////////////////////////////////
   // Read in Other parameters.
 
+  // Read in gravity
+  strBuf = IO::read_line_after(File, "Gravity Enabled:");
+  sscanf(strBuf.c_str()," %u \n", &uBuf);
+  Body_In.Set_Gravity_Enabled(uBuf);
+
   // Read in Viscosity (mu)
   strBuf = IO::read_line_after(File, "Viscosity (mu):");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Body_In.Set_mu(lfBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Viscosity (mu) as:            %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
   // Read in F_Index
   strBuf = IO::read_line_after(File, "F_Index:");
   sscanf(strBuf.c_str()," %u \n", &uBuf);
   Body_In.Set_F_Index(uBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's F_Index as %u\n", Body_In.Get_Name().c_str(), uBuf);
-  #endif
 
   // Read in alpha (HG parameter)
   strBuf = IO::read_line_after(File, "alpha (HG parameter):");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Body_In.Set_alpha(lfBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's alpha (HG parameter) as:      %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
   // Read in Tau (damage parameter)
   strBuf = IO::read_line_after(File, "Tau (damage parameter):");
   sscanf(strBuf.c_str()," %lf \n", &lfBuf);
   Body_In.Set_Tau(lfBuf);
-  #if defined(LOAD_MONITOR)
-    printf("Read %s's Tau (damage parameter) as:    %lf\n", Body_In.Get_Name().c_str(), lfBuf);
-  #endif
 
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Read in Particle properties.
 
-  // read in number of particles
+  /* read in number of particles. This should have been read in by
+  Load_Simulation, so it's redundand information now. We don't do anything with
+  it. */
   unsigned Num_Particles;
   strBuf = IO::read_line_after(File, "Number of particles:");
   sscanf(strBuf.c_str(), " %u \n", &Num_Particles);
+
+
   #if defined(LOAD_MONITOR)
-    printf("Read %s's Number of particles as:       %u\n", Body_In.Get_Name().c_str(), Num_Particles);
+    printf("\n");
+    printf("Read %s's IPS as:                       %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_Inter_Particle_Spacing());
+    printf("Read %s's Support Radius as:            %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_Support_Radius());
+    printf("Read %s's Lame parameter as:            %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_Lame());
+    printf("Read %s's Shear modulus (mu0) as:       %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_mu0());
+    printf("Read %s's Hourglass Stuffness (E) as:   %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_E());
+    printf("Read %s's density as:                   %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_density());
+    printf("Read %s's Gravity Enabled as:           %u\n",  Body_In.Get_Name().c_str(), Body_In.Get_Gravity_Enabled());
+    printf("Read %s's Viscosity (mu) as:            %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_mu());
+    printf("Read %s's F_Index as                    %u\n",  Body_In.Get_Name().c_str(), Body_In.Get_F_Index());
+    printf("Read %s's alpha (HG parameter) as:      %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_alpha());
+    printf("Read %s's Tau (damage parameter) as:    %lf\n", Body_In.Get_Name().c_str(), Body_In.Get_Tau());
+    printf("Read %s's Number of particles as:       %u\n",  Body_In.Get_Name().c_str(), Num_Particles);
   #endif
+
 
   /* Now read in particles. For each particle, this sets the particles members
   that do not depend on the particles neighbors. The neighbor dependnet
@@ -313,9 +298,37 @@ static void IO::Load_Body(Body & Body_In) {
   until every particle has been read in. */
   for(unsigned i = 0; i < Num_Particles; i++) { IO::Load_Particle(Body_In[i], File); }
 
-  /* Now, for each particle in the Body, set the particles neighbor dependent
-  members. */
-  for(unsigned i = 0; i < Num_Particles; i++) { Body_In.Set_Neighbor_Dependent_Members(i); }
+  /* If the body is not fixed, then we should set each particle's neighbor
+  dependent members. */
+  List<unsigned> Damaged_Particle_List{};
+
+  if(Body_In.Get_Is_Fixed() == false) {
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      /* If a particle is damaged, then we should not attempt to set up its
+      neighbors. */
+      if(Body_In[i].Get_D() >= 1) { continue; }
+
+      /* This may throw a singular matrix error... this happens if a particle
+      doesn't have enough neighbors to create a non-singula A tensor. In theory,
+      this should never happen (a saved particle should't have a valid A tensor)
+      However, theory doesn't always play out. If this happens, then we add the
+      particle to the damaged particle list and then causally remove it from the
+      body once every other particle has been set up.
+
+      Importantly, calculating A^(-1) is the last thing that
+      Set_Neighbor_Dependent_Members does. As such, if an error is thown, it
+      should be thrown once everything else about the particle has been
+      established. */
+      try { Body_In.Set_Neighbor_Dependent_Members(i); }
+      catch(Singular_Matrix & Er_In) {
+        Body_In[i].Set_D(1);
+        Damaged_Particle_List.Push_Front(i);
+      } // catch(Singular_Matrix & Er_In) {
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
+  } // if(Body_In.Get_Is_Fixed() == false) {
+
+  // Remove any particles that were damaged above.
+  Body_In.Remove_Damaged_Particles(Damaged_Particle_List);
 
   // All done, close the file.
   File.close();
