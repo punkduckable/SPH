@@ -2,10 +2,10 @@
 # Simulation Parameters
 
 # IO
-Load Simulation from Save:                       false
-Save Data To File:                               false
+Load Simulation from Save:                       true
+Save Simulation:                                 true
 Print Particle Forces:                           false
-Print Body Forces:                               false
+Print Body Forces:                               true
 Print Body Torques:                              false
 Print Box Boundary Forces:                       true
 Time Steps Between Prints:                       100
@@ -26,7 +26,7 @@ Friction Coefficient:                            .1
 ################################################################################
 # Number of Bodies
 
-Number of Bodies:                                1
+Number of Bodies:                                2
 
 
 
@@ -34,14 +34,14 @@ Number of Bodies:                                1
 # Body 0
 
 # General
-Name:                                            Column
+Name:                                            Blob
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {7, 21, 7}
+    Dimensions [# Particles]:                    {11, 11, 11}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
-    y plus BC [mm/s]:                            {0, 100, 0}
-    y minus BC [mm/s]:                           {0, 0, 0}
+    y plus BC [mm/s]:                            {Free, Free, Free}
+    y minus BC [mm/s]:                           {Free, Free, Free}
     z plus BC [mm/s]:                            {Free, Free, Free}
     z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
@@ -56,8 +56,8 @@ mu0 (Shear Modulus) [Mpa]:                       .275
 Density [g/mm^3]:                                .01
 
 # Initial conditions
-Offset [mm]:                                     {-3, 0, -3}
-Initial Velocity [mm/s]:                         {0, 0, 0}
+Offset [mm]:                                     {-5, 3, -5}
+Initial Velocity [mm/s]:                         {0, -500, 0}
 
 # General Boundary Conditions
 Number of General Boundary Conditions:           0
@@ -68,7 +68,7 @@ Number of General Boundary Conditions:           0
   Effect Vector [mm/s]:                          {0, -200, 0}
 
 # Other
-Enable Gravity:                                  false
+Enable Gravity:                                  true
 Mu (Viscosity) [Mpa*s]:                          .00004
 Alpha (Hg Control parameter):                    .075
 Inter Particle Spacing (IPS) [mm]:               1.0
