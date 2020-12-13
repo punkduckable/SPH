@@ -66,13 +66,22 @@ void Simulation::Run(void) {
       // Export Bodies data
 
       if(time_step%Simulation::TimeSteps_Between_Prints == 0) {
-        #pragma omp single nowait
+        /* This is in here so that we don't double print position files when
+        loading from save. In that case, the last set of printouts correspond
+        to the final time step in the saved simulation. If we were to print them
+        again (when time_step = 0 in the new simulation), then we'd end up
+        printing that information again. Thus, we skip if we're loading from
+        simulation and this is the first time step. */
+        if(time_step != 0 || Simulation::Load_Simulation_From_Save == false)
         {
-          printf("%d time steps complete\n", time_step);
-          Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
-          Print_time += Time_Since(time2);
-          time2 = Get_Time();
-        } // #pragma omp single nowait
+          #pragma omp single nowait
+          {
+            printf("%d time steps complete\n", time_step);
+            Simulation::Export_Bodies_Data(Bodies, Num_Bodies, time_step);
+            Print_time += Time_Since(time2);
+            time2 = Get_Time();
+          } // #pragma omp single nowait
+        } // if(time_step != 0 || Simulation::Load_Simulation_From_Save == false)
       } // if(t%TimeSteps_Between_Prints == 0) {
 
 

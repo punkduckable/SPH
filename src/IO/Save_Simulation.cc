@@ -118,6 +118,7 @@ static void IO::Save_Body(const Body & Body_In) {
   fprintf(File,   "Material density:                       %5lf\n\n",  Body_In.Get_density());
 
   fprintf(File,   "       -- Other Parameters --\n");
+  fprintf(File,   "Gravity Enabled:                        %u\n",    Body_In.Get_Gravity_Enabled());
   fprintf(File,   "Viscosity (mu):                         %5lf\n",  Body_In.Get_mu());
   fprintf(File,   "F_Index:                                %u\n",    Body_In.Get_F_Index());
   fprintf(File,   "alpha (HG parameter):                   %5lf\n",  Body_In.Get_alpha());

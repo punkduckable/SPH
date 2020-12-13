@@ -3,7 +3,7 @@
 
 # IO
 Load Simulation from Save:                       false
-Save Data To File:                               false
+Save Simulation:                                 false
 Print Particle Forces:                           false
 Print Body Forces:                               false
 Print Body Torques:                              false

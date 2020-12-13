@@ -47,7 +47,7 @@ void Body::Update_P(const double dt) {
               0,0,1};
 
 
-  List<unsigned> Damaged_Particle_List;          // Keeps track of which particles are newly damaged
+  List<unsigned> Damaged_Particle_List{};          // Keeps track of which particles are newly damaged
 
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
