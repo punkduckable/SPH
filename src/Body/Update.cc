@@ -67,6 +67,7 @@ void Body::Update_P(const double dt) {
     if(Particles[i].D >= 1) { continue; }
 
 
+
     ////////////////////////////////////////////////////////////////////////////
     /* Now, we can calculate F for the current particle by cycling through
     that particle's neighbors. First, however, we need to reset F (from the
@@ -90,6 +91,7 @@ void Body::Update_P(const double dt) {
 
     // Deformation gradient with correction
     F *= Particles[i].A_Inv;                                                   //        : unitless Tensor
+
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -139,6 +141,7 @@ void Body::Update_P(const double dt) {
         continue;
       } // if(Particles[i].D >= 1) {
     } // if((*this).Is_Damageable == true) {
+
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -230,6 +233,8 @@ void Body::Update_P(const double dt) {
       OP_Count::Division += 1;
     #endif
 
+
+
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate P (First Piola-Kirchhoff stress tensor). Here we also update
     the current particle's P and F members. Note, however, that we need to be
@@ -245,6 +250,7 @@ void Body::Update_P(const double dt) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
+
   #pragma omp critical
   Remove_Damaged_Particles(Damaged_Particle_List);
 
@@ -313,6 +319,8 @@ void Body::Update_x(const double dt) {
       // Update Neighbor
       unsigned Neighbor_ID = Particles[i].Neighbor_IDs[j];       // ID of current neighbor particle
 
+
+
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Internal force */
 
@@ -332,6 +340,8 @@ void Body::Update_x(const double dt) {
 
       // Force_Viscosity += V_j*((Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
       Calculate_Force(Force_Viscosity, V_j, Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);         // N Vector
+
+
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */

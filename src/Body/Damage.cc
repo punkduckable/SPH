@@ -38,7 +38,7 @@ void Body::Set_Particles_Critical_Stretch(const double Stretch_Critical_Mean, co
 
 
 void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
-  /* This function removes the particles in the Damated_Particles_List from
+  /* This function removes the particles in the Damaged_Particles_List from
   the Body (makes them damaged/removes them from every other particle's neighbor
   list so that the damage particles no longer impact the body)  */
 
@@ -65,9 +65,9 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
   Since P is damaged, if the body breaks at P, then there can't be any
   connection from P_i to P_j. Therefore, if P is infront of P_j, then P_i
   shouldn't be neighbors with P_j. We say that P_j is in P's 'shadow region'
-  Basically, if P_i were a light and P were some obstical, then any particle
+  Basically, if P_i were a light and P were some obstacle, then any particle
   P_j in the 'shadow region' would be covered by the shadow of P. More
-  More formally, for any two particles, P_i and P_j, if the ray between P_i and
+  formally, for any two particles, P_i and P_j, if the ray between P_i and
   P_j passes through the damaged particle, then P_j is in the 'shadow region' of
   P. For any particle P_i, we remove all neighbors that are damaged or in the
   shadow region of a damaged particle.
@@ -92,10 +92,10 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
   no longer one of P_i's neighbors.
 
   So how do we detect if the ray intersects the sphere? There are three
-  necessairry conditions for ray-sphere intersection:
+  necessary conditions for ray-sphere intersection:
 
   For the fist condition, Let R_i R_j and R_In denote the reference position
-  vectors of P_i P_j and P respectivly. If the ray from R_i to R_j intersects
+  vectors of P_i P_j and P respectively. If the ray from R_i to R_j intersects
   P's sphere, then the scalar projection of (R_In-R_i) onto (R_j - R_i) must
   be positive. Why is this? Well, if this projection is negaitve then
   (R_In - R_i) must go in away from (R_j - R_i) and therefore can not intersect
@@ -106,7 +106,7 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
 
   For the second condition, we need to check the lengths of (R_In - R_i) and
   (R_j - R_i). If the ray (R_j - R_i) is to pass through P's sphere, then
-  (R_j - R_i) must be longer than (R_In - R_i)? To understand why, consider the
+  (R_j - R_i) must be longer than (R_In - R_i). To understand why, consider the
   following diagrams:
 
 
@@ -128,12 +128,12 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
 
   Even if (R_i - R_j) is pointed in the same direction as (R_In - R_i) (the
   scalar projection of (R_In - R_i) onto (R_i - R_j) is positive), intersection
-  occurs only if Notice that if (R_i - R_j) is LONGER than (R_i - R_In).
-  Therefore, our second necessairry condition for intersction is:
+  occurs only if (R_i - R_j) is LONGER than (R_i - R_In).
+  Therefore, our second necessary condition for intersction is:
 
          |R_In - R_i| < |R_j - R_i|
 
-  For the third conidition: Assuming that the two conditions avbove check out
+  For the third conidition: Assuming that the two conditions above check out
   then we need to find the shortest distance between a point on (R-i - R_j) and
   R_In. Consider the following diagram:
 
@@ -160,7 +160,7 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
 
   const double r_Squared = Particles[p].Radius*Particles[p].Radius;            //        : mm^2
 
-  // Particle i (P_j) parameters
+  // Particle i (P_i) parameters
   unsigned Pi_ID;                            // ID of P_i
   List<unsigned> Pi_New_Neighbor_List;       // List of all of P_i's neighbors that are not damaged or in Particles[p]'s shadow region
 
@@ -172,7 +172,7 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
   Vector RIn_Ri;                                 // R_In - R_i                           : mm Vector
   double RIn_Ri_Dot_RIn_Ri;                      // Dot product of RIn_Ri and RIn_Ri (= |RIn_Ri|^2). Used to determine intersection
   double RIn_Ri_Dot_Rj_Ri;                       // Dot product of RIn_Ri and Rj_Ri. Used to calculate d^2.            : mm^2
-  double Rj_Ri_Dot_Rj_Ri;                        // Dot product of Rj_Ri and Rj_Ri (= |Rj-Ri|^2). Used to calculate d^2: mm^2
+  double Rj_Ri_Dot_Rj_Ri;                        // Dot product of Rj_Ri and Rj_Ri_Dot_Rj_Rii (= |Rj-Ri|^2). Used to calculate d^2: mm^2
 
   // d (orthogonal distance from ray to sphere)
   double d_Squared;                                                            //        : mm^2
@@ -190,7 +190,7 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
   unsigned Num_Neighbors = Particles[p].Num_Neighbors;
   for(unsigned i = 0; i < Num_Neighbors; i++) {
     /* For each neighbor of the damaged particle, P_i, we need to remove the
-    neirhbors of Particles[i] as well as any of P_i's neighbors that are in the
+    neighbors of Particles[i] as well as any of P_i's neighbors that are in the
     shadow region from P_i's neighbor list. Thus, we need to cycle through P_i's
     neighbors. */
     Pi_ID = Particles[p].Neighbor_IDs[i];
@@ -253,7 +253,7 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
       if(d_Squared <= r_Squared) {
         /* if so, then P_j is in P_i's shadow region! This means that P_i is
         no longer a neighbor of P_j, and that P_j is no longer a neighbor of
-        P_i. To things need to happen for this to work, P_i needs to stop
+        P_i. Two things need to happen for this to work, P_i needs to stop
         being a neighbor with P_j and P_j needs to stop being a neighbor
         with P_i.
 
@@ -284,14 +284,13 @@ void Body::Remove_Damaged_Particles(List<unsigned> & Damaged_Particle_List) {
       } // else {
     } // for(j = 0; j < Particles[Pi_ID].Num_Neighbors; j++) {
 
-
     ////////////////////////////////////////////////////////////////////////////
     /* We now have a complete new neighbor list for P_i (with Particles[i] and the
     shadow region particles removed). We can now begin the process of redoing
     P_i's member variables. */
 
-    // To begin, convert the New Neirghbor List to an Array
-    Array<unsigned> Pi_New_Neighbors(Pi_New_Neighbor_List);
+    // To begin, convert the New Neighbor List to an Array
+    Array<unsigned> Pi_New_Neighbors{Pi_New_Neighbor_List};
 
 
     /* When we set new neighbors, the Set_Neighbors function will allocate

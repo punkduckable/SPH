@@ -69,12 +69,16 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   z_max = x[2];
   z_min = z_max;
 
-  /* Determine the maximum and minimum x, y, z coordinate of the particles
-  in the two bodies. Each thread only searches through a subset of the
-  particles. Once this is done, we will "reduce" them together in the
+
+  /* Determine the maximum and minimum x, y, z coordinate of the non-damaged
+  particles in the two bodies. Each thread only searches through a subset 
+  of the particles. Once this is done, we will "reduce" them together in the
   buffer to determine the global minimum. */
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
+    /* Contact can only happen with particles that are not damaged. */
+    if(Body_A[i].Get_D() >= 1) { continue; }
+
     x = Body_A[i].Get_x();
 
     /* Note: if x[0] > x_max, then we can't also have x[0] < x_min (this relies
@@ -91,6 +95,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_B; i++) {
+    if(Body_B[i].Get_D() >= 1) { continue; }
+
     x = Body_B[i].Get_x();
 
     if     (x[0] > x_max) { x_max = x[0]; }
@@ -102,6 +108,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     if     (x[2] > z_max) { z_max = x[2]; }
     else if(x[2] < z_min) { z_min = x[2]; }
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
 
   /* The static global buffer variable will be used to perform the reduce
   operation. We will associate the 6 elements of the Buffer to perform the
@@ -178,9 +185,9 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   such that Contact_Distance <= (x_max - x_min)/Nx. A little thought reveals
   that this occurs precisely when Nx = floor((x_max - x_min)/Contact_Distance).
   A similar result holds for the y and z directions. */
-  const unsigned Nx = floor((x_max - x_min)/Simulation::Contact_Distance);
-  const unsigned Ny = floor((y_max - y_min)/Simulation::Contact_Distance);
-  const unsigned Nz = floor((z_max - z_min)/Simulation::Contact_Distance);
+  const unsigned Nx = floor((x_max - x_min)/(4*Simulation::Contact_Distance));
+  const unsigned Ny = floor((y_max - y_min)/(4*Simulation::Contact_Distance));
+  const unsigned Nz = floor((z_max - z_min)/(4*Simulation::Contact_Distance));
 
   #ifdef OPERATION_COUNT
     // 3 subtractions, 3 divisions in the computations above.
@@ -238,6 +245,9 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
+    /* Damaged particles can not do contact. Ignore them. */
+    if(Body_A[i].Get_D() >= 1) { continue; }
+ 
     /* First, we need to determine which bucket our particle belongs in. Let's
     focus on the x coordinate. Each bucket has an x-dimension length of
     (x_max - x_min)/Nx, which we call cell_x_dim. The x coordinates of
@@ -282,6 +292,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   #pragma omp for
   for(unsigned i = 0; i < Num_Particles_B; i++) {
+    if(Body_B[i].Get_D() >= 1) { continue; }
+
     /* Calculate bucket indicies */
     x = Body_B.Particles[i].Get_x();
     unsigned nx = floor((x[0] - x_min)/cell_x_dim);
@@ -326,13 +338,16 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
       for(unsigned i = 0; i < Nx*Ny*Nz; i++) { Buckets[i].Array_A.Set_Length(Buckets[i].Counter_A); }
 
       /* Now, cycle through the elements of Bucket_Indicies_Body_A. Consider
-      the ith iteration of this cycle. The ith element of this array tells us
+      the ith iteration of this cycle. (assuming a non-damaged particle.
+      We skip damaged ones) The ith element of this array tells us
       which bucket particle i of body A belongs in. We, therefore, add its
       index to the corresponding bucket's Array_A array. Importantly, we use the
       Counter_A member of the corresponding bucket to keep track of where we
       should put the particle index in the corresponding bucket's Array_A array
       (remember 0 indexing!) */
       for(unsigned i = 0; i < Num_Particles_A; i++) {
+        if(Body_A[i].Get_D() >= 1) { continue; }
+
         const unsigned Bucket_Index = Bucket_Indicies_Body_A[i];
         Buckets[Bucket_Index].Counter_A--;
         Buckets[Bucket_Index].Array_A[Buckets[Bucket_Index].Counter_A] = i;
@@ -354,6 +369,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
       should put the particle index in the corresponding bucker's Array_B array
       (remember 0 indexing!) */
       for(unsigned i = 0; i < Num_Particles_B; i++) {
+        if(Body_B[i].Get_D() >= 1) { continue; }
+
         const unsigned Bucket_Index = Bucket_Indicies_Body_B[i];
         Buckets[Bucket_Index].Counter_B--;
         Buckets[Bucket_Index].Array_B[Buckets[Bucket_Index].Counter_B] = i;
