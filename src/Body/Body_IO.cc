@@ -501,182 +501,323 @@ void Body::Export_Particle_Positions(void) {
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /* Find the components of S and E for each particle
-  We Calculate each of these by first finding P and F for each particle. We then
-  use these quantities to calculate Sigma and E. The components of each of these
-  tensors are then stored in dynamic arrays. Once this is finished, we write the
-  components to the output file.
+  /* Calculate particle data
+  Here we calculate the particle data that the user has requested we print. The
+  quantities that we can calculate point data for are:
+    D:             Particle Damage
+    Stretch_Max:   Maximum stretch (maximum eigenvalue of C)
+    J:             det(F), local volume change ratio.
+    F:             Deformation gradient.
+    C:             Right Cauchy-Green Strain Tensor.
+    E:             Green Strain tensor.
+    P:             First Piola-Kirchoff Stress Tensor.
+    T:             Cauchy Stress tensor.
 
-  We choose to store the components in dynamic arrays before writing to the file
-  to improve performnace. Each particle's P, F tensors are in distinct memory
-  locations. If we were to collect each component at a time, we'd have to read
-  in a new cache line for each component from each particle. In other words,
-  we'd only get one double from each cache line. This is bad. To improve this,
-  we only pull from the particles once. We pull in the entire tensor, then write
-  its components to the dynamic arrays. We use all 6 of each tensor's components
-  in each iteration. This means that we can make better usage of cache lines.
+  C, E, P, and T are all symmetric tensors. As such, we only print out their
+  upper triangular components. F, by contrast, is not symmetric in general.
+  Thus, we need to print out all 9 of its components.
 
-  Once the components have been written to the arrays, tensor components
-  belonging to adjacent particles are next to each ther in memory. For example,
-  in the P11 array, P11 component of the 100th particle is stored right next to
-  the P11 component of the 101th particle. when we write to the file, we pull
-  from the dynamic arrays. This allows us to use cache lines efficiently.
+  D, Stretch_Max, F, and P can acquired directly from the particle. The other
+  quantities require calculations. C and E are functions of F. T is a function
+  of T and P.
 
-  This improves performance.
-  */
+  For each quantity that the user wants, we save the relevant data into a set
+  of dynamic arrays. Once this is finished, we write the components to the
+  output file. */
 
-  /* Create dynamic arrays for components of S, E (note, both are symmetric, so
-  we only need to store 6 components) and J (det F)*/
-
-  double * LamM = new double[Num_Particles];
-  //double * LamH = new double[Num_Particles];
-  //double * LamC = new double[Num_Particles];
-  double * D = new double[Num_Particles];
-  /*
-  double * S11 = new double[Num_Particles];
-  double * S22 = new double[Num_Particles];
-  double * S33 = new double[Num_Particles];
-  double * S21 = new double[Num_Particles];
-  double * S31 = new double[Num_Particles];
-  double * S32 = new double[Num_Particles];
-  */
-  //double * E11 = new double[Num_Particles];
-  //double * E22 = new double[Num_Particles];
-  //double * E33 = new double[Num_Particles];
-  //double * E21 = new double[Num_Particles];
-  //double * E31 = new double[Num_Particles];
-  //double * E32 = new double[Num_Particles];
-
-  //double * J = new double[Num_Particles];
-
-  Tensor F, P, S, E;
-  Tensor I{1,0,0,
-           0,1,0,
-           0,0,1};
-
-  for(unsigned i = 0; i < Num_Particles; i++) {
-    LamM[i] = Particles[i].Get_Stretch_M();
-    //LamH[i] = Particles[i].Get_Stretch_H();
-    //LamC[i] = Particles[i].Get_Stretch_Critical();
-    D[i] = Particles[i].Get_D();
-
-    // Get F, P from current particle
-    //F = Particles[i].Get_F();
-    //P = Particles[i].Get_P();
-
-    // Use F to calculate determinant (J)
-    //J[i] = Determinant(F);
-
-    // Calculate S from P.
-    //S = P*(F^(T))/J[i];
-
-    // Get components of S
-    /*
-    S11[i] = S[3*0 + 0];
-    S22[i] = S[3*1 + 1];
-    S33[i] = S[3*2 + 2];
-    S21[i] = S[3*1 + 0];
-    S31[i] = S[3*2 + 0];
-    S32[i] = S[3*2 + 1];
-    */
-
-    // Now calculate E = (1/2)(C-I)
-    //E = (1./2.)*((F^T)*F - I);
-
-    // Now get components of E
-    //E11[i] = E[3*0 + 0];
-    //E22[i] = E[3*1 + 1];
-    //E33[i] = E[3*2 + 2];
-    //E21[i] = E[3*1 + 0];
-    //E31[i] = E[3*2 + 0];
-    //E32[i] = E[3*2 + 1];
-  } // for(unsigned int i = 0; i < Num_Particles; i++) {
+  /* Create dynamic arrays for data that the user wants to print. */
 
   // Now print these values to the file.
   fprintf(File,"POINT_DATA %i\n", Num_Particles);
-  char Weight_Name[5];
+  char Weight_Name[15];
 
-  /* Damage parameters  */
+  // D
+  if(Simulation::Print_Particle_D == true) {
+    double * D = new double[Num_Particles];
 
-  std::strcpy(Weight_Name, "LamM");
-  Add_Point_Data(File, Weight_Name, Num_Particles, LamM);
+    for(unsigned i = 0; i < Num_Particles; i++) { D[i] = Particles[i].Get_D(); }
 
-  //std::strcpy(Weight_Name, "LamH");
-  //Add_Point_Data(File, Weight_Name, Num_Particles, LamH);
+    std::strcpy(Weight_Name, "D");
+    Add_Point_Data(File, Weight_Name, Num_Particles, D);
 
-  //std::strcpy(Weight_Name, "LamC");
-  //Add_Point_Data(File, Weight_Name, Num_Particles, LamC);
+    delete [] D;
+  } // if(Simulation::Print_Particle_D == true) {
 
-  std::strcpy(Weight_Name, "D");
-  Add_Point_Data(File, Weight_Name, Num_Particles, D);
-  /* Components of S */
-  /*
-  std::strcpy(Weight_Name, "S11");
-  Add_Point_Data(File, Weight_Name, Num_Particles, S11);
 
-  std::strcpy(Weight_Name, "S22");
-  Add_Point_Data(File, Weight_Name, Num_Particles, S22);
+  // Stretch_Max
+  if(Simulation::Print_Particle_Stretch_Max == true) {
+    double * Stretch_Max = new double[Num_Particles];
 
-  std::strcpy(Weight_Name, "S33");
-  Add_Point_Data(File, Weight_Name, Num_Particles, S33);
+    for(unsigned i = 0; i < Num_Particles; i++) { Stretch_Max[i] = Particles[i].Get_Stretch_M(); }
 
-  std::strcpy(Weight_Name, "S21");
-  Add_Point_Data(File, Weight_Name, Num_Particles, S21);
+    std::strcpy(Weight_Name, "Stretch_Max");
+    Add_Point_Data(File, Weight_Name, Num_Particles, Stretch_Max);
 
-  std::strcpy(Weight_Name, "S31");
-  Add_Point_Data(File, Weight_Name, Num_Particles, S31);
+    delete [] Stretch_Max;
+  } // if(Simulation::Print_Particle_Stretch_Max == true) {
 
-  std::strcpy(Weight_Name, "S32");
-  Add_Point_Data(File, Weight_Name, Num_Particles, S32);
-  */
 
-  /* Components of E*/
-  //std::strcpy(Weight_Name, "E11");
-  //Add_Point_Data(File, Weight_Name, Num_Particles, E11);
+  // J
+  if(Simulation::Print_Particle_J == true) {
+    double * J = new double[Num_Particles];
 
-  //std::strcpy(Weight_Name, "E22");
-  //Add_Point_Data(File, Weight_Name, Num_Particles, E22);
-  /*
-  std::strcpy(Weight_Name, "E33");
-  Add_Point_Data(File, Weight_Name, Num_Particles, E33);
+    Tensor F{};
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      F = Particles[i].Get_F((*this).F_Index);
+      J[i] = Determinant(F);
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
 
-  std::strcpy(Weight_Name, "E21");
-  Add_Point_Data(File, Weight_Name, Num_Particles, E21);
+    std::strcpy(Weight_Name, "J");
+    Add_Point_Data(File, Weight_Name, Num_Particles, J);
+    delete [] J;
+  } // if(Simulation::Print_Particle_J == true) {
 
-  std::strcpy(Weight_Name, "E31");
-  Add_Point_Data(File, Weight_Name, Num_Particles, E31);
 
-  std::strcpy(Weight_Name, "E32");
-  Add_Point_Data(File, Weight_Name, Num_Particles, E32);
-  */
+  // F
+  if(Simulation::Print_Particle_F == true) {
+    double * F11 = new double[Num_Particles];
+    double * F12 = new double[Num_Particles];
+    double * F13 = new double[Num_Particles];
 
-  /* J */
-  /*
-  std::strcpy(Weight_Name, "J");
-  Add_Point_Data(File, Weight_Name, Num_Particles, J);
-  */
+    double * F21 = new double[Num_Particles];
+    double * F22 = new double[Num_Particles];
+    double * F23 = new double[Num_Particles];
 
-  // Deallocate dynamic arrays
-  delete [] LamM;
-  //delete [] LamH;
-  //delete [] LamC;
-  delete [] D;
-  /*
-  delete [] S11;
-  delete [] S22;
-  delete [] S33;
-  delete [] S21;
-  delete [] S31;
-  delete [] S32;
-  */
-  //delete [] E11;
-  //delete [] E22;
-  //delete [] E33;
-  //delete [] E21;
-  //delete [] E31;
-  //delete [] E32;
+    double * F31 = new double[Num_Particles];
+    double * F32 = new double[Num_Particles];
+    double * F33 = new double[Num_Particles];
 
-  //delete [] J;
+    Tensor F{};
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      F = Particles[i].Get_F((*this).F_Index);
+
+      F11[i] = F[0*3 + 0];
+      F12[i] = F[0*3 + 1];
+      F13[i] = F[0*3 + 2];
+
+      F21[i] = F[1*3 + 0];
+      F22[i] = F[1*3 + 1];
+      F23[i] = F[1*3 + 2];
+
+      F31[i] = F[2*3 + 0];
+      F32[i] = F[2*3 + 1];
+      F33[i] = F[2*3 + 2];
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+    std::strcpy(Weight_Name, "F11");   Add_Point_Data(File, Weight_Name, Num_Particles, F11);
+    std::strcpy(Weight_Name, "F12");   Add_Point_Data(File, Weight_Name, Num_Particles, F12);
+    std::strcpy(Weight_Name, "F13");   Add_Point_Data(File, Weight_Name, Num_Particles, F13);
+
+    std::strcpy(Weight_Name, "F21");   Add_Point_Data(File, Weight_Name, Num_Particles, F21);
+    std::strcpy(Weight_Name, "F22");   Add_Point_Data(File, Weight_Name, Num_Particles, F22);
+    std::strcpy(Weight_Name, "F23");   Add_Point_Data(File, Weight_Name, Num_Particles, F23);
+
+    std::strcpy(Weight_Name, "F31");   Add_Point_Data(File, Weight_Name, Num_Particles, F31);
+    std::strcpy(Weight_Name, "F32");   Add_Point_Data(File, Weight_Name, Num_Particles, F32);
+    std::strcpy(Weight_Name, "F33");   Add_Point_Data(File, Weight_Name, Num_Particles, F33);
+
+    delete [] F11;
+    delete [] F12;
+    delete [] F13;
+
+    delete [] F21;
+    delete [] F22;
+    delete [] F23;
+
+    delete [] F31;
+    delete [] F32;
+    delete [] F33;
+  } // if(Simulation::Print_Particle_F == true) {
+
+
+  // C
+  if(Simulation::Print_Particle_C == true) {
+    double * C11 = new double[Num_Particles];
+    double * C12 = new double[Num_Particles];
+    double * C13 = new double[Num_Particles];
+
+    double * C22 = new double[Num_Particles];
+    double * C23 = new double[Num_Particles];
+
+    double * C33 = new double[Num_Particles];
+
+    Tensor F{}, C{};
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      F = Particles[i].Get_F((*this).F_Index);
+      C = (F^T)*F;
+
+      C11[i] = C[0*3 + 0];
+      C12[i] = C[0*3 + 1];
+      C13[i] = C[0*3 + 2];
+
+      C22[i] = C[1*3 + 1];
+      C23[i] = C[1*3 + 2];
+
+      C33[i] = C[2*3 + 2];
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+    std::strcpy(Weight_Name, "C11");   Add_Point_Data(File, Weight_Name, Num_Particles, C11);
+    std::strcpy(Weight_Name, "C12");   Add_Point_Data(File, Weight_Name, Num_Particles, C12);
+    std::strcpy(Weight_Name, "C13");   Add_Point_Data(File, Weight_Name, Num_Particles, C13);
+
+    std::strcpy(Weight_Name, "C22");   Add_Point_Data(File, Weight_Name, Num_Particles, C22);
+    std::strcpy(Weight_Name, "C23");   Add_Point_Data(File, Weight_Name, Num_Particles, C23);
+
+    std::strcpy(Weight_Name, "C33");   Add_Point_Data(File, Weight_Name, Num_Particles, C33);
+
+    delete [] C11;
+    delete [] C12;
+    delete [] C13;
+
+    delete [] C22;
+    delete [] C23;
+
+    delete [] C33;
+  } // if(Simulation::Print_Particle_C == true) {
+
+
+  // E
+  if(Simulation::Print_Particle_E == true) {
+    double * E11 = new double[Num_Particles];
+    double * E12 = new double[Num_Particles];
+    double * E13 = new double[Num_Particles];
+
+    double * E22 = new double[Num_Particles];
+    double * E23 = new double[Num_Particles];
+
+    double * E33 = new double[Num_Particles];
+
+    Tensor F{}, E{};
+    Tensor I{1.0, 0.0, 0.0,
+             0.0, 1.0, 0.0,
+             0.0, 0.0, 1.0};
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      F = Particles[i].Get_F((*this).F_Index);
+      E = (1/2)*((F^T)*F - I);
+
+      E11[i] = E[0*3 + 0];
+      E12[i] = E[0*3 + 1];
+      E13[i] = E[0*3 + 2];
+
+      E22[i] = E[1*3 + 1];
+      E23[i] = E[1*3 + 2];
+
+      E33[i] = E[2*3 + 2];
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+    std::strcpy(Weight_Name, "E11");   Add_Point_Data(File, Weight_Name, Num_Particles, E11);
+    std::strcpy(Weight_Name, "E12");   Add_Point_Data(File, Weight_Name, Num_Particles, E12);
+    std::strcpy(Weight_Name, "E13");   Add_Point_Data(File, Weight_Name, Num_Particles, E13);
+
+    std::strcpy(Weight_Name, "E22");   Add_Point_Data(File, Weight_Name, Num_Particles, E22);
+    std::strcpy(Weight_Name, "E23");   Add_Point_Data(File, Weight_Name, Num_Particles, E23);
+
+    std::strcpy(Weight_Name, "E33");   Add_Point_Data(File, Weight_Name, Num_Particles, E33);
+
+    delete [] E11;
+    delete [] E12;
+    delete [] E13;
+
+    delete [] E22;
+    delete [] E23;
+
+    delete [] E33;
+  } // if(Simulation::Print_Particle_E == true) {
+
+
+  // P
+  if(Simulation::Print_Particle_P == true) {
+    double * P11 = new double[Num_Particles];
+    double * P12 = new double[Num_Particles];
+    double * P13 = new double[Num_Particles];
+
+    double * P22 = new double[Num_Particles];
+    double * P23 = new double[Num_Particles];
+
+    double * P33 = new double[Num_Particles];
+
+    Tensor P{};
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      P = Particles[i].Get_P();
+
+      P11[i] = P[0*3 + 0];
+      P12[i] = P[0*3 + 1];
+      P13[i] = P[0*3 + 2];
+
+      P22[i] = P[1*3 + 1];
+      P23[i] = P[1*3 + 2];
+
+      P33[i] = P[2*3 + 2];
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+    std::strcpy(Weight_Name, "P11");   Add_Point_Data(File, Weight_Name, Num_Particles, P11);
+    std::strcpy(Weight_Name, "P12");   Add_Point_Data(File, Weight_Name, Num_Particles, P12);
+    std::strcpy(Weight_Name, "P13");   Add_Point_Data(File, Weight_Name, Num_Particles, P13);
+
+    std::strcpy(Weight_Name, "P22");   Add_Point_Data(File, Weight_Name, Num_Particles, P22);
+    std::strcpy(Weight_Name, "P23");   Add_Point_Data(File, Weight_Name, Num_Particles, P23);
+
+    std::strcpy(Weight_Name, "P33");   Add_Point_Data(File, Weight_Name, Num_Particles, P33);
+
+    delete [] P11;
+    delete [] P12;
+    delete [] P13;
+
+    delete [] P22;
+    delete [] P23;
+
+    delete [] P33;
+  } // if(Simulation::Print_Particle_P == true) {
+
+
+  // T
+  if(Simulation::Print_Particle_C == true) {
+    double * T11 = new double[Num_Particles];
+    double * T12 = new double[Num_Particles];
+    double * T13 = new double[Num_Particles];
+
+    double * T22 = new double[Num_Particles];
+    double * T23 = new double[Num_Particles];
+
+    double * T33 = new double[Num_Particles];
+
+    double J;
+    Tensor F{}, P{}, T{};
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      F = Particles[i].Get_F((*this).F_Index);
+      P = Particles[i].Get_P();
+      J = Determinant(F);
+      T = (P*Transpose(F))/J;
+
+      T11[i] = T[0*3 + 0];
+      T12[i] = T[0*3 + 1];
+      T13[i] = T[0*3 + 2];
+
+      T22[i] = T[1*3 + 1];
+      T23[i] = T[1*3 + 2];
+
+      T33[i] = T[2*3 + 2];
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+    std::strcpy(Weight_Name, "T11");   Add_Point_Data(File, Weight_Name, Num_Particles, T11);
+    std::strcpy(Weight_Name, "T12");   Add_Point_Data(File, Weight_Name, Num_Particles, T12);
+    std::strcpy(Weight_Name, "T13");   Add_Point_Data(File, Weight_Name, Num_Particles, T13);
+
+    std::strcpy(Weight_Name, "T22");   Add_Point_Data(File, Weight_Name, Num_Particles, T22);
+    std::strcpy(Weight_Name, "T23");   Add_Point_Data(File, Weight_Name, Num_Particles, T23);
+
+    std::strcpy(Weight_Name, "T33");   Add_Point_Data(File, Weight_Name, Num_Particles, T33);
+
+    delete [] T11;
+    delete [] T12;
+    delete [] T13;
+
+    delete [] T22;
+    delete [] T23;
+
+    delete [] T33;
+  } // if(Simulation::Print_Particle_C == true) {
+
 
   // Free the file
   fclose(File);

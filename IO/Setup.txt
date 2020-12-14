@@ -1,18 +1,30 @@
 ################################################################################
 # Simulation Parameters
 
-# IO
+# Save/Load
 Load Simulation from Save:                       false
 Save Simulation:                                 false
-Print Particle Forces:                           false
-Print Body Forces:                               false
-Print Body Torques:                              false
-Print Box Boundary Forces:                       true
-Time Steps Between Prints:                       100
 
 # Time Step
 dt [s]:                                          .00001
 Num Time Steps:                                  4000
+Time Steps Between Prints:                       100
+
+# What particle data should we print?
+D (Damage):                                      true
+Stretch_Max (Maximum Stretch):                   true
+J (det(F), local volume change ratio):           true
+F (deformation gradient):                        false
+C (right Cauchy-Green strain):                   true
+E (Green strain):                                false
+P (First Piola-Kirchoff Stress):                 false
+T (Cauchy stress):                               false
+
+# Forces, Torques
+Print Particle Forces:                           false
+Print Body Forces:                               false
+Print Body Torques:                              false
+Print Box Boundary Forces:                       true
 
 # Contact
 Contact Distance [mm]:                           1.0
@@ -26,7 +38,7 @@ Friction Coefficient:                            .1
 ################################################################################
 # Number of Bodies
 
-Number of Bodies:                                2
+Number of Bodies:                                1
 
 
 
@@ -34,14 +46,14 @@ Number of Bodies:                                2
 # Body 0
 
 # General
-Name:                                            Block1
+Name:                                            Column
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {10, 10, 10}
+    Dimensions [# Particles]:                    {7, 19, 7}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
-    y plus BC [mm/s]:                            {Free, Free, Free}
-    y minus BC [mm/s]:                           {Free, Free, Free}
+    y plus BC [mm/s]:                            {0, 40, 0}
+    y minus BC [mm/s]:                           {0, -40, 0}
     z plus BC [mm/s]:                            {Free, Free, Free}
     z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
@@ -56,8 +68,8 @@ mu0 (Shear Modulus) [Mpa]:                       .275
 Density [g/mm^3]:                                .01
 
 # Initial conditions
-Offset [mm]:                                     {-30, 30, 0}
-Initial Velocity [mm/s]:                         {50, 0, 0}
+Offset [mm]:                                     {0, 0, 0}
+Initial Velocity [mm/s]:                         {0, 0, 0}
 
 # General Boundary Conditions
 Number of General Boundary Conditions:           0

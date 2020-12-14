@@ -22,11 +22,13 @@ namespace Simulation {
   void Setup(Body ** Bodies);
 
 
+
   //////////////////////////////////////////////////////////////////////////////
   // Functions that run simulations
   // Defined in Simulation.cc
 
   void Run(void);
+
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -38,6 +40,7 @@ namespace Simulation {
   TIME_TYPE Time_Since(TIME_TYPE time);
 
 
+
   //////////////////////////////////////////////////////////////////////////////
   // Setup file function
   // Defined in Setup_File_Reader.cc
@@ -45,22 +48,36 @@ namespace Simulation {
   Body* Load_Setup_File(void);
 
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Simulation parameters
-  // Declared in Setup_File.cc (defined by Load_Setup_File.cc and Setup.txt)
 
-  // IO parameters
+  //////////////////////////////////////////////////////////////////////////////
+  /* Simulation parameters
+  Declared in Simulation_Setup.cc (defined by Setup_File_Reader.cc and
+  Simulation_Setup.txt) */
+
+  // Save/Load parameters
   extern bool Load_Simulation_From_Save;
   extern bool Save_Simulation_To_File;
+
+  // Time Step parameters
+  extern double dt;                              // Time step                   : s
+  extern unsigned Num_Time_Steps;                // Number of time steps
+  extern unsigned TimeSteps_Between_Prints;      // Time steps between when we print to file.
+
+  // Particle data printing parameters
+  extern bool Print_Particle_D;
+  extern bool Print_Particle_Stretch_Max;
+  extern bool Print_Particle_J;
+  extern bool Print_Particle_F;
+  extern bool Print_Particle_C;
+  extern bool Print_Particle_E;
+  extern bool Print_Particle_P;
+  extern bool Print_Particle_T;
+
+  // Forces, Torques parameters
   extern bool Print_Particle_Forces;
   extern bool Print_Body_Forces;
   extern bool Print_Body_Torques;
   extern bool Print_Box_Boundary_Forces;
-  extern unsigned TimeSteps_Between_Prints;
-
-  // Time Step
-  extern double dt;                              // Time step                   : s
-  extern unsigned Num_Time_Steps;                // Number of time steps
 
   // Contact
   extern double Contact_Distance;                // Distance at which bodies begin contacting one another.   : mm
@@ -68,6 +85,7 @@ namespace Simulation {
 
   // Number of bodies
   extern unsigned Num_Bodies;                    // Number of bodies in simulation
+
 
 
   //////////////////////////////////////////////////////////////////////////////

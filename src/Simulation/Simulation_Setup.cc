@@ -23,18 +23,30 @@ static Vector * X;
 
 // Declare Simulation Parameters
 namespace Simulation {
-  // IO parameters
+  // Save/Load parameters
   bool Load_Simulation_From_Save;
   bool Save_Simulation_To_File;
+
+  // Time Step parameters
+  double dt;                                     // Time step        : s
+  unsigned Num_Time_Steps;                       // Number of time steps
+  unsigned TimeSteps_Between_Prints;             // Time steps between when we print to file.
+
+  // Particle data printing parameters
+  bool Print_Particle_D;
+  bool Print_Particle_Stretch_Max;
+  bool Print_Particle_J;
+  bool Print_Particle_F;
+  bool Print_Particle_C;
+  bool Print_Particle_E;
+  bool Print_Particle_P;
+  bool Print_Particle_T;
+
+  // Forces, Torques parameters
   bool Print_Particle_Forces;
   bool Print_Body_Forces;
   bool Print_Body_Torques;
   bool Print_Box_Boundary_Forces;
-  unsigned TimeSteps_Between_Prints;
-
-  // TimeStep parameters
-  double dt;                                     // Time step        : s
-  unsigned Num_Time_Steps;                       // Number of time steps
 
   // Contact
   double Contact_Distance;                       // Distance at which bodies begin contacting one another.   : mm
@@ -199,7 +211,7 @@ static void Simulation::Setup_Box(Body & Body_In, const unsigned m) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Set up particles
-  
+
   #pragma omp single nowait
   { printf(         "\nGenerating particles for %s...",Body_In.Get_Name().c_str()); }
   time1 = Get_Time();

@@ -304,8 +304,8 @@ void Body::Update_x(const double dt) {
 
     // Set up current particle properties
     double V_i = Particles[i].Get_Volume();      // volume of current particle           : mm^3
-    const Tensor & F_i = Particles[i].Get_F(F_Index);
-    const Tensor & P_i = Particles[i].Get_P();
+    const Tensor & F_i = Particles[i].F[F_Index];
+    const Tensor & P_i = Particles[i].P;
     const Tensor & Visc = Particles[i].Visc;
 
     Vector * R = Particles[i].R;                 // Reference displacement array         : mm Vector
