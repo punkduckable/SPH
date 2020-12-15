@@ -463,9 +463,6 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
               for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {
                 const unsigned i = Array_A[A_particle_index];
 
-                // Skip broken particles
-                if(Body_A[i].Get_D() >= 1) { continue; }
-
                 double V_i = Body_A[i].Get_Volume();                           //        : mm^3
                 const double KV_i = K*V_i;                                     //        : N*mm
                 x_i = Body_A[i].Get_x();                                       //        : mm Vector

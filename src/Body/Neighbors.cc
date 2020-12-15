@@ -164,6 +164,9 @@ void Body::Find_Neighbors(void){
   buffer to determine the global minimum. */
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles; i++) {
+    // if the particle is damaged, then don't place it in any buckets
+    if ((*this)[i].Get_D() >=1) { continue;}
+
     x = (*this)[i].Get_x();
 
     /* Note: if x[0] > x_max, then we can't also have x[0] < x_min (this relies
@@ -286,6 +289,10 @@ void Body::Find_Neighbors(void){
 
   #pragma omp for
   for(unsigned i = 0; i < Num_Particles; i++) {
+    //don't place damaged particles in buckets
+    // (damaged particles don't get assigned neighbors)
+    if( (*this)[i].Get_D() >=1) {continue;}
+
     /* First, we need to determine which bucket our particle belongs in. Let's
     focus on the x coordinate. Each bucket has an x-dimension length of
     (x_max - x_min)/Nx, which we call cell_x_dim. The x coordinates of
@@ -345,6 +352,9 @@ void Body::Find_Neighbors(void){
     should put the particle index in the corresponding bucket's Indices_Array array
     (remember 0 indexing!) */
     for(unsigned i = 0; i < Num_Particles; i++) {
+      //don't put damaged particles in buckets
+      if( (*this)[i].Get_D() >=1) {continue;}
+
       const unsigned Bucket_Index = Bucket_Indicies[i];
       Buckets[Bucket_Index].Counter--;
       Buckets[Bucket_Index].Indices_Array[Buckets[Bucket_Index].Counter] = i;
@@ -403,6 +413,8 @@ void Body::Find_Neighbors(void){
         /* Cycle through particles in main bucket */
         for(unsigned int Main_particle_index = 0; Main_particle_index < Num_Particles; Main_particle_index++) {
           unsigned int i = Indices_Array[Main_particle_index]; //index of particle whose neighbors we are trying to find
+
+          if( (*this)[i].Get_D() >=1) {continue;} //skip damaged particles
 
           /* Cycle through the buckets that neighbors may be in. */
           for(unsigned rb = kb_min; rb <= kb_max; rb++) {
