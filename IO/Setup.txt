@@ -13,16 +13,17 @@ Time Steps Between Prints:                       100
 # What particle data should we print?
 D (Damage):                                      true
 Stretch_Max (Maximum Stretch):                   true
-J (det(F), local volume change ratio):           true
+J (det(F), local volume change ratio):           false
 F (deformation gradient):                        false
 C (right Cauchy-Green strain):                   true
+B (left Cauchy-Green strain):                    true
 E (Green strain):                                false
 P (First Piola-Kirchoff Stress):                 false
 T (Cauchy stress):                               false
 
 # Forces, Torques
 Print Particle Forces:                           false
-Print Body Forces:                               false
+Print Body Forces:                               true
 Print Body Torques:                              false
 Print Box Boundary Forces:                       true
 
@@ -49,10 +50,10 @@ Number of Bodies:                                1
 Name:                                            Column
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {7, 19, 7}
+    Dimensions [# Particles]:                    {9, 19, 9}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
-    y plus BC [mm/s]:                            {0, 40, 0}
+    y plus BC [mm/s]:                            {Free, 40, Free}
     y minus BC [mm/s]:                           {0, -40, 0}
     z plus BC [mm/s]:                            {Free, Free, Free}
     z minus BC [mm/s]:                           {Free, Free, Free}

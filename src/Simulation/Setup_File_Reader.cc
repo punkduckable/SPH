@@ -83,6 +83,10 @@ Body* Simulation::Load_Setup_File(void) {
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_C = true; }
   else {                                                        Simulation::Print_Particle_C = false; }
 
+  strBuf = IO::read_line_after(File, "B (left Cauchy-Green strain):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_B = true; }
+  else {                                                        Simulation::Print_Particle_B = false; }
+
   strBuf = IO::read_line_after(File, "E (Green strain):", false);
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_E = true; }
   else {                                                        Simulation::Print_Particle_E = false; }
@@ -169,6 +173,10 @@ Body* Simulation::Load_Setup_File(void) {
 
     printf(  "Read Print_Particle_C as:               ");
     if(Simulation::Print_Particle_C == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_B as:               ");
+    if(Simulation::Print_Particle_B == true) {             printf("true\n");  }
     else {                                                 printf("false\n"); }
 
     printf(  "Read Print_Particle_E as:               ");

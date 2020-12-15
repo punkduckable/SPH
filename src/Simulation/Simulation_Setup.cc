@@ -38,6 +38,7 @@ namespace Simulation {
   bool Print_Particle_J;
   bool Print_Particle_F;
   bool Print_Particle_C;
+  bool Print_Particle_B;
   bool Print_Particle_E;
   bool Print_Particle_P;
   bool Print_Particle_T;
