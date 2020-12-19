@@ -13,12 +13,12 @@ Time Steps Between Prints:                       100
 # What particle data should we print?
 D (Damage):                                      true
 Stretch_Max (Maximum Stretch):                   true
-J (det(F), local volume change ratio):           true
+J (det(F), local volume change ratio):           false
 F (deformation gradient):                        false
-C (right Cauchy-Green strain):                   true
-E (Green strain):                                false
+C (right Cauchy-Green strain):                   false
+E (Green strain):                                true
 P (First Piola-Kirchoff Stress):                 false
-T (Cauchy stress):                               false
+T (Cauchy stress):                               true
 
 # Forces, Torques
 Print Particle Forces:                           false
@@ -38,7 +38,7 @@ Friction Coefficient:                            .1
 ################################################################################
 # Number of Bodies
 
-Number of Bodies:                                1
+Number of Bodies:                                2
 
 
 
@@ -46,53 +46,7 @@ Number of Bodies:                                1
 # Body 0
 
 # General
-Name:                                            Column
-From FEB File:                                   false
-Is Box:                                          true
-    Dimensions [# Particles]:                    {7, 19, 7}
-    x plus BC [mm/s]:                            {Free, Free, Free}
-    x minus BC [mm/s]:                           {Free, Free, Free}
-    y plus BC [mm/s]:                            {0, 40, 0}
-    y minus BC [mm/s]:                           {0, -40, 0}
-    z plus BC [mm/s]:                            {Free, Free, Free}
-    z minus BC [mm/s]:                           {Free, Free, Free}
-Is Fixed In Place:                               false
-Is Damageable:                                   true
-    Critical Stretch Mean:                       1.3
-    Critical Stretch SD:                         .05
-    Tau (Damage rate):                           .15
-
-# Material
-Lame Parameter [Mpa]:                            1.125
-mu0 (Shear Modulus) [Mpa]:                       .275
-Density [g/mm^3]:                                .01
-
-# Initial conditions
-Offset [mm]:                                     {0, 0, 0}
-Initial Velocity [mm/s]:                         {0, 0, 0}
-
-# General Boundary Conditions
-Number of General Boundary Conditions:           0
-  # Condition 0
-  Condition Plane Normal Vector:                 {0, 13, 0}
-  Condition Plane Distance [mm]:
-  Condition Inequality:                          >=
-  Effect Vector [mm/s]:                          {0, -200, 0}
-
-# Other
-Enable Gravity:                                  false
-Mu (Viscosity) [Mpa*s]:                          .00004
-Alpha (Hg Control parameter):                    .075
-Inter Particle Spacing (IPS) [mm]:               1.0
-Support Radius [mm]:                             3
-
-
-
-################################################################################
-# Body 1
-
-# General
-Name:                                            Block2
+Name:                                            Block1
 From FEB File:                                   false
 Is Box:                                          true
     Dimensions [# Particles]:                    {10, 10, 10}
@@ -114,15 +68,61 @@ mu0 (Shear Modulus) [Mpa]:                       .275
 Density [g/mm^3]:                                .01
 
 # Initial conditions
-Offset [mm]:                                     {30, 30, 0}
-Initial Velocity [mm/s]:                         {-50, 0, 0}
+Offset [mm]:                                     {-20, 0, 0}
+Initial Velocity [mm/s]:                         {500, -500, 0}
+
+# General Boundary Conditions
+Number of General Boundary Conditions:           0
+  # Condition 0
+  Condition Plane Normal Vector:                 {0, 13, 0}
+  Condition Plane Distance [mm]:
+  Condition Inequality:                          >=
+  Effect Vector [mm/s]:                          {0, -200, 0}
+
+# Other
+Enable Gravity:                                  true
+Mu (Viscosity) [Mpa*s]:                          .00004
+Alpha (Hg Control parameter):                    .0075
+Inter Particle Spacing (IPS) [mm]:               1.0
+Support Radius [mm]:                             3
+
+
+
+################################################################################
+# Body 1
+
+# General
+Name:                                            Block2
+From FEB File:                                   false
+Is Box:                                          true
+    Dimensions [# Particles]:                    {10, 10, 10}
+    x plus BC [mm/s]:                            {Free, Free, Free}
+    x minus BC [mm/s]:                           {Free, Free, Free}
+    y plus BC [mm/s]:                            {Free, Free, Free}
+    y minus BC [mm/s]:                           {Free, Free, Free}
+    z plus BC [mm/s]:                            {Free, Free, Free}
+    z minus BC [mm/s]:                           {Free, Free, Free}
+Is Fixed In Place:                               false
+Is Damageable:                                   false
+    Critical Stretch Mean:                       1.3
+    Critical Stretch SD:                         .05
+    Tau (Damage rate):                           .15
+
+# Material
+Lame Parameter [Mpa]:                            1.125
+mu0 (Shear Modulus) [Mpa]:                       .275
+Density [g/mm^3]:                                .01
+
+# Initial conditions
+Offset [mm]:                                     {0, 0, 0}
+Initial Velocity [mm/s]:                         {-500, -500, 0}
 
 # General Boundary Conditions
 Number of General Boundary Conditions:           0
 
 # Other
-Enable Gravity:                                  false
+Enable Gravity:                                  true
 Mu (Viscosity) [Mpa*s]:                          .00004
-Alpha (Hg Control parameter):                    7.5
+Alpha (Hg Control parameter):                    .0075
 Inter Particle Spacing (IPS) [mm]:               1
 Support Radius [mm]:                             3
