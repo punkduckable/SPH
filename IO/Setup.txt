@@ -16,10 +16,7 @@ Stretch_Max (Maximum Stretch):                   true
 J (det(F), local volume change ratio):           false
 F (deformation gradient):                        false
 C (right Cauchy-Green strain):                   false
-<<<<<<< HEAD
-=======
 B (left Cauchy-Green strain):                    false
->>>>>>> 932993250b6c967c0c4aa8416b75c94f9a7670b0
 E (Green strain):                                true
 P (First Piola-Kirchoff Stress):                 false
 T (Cauchy stress):                               true
@@ -53,19 +50,11 @@ Number of Bodies:                                2
 Name:                                            Block1
 From FEB File:                                   false
 Is Box:                                          true
-<<<<<<< HEAD
     Dimensions [# Particles]:                    {10, 10, 10}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
     y plus BC [mm/s]:                            {Free, Free, Free}
     y minus BC [mm/s]:                           {Free, Free, Free}
-=======
-    Dimensions [# Particles]:                    {11, 29, 11}
-    x plus BC [mm/s]:                            {Free, Free, Free}
-    x minus BC [mm/s]:                           {Free, Free, Free}
-    y plus BC [mm/s]:                            {0, 50, 0}
-    y minus BC [mm/s]:                           {0, -50, 0}
->>>>>>> 932993250b6c967c0c4aa8416b75c94f9a7670b0
     z plus BC [mm/s]:                            {Free, Free, Free}
     z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false
