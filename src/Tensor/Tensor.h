@@ -84,7 +84,15 @@ class Tensor {
     const Vector Eigenvalues(void) const;         // Returns eigenvalues of the Tensor
     void Print(void) const;                       // Print tensor components
     const double* Get_Ar(void) const;             // Get direct access to the tensor's array. Only use if you know what you're doing
+
+
+
+    // Friends
+    friend Tensor Dyadic_Product(const Vector & V1,
+                                 const Vector & V2);
 }; // class Tensor {
+
+
 
 // Functions of a tensor
 Tensor operator*(double c,

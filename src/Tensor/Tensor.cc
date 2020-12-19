@@ -75,7 +75,7 @@ Tensor & Tensor::operator=(const Tensor & Tensor_In) {
   this overhead, I wrote what would have been the 9 iterations of this double
   loop as 9 statemenets.
 
-  To make this a little  more readible, I have included a comment with each
+  To make this a little  easier to read, I have included a comment with each
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
   (*this).Ar[3*0 + 0] = Tensor_In.Ar[3*0 + 0];             // i = 0, j = 0
@@ -626,7 +626,7 @@ bool Tensor::operator==(const Tensor & T_In) const {
 bool Tensor::operator!=(const Tensor & T_In) const {
   // Return the negation of (*this) == T_In
   return !((*this) == T_In);
-} // bool Tensor::operator==(const Tensor & T_In) const {
+} // bool Tensor::operator!=(const Tensor & T_In) const {
 
 
 
