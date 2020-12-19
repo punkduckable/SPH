@@ -69,6 +69,7 @@ namespace Simulation {
   extern bool Print_Particle_J;
   extern bool Print_Particle_F;
   extern bool Print_Particle_C;
+  extern bool Print_Particle_B;
   extern bool Print_Particle_E;
   extern bool Print_Particle_P;
   extern bool Print_Particle_T;

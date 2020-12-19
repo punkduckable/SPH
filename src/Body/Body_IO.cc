@@ -676,6 +676,52 @@ void Body::Export_Particle_Positions(void) {
   } // if(Simulation::Print_Particle_C == true) {
 
 
+  // B
+  if(Simulation::Print_Particle_B == true) {
+    double * B11 = new double[Num_Particles];
+    double * B12 = new double[Num_Particles];
+    double * B13 = new double[Num_Particles];
+
+    double * B22 = new double[Num_Particles];
+    double * B23 = new double[Num_Particles];
+
+    double * B33 = new double[Num_Particles];
+
+    Tensor F{}, B{};
+    for(unsigned i = 0; i < Num_Particles; i++) {
+      F = Particles[i].Get_F((*this).F_Index);
+      B = F*(F^T);
+
+      B11[i] = B[0*3 + 0];
+      B12[i] = B[0*3 + 1];
+      B13[i] = B[0*3 + 2];
+
+      B22[i] = B[1*3 + 1];
+      B23[i] = B[1*3 + 2];
+
+      B33[i] = B[2*3 + 2];
+    } // for(unsigned i = 0; i < Num_Particles; i++) {
+
+    std::strcpy(Weight_Name, "B11");   Add_Point_Data(File, Weight_Name, Num_Particles, B11);
+    std::strcpy(Weight_Name, "B12");   Add_Point_Data(File, Weight_Name, Num_Particles, B12);
+    std::strcpy(Weight_Name, "B13");   Add_Point_Data(File, Weight_Name, Num_Particles, B13);
+
+    std::strcpy(Weight_Name, "B22");   Add_Point_Data(File, Weight_Name, Num_Particles, B22);
+    std::strcpy(Weight_Name, "B23");   Add_Point_Data(File, Weight_Name, Num_Particles, B23);
+
+    std::strcpy(Weight_Name, "B33");   Add_Point_Data(File, Weight_Name, Num_Particles, B33);
+
+    delete [] B11;
+    delete [] B12;
+    delete [] B13;
+
+    delete [] B22;
+    delete [] B23;
+
+    delete [] B33;
+  } // if(Simulation::Print_Particle_B == true) {
+
+
   // E
   if(Simulation::Print_Particle_E == true) {
     double * E11 = new double[Num_Particles];
