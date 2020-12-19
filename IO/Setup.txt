@@ -7,25 +7,25 @@ Save Simulation:                                 false
 
 # Time Step
 dt [s]:                                          .00001
-Num Time Steps:                                  4000
-Time Steps Between Prints:                       100
+Num Time Steps:                                  10000
+Time Steps Between Prints:                       50
 
 # What particle data should we print?
 D (Damage):                                      true
 Stretch_Max (Maximum Stretch):                   true
 J (det(F), local volume change ratio):           false
 F (deformation gradient):                        false
-C (right Cauchy-Green strain):                   true
-B (left Cauchy-Green strain):                    true
-E (Green strain):                                false
+C (right Cauchy-Green strain):                   false
+B (left Cauchy-Green strain):                    false
+E (Green strain):                                true
 P (First Piola-Kirchoff Stress):                 false
-T (Cauchy stress):                               false
+T (Cauchy stress):                               true
 
 # Forces, Torques
 Print Particle Forces:                           false
-Print Body Forces:                               true
+Print Body Forces:                               false
 Print Body Torques:                              false
-Print Box Boundary Forces:                       true
+Print Box Boundary Forces:                       false
 
 # Contact
 Contact Distance [mm]:                           1.0
@@ -50,11 +50,11 @@ Number of Bodies:                                1
 Name:                                            Column
 From FEB File:                                   false
 Is Box:                                          true
-    Dimensions [# Particles]:                    {9, 19, 9}
+    Dimensions [# Particles]:                    {11, 29, 11}
     x plus BC [mm/s]:                            {Free, Free, Free}
     x minus BC [mm/s]:                           {Free, Free, Free}
-    y plus BC [mm/s]:                            {Free, 40, Free}
-    y minus BC [mm/s]:                           {0, -40, 0}
+    y plus BC [mm/s]:                            {0, 50, 0}
+    y minus BC [mm/s]:                           {0, -50, 0}
     z plus BC [mm/s]:                            {Free, Free, Free}
     z minus BC [mm/s]:                           {Free, Free, Free}
 Is Fixed In Place:                               false

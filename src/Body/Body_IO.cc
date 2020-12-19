@@ -739,7 +739,7 @@ void Body::Export_Particle_Positions(void) {
              0.0, 0.0, 1.0};
     for(unsigned i = 0; i < Num_Particles; i++) {
       F = Particles[i].Get_F((*this).F_Index);
-      E = (1/2)*((F^T)*F - I);
+      E = (1./2.)*((F^T)*F - I);
 
       E11[i] = E[0*3 + 0];
       E12[i] = E[0*3 + 1];
@@ -817,7 +817,7 @@ void Body::Export_Particle_Positions(void) {
 
 
   // T
-  if(Simulation::Print_Particle_C == true) {
+  if(Simulation::Print_Particle_T == true) {
     double * T11 = new double[Num_Particles];
     double * T12 = new double[Num_Particles];
     double * T13 = new double[Num_Particles];
@@ -862,7 +862,7 @@ void Body::Export_Particle_Positions(void) {
     delete [] T23;
 
     delete [] T33;
-  } // if(Simulation::Print_Particle_C == true) {
+  } // if(Simulation::Print_Particle_T == true) {
 
 
   // Free the file
