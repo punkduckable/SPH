@@ -75,7 +75,6 @@ namespace Simulation {
   extern bool Print_Particle_T;
 
   // Forces, Torques parameters
-  extern bool Print_Particle_Forces;
   extern bool Print_Body_Forces;
   extern bool Print_Body_Torques;
   extern bool Print_Box_Boundary_Forces;

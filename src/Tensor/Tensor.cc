@@ -78,6 +78,7 @@ Tensor & Tensor::operator=(const Tensor & Tensor_In) {
   To make this a little  easier to read, I have included a comment with each
   statement that identifies which loop iteration that statement would have
   corresponded to (with i as the row index and j as the column index) */
+
   (*this).Ar[3*0 + 0] = Tensor_In.Ar[3*0 + 0];             // i = 0, j = 0
   (*this).Ar[3*0 + 1] = Tensor_In.Ar[3*0 + 1];             // i = 0, j = 1
   (*this).Ar[3*0 + 2] = Tensor_In.Ar[3*0 + 2];             // i = 0, j = 1
@@ -983,9 +984,6 @@ double Dot_Product(const Tensor & T1, const Tensor & T2) {
   /* This returns T1:T2, the tensor dot product of T1 and T2. This is given by
   T1(0,0)*T2(0,0) + T1(0,1)*T2(0,1) + .... T1(2,2)*T2(2,2) */
 
-  const double * T1_Ar = T1.Get_Ar();
-  const double * T2_Ar = T2.Get_Ar();
-
   #ifdef OPERATION_COUNT
     // 9 multiplications, 8 additions below.
     #pragma omp atomic update
@@ -994,13 +992,13 @@ double Dot_Product(const Tensor & T1, const Tensor & T2) {
     OP_Count::Addition += 8;
   #endif
 
-  return T1_Ar[0]*T2_Ar[0] +
-         T1_Ar[1]*T2_Ar[1] +
-         T1_Ar[2]*T2_Ar[2] +
-         T1_Ar[3]*T2_Ar[3] +
-         T1_Ar[4]*T2_Ar[4] +
-         T1_Ar[5]*T2_Ar[5] +
-         T1_Ar[6]*T2_Ar[6] +
-         T1_Ar[7]*T2_Ar[7] +
-         T1_Ar[8]*T2_Ar[8];
+  return T1.Ar[0]*T2.Ar[0] +
+         T1.Ar[1]*T2.Ar[1] +
+         T1.Ar[2]*T2.Ar[2] +
+         T1.Ar[3]*T2.Ar[3] +
+         T1.Ar[4]*T2.Ar[4] +
+         T1.Ar[5]*T2.Ar[5] +
+         T1.Ar[6]*T2.Ar[6] +
+         T1.Ar[7]*T2.Ar[7] +
+         T1.Ar[8]*T2.Ar[8];
 } // double Dot_Product(const Tensor & T1, const Tensor & T2) {

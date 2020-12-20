@@ -237,4 +237,17 @@ class Body {
                                     unsigned & Num_Bodies);
 }; // class Body {
 
+
+
+// Helper functions.
+void Calculate_Force(Vector & F,
+                     const double V_j,
+                     const Tensor & T1,
+                     const Tensor & T2,
+                     const Vector & Grad_Wj);
+
+double Calculate_Delta(const Tensor & F,
+                       const Vector & R_j,
+                       const Vector & r_j,
+                       const double Mag_rj);
 #endif

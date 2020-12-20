@@ -386,67 +386,6 @@ void Body::Export_Box_Boundary_Forces(const unsigned time_steps) {
 
 
 
-void Body::Export_Particle_Forces(void) {
-  /* This function is used to print the forces applied to each particle in a
-  body.
-
-  This function can NOT be called by multiple threads at once (this
-  function is not thread safe). */
-
-  #if defined(IO_MONITOR)
-    printf("Exporting particle forces for %s\n",(*this).Name.c_str());
-  #endif
-
-  // Create a file path for the new file (based on the Body's name
-  // and time_step)
-  char Buf[10];
-  sprintf(Buf,"%05u.txt",Times_Printed_Particle_Forces);
-  std::string File_Path = "./IO/Force_Files/";
-  File_Path += (*this).Name;
-  File_Path +=  "_Force_";
-  File_Path +=  Buf;
-
-  // Now open the file.
-  FILE * File = fopen(File_Path.c_str(), "w");
-  if(File == nullptr) {
-    char Error_Buf[500];
-    sprintf(Error_Buf,
-            "Cant Open File Exception: Thrown by Body::Export_Particle_Forces\n"
-            "For some reason, ./IO/Force_Files/%s_Force_%s won't open :(\n",
-            (*this).Name.c_str(),
-            Buf);
-    throw Cant_Open_File(Error_Buf);
-  } // if(File == nullptr) {
-
-  // Increment the number of times that we're printed particle force data.
-  (*this).Times_Printed_Particle_Forces++;
-
-  // Print header.
-  fprintf(File,"  ID  |");
-  fprintf(File," Particle Pos  |");
-  fprintf(File,"        Internal Force        |");
-  fprintf(File,"        Viscous Force         |");
-  fprintf(File,"        Contact Force         |");
-  fprintf(File,"        Friction Force        |");
-  fprintf(File,"        Hourglass Force       |");
-  fprintf(File,"\n");
-
-  // Cycle through particles, print spacial positions, forces for each particle
-  for(unsigned i = 0; i < Num_Particles; i++) {
-    fprintf(File,"%6u|", Particles[i].Get_ID());
-    fprintf(File,"%4.1f,%4.1f,%4.1f | ",    Particles[i].X[0],               Particles[i].X[1],               Particles[i].X[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Internal[0],  Particles[i].Force_Internal[1],  Particles[i].Force_Internal[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Viscosity[0], Particles[i].Force_Viscosity[1], Particles[i].Force_Viscosity[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Contact[0],   Particles[i].Force_Contact[1],   Particles[i].Force_Contact[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e> | ",  Particles[i].Force_Friction[0],  Particles[i].Force_Friction[1],  Particles[i].Force_Friction[2]);
-    fprintf(File,"<%8.1e,%8.1e,%8.1e>\n",   Particles[i].Force_Hourglass[0], Particles[i].Force_Hourglass[1], Particles[i].Force_Hourglass[2]);
-  } // for(unsigned i = 0; i < Num_Particles; i++) {
-
-  fclose(File);
-} // void Body::Export_Particle_Forces(void) {
-
-
-
 void Body::Export_Particle_Positions(void) {
   /* This function prints (to a file) the position of every particle in (*this).
   This is used to visualize what the simulation is doing.

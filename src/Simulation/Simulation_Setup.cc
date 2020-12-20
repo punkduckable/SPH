@@ -44,7 +44,6 @@ namespace Simulation {
   bool Print_Particle_T;
 
   // Forces, Torques parameters
-  bool Print_Particle_Forces;
   bool Print_Body_Forces;
   bool Print_Body_Torques;
   bool Print_Box_Boundary_Forces;
@@ -148,7 +147,6 @@ void Simulation::Setup(Body ** Bodies) {
     printf(         "\nRunning a Simulation...\n");
     printf(         "Load_Simulation_From_Save =   %u\n",    Simulation::Load_Simulation_From_Save);
     printf(         "Save_Simulation_To_File =     %u\n",    Simulation::Save_Simulation_To_File);
-    printf(         "Print_Particle_Forces =       %u\n",    Simulation::Print_Particle_Forces);
     printf(         "Print_Body_Forces =           %u\n",    Simulation::Print_Body_Forces);
     printf(         "Print_Body_Torques =          %u\n",    Simulation::Print_Body_Torques);
     printf(         "TimeSteps_Between_Prints =    %u\n",    Simulation::TimeSteps_Between_Prints);

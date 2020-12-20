@@ -8,18 +8,6 @@
 #include <math.h>
 #include <assert.h>
 
-// Static prototypes.
-static void Calculate_Force(Vector & F,
-                            const double V_j,
-                            const Tensor & T1,
-                            const Tensor & T2,
-                            const Vector & Grad_Wj);
-
-static double Calculate_Delta(const Tensor & F,
-                              const Vector & R_j,
-                              const Vector & r_j,
-                              const double Mag_rj);
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -497,11 +485,11 @@ void Body::Update_x(const double dt) {
     Particles[i].V += (dt)*a;                    // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
 
-    if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
+    if(Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
       Particles[i].Force_Internal  = Force_Internal;    // update Internal force                : N Vector
       Particles[i].Force_Hourglass = Force_Hourglass;   // update Hourglassing force            : N Vector
       Particles[i].Force_Viscosity = Force_Viscosity;   // update Viscosity force               : N Vector
-    } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
+    } // if(Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
@@ -524,11 +512,11 @@ void Body::Update_x(const double dt) {
 /* These are functions that compute quantities that would otherwise be computed
 using operator overloading and would otherwise incur temporary variables. */
 
-static void Calculate_Force(Vector & F,
-                            const double V_j,
-                            const Tensor & T1,
-                            const Tensor & T2,
-                            const Vector & Grad_Wj) {
+void Calculate_Force(Vector & F,
+                     const double V_j,
+                     const Tensor & T1,
+                     const Tensor & T2,
+                     const Vector & Grad_Wj) {
   /* This function is used to calculate Force_Internal and Force_Viscosity due
   to one of a particle's neighbors. These quantities are calculated by the
   following expression:
@@ -543,22 +531,18 @@ static void Calculate_Force(Vector & F,
 
   /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
   rows as infrequently. */
-  const double * T1_Ar = T1.Get_Ar();
-  const double * T2_Ar = T2.Get_Ar();
-  const double * Grad_Wj_Ar = Grad_Wj.Get_Ar();
 
+  F.Ar[0] += + V_j*( (T1.Ar[0*3 + 0] + T2.Ar[0*3 + 0])*Grad_Wj.Ar[0] +
+                     (T1.Ar[0*3 + 1] + T2.Ar[0*3 + 1])*Grad_Wj.Ar[1] +
+                     (T1.Ar[0*3 + 2] + T2.Ar[0*3 + 2])*Grad_Wj.Ar[2] );
 
-  F[0] += + V_j*( (T1_Ar[0*3 + 0] + T2_Ar[0*3 + 0])*Grad_Wj_Ar[0] +
-                  (T1_Ar[0*3 + 1] + T2_Ar[0*3 + 1])*Grad_Wj_Ar[1] +
-                  (T1_Ar[0*3 + 2] + T2_Ar[0*3 + 2])*Grad_Wj_Ar[2] );
+  F.Ar[1] += + V_j*( (T1.Ar[1*3 + 0] + T2.Ar[1*3 + 0])*Grad_Wj.Ar[0] +
+                     (T1.Ar[1*3 + 1] + T2.Ar[1*3 + 1])*Grad_Wj.Ar[1] +
+                     (T1.Ar[1*3 + 2] + T2.Ar[1*3 + 2])*Grad_Wj.Ar[2] );
 
-  F[1] += + V_j*( (T1_Ar[1*3 + 0] + T2_Ar[1*3 + 0])*Grad_Wj_Ar[0] +
-                  (T1_Ar[1*3 + 1] + T2_Ar[1*3 + 1])*Grad_Wj_Ar[1] +
-                  (T1_Ar[1*3 + 2] + T2_Ar[1*3 + 2])*Grad_Wj_Ar[2] );
-
-  F[2] += + V_j*( (T1_Ar[2*3 + 0] + T2_Ar[2*3 + 0])*Grad_Wj_Ar[0] +
-                  (T1_Ar[2*3 + 1] + T2_Ar[2*3 + 1])*Grad_Wj_Ar[1] +
-                  (T1_Ar[2*3 + 2] + T2_Ar[2*3 + 2])*Grad_Wj_Ar[2] );
+  F.Ar[2] += + V_j*( (T1.Ar[2*3 + 0] + T2.Ar[2*3 + 0])*Grad_Wj.Ar[0] +
+                     (T1.Ar[2*3 + 1] + T2.Ar[2*3 + 1])*Grad_Wj.Ar[1] +
+                     (T1.Ar[2*3 + 2] + T2.Ar[2*3 + 2])*Grad_Wj.Ar[2] );
 
   #ifdef OPERATION_COUNT
     /* Each component above uses 6 additions and 4 multiplications */
@@ -567,11 +551,11 @@ static void Calculate_Force(Vector & F,
     #pragma omp atomic update
     OP_Count::Addition += 18;
   #endif
-} // static void Calculate_Force(Tensor & F,...
+} // void Calculate_Force(Tensor & F,...
 
 
 
-static double Calculate_Delta(const Tensor & F,
+double Calculate_Delta(const Tensor & F,
                               const Vector & R_j,
                               const Vector & rj,
                               const double Mag_rj) {
@@ -584,14 +568,9 @@ static double Calculate_Delta(const Tensor & F,
 
   update_x is the ONLY thing that should call this function. */
 
-  const double * F_Ar  = F.Get_Ar();
-  const double * Rj_Ar = R_j.Get_Ar();
-  const double * rj_Ar = rj.Get_Ar();
-
-
-  double FRj_0 = F_Ar[0*3 + 0]*Rj_Ar[0] + F_Ar[0*3 + 1]*Rj_Ar[1] + F_Ar[0*3 + 2]*Rj_Ar[2];
-  double FRj_1 = F_Ar[1*3 + 0]*Rj_Ar[0] + F_Ar[1*3 + 1]*Rj_Ar[1] + F_Ar[1*3 + 2]*Rj_Ar[2];
-  double FRj_2 = F_Ar[2*3 + 0]*Rj_Ar[0] + F_Ar[2*3 + 1]*Rj_Ar[1] + F_Ar[2*3 + 2]*Rj_Ar[2];
+  double FRj_0 = F.Ar[0*3 + 0]*R_j.Ar[0] + F.Ar[0*3 + 1]*R_j.Ar[1] + F.Ar[0*3 + 2]*R_j.Ar[2];
+  double FRj_1 = F.Ar[1*3 + 0]*R_j.Ar[0] + F.Ar[1*3 + 1]*R_j.Ar[1] + F.Ar[1*3 + 2]*R_j.Ar[2];
+  double FRj_2 = F.Ar[2*3 + 0]*R_j.Ar[0] + F.Ar[2*3 + 1]*R_j.Ar[1] + F.Ar[2*3 + 2]*R_j.Ar[2];
 
   #ifdef OPERATION_COUNT
     // This includes the calculations above and below (return statement)
@@ -605,5 +584,5 @@ static double Calculate_Delta(const Tensor & F,
     OP_Count::Subtraction += 1;
   #endif
 
-  return (FRj_0*rj_Ar[0] + FRj_1*rj_Ar[1] + FRj_2*rj_Ar[2])/(Mag_rj) - Mag_rj;
-} // static double Calculate_Delta(const Tensor & F,
+  return (FRj_0*rj.Ar[0] + FRj_1*rj.Ar[1] + FRj_2*rj.Ar[2])/(Mag_rj) - Mag_rj;
+} // double Calculate_Delta(const Tensor & F,

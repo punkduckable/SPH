@@ -90,6 +90,19 @@ class Tensor {
     // Friends
     friend Tensor Dyadic_Product(const Vector & V1,
                                  const Vector & V2);
+
+    friend double Dot_Product(const Tensor & T1,
+                              const Tensor & T2);
+
+    friend void Calculate_Force(Vector & F,
+                                const double V_j,
+                                const Tensor & T1,
+                                const Tensor & T2,
+                                const Vector & Grad_Wj);
+    friend double Calculate_Delta(const Tensor & F,
+                                  const Vector & R_j,
+                                  const Vector & r_j,
+                                  const double Mag_rj);
 }; // class Tensor {
 
 
@@ -101,8 +114,6 @@ Tensor Inverse(const Tensor & T_In);
 double Determinant(const Tensor & T_In);
 Tensor Transpose(const Tensor & T_In);
 const Vector Eigenvalues(const Tensor & T_In);
-double Dot_Product(const Tensor & T1,
-                   const Tensor & T2);
 void Print(const Tensor & T_In);
 
 #endif

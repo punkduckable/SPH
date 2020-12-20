@@ -233,7 +233,6 @@ static void Simulation::Export_Bodies_Data(Body * Bodies, unsigned Num_Bodies, c
   for(unsigned b = 0; b < Num_Bodies; b++) {
     try {
                                                       Bodies[b].Export_Particle_Positions();
-      if(Simulation::Print_Particle_Forces == true) { Bodies[b].Export_Particle_Forces();}
       if(Simulation::Print_Body_Forces == true) {     Bodies[b].Export_Body_Forces(time_steps); }
       if(Simulation::Print_Body_Torques == true) {    Bodies[b].Export_Body_Torques(time_steps); }
       if(Simulation::Print_Box_Boundary_Forces == true &&

@@ -80,6 +80,15 @@ class Vector {
                                 const Vector & V2);
     friend Tensor Dyadic_Product(const Vector & V1,
                                  const Vector & V2);
+    friend void Calculate_Force(Vector & F,
+                                const double V_j,
+                                const Tensor & T1,
+                                const Tensor & T2,
+                                const Vector & Grad_Wj);
+    friend double Calculate_Delta(const Tensor & F,
+                                  const Vector & R_j,
+                                  const Vector & r_j,
+                                  const double Mag_rj);
 }; // class Vector {
 
 

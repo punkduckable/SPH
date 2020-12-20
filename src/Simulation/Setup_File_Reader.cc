@@ -104,10 +104,6 @@ Body* Simulation::Load_Setup_File(void) {
   //////////////////////////////////////////////////////////////////////////////
   // Forces, Torques
 
-  strBuf = IO::read_line_after(File, "Print Particle Forces:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_Forces = true; }
-  else {                                                        Simulation::Print_Particle_Forces = false; }
-
   strBuf = IO::read_line_after(File, "Print Body Forces:", false);
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Forces = true; }
   else {                                                        Simulation::Print_Body_Forces = false; }
@@ -194,10 +190,6 @@ Body* Simulation::Load_Setup_File(void) {
 
 
     // Forces, Torques
-    printf("\nRead Print_Particle_Forces as:          ");
-    if(Simulation::Print_Particle_Forces == true) {        printf("true\n");  }
-    else {                                                 printf("false\n"); }
-
     printf(  "Read Print_Body_Forces as:              ");
     if(Simulation::Print_Body_Forces == true) {            printf("true\n");  }
     else {                                                 printf("flase\n"); }
