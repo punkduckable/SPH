@@ -55,7 +55,9 @@ List<T>::List(void) {
 
 template <typename T>
 List<T>::~List(void) {
-  /* To delete this node, we need to free all memory that has bee nallocated by
+  /* This is the destructor fo the list class.
+
+  To delete this list, we need to free all memory that has bee nallocated by
   our list. To do this, we need to delete our nodes one by one. */
 
   Node * temp;
@@ -238,6 +240,9 @@ unsigned int List<T>::Get_Length(void) const {
 
 template <typename T>
 void List<T>::Print_Node_Info(void) const {
+  /* This method, as the name suggests, prints out a bunch of information about
+  the (*this) list. It is used for debugging purposes. */
+
   Node * Current_Node = Start;
   int Node_Num = 0;
 

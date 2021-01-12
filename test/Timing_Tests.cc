@@ -1,6 +1,9 @@
-#include "Timing_Test.h"
+#include "Tensor/Tensor.h"
+#include "Vector/Vector.h"
+#include <stdio.h>
+#include <time.h>
 
-void Timing_Tests(void) {
+TEST_CASE("Timing Test","[Timing]") {
   printf("\nTiming tests\n\n");
 
   // Set up timing variables. Note: All times will be reported in ms

@@ -25,7 +25,7 @@ const double Vector_Epsilon = 1e-16;
 
 class Vector {
   private:
-    double V[3];                                           // Holds the three components of the Vector
+    double Ar[3];                                         // Holds the three components of the Vector
 
   public:
     // Constructors, destructor
@@ -38,9 +38,11 @@ class Vector {
     ~Vector(void);                                         // Destructor
 
 
+
     // Vector equality
     Vector & operator=(const double V_In[3]);              // Vector equality (defines V1 = V2[3])
     Vector & operator=(const Vector & V_In);               // Vector equalitty (defines V1 = V2)
+
 
 
     // Operator overloading
@@ -62,28 +64,40 @@ class Vector {
     bool operator!=(const Vector & V_In) const;
 
 
+
     // Other methods
     double Magnitude(void) const;                          // Returns magnitude of vector
     double Max_Component(void) const;                      // Returns maximum component of vector.
     void Print(void) const;                                // Print vector components
+    const double* Get_Ar(void) const;
+
+
+
+    // Friends
+    friend double Dot_Product(const Vector & V1,
+                              const Vector & V2);
+    friend Vector Cross_Product(const Vector & V1,
+                                const Vector & V2);
+    friend Tensor Dyadic_Product(const Vector & V1,
+                                 const Vector & V2);
+    friend void Calculate_Force(Vector & F,
+                                const double V_j,
+                                const Tensor & T1,
+                                const Tensor & T2,
+                                const Vector & Grad_Wj);
+    friend double Calculate_Delta(const Tensor & F,
+                                  const Vector & R_j,
+                                  const Vector & r_j,
+                                  const double Mag_rj);
 }; // class Vector {
 
 
-// Functions of a single vector
+
+// Functions of a vector
 Vector operator*(double c,                      // Scalar multiplication (defines c*V)
                  const Vector & V_In);
 double Max_Component(const Vector & V_In);      // Returns maximum component of vector.
 double Magnitude(const Vector & V_In);
 void Print(const Vector & V_In);
-
-
-// Functions of multiple vectors
-double Dot_Product(const Vector & V1,
-                   const Vector & V2);
-Vector Cross_Product(const Vector & V1,
-                     const Vector & V2);
-Tensor Dyadic_Product(const Vector & V1,
-                      const Vector & V2);
-
 
 #endif

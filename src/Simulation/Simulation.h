@@ -10,7 +10,7 @@
 #include <string>
 #include <ctime>
 
-const double CLOCKS_PER_MS = CLOCKS_PER_SEC/1000.;
+
 
 // Simulation napespace (stores the variables and functions that are needed to
 // run a simulation)
@@ -22,6 +22,7 @@ namespace Simulation {
   void Setup(Body ** Bodies);
 
 
+
   //////////////////////////////////////////////////////////////////////////////
   // Functions that run simulations
   // Defined in Simulation.cc
@@ -29,41 +30,54 @@ namespace Simulation {
   void Run(void);
 
 
+
   //////////////////////////////////////////////////////////////////////////////
   // Timing functions
   // Defined in Timing.cc
 
-  #if defined(_OPENMP)
-    #define TIME_TYPE double
-  #else
-    #define TIME_TYPE clock_t
-  #endif
+  #define TIME_TYPE double
   TIME_TYPE Get_Time(void);
   TIME_TYPE Time_Since(TIME_TYPE time);
 
 
+
   //////////////////////////////////////////////////////////////////////////////
   // Setup file function
-  // Defined in Setup_File.cc
+  // Defined in Setup_File_Reader.cc
 
   Body* Load_Setup_File(void);
 
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Simulation parameters
-  // Declared in Setup_File.cc (defined by Load_Setup_File.cc and Setup.txt)
 
-  // IO parameters 
+  //////////////////////////////////////////////////////////////////////////////
+  /* Simulation parameters
+  Declared in Simulation_Setup.cc (defined by Setup_File_Reader.cc and
+  Simulation_Setup.txt) */
+
+  // Save/Load parameters
   extern bool Load_Simulation_From_Save;
   extern bool Save_Simulation_To_File;
-  extern bool Print_Particle_Forces;
-  extern bool Print_Body_Forces;
-  extern bool Print_Body_Torques;
-  extern unsigned TimeSteps_Between_Prints;
 
-  // Time Step
+  // Time Step parameters
   extern double dt;                              // Time step                   : s
   extern unsigned Num_Time_Steps;                // Number of time steps
+  extern unsigned TimeSteps_Between_Prints;      // Time steps between when we print to file.
+
+  // Particle data printing parameters
+  extern bool Print_Particle_D;
+  extern bool Print_Particle_Stretch_Max;
+  extern bool Print_Particle_J;
+  extern bool Print_Particle_F;
+  extern bool Print_Particle_C;
+  extern bool Print_Particle_B;
+  extern bool Print_Particle_E;
+  extern bool Print_Particle_P;
+  extern bool Print_Particle_T;
+
+  // Forces, Torques parameters
+  extern bool Print_Body_Forces;
+  extern bool Print_Body_Torques;
+  extern bool Print_Box_Boundary_Forces;
 
   // Contact
   extern double Contact_Distance;                // Distance at which bodies begin contacting one another.   : mm
@@ -71,6 +85,7 @@ namespace Simulation {
 
   // Number of bodies
   extern unsigned Num_Bodies;                    // Number of bodies in simulation
+
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -156,8 +171,6 @@ namespace Simulation {
                        Array<General_Boundary_Condition> & BCs_In);  // The BCs being applied
   void Set_Box_BCs(Body & Box,                             // Reference to the box body
                    Box_BCs & Boundary_Conditions);         // Box's parameters
-  void Set_Box_Particle_BCs(Particle & P_In,               // Particle that we're applying the BC to
-                            Vector BC);                    // The BC that's being applied
 } // namespace Simulation {
 
 #endif

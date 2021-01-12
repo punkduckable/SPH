@@ -1,91 +1,38 @@
 #include "Operation_Count.h"
+#include <stdio.h>
 
-void OP_Count::Reset_Counts(void) {
-  /* This function, as the name would suggest, is designed to reset the
-  operation counts. This is done by literally setting each of the operation
-  count varialbes to 0. */
-
-  // Tensors
-  T_Default_Constructor = 0;
-  T_Component_Constructor = 0;
-  T_Copy_Constructor = 0;
-  T_Equality = 0;
-  T_T_Addition = 0;
-  T_T_Subtraction = 0;
-  T_T_Multiplication = 0;
-  T_V_Multiplication = 0;
-  T_S_Multiplication = 0;
-  T_S_Division = 0;
-  Compound_T_T_Addition = 0;
-  Compound_T_T_Subtraction = 0;
-  Compound_T_T_Multiplication = 0;
-  T_Inverse = 0;
-  T_Determinant = 0;
-  T_Transpose = 0;
-  T_Dot_Product = 0;
-
-  // Vectors
-  V_Default_Constructor = 0;
-  V_Component_Constructor = 0;
-  V_Copy_Constructor = 0;
-  V_Equality = 0;
-  V_V_Addition = 0;
-  V_V_Subtraction  = 0;
-  V_S_Multiplication = 0;
-  V_S_Division = 0;
-  Compound_V_V_Addition = 0;
-  Compound_V_V_Subtraction = 0;
-  Compound_V_S_Multiplication = 0;
-  V_Magnitude = 0;
-  V_Dot_Product = 0;
-
-  // Other
-  Dyadic_Product = 0;
-} // void OP_Count::Reset_Counts(void) {
+/* Initialize OP_Count variables. */
+namespace OP_Count {
+  unsigned long Addition       = 0;
+  unsigned long Subtraction    = 0;
+  unsigned long Multiplication = 0;
+  unsigned long Division       = 0;
+  unsigned long Modulus        = 0;
+  unsigned long Sqrt           = 0;
+  unsigned long Exp            = 0;
+  unsigned long Log            = 0;
+  unsigned long Cos            = 0;
+  unsigned long Acos           = 0;
+} // namespace OP_Count {
 
 
 
-void OP_Count::Print_Counts(void) {
+void OP_Count::Print(void) {
   #ifndef OPERATION_COUNT
     printf("OPERATION_COUNT not defined. Nothing to report\n");
+    return;
   #endif
 
-  printf("\nOperation count:\n\n");
-
-  // Tensors
-  printf("Tensor Default Constructor =           %u\n",    T_Default_Constructor);
-  printf("Tensor Component Constructor =         %u\n",    T_Component_Constructor);
-  printf("Tensor Copy Constructor =              %u\n",    T_Copy_Constructor);
-  printf("Tensor Equality =                      %u\n",    T_Equality);
-  printf("Tensor-Tensor Addition =               %u\n",    T_T_Addition);
-  printf("Tensor_Tensor_Subtraction =            %u\n",    T_T_Subtraction);
-  printf("Tensor-Tensor Multiplication =         %u\n",    T_T_Multiplication);
-  printf("Tensor-Vector Multiplication =         %u\n",    T_V_Multiplication);
-  printf("Tensor-Scalar Multiplication =         %u\n",    T_S_Multiplication);
-  printf("Tensor-Scalar Division =               %u\n",    T_S_Division);
-  printf("Compound Tensor-Tensor Addition =      %u\n",    Compound_T_T_Addition);
-  printf("Compound Tensor-Tensor Subtraction =   %u\n",    Compound_T_T_Subtraction);
-  printf("Compound Tensor-Tensor Multiplication =%u\n",    Compound_T_T_Multiplication);
-  printf("Tensor Inverse =                       %u\n",    T_Inverse);
-  printf("Tensor Determinant =                   %u\n",    T_Determinant);
-  printf("Tensor Transpose =                     %u\n",    T_Transpose);
-  printf("Tensor Dot Product =                   %u\n",    T_Dot_Product);
-
-  // Vectors
-  printf("Vector Default Constructor =           %u\n",    V_Default_Constructor);
-  printf("Vector Component Constructor =         %u\n",    V_Component_Constructor);
-  printf("Vector Copy Constructor =              %u\n",    V_Copy_Constructor);
-  printf("Vector Equality =                      %u\n",    V_Equality);
-  printf("Vector-Vector Addition =               %u\n",    V_V_Addition);
-  printf("Vector-Vector Subtraction =            %u\n",    V_V_Subtraction );
-  printf("Vector-Scalar Multiplication =         %u\n",    V_S_Multiplication);
-  printf("Vector-Scalar Division =               %u\n",    V_S_Division);
-  printf("Compound Vector-Vector Addition =      %u\n",    Compound_V_V_Addition);
-  printf("Compound Vector-Vector Subtraction =   %u\n",    Compound_V_V_Subtraction);
-  printf("Compound Vector-Scalar Multiplication =%u\n",    Compound_V_S_Multiplication);
-  printf("Vector Magnitude =                     %u\n",    V_Magnitude);
-  printf("Vector Dot Product =                   %u\n",    V_Dot_Product);
-
-  // Other
-  printf("Dyadic Product =                       %u\n",    Dyadic_Product);
-} // void OP_Count::Print_Counts(void) {
+  printf("\nOperation count:\n");
+  printf("Addition:           %lu\n", OP_Count::Addition);
+  printf("Subtraction:        %lu\n", OP_Count::Subtraction);
+  printf("Multiplication:     %lu\n", OP_Count::Multiplication);
+  printf("Division:           %lu\n", OP_Count::Division);
+  printf("Modulus:            %lu\n", OP_Count::Modulus);
+  printf("Sqrt:               %lu\n", OP_Count::Sqrt);
+  printf("Exp:                %lu\n", OP_Count::Exp);
+  printf("Log:                %lu\n", OP_Count::Log);
+  printf("Cos:                %lu\n", OP_Count::Cos);
+  printf("Acos:               %lu\n", OP_Count::Acos);
+  printf("\n");
+} // void OP_Count::Pint(void) {

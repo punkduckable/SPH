@@ -10,9 +10,9 @@
 
 // Prototypes for functions that are local to this file.
 namespace Simulation {
-  void Load_Body_From_Setup_File(Body & Body_In, const unsigned i);
-  Vector Parse_BC(std::string & Line);
-  void Print_BC(Vector & BC_In);
+  static void Load_Body_From_Setup_File(Body & Body_In, const unsigned i);
+  static Vector Parse_BC(std::string & Line);
+  static void Print_BC(Vector & BC_In);
 } // namespace Simulation {
 
 
@@ -37,56 +37,15 @@ Body* Simulation::Load_Setup_File(void) {
   // Now read simulation parameters
 
   //////////////////////////////////////////////////////////////////////////////
-  // IO
+  // Save/Load
   strBuf = IO::read_line_after(File, "Load Simulation from Save:", false);
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Load_Simulation_From_Save = true; }
   else {                                                        Simulation::Load_Simulation_From_Save = false; }
 
-  strBuf = IO::read_line_after(File, "Save Data To File:", false);
+  strBuf = IO::read_line_after(File, "Save Simulation:", false);
   if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Save_Simulation_To_File = true; }
   else {                                                        Simulation::Save_Simulation_To_File = false; }
 
-  strBuf = IO::read_line_after(File, "Print Particle Forces:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_Forces = true; }
-  else {                                                        Simulation::Print_Particle_Forces = false; }
-
-  strBuf = IO::read_line_after(File, "Print Body Forces:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Forces = true; }
-  else {                                                        Simulation::Print_Body_Forces = false; }
-
-  strBuf = IO::read_line_after(File, "Print Body Torques:", false);
-  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Torques = true; }
-  else {                                                        Simulation::Print_Body_Torques = false; }
-
-  strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);
-  sscanf(strBuf.c_str(), " %u \n", &Simulation::TimeSteps_Between_Prints);
-
-
-  #if defined(SIMULATION_SETUP_MONITOR)
-    printf(  "Read Load_Simulation_From_Save as:      ");
-    if(Simulation::Load_Simulation_From_Save == true) {    printf("true\n");  }
-    else {                                                 printf("false\n"); }
-
-    printf(  "Read Save_Simulation_To_File as:        ");
-    if(Simulation::Save_Simulation_To_File == true) {      printf("true\n");  }
-    else {                                                 printf("false\n"); }
-
-    printf(  "Read Print_Particle_Forces as:          ");
-    if(Simulation::Print_Particle_Forces == true) {        printf("true\n");  }
-    else {                                                 printf("false\n"); }
-
-    printf(  "Read Print_Body_Forces as:              ");
-    if(Simulation::Print_Body_Forces == true) {            printf("true\n");  }
-    else {                                                 printf("flase\n"); }
-
-    printf(  "Read Print_Body_Torques as:             ");
-    if(Simulation::Print_Body_Torques == true) {           printf("true\n");  }
-    else {                                                 printf("flase\n"); }
-
-    printf(  "Read Time_Steps_Between_Prints as:      ");
-    if(Simulation::TimeSteps_Between_Prints == true) {     printf("true\n");  }
-    else {                                                 printf("false\n"); }
-  #endif
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -96,6 +55,66 @@ Body* Simulation::Load_Setup_File(void) {
 
   strBuf = IO::read_line_after(File, "Num Time Steps:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::Num_Time_Steps);
+
+  strBuf = IO::read_line_after(File, "Time Steps Between Prints:", false);
+  sscanf(strBuf.c_str(), " %u \n", &Simulation::TimeSteps_Between_Prints);
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // What particle data should we print?
+  strBuf = IO::read_line_after(File, "D (Damage):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_D = true; }
+  else {                                                        Simulation::Print_Particle_D = false; }
+
+  strBuf = IO::read_line_after(File, "Stretch_Max (Maximum Stretch):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_Stretch_Max = true; }
+  else {                                                        Simulation::Print_Particle_Stretch_Max = false; }
+
+  strBuf = IO::read_line_after(File, "J (det(F), local volume change ratio):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_J = true; }
+  else {                                                        Simulation::Print_Particle_J = false; }
+
+  strBuf = IO::read_line_after(File, "F (deformation gradient):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_F = true; }
+  else {                                                        Simulation::Print_Particle_F = false; }
+
+  strBuf = IO::read_line_after(File, "C (right Cauchy-Green strain):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_C = true; }
+  else {                                                        Simulation::Print_Particle_C = false; }
+
+  strBuf = IO::read_line_after(File, "B (left Cauchy-Green strain):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_B = true; }
+  else {                                                        Simulation::Print_Particle_B = false; }
+
+  strBuf = IO::read_line_after(File, "E (Green strain):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_E = true; }
+  else {                                                        Simulation::Print_Particle_E = false; }
+
+  strBuf = IO::read_line_after(File, "P (First Piola-Kirchoff Stress):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_P = true; }
+  else {                                                        Simulation::Print_Particle_P = false; }
+
+  strBuf = IO::read_line_after(File, "T (Cauchy stress):", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Particle_T = true; }
+  else {                                                        Simulation::Print_Particle_T = false; }
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Forces, Torques
+
+  strBuf = IO::read_line_after(File, "Print Body Forces:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Forces = true; }
+  else {                                                        Simulation::Print_Body_Forces = false; }
+
+  strBuf = IO::read_line_after(File, "Print Body Torques:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Body_Torques = true; }
+  else {                                                        Simulation::Print_Body_Torques = false; }
+
+  strBuf = IO::read_line_after(File, "Print Box Boundary Forces:", false);
+  if(IO::String_Ops::Contains(strBuf.c_str(), "true", false)) { Simulation::Print_Box_Boundary_Forces = true; }
+  else {                                                        Simulation::Print_Box_Boundary_Forces = false; }
 
 
 
@@ -107,11 +126,86 @@ Body* Simulation::Load_Setup_File(void) {
   strBuf = IO::read_line_after(File, "Friction Coefficient:", false);
   sscanf(strBuf.c_str(), " %lf \n", &Simulation::Friction_Coefficient);
 
+
+
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf(  "Read TimeSteps_Between_Prints as:       %u\n",  Simulation::TimeSteps_Between_Prints);
+    // Save/Load
+    printf(  "Read Load_Simulation_From_Save as:      ");
+    if(Simulation::Load_Simulation_From_Save == true) {    printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Save_Simulation_To_File as:        ");
+    if(Simulation::Save_Simulation_To_File == true) {      printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+
+
+    // Time steps.
+    printf("\nRead Time_Steps_Between_Prints as:      ");
+    if(Simulation::TimeSteps_Between_Prints == true) {     printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
     printf(  "Read dt as:                             %lf (s)\n", Simulation::dt);
     printf(  "Read Num_Time_Steps as:                 %u\n",  Simulation::Num_Time_Steps);
-    printf(  "Read Contact_Distance as:               %lf (mm)\n", Simulation::Contact_Distance);
+
+
+
+    // What particle data should we print?
+    printf("\nRead Print_Particle_D as:               ");
+    if(Simulation::Print_Particle_D == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_Stretch_Max as:     ");
+    if(Simulation::Print_Particle_Stretch_Max == true) {   printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_J as:               ");
+    if(Simulation::Print_Particle_J == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_F as:               ");
+    if(Simulation::Print_Particle_F == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_C as:               ");
+    if(Simulation::Print_Particle_C == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_B as:               ");
+    if(Simulation::Print_Particle_B == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_E as:               ");
+    if(Simulation::Print_Particle_E == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_P as:               ");
+    if(Simulation::Print_Particle_P == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+    printf(  "Read Print_Particle_T as:               ");
+    if(Simulation::Print_Particle_T == true) {             printf("true\n");  }
+    else {                                                 printf("false\n"); }
+
+
+
+    // Forces, Torques
+    printf(  "Read Print_Body_Forces as:              ");
+    if(Simulation::Print_Body_Forces == true) {            printf("true\n");  }
+    else {                                                 printf("flase\n"); }
+
+    printf(  "Read Print_Body_Torques as:             ");
+    if(Simulation::Print_Body_Torques == true) {           printf("true\n");  }
+    else {                                                 printf("flase\n"); }
+
+    printf(  "Read Print_Box_Boundary_Forces as:      ");
+    if(Simulation::Print_Box_Boundary_Forces == true) {    printf("true\n");  }
+    else {                                                 printf("flase\n"); }
+
+
+
+    // Contact
+    printf("\nRead Contact_Distance as:               %lf (mm)\n", Simulation::Contact_Distance);
     printf(  "Read Friction_Coefficient as:           %lf\n", Simulation::Friction_Coefficient);
   #endif
 
@@ -127,14 +221,13 @@ Body* Simulation::Load_Setup_File(void) {
 
 
 
-
   //////////////////////////////////////////////////////////////////////////////
   // Number of Bodies
   strBuf = IO::read_line_after(File, "Number of Bodies:", false);
   sscanf(strBuf.c_str(), " %u \n", &Simulation::Num_Bodies);
 
   #if defined(SIMULATION_SETUP_MONITOR)
-    printf(  "Read Number of Bodies as:               %u\n", Simulation::Num_Bodies);
+    printf("\nRead Number of Bodies as:               %u\n", Simulation::Num_Bodies);
   #endif
 
   // We're done reading in the Simulation parameters. We can close the setup file.
@@ -158,9 +251,7 @@ Body* Simulation::Load_Setup_File(void) {
 
 
 
-
-
-void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
+static void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
   /* Function description:
   This function reads in the ith body from Setup.txt.
 
@@ -419,7 +510,7 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
               General_BCs[i][j].Effect_Vector[2]);
     } // for(unsigned j = 0; j < Number_General_BCs; j++) {
 
-    printf("\nRead Bodu[%3u].Gravity_Enabled          ", i);
+    printf("\nRead Body[%3u].Gravity_Enabled          ", i);
     if(Body_In.Get_Gravity_Enabled() == true)    { printf("true\n");  }
     else                                         { printf("false\n"); }
 
@@ -432,13 +523,11 @@ void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
   // All done. Close file
   File.close();
-} // void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
+} // static void Simulation::Load_Body_From_Setup_File(Body & Body_In, const unsigned i) {
 
 
 
-
-
-Vector Simulation::Parse_BC(std::string & Line) {
+static Vector Simulation::Parse_BC(std::string & Line) {
   /* Function description:
   This function is designed to take a line of the form " {BCx, BCy, BCz} and
   return the vector <BCx, BCy, BCz>, where BCx/y/z is either a double or "free".
@@ -466,11 +555,11 @@ Vector Simulation::Parse_BC(std::string & Line) {
   } // for(unsigned i = 0; i < 3; i++) {
 
   return Parsed_BC;
-} // void Simulation::Parse_BC(std::string & Line) {
+} // static void Simulation::Parse_BC(std::string & Line) {
 
 
 
-void Simulation::Print_BC(Vector & BC_In) {
+static void Simulation::Print_BC(Vector & BC_In) {
   /* Function description:
   This function is for testing only. It exists only to eliminate code repetition */
   printf("{");
@@ -481,4 +570,4 @@ void Simulation::Print_BC(Vector & BC_In) {
     if(j == 2) { printf("}\n"); }
     else { printf(", "); }
   } // for(unsigned j = 0; j < 3; j++) {
-} // void Simulation::Print_BC(Vector & BC_In) {
+} // static void Simulation::Print_BC(Vector & BC_In) {

@@ -4,6 +4,7 @@
 #define DAMAGE_MONITOR
 #define IO_MONITOR
 //#define CONTACT_MONITOR
+//#define NEIGHBOR_MONITOR
 
 #include "Materials.h"
 #include "Classes.h"
@@ -33,7 +34,7 @@ class Body {
     ////////////////////////////////////////////////////////////////////////////
     // Body parameters
 
-    // Particle array name
+    // Body name
     std::string Name;
 
     // The array of particles
@@ -79,17 +80,10 @@ class Body {
     // Printing Parameters
     unsigned Times_Printed_Body_Forces = 0;
     unsigned Times_Printed_Body_Torques = 0;
+    unsigned Times_Printed_Box_Boundary_Forces = 0;
     unsigned Times_Printed_Particle_Forces = 0;
     unsigned Times_Printed_Particle_Positions = 0;
 
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Private methods
-    void Add_Point_Data(FILE * File,             // Defined in Body_IO.cc
-                        char * Weight_Name,      // Helps Export_Particle_Positions.
-                        unsigned Num_Particles,
-                        double * Data) const;
 
 
   public:
@@ -230,6 +224,7 @@ class Body {
     void Print_Parameters(void) const;                               // Prints to command line
     void Export_Body_Forces(const unsigned time_steps);              // Prints to file
     void Export_Body_Torques(const unsigned time_steps);             // Prints to file
+    void Export_Box_Boundary_Forces(const unsigned time_steps);      // Prints to file
     void Export_Particle_Forces(void);                               // Prints to file
     void Export_Particle_Positions(void);                            // Prints to file
 
@@ -242,4 +237,17 @@ class Body {
                                     unsigned & Num_Bodies);
 }; // class Body {
 
+
+
+// Helper functions.
+void Calculate_Force(Vector & F,
+                     const double V_j,
+                     const Tensor & T1,
+                     const Tensor & T2,
+                     const Vector & Grad_Wj);
+
+double Calculate_Delta(const Tensor & F,
+                       const Vector & R_j,
+                       const Vector & r_j,
+                       const double Mag_rj);
 #endif

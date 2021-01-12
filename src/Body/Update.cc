@@ -3,9 +3,12 @@
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
 #include "List.h"
+#include "Diagnostics/Operation_Count.h"
 #include "Errors.h"
 #include <math.h>
 #include <assert.h>
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Update methods
@@ -32,7 +35,7 @@ void Body::Update_P(const double dt) {
               0,0,1};
 
 
-  List<unsigned> Damaged_Particle_List;          // Keeps track of which particles are newly damaged
+  List<unsigned> Damaged_Particle_List{};          // Keeps track of which particles are newly damaged
 
   Tensor F_Prime;                                // F time derivative                    : 1/s Tensor
   Tensor L;                                      // symmetric part of velocity gradient  : 1/s Tensor
@@ -50,6 +53,7 @@ void Body::Update_P(const double dt) {
   for(unsigned i = 0; i < Num_Particles; i++) {
     // First, Check if the current particle is damaged (if so, we skip this particle)
     if(Particles[i].D >= 1) { continue; }
+
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -77,6 +81,7 @@ void Body::Update_P(const double dt) {
     F *= Particles[i].A_Inv;                                                   //        : unitless Tensor
 
 
+
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate Damage:
     To do this, we first need to find the principle stretch. To do this, we
@@ -101,7 +106,19 @@ void Body::Update_P(const double dt) {
       if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
         /* Note: Set_Tau requires that Tau != 0. Therefore, dividing by Tau
         should be well defined. */
-        Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1;
+        Particles[i].D = exp(((Particles[i].Stretch_H - Particles[i].Stretch_Critical)*(Particles[i].Stretch_H - Particles[i].Stretch_Critical))/(Tau*Tau)) - 1.;
+
+        #ifdef OPERATION_COUNT
+          // 3 subtractions, 2 multiplications, 1 division, and one exp in the calculation above.
+          #pragma omp atomic update
+          OP_Count::Subtraction += 3;
+          #pragma omp atomic update
+          OP_Count::Multiplication += 2;
+          #pragma omp atomic update
+          OP_Count::Division += 1;
+          #pragma omp atomic update
+          OP_Count::Exp += 1;
+        #endif
       } // if(Particles[i].Stretch_H > Particles[i].Stretch_Critical) {
 
       // If particle is fully damaged, add this particle to the damaged list
@@ -112,6 +129,7 @@ void Body::Update_P(const double dt) {
         continue;
       } // if(Particles[i].D >= 1) {
     } // if((*this).Is_Damageable == true) {
+
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -144,6 +162,21 @@ void Body::Update_P(const double dt) {
     then det(C) != 0, and C^(-1) is well defined. */
     S = (1 - Particles[i].D)*(mu0*I + (-mu0 + 2.*Lame*log(J))*(C^(-1)));       //        : Mpa Tensor
 
+    #ifdef OPERATION_COUNT
+      /* 1 addition, 1 subtraction, 1 log, 2 multiplications in the calculation above.
+      There are many other operations in there, but they're all done with operator
+      overloading and are, therefore, counted elsewhere. */
+      #pragma omp atomic update
+      OP_Count::Subtraction += 1;
+      #pragma omp atomic update
+      OP_Count::Addition += 1;
+      #pragma omp atomic update
+      OP_Count::Log += 1;
+      #pragma omp atomic update
+      OP_Count::Multiplication += 2;
+    #endif
+
+
 
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate viscosity tensor:
@@ -151,7 +184,7 @@ void Body::Update_P(const double dt) {
     gradient. To get O(h^2) accuracy, we use a three point approximation for
     calculating this derivative. To use this three point derivative, we need
     to know the last two deformation gradients. These are stored in each particle
-    in the 'F' array. The 'F_Index in the current particle array keeps track
+    in the 'F' array. The 'F_Index' in the body keeps track
     of which member of this array was last updated (therefore telling us which
     element of the array is F from the last time step, F(t-dt), and which is from two
     time steps ago, F(t-2*dt)). The current deformation gradient, F(t), is stored
@@ -179,6 +212,17 @@ void Body::Update_P(const double dt) {
     L = F_Prime*(F^(-1));                                                      //        : 1/s Tensor
     Visc = (J*mu)*(L + (L^(T))*(F^(-T)));                                      //        : Mpa Tensor
 
+    #ifdef OPERATION_COUNT
+      /* F_Prime : 1 division, 1 multiplication (all other operations use operator overloading)
+      Visc       : 1 multiplication (other operations use operator overloading) */
+      #pragma omp atomic update
+      OP_Count::Multiplication += 2;
+      #pragma omp atomic update
+      OP_Count::Division += 1;
+    #endif
+
+
+
     ////////////////////////////////////////////////////////////////////////////
     /* Calculate P (First Piola-Kirchhoff stress tensor). Here we also update
     the current particle's P and F members. Note, however, that we need to be
@@ -194,6 +238,7 @@ void Body::Update_P(const double dt) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
   // have each thread remove its damaged particles
+
   #pragma omp critical
   Remove_Damaged_Particles(Damaged_Particle_List);
 
@@ -221,8 +266,6 @@ void Body::Update_x(const double dt) {
   Vector Force_Internal;                         // Internal Force vector                : N Vector
   Vector Force_Hourglass;                        // Hour-glass force                     : N Vector
   Vector Force_Viscosity;                        // Viscosity force.                     : N Vector
-  Tensor F_i;                                    // Deformation gradient                 : unitless Tensor
-  Tensor P_i;                                    // First Piola-Kirchhoff stress tensor  : Mpa Tensor
   Vector a;                                      // acceleration                         : mm/s^2 Vector
 
   // Neighboring (jth) particle properties
@@ -249,8 +292,10 @@ void Body::Update_x(const double dt) {
 
     // Set up current particle properties
     double V_i = Particles[i].Get_Volume();      // volume of current particle           : mm^3
-    F_i = Particles[i].Get_F(F_Index);
-    P_i = Particles[i].Get_P();
+    const Tensor & F_i = Particles[i].F[F_Index];
+    const Tensor & P_i = Particles[i].P;
+    const Tensor & Visc = Particles[i].Visc;
+
     Vector * R = Particles[i].R;                 // Reference displacement array         : mm Vector
     double * Mag_R = Particles[i].Mag_R;         // Mag of reference displacment array   : mm
     double * W = Particles[i].W;                 // Kernel function array                : 1/mm^3
@@ -261,6 +306,8 @@ void Body::Update_x(const double dt) {
     for(unsigned j = 0; j < Num_Neighbors; j++) {
       // Update Neighbor
       unsigned Neighbor_ID = Particles[i].Neighbor_IDs[j];       // ID of current neighbor particle
+
+
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Internal force */
@@ -274,9 +321,15 @@ void Body::Update_x(const double dt) {
 
 
       double V_j = Particles[Neighbor_ID].Volume;// Volume of jth particle               : mm^3
-      P_j = Particles[Neighbor_ID].P;                                          //        : Mpa Tensor
-      Force_Internal += (V_j)*((P_i + P_j)*Grad_W[j]);                         //        : N Vector
-      Force_Viscosity += (V_j)*((Particles[i].Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]); //  : N Vector
+      P_j = Particles[Neighbor_ID].Get_P();                                    //        : Mpa Tensor
+
+      // Force_Internal += V_j*((P_i + P_j)*Grad_W[j]);
+      Calculate_Force(Force_Internal , V_j, P_i , P_j                        , Grad_W[j]);         // N Vector
+
+      // Force_Viscosity += V_j*((Visc + Particles[Neighbor_ID].Visc)*Grad_W[j]);
+      Calculate_Force(Force_Viscosity, V_j, Visc, Particles[Neighbor_ID].Visc, Grad_W[j]);         // N Vector
+
+
 
       //////////////////////////////////////////////////////////////////////////
       /* Calculate Hour Glass force */
@@ -310,7 +363,9 @@ void Body::Update_x(const double dt) {
                 (*this).Name.c_str(), (*this).Name.c_str(), Neighbor_ID, i);
         throw Divide_By_Zero(Buf);
       } // if(Mag_rj == 0) {
-      double delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
+
+      // double delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj;
+      double delta_ij = Calculate_Delta(F_i, R[j], rj, Mag_rj);                //        : mm
 
       /* Here we calculate delta_ji.
             delta_ji = ( Error_ji dot r_ji )/|r_ji|
@@ -341,7 +396,9 @@ void Body::Update_x(const double dt) {
       Note: this calculation requires that Mag_rj != 0. We check for this
       condition above, however. */
       F_j = Particles[Neighbor_ID].F[F_Index];                                 //        : unitless Tensor
-      double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;           //        : mm
+
+      // double delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj;
+      double delta_ji = Calculate_Delta(F_j, R[j], rj, Mag_rj);                //        : mm
 
       /* Finally, we calculate the hour glass force. However, it should be
       noted that each term of Force_Hourglass is multiplied by -(1/2), E, alpha,
@@ -353,7 +410,19 @@ void Body::Update_x(const double dt) {
       for the latter. The former should be true so long as the bodies were setup
       properly. */
       Force_Hourglass += (((V_j*W[j])/(Mag_R[j]*Mag_R[j]*Mag_rj))*             //        : (1/mm) Vector
-                         (delta_ij + delta_ji))*(rj);
+                         (delta_ij + delta_ji))*rj;
+
+
+      #ifdef OPERATION_COUNT
+        /* 3 multiplications, 1 division, 1 addition in the calculation above
+        (the other multiplication uses operator overloading) */
+        #pragma omp atomic update
+        OP_Count::Multiplication += 3;
+        #pragma omp atomic update
+        OP_Count::Division += 1;
+        #pragma omp atomic update
+        OP_Count::Addition += 1;
+      #endif
     } // for(unsigned j = 0; j < Num_Neighbors; j++) {
     Force_Hourglass *= -.5*E*V_i*alpha;  // Each term in F_Hg is multiplied by this. Pulling out of sum improved runtime : N Vector
     Force_Internal *= V_i;               // Each term in F_Int is multiplied by Vi, pulling out of sum improved runtime  : N Vector
@@ -376,12 +445,28 @@ void Body::Update_x(const double dt) {
     /* If gravity is enabled, add that in. */
     if((*this).Gravity_Enabled == true) { a += Body::g; }
 
+    #ifdef OPERATION_COUNT
+      /* Force_Hourglass : 3 multiplications
+      a                  : 1 division, 1 multiplication (eveything else is operator oveloading) */
+      #pragma omp atomic update
+      OP_Count::Multiplication += 4;
+      #pragma omp atomic update
+      OP_Count::Division += 1;
+    #endif
+
     /* Now update the velocity, position vectors. This is done using the
     'leap-frog' integration scheme. However, during the first step of this
     scheme, we need to use forward euler to get the initial velocity.*/
     if(First_Time_Step == true) {
       First_Time_Step = false;
       Particles[i].V += (dt/2.)*a;                                             // velocity starts at t_i+1/2           : mm/s Vector
+
+      #ifdef OPERATION_COUNT
+        /* 1 multiplication to calculate V above (multiplication by a uses
+        operator oveloading) */
+        #pragma omp atomic update
+        OP_Count::Division += 1;
+      #endif
     } // if(First_Time_Step == true) {
 
     /* Before updating the velocity/position, let's check if the particle has
@@ -400,11 +485,11 @@ void Body::Update_x(const double dt) {
     Particles[i].V += (dt)*a;                    // V_i+3/2 = V_i+1/2 + dt*a(t_i+1)      : mm/s Vector
     Particles[i].a = a;                          // update acceleration vector           : mm/s^2 Vector
 
-    if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques) {
-      Particles[i].Force_Internal = Force_Internal;     // update Internal force                : N Vector
+    if(Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
+      Particles[i].Force_Internal  = Force_Internal;    // update Internal force                : N Vector
       Particles[i].Force_Hourglass = Force_Hourglass;   // update Hourglassing force            : N Vector
       Particles[i].Force_Viscosity = Force_Viscosity;   // update Viscosity force               : N Vector
-    } // if(Simulation::Print_Particle_Forces == true || Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques) {
+    } // if(Simulation::Print_Body_Forces == true || Simulation::Print_Body_Torques == true) {
   } // for(int i = 0; i < Num_Particles; i++) {
 
   // Now we need to remove the damaged particles. To do this, we can one by one
@@ -419,3 +504,85 @@ void Body::Update_x(const double dt) {
   can be sure that all particles have been damaged. Therefore, we don't
   need a barrier. */
 } // void Body::Update_x(const double dt) {
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Helper functions.
+/* These are functions that compute quantities that would otherwise be computed
+using operator overloading and would otherwise incur temporary variables. */
+
+void Calculate_Force(Vector & F,
+                     const double V_j,
+                     const Tensor & T1,
+                     const Tensor & T2,
+                     const Vector & Grad_Wj) {
+  /* This function is used to calculate Force_Internal and Force_Viscosity due
+  to one of a particle's neighbors. These quantities are calculated by the
+  following expression:
+      Force_Internal  += V_j*((P_i + P_j)*Grad_W[j])
+      Force_Viscosity += V_j*((Visc + Particles[Neighbor_ID].Visc)*Grad_W[j])
+  Thus, this function computes the following:
+      F += V_j*((T1 + T2)*GradW_j) without any
+  The goal is to eliminate any use of temporary objects and (hopefully) improve
+  runtime.
+
+  update_x is the only thing that should call this function. */
+
+  /* Note: Tensors are stored in ROW MAJOR ordering. Thus, we want to change
+  rows as infrequently. */
+
+  F.Ar[0] += + V_j*( (T1.Ar[0*3 + 0] + T2.Ar[0*3 + 0])*Grad_Wj.Ar[0] +
+                     (T1.Ar[0*3 + 1] + T2.Ar[0*3 + 1])*Grad_Wj.Ar[1] +
+                     (T1.Ar[0*3 + 2] + T2.Ar[0*3 + 2])*Grad_Wj.Ar[2] );
+
+  F.Ar[1] += + V_j*( (T1.Ar[1*3 + 0] + T2.Ar[1*3 + 0])*Grad_Wj.Ar[0] +
+                     (T1.Ar[1*3 + 1] + T2.Ar[1*3 + 1])*Grad_Wj.Ar[1] +
+                     (T1.Ar[1*3 + 2] + T2.Ar[1*3 + 2])*Grad_Wj.Ar[2] );
+
+  F.Ar[2] += + V_j*( (T1.Ar[2*3 + 0] + T2.Ar[2*3 + 0])*Grad_Wj.Ar[0] +
+                     (T1.Ar[2*3 + 1] + T2.Ar[2*3 + 1])*Grad_Wj.Ar[1] +
+                     (T1.Ar[2*3 + 2] + T2.Ar[2*3 + 2])*Grad_Wj.Ar[2] );
+
+  #ifdef OPERATION_COUNT
+    /* Each component above uses 6 additions and 4 multiplications */
+    #pragma omp atomic update
+    OP_Count::Multiplication += 12;
+    #pragma omp atomic update
+    OP_Count::Addition += 18;
+  #endif
+} // void Calculate_Force(Tensor & F,...
+
+
+
+double Calculate_Delta(const Tensor & F,
+                              const Vector & R_j,
+                              const Vector & rj,
+                              const double Mag_rj) {
+  /* This function computes delta_ij and delta_ji. By definition,
+        delta_ji = Dot_Product(F_j*R[j], rj)/(Mag_rj) - Mag_rj
+        delta_ij = Dot_Product(F_i*R[j], rj)/(Mag_rj) - Mag_rj
+  Thus, this function returns the following quantity:
+        Dot_Product(F*R_j, rj)/(Mag_rj) - Mag_rj
+  The goal is to eliminate any use of temporary objects.
+
+  update_x is the ONLY thing that should call this function. */
+
+  double FRj_0 = F.Ar[0*3 + 0]*R_j.Ar[0] + F.Ar[0*3 + 1]*R_j.Ar[1] + F.Ar[0*3 + 2]*R_j.Ar[2];
+  double FRj_1 = F.Ar[1*3 + 0]*R_j.Ar[0] + F.Ar[1*3 + 1]*R_j.Ar[1] + F.Ar[1*3 + 2]*R_j.Ar[2];
+  double FRj_2 = F.Ar[2*3 + 0]*R_j.Ar[0] + F.Ar[2*3 + 1]*R_j.Ar[1] + F.Ar[2*3 + 2]*R_j.Ar[2];
+
+  #ifdef OPERATION_COUNT
+    // This includes the calculations above and below (return statement)
+    #pragma omp atomic update
+    OP_Count::Multiplication += 12;
+    #pragma omp atomic update
+    OP_Count::Addition += 8;
+    #pragma omp atomic update
+    OP_Count::Division += 1;
+    #pragma omp atomic update
+    OP_Count::Subtraction += 1;
+  #endif
+
+  return (FRj_0*rj.Ar[0] + FRj_1*rj.Ar[1] + FRj_2*rj.Ar[2])/(Mag_rj) - Mag_rj;
+} // double Calculate_Delta(const Tensor & F,

@@ -1,7 +1,6 @@
 #include "Particle.h"
 #include "Body/Body.h"
 #include "Errors.h"
-#include <random>
 #include <assert.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,15 +131,8 @@ double Particle::Get_D(void) const { return D; }
 
 unsigned Particle::Get_Num_Neighbors(void) const { return Num_Neighbors; }
 unsigned Particle::Get_Neighbor_IDs(unsigned i) const {
-  if(i < Num_Neighbors) { return Neighbor_IDs[i]; }
-  else {
-    char Error_Message_Buffer[500];
-    sprintf(Error_Message_Buffer,
-            "Bad Neighbor Index exception: Thrown by Particle::Get_Neighbor_IDs\n"
-            "Particle %u has %u neighbors. You requested neighbor %u\n",
-            ID, Num_Neighbors, i);
-    throw Bad_Neighbor_Index(Error_Message_Buffer);
-  } // else
+  assert(i < Num_Neighbors);
+  return Neighbor_IDs[i];
 } // unsigned Particle::Get_Neighbor_IDs(unsigned i) const {
 
 bool Particle::Get_Has_BC(unsigned Component) const {
@@ -175,6 +167,8 @@ double Particle::Get_BC(unsigned Component) const {
 // Printing functions
 
 void Particle::Print(void) const {
+  /* This function prints out the members of tthe (*this) particle. */
+
   // Print basic particle parameters.
   printf("ID:       %u\n",(*this).ID);
 

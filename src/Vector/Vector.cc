@@ -1,6 +1,7 @@
 #include "Vector.h"
 #include "Tensor/Tensor.h"
 #include "Errors.h"
+#include "Diagnostics/Operation_Count.h"
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
@@ -13,36 +14,24 @@ designed to make vector objects work just like mathematical vectors.  */
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors, Destructor
 
-Vector::Vector(void) {
-  #ifdef OPERATION_COUNT
-    OP_Count::V_Default_Constructor++;             // Increment operator count
-  #endif
-} // Vector::Vector(void) {
+Vector::Vector(void) { }
 
 
 
 Vector::Vector(const double v0, const double v1, const double v2) {
   // Initialize components of vector using supplied components
-  (*this)[0] = v0;
-  (*this)[1] = v1;
-  (*this)[2] = v2;
-
-  #ifdef OPERATION_COUNT
-    OP_Count::V_Component_Constructor++;           // Increment operator count
-  #endif
+  (*this).Ar[0] = v0;
+  (*this).Ar[1] = v1;
+  (*this).Ar[2] = v2;
 } // Vector::Vector(const double v0, const double v1, const double v2) {
 
 
 
 Vector::Vector(const Vector & V_In) {
   // Initialize components of vector using supplied components
-  (*this)[0] = V_In[0];
-  (*this)[1] = V_In[1];
-  (*this)[2] = V_In[2];
-
-  #ifdef OPERATION_COUNT
-    OP_Count::V_Copy_Constructor++;                // Increment operator count
-  #endif
+  (*this).Ar[0] = V_In.Ar[0];
+  (*this).Ar[1] = V_In.Ar[1];
+  (*this).Ar[2] = V_In.Ar[2];
 } // Vector::Vector(const Vector & V_In) {
 
 
@@ -58,13 +47,9 @@ Vector::~Vector(void) { }
 
 Vector & Vector::operator=(const double V_In[3]) {
   // Assign components of vector to V_In array
-  (*this)[0] = V_In[0];
-  (*this)[1] = V_In[1];
-  (*this)[2] = V_In[2];
-
-  #ifdef OPERATION_COUNT
-    OP_Count::V_Equality++;                        // Increment operator count
-  #endif
+  (*this).Ar[0] = V_In[0];
+  (*this).Ar[1] = V_In[1];
+  (*this).Ar[2] = V_In[2];
 
   // Return this Vector
   return *this;
@@ -74,13 +59,9 @@ Vector & Vector::operator=(const double V_In[3]) {
 
 Vector & Vector::operator=(const Vector & V_In) {
   // Assign components of V using V_In.
-  (*this)[0] = V_In[0];
-  (*this)[1] = V_In[1];
-  (*this)[2] = V_In[2];
-
-  #ifdef OPERATION_COUNT
-    OP_Count::V_Equality++;                        // Increment operator count
-  #endif
+  (*this).Ar[0] = V_In.Ar[0];
+  (*this).Ar[1] = V_In.Ar[1];
+  (*this).Ar[2] = V_In.Ar[2];
 
   // Return this vector
   return *this;
@@ -97,12 +78,14 @@ Vector Vector::operator+(const Vector & V_In) const {
   // Declare a sum Vector. This will be used to store the sum
   Vector Sum;
 
-  Sum[0] = (*this)[0] + V_In[0];
-  Sum[1] = (*this)[1] + V_In[1];
-  Sum[2] = (*this)[2] + V_In[2];
+  Sum.Ar[0] = (*this).Ar[0] + V_In.Ar[0];
+  Sum.Ar[1] = (*this).Ar[1] + V_In.Ar[1];
+  Sum.Ar[2] = (*this).Ar[2] + V_In.Ar[2];
 
   #ifdef OPERATION_COUNT
-    OP_Count::V_V_Addition++;                      // Increment operator count
+    // 3 additions
+    #pragma omp atomic update
+    OP_Count::Addition += 3;
   #endif
 
   return Sum;
@@ -110,16 +93,18 @@ Vector Vector::operator+(const Vector & V_In) const {
 
 
 
-Vector Vector::operator-(const Vector & V_In) const{
+Vector Vector::operator-(const Vector & V_In) const {
   // Declare a Diff vector. This will be used to store the difference.
   Vector Diff;
 
-  Diff[0] = (*this)[0] - V_In[0];
-  Diff[1] = (*this)[1] - V_In[1];
-  Diff[2] = (*this)[2] - V_In[2];
+  Diff.Ar[0] = (*this).Ar[0] - V_In.Ar[0];
+  Diff.Ar[1] = (*this).Ar[1] - V_In.Ar[1];
+  Diff.Ar[2] = (*this).Ar[2] - V_In.Ar[2];
 
   #ifdef OPERATION_COUNT
-    OP_Count::V_V_Subtraction++;                   // Increment operator count
+    // 3 subtractions
+    #pragma omp atomic update
+    OP_Count::Subtraction += 3;
   #endif
 
   return Diff;
@@ -132,12 +117,14 @@ Vector Vector::operator*(const double c) const {
   Vector Prod;
 
   // Scale components of Prod by c.
-  Prod[0] = (*this)[0]*c;
-  Prod[1] = (*this)[1]*c;
-  Prod[2] = (*this)[2]*c;
+  Prod.Ar[0] = (*this).Ar[0]*c;
+  Prod.Ar[1] = (*this).Ar[1]*c;
+  Prod.Ar[2] = (*this).Ar[2]*c;
 
   #ifdef OPERATION_COUNT
-    OP_Count::V_S_Multiplication++;                // Increment operator count
+    // 1 multiplication
+    #pragma omp atomic update
+    OP_Count::Multiplication += 3;
   #endif
 
   return Prod;
@@ -146,15 +133,18 @@ Vector Vector::operator*(const double c) const {
 
 
 Vector Vector::operator/(const double c) const {
-  // Check for divide by zero
+  /* Check for divide by zero
+  Note: we keep this as an exception rather than an assertion because dividing
+  by zero can happen in particular simulations (rather than just in buggy code). */
   if(c == 0) {
     throw Divide_By_Zero("Divide by Zero exception: Thrown by Vector::operator/\n"
                          "You tried to divide a vector by zero. Bad!\n");
   } // if(c == 0) {
 
   #ifdef OPERATION_COUNT
-    OP_Count::V_S_Multiplication++;                // This prevents double counting. /s uses *s
-    OP_Count::V_S_Division++;                      // Increment operator count
+    // 1 division (the multiplication uses operator overloading and is counted elsewhere)
+    #pragma omp atomic update
+    OP_Count::Division += 1;
   #endif
 
   return (*this)*(1./c);
@@ -168,12 +158,14 @@ Vector Vector::operator/(const double c) const {
 // Compound arithmetic operators
 
 Vector & Vector::operator+=(const Vector & V_In) {
-  (*this)[0] += V_In[0];
-  (*this)[1] += V_In[1];
-  (*this)[2] += V_In[2];
+  (*this).Ar[0] += V_In.Ar[0];
+  (*this).Ar[1] += V_In.Ar[1];
+  (*this).Ar[2] += V_In.Ar[2];
 
   #ifdef OPERATION_COUNT
-    OP_Count::Compound_V_V_Addition++;             // Increment operator count
+    // 3 additions.
+    #pragma omp atomic update
+    OP_Count::Addition += 3;
   #endif
 
   // Return this vector
@@ -183,12 +175,14 @@ Vector & Vector::operator+=(const Vector & V_In) {
 
 
 Vector & Vector::operator-=(const Vector & V_In) {
-  (*this)[0] -= V_In[0];
-  (*this)[1] -= V_In[1];
-  (*this)[2] -= V_In[2];
+  (*this).Ar[0] -= V_In.Ar[0];
+  (*this).Ar[1] -= V_In.Ar[1];
+  (*this).Ar[2] -= V_In.Ar[2];
 
   #ifdef OPERATION_COUNT
-    OP_Count::Compound_V_V_Subtraction++;        // Increment operator count
+    // 3 subtractions
+    #pragma omp atomic update
+    OP_Count::Subtraction += 3;        // Increment operator count
   #endif
 
   // Return this vector
@@ -198,12 +192,14 @@ Vector & Vector::operator-=(const Vector & V_In) {
 
 
 Vector & Vector::operator*=(const double c) {
-  (*this)[0] *= c;
-  (*this)[1] *= c;
-  (*this)[2] *= c;
+  (*this).Ar[0] *= c;
+  (*this).Ar[1] *= c;
+  (*this).Ar[2] *= c;
 
   #ifdef OPERATION_COUNT
-    OP_Count::Compound_V_S_Multiplication++;       // Increment operator count
+    // 3 multiplications
+    #pragma omp atomic update
+    OP_Count::Multiplication += 3;
   #endif
 
   // Return this vector (now scalled by c)
@@ -222,7 +218,7 @@ double & Vector::operator[](const unsigned index) {
   Vectors only have 3 components (with indicies 0, 1, 2) */
   assert(index < 3);
 
-  return (*this).V[index];
+  return (*this).Ar[index];
 } // double & Vector::operator[](const unsigned index) {
 
 double & Vector::operator()(const unsigned index) { return (*this)[index]; }
@@ -234,7 +230,7 @@ double Vector::operator[](const unsigned index) const {
   Vectors only have 3 components (with indicies 0, 1, 2) */
   assert(index < 3);
 
-  return (*this).V[index];
+  return (*this).Ar[index];
 } // double Vector::operator()(const unsigned index) const {
 
 double Vector::operator()(const unsigned index) const { return (*this)[index]; }
@@ -250,9 +246,15 @@ bool Vector::operator==(const Vector & V_In) const {
   /* Check that the distance between components is <= Vector Epsilon.
   If it is then return false. */
   for(unsigned i = 0; i < 3; i++) {
-    double d = (*this)[i] - V_In[i];
+    double d = (*this).Ar[i] - V_In.Ar[i];
     if( d < -Vector_Epsilon || d > Vector_Epsilon) { return false; }
   } // for(unsigned i = 0; i < 3; i++) {
+
+  #ifdef OPERATION_COUNT
+    // 3 subtractions in the loop above.
+    #pragma omp atomic update
+    OP_Count::Subtraction += 3;
+  #endif
 
   // If all components are sufficiently close, return true.
   return true;
@@ -273,30 +275,47 @@ bool Vector::operator!=(const Vector & V_In) const {
 // Other methods
 
 void Vector::Print(void) const {
-  printf("< %9.2e, %9.2e, %9.2e>\n",(*this)[0], (*this)[1], (*this)[2]);
+  printf("< %9.2e, %9.2e, %9.2e>\n", (*this).Ar[0], (*this).Ar[1], (*this).Ar[2]);
 } // void Print(void) const {
 
 
 
 double Vector::Magnitude(void) const {
   #ifdef OPERATION_COUNT
-    OP_Count::V_Magnitude++;                       // Increment operator count
+    // 3 multiplications, 2 additions, and 1 sqrt (see below)
+    #pragma omp atomic update
+    OP_Count::Multiplication += 3;
+    #pragma omp atomic update
+    OP_Count::Addition += 2;
+    #pragma omp atomic update
+    OP_Count::Sqrt += 1;
   #endif
 
-  return sqrt((*this)[0]*(*this)[0] +
-                   (*this)[1]*(*this)[1] +
-                   (*this)[2]*(*this)[2]);
+  return sqrt((*this).Ar[0]*(*this).Ar[0] +
+              (*this).Ar[1]*(*this).Ar[1] +
+              (*this).Ar[2]*(*this).Ar[2]);
 } // double Vector::Magnitude(void) const {
 
 
 
 double Vector::Max_Component(void) const {
-  double Max = (*this)[0];
-  if((*this)[1] > Max) { Max = (*this)[1]; }
-  if((*this)[2] > Max) { Max = (*this)[2]; }
+  double Max = (*this).Ar[0];
+  if((*this).Ar[1] > Max) { Max = (*this).Ar[1]; }
+  if((*this).Ar[2] > Max) { Max = (*this).Ar[2]; }
 
   return Max;
 } // double Vetor::Max_Component(void) const {
+
+
+
+const double* Vector::Get_Ar(void) const {
+  /* This function returns the address of the vector's internal array.
+
+  This can be used to bypass the operator access methods and, thereby, improve
+  runtime. However, it is extremely risky (no checks at all). Only use this if
+  you know what you're doing. */
+  return (*this).Ar;
+} // const double* Vector::Get_Ar(void) const {
 
 
 
@@ -322,7 +341,15 @@ void Print(const Vector & V_In) { V_In.Print(); }
 // Functions of multiple vectors
 
 double Dot_Product(const Vector & V1, const Vector & V2) {
-  return (V1[0]*V2[0] + V1[1]*V2[1] + V1[2]*V2[2]);
+  #ifdef OPERATION_COUNT
+    // 2 additions, 3 multiplications (see below)
+    #pragma omp atomic update
+    OP_Count::Multiplication += 3;
+    #pragma omp atomic update
+    OP_Count::Addition += 2;
+  #endif
+
+  return (V1.Ar[0]*V2.Ar[0] + V1.Ar[1]*V2.Ar[1] + V1.Ar[2]*V2.Ar[2]);
 } // double Dot_Product(const Vector & V1, const Vector & V2) {
 
 
@@ -332,9 +359,17 @@ Vector Cross_Product(const Vector & V1, const Vector & V2) {
 
   /* We assign the elements of the cross product V1 x V2 to the corresponding
   elements of V1_x_V2. */
-  V1_x_V2[0] = V1[1]*V2[2] - V1[2]*V2[1];
-  V1_x_V2[1] = V1[2]*V2[0] - V1[0]*V2[2];
-  V1_x_V2[2] = V1[0]*V2[1] - V1[1]*V2[0];
+  V1_x_V2.Ar[0] = V1.Ar[1]*V2.Ar[2] - V1.Ar[2]*V2.Ar[1];
+  V1_x_V2.Ar[1] = V1.Ar[2]*V2.Ar[0] - V1.Ar[0]*V2.Ar[2];
+  V1_x_V2.Ar[2] = V1.Ar[0]*V2.Ar[1] - V1.Ar[1]*V2.Ar[0];
+
+  #ifdef OPERATION_COUNT
+    // 6 Multiplications, 3 subtractions above.
+    #pragma omp atomic update
+    OP_Count::Multiplication += 6;
+    #pragma omp atomic update
+    OP_Count::Subtraction += 3;
+  #endif
 
   return V1_x_V2;
 } // Vector Cross_Product(const Vector & V1, const Vector & V2) {
@@ -347,32 +382,24 @@ Tensor Dyadic_Product(const Vector & V1,const Vector & V2) {
   /* Assign the elements of our dyadic product using nested for loop. Note that
      We only cycle through the columns. Let S denote the dyadic product of V1
      and v2. The jth column of S is equal to V1*V2[j] (scale the vector V1 by
-     the jth component of V2)
-  */
+     the jth component of V2) */
 
-  /* Unrolled loop (runs slower than 1 rolled loop for some reason)
-  T[3*0 + 0] = V1[0]*V2[0];            // i = 0, j = 0
-  T[3*0 + 1] = V1[0]*V2[1];            // i = 0, j = 1
-  T[3*0 + 2] = V1[0]*V2[2];            // i = 0, j = 2
+  S.Ar[3*0 + 0] = V1.Ar[0]*V2.Ar[0];            // i = 0, j = 0
+  S.Ar[3*0 + 1] = V1.Ar[0]*V2.Ar[1];            // i = 0, j = 1
+  S.Ar[3*0 + 2] = V1.Ar[0]*V2.Ar[2];            // i = 0, j = 2
 
-  T[3*1 + 0] = V1[1]*V2[0];            // i = 1, j = 0
-  T[3*1 + 1] = V1[1]*V2[1];            // i = 1, j = 1
-  T[3*1 + 2] = V1[1]*V2[2];            // i = 1, j = 2
+  S.Ar[3*1 + 0] = V1.Ar[1]*V2.Ar[0];            // i = 1, j = 0
+  S.Ar[3*1 + 1] = V1.Ar[1]*V2.Ar[1];            // i = 1, j = 1
+  S.Ar[3*1 + 2] = V1.Ar[1]*V2.Ar[2];            // i = 1, j = 2
 
-  T[3*2 + 0] = V1[2]*V2[0];            // i = 2, j = 0
-  T[3*2 + 1] = V1[2]*V2[1];            // i = 2, j = 1
-  T[3*2 + 2] = V1[2]*V2[2];            // i = 2, j = 2
-  */
-
-  // Old loop. (works better than fully unrolled when using O2 optimization)
-  for(int i = 0; i < 3; i++) {
-    S[3*i + 0] = V1[i]*V2[0];
-    S[3*i + 1] = V1[i]*V2[1];
-    S[3*i + 2] = V1[i]*V2[2];
-  } //   for(int i = 0; i < 3; i++)
+  S.Ar[3*2 + 0] = V1.Ar[2]*V2.Ar[0];            // i = 2, j = 0
+  S.Ar[3*2 + 1] = V1.Ar[2]*V2.Ar[1];            // i = 2, j = 1
+  S.Ar[3*2 + 2] = V1.Ar[2]*V2.Ar[2];            // i = 2, j = 2
 
   #ifdef OPERATION_COUNT
-    OP_Count::Dyadic_Product++;                    // Increment operator count
+    // 9 multiplications in the loop above.
+    #pragma omp atomic update
+    OP_Count::Multiplication += 9;
   #endif
 
   return S;

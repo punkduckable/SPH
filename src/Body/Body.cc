@@ -34,6 +34,9 @@ Body::Body(void) {
 
 
 Body::Body(const unsigned Num_Particles_In) {
+  /* This constructor sets up the Particles array with a specified number
+  of particles. */
+
   if(Num_Particles == 0) {
     printf("An array of particles must have AT LEAST 1 particle\n");
     return;
@@ -61,9 +64,7 @@ Body::Body(const unsigned Num_Particles_In) {
 
 
 
-Body::~Body(void) {
-  delete [] Particles;
-}
+Body::~Body(void) { delete [] Particles; }
 
 
 
@@ -100,7 +101,11 @@ const Particle & Body::operator[](const unsigned i) const {
 // Boundary Conditions
 
 void Body::Apply_BCs(void) {
-  // Using this function only makes sense if the particles array has been set up.
+  /* This function runs the "Apply_BCs" function on every particle in (*this)'s
+  particles array.
+
+  Thus, using this function only makes sense if the particles array has been set
+  up. */
   assert(Particles_Set_Up);
 
   // For each particle in this body, apply its BCs.
@@ -127,7 +132,7 @@ void Body::Set_Num_Particles(const unsigned Num_Particles_In) {
   } // if(Num_Particles_In == 0) {
 
   if((*this).Particles_Set_Up == true) {
-    printf("This particle array has already been setup!!!\n");
+    printf("This Body has already been setup!!!\n");
     printf("You can't change the number of particles in a Body!!!\n");
     return;
   } // if((*this).Particles_Set_Up == true) {
@@ -179,7 +184,7 @@ void Body::Set_Material(const Materials::Material & Mat_In) {
   E, we calculuate E using the following equation:
             E = mu0*(3*Lame + 2*mu0)/(Lame + mu0)
   */
-  Body_Material.E = (Mat_In.mu0)*(3*Mat_In.Lame + 2*Mat_In.mu0)/(Mat_In.Lame + Mat_In.mu0);
+  Body_Material.E = (Mat_In.mu0)*(3.*Mat_In.Lame + 2.*Mat_In.mu0)/(Mat_In.Lame + Mat_In.mu0);
 } // void Body::Set_Material(const Materials::Material & Mat_In) {
 void Body::Set_mu(const double mu_In) { mu = mu_In; }
 void Body::Set_alpha(const double alpha_In) { alpha = alpha_In; }

@@ -2,6 +2,7 @@
 #include "Simulation/Simulation.h"
 #include "Particle/Particle.h"
 #include "Vector/Vector.h"
+#include "Diagnostics/Operation_Count.h"
 #include "List.h"
 #include "Array.h"
 #include <math.h>
@@ -27,8 +28,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   First, we partition the spatial domain. To do this, we first determine the
   maximum and minimum x, y, and z coordinates of the live (damage < 1) particles
-  This gives us a cuboid in which the particles of the two bodies live. We
-  then divide the x, y, and z dimensions of this cuboid into smaller cuboids,
+  This gives us a box in which the particles of the two bodies live. We
+  then divide the x, y, and z dimensions of this box into smaller boxes,
   called cells, each one of which has a side length that is barely greater than
   the contact distance. We then allocate an array of buckets with one bucket per
   cell. We then cycle through the particles of A and B, determining which bucket
@@ -68,12 +69,16 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   z_max = x[2];
   z_min = z_max;
 
-  /* Determine the maximum and minimum x, y, z coordinate of the particles
-  in the two bodies. Each thread only searches through a subset of the
-  particles. Once this is done, we will "reduce" them together in the
+
+  /* Determine the maximum and minimum x, y, z coordinate of the non-damaged
+  particles in the two bodies. Each thread only searches through a subset 
+  of the particles. Once this is done, we will "reduce" them together in the
   buffer to determine the global minimum. */
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
+    /* Contact can only happen with particles that are not damaged. */
+    if(Body_A[i].Get_D() >= 1) { continue; }
+
     x = Body_A[i].Get_x();
 
     /* Note: if x[0] > x_max, then we can't also have x[0] < x_min (this relies
@@ -90,6 +95,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_B; i++) {
+    if(Body_B[i].Get_D() >= 1) { continue; }
+
     x = Body_B[i].Get_x();
 
     if     (x[0] > x_max) { x_max = x[0]; }
@@ -101,6 +108,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     if     (x[2] > z_max) { z_max = x[2]; }
     else if(x[2] < z_min) { z_min = x[2]; }
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
 
   /* The static global buffer variable will be used to perform the reduce
   operation. We will associate the 6 elements of the Buffer to perform the
@@ -169,17 +177,28 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
   /* We want the dimension (in all three coordinate directions) of the
   cell to be >= the contact distance. By doing this, particles
-  can only compe into contact with particles in their bucket or in buckets
+  can only come into contact with particles in their bucket or in buckets
   that are adjacent to their bucket. In general, we want the buckets to be as
   small as possible (so that there are as few particles to check for contact as
   possible). Let's focus on the x coordinate. Let Nx denote the number of
   cell in the x direction. We want Nx to be the largest natural number
-  such that Contact_Distance <= (x_max - x_min)/Nx. A little though reveals
+  such that Contact_Distance <= (x_max - x_min)/Nx. A little thought reveals
   that this occurs precisely when Nx = floor((x_max - x_min)/Contact_Distance).
   A similar result holds for the y and z directions. */
-  const unsigned Nx = floor((x_max - x_min)/Simulation::Contact_Distance);
-  const unsigned Ny = floor((y_max - y_min)/Simulation::Contact_Distance);
-  const unsigned Nz = floor((z_max - z_min)/Simulation::Contact_Distance);
+  const unsigned Nx = floor((x_max - x_min)/(4*Simulation::Contact_Distance));
+  const unsigned Ny = floor((y_max - y_min)/(4*Simulation::Contact_Distance));
+  const unsigned Nz = floor((z_max - z_min)/(4*Simulation::Contact_Distance));
+
+  #ifdef OPERATION_COUNT
+    // 3 subtractions, 3 divisions in the computations above.
+    #pragma omp single nowait
+    {
+      #pragma omp atomic update
+      OP_Count::Subtraction += 3;
+      #pragma omp atomic update
+      OP_Count::Division += 3;
+    } // #pragma omp single nowait
+  #endif
 
   /* Now that we know the number of buckets in each direction, one thread can
   allocate the global arrays */
@@ -213,8 +232,22 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
   const double cell_y_dim = (y_max - y_min)/Ny;
   const double cell_z_dim = (z_max - z_min)/Nz;
 
+  #ifdef OPERATION_COUNT
+    // 3 subtractions, 3 divisions in the computations above.
+    #pragma omp single nowait
+    {
+      #pragma omp atomic update
+      OP_Count::Subtraction += 3;
+      #pragma omp atomic update
+      OP_Count::Division += 3;
+    } // #pragma omp single nowait
+  #endif
+
   #pragma omp for nowait
   for(unsigned i = 0; i < Num_Particles_A; i++) {
+    /* Damaged particles can not do contact. Ignore them. */
+    if(Body_A[i].Get_D() >= 1) { continue; }
+ 
     /* First, we need to determine which bucket our particle belongs in. Let's
     focus on the x coordinate. Each bucket has an x-dimension length of
     (x_max - x_min)/Nx, which we call cell_x_dim. The x coordinates of
@@ -228,7 +261,7 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
     unsigned ny = floor((x[1] - y_min)/cell_y_dim);
     unsigned nz = floor((x[2] - z_min)/cell_z_dim);
 
-    /* We run into a bit of a problem if a pritlce's x coordinate is equal to
+    /* We run into a bit of a problem if a particle's x coordinate is equal to
     x_max. In this case (assuming no roundoff error), nx will evaluate to Nx.
     This is problematic, because the bucket x coordinates range from 0 to Nx-1
     (remember, 0 indexing). Really, we want this particle to go into a bucket
@@ -254,11 +287,13 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
     /* Update that bucket's A counter */
     #pragma omp atomic
-      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
+    Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_A++;
   } // for(unsigned i = 0; i < Num_Particles_A; i++) {
 
   #pragma omp for
   for(unsigned i = 0; i < Num_Particles_B; i++) {
+    if(Body_B[i].Get_D() >= 1) { continue; }
+
     /* Calculate bucket indicies */
     x = Body_B.Particles[i].Get_x();
     unsigned nx = floor((x[0] - x_min)/cell_x_dim);
@@ -275,8 +310,19 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
 
     /* Update that bucket's B counter */
     #pragma omp atomic
-      Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
+    Buckets[nx + ny*Nx + nz*Nx*Ny].Counter_B++;
   } // for(unsigned i = 0; i < Num_Particles_B; i++) {
+
+  #ifdef OPERATION_COUNT
+    // 3 subractions, 3 divisions per cycle of both loops above.
+    #pragma omp single nowait
+    {
+      #pragma omp atomic update
+      OP_Count::Subtraction += 3*(Num_Particles_A + Num_Particles_B);
+      #pragma omp atomic update
+      OP_Count::Division += 3*(Num_Particles_A + Num_Particles_B);
+    } // #pragma omp single
+  #endif
 
 
 
@@ -292,13 +338,16 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
       for(unsigned i = 0; i < Nx*Ny*Nz; i++) { Buckets[i].Array_A.Set_Length(Buckets[i].Counter_A); }
 
       /* Now, cycle through the elements of Bucket_Indicies_Body_A. Consider
-      the ith iteration of this cycle. The ith element of this array tells us
+      the ith iteration of this cycle. (assuming a non-damaged particle.
+      We skip damaged ones) The ith element of this array tells us
       which bucket particle i of body A belongs in. We, therefore, add its
       index to the corresponding bucket's Array_A array. Importantly, we use the
       Counter_A member of the corresponding bucket to keep track of where we
-      should put the particle index in the corresponding bucker's Array_A array
+      should put the particle index in the corresponding bucket's Array_A array
       (remember 0 indexing!) */
       for(unsigned i = 0; i < Num_Particles_A; i++) {
+        if(Body_A[i].Get_D() >= 1) { continue; }
+
         const unsigned Bucket_Index = Bucket_Indicies_Body_A[i];
         Buckets[Bucket_Index].Counter_A--;
         Buckets[Bucket_Index].Array_A[Buckets[Bucket_Index].Counter_A] = i;
@@ -320,6 +369,8 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
       should put the particle index in the corresponding bucker's Array_B array
       (remember 0 indexing!) */
       for(unsigned i = 0; i < Num_Particles_B; i++) {
+        if(Body_B[i].Get_D() >= 1) { continue; }
+
         const unsigned Bucket_Index = Bucket_Indicies_Body_B[i];
         Buckets[Bucket_Index].Counter_B--;
         Buckets[Bucket_Index].Array_B[Buckets[Bucket_Index].Counter_B] = i;
@@ -412,9 +463,6 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
               for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {
                 const unsigned i = Array_A[A_particle_index];
 
-                // Skip broken particles
-                if(Body_A[i].Get_D() >= 1) { continue; }
-
                 double V_i = Body_A[i].Get_Volume();                           //        : mm^3
                 const double KV_i = K*V_i;                                     //        : N*mm
                 x_i = Body_A[i].Get_x();                                       //        : mm Vector
@@ -439,14 +487,24 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                     double V_j = Body_B[j].Get_Volume();                       //        : mm^3
                     double Mag_r_ij = Magnitude(r_ij);                         //        : mm
                     double h_minus_Mag_r_ij = h - Mag_r_ij;                    //        : mm
-                    Grad_W = (-3*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
+                    Grad_W = (-3.*(Shape_Function_Amp)*(h_minus_Mag_r_ij*h_minus_Mag_r_ij)/Mag_r_ij)*(r_ij);   // 1/mm^4 Vector
+
+                    #ifdef OPERATION_COUNT
+                      /* 3 multiplications, 1 division to calculate Grad_W (the
+                      final multiplication uses operator overloading and is
+                      counted elsewhere. */
+                      #pragma omp atomic update
+                      OP_Count::Multiplication += 3;
+                      #pragma omp atomic update
+                      OP_Count::Division += 1;
+                    #endif
 
                     /* Now apply the force to the two interacting bodies (Note
                     the forces are equal and opposite). We have to apply the
-                    contact force on B using a critical region. The reson for
+                    contact force on B using a critical region. The reason for
                     this is that multiple threads may try to update the same
                     particle's contact force at the same time. Because different
-                    thereads operate on different buckets of particles of A, and
+                    threads operate on different buckets of particles of A, and
                     each particle is in just one bucket, this issue can not
                     happen for particles in body A. However, since different
                     threads can work with the same buckets of B particles, it is
@@ -475,6 +533,15 @@ void Body::Contact(Body & Body_A, Body & Body_B) {
                     F_Friction = ((-1*Simulation::Friction_Coefficient*Mag_F_Contact) / Relative_Velocity.Magnitude())*(Relative_Velocity);
                     Body_A[i].Force_Friction += F_Friction;                    //        : N Vector
                     Body_B_F_Friction_Local[j] -= F_Friction;                  //        : N Vector
+
+                    #ifdef OPERATION_COUNT
+                      /* F_Contact: 1 multiplication (multiplication by Grad_W uses operator overloading)
+                      F_Friction:   2 multiplications, 1 division (multiplycatiom by Relative_Velocity uses operator overloading) */
+                      #pragma omp atomic update
+                      OP_Count::Multiplication += 3;
+                      #pragma omp atomic update
+                      OP_Count::Division += 1;
+                    #endif
                   } // if(Magnitude(r_ij) < h) {
                 } // for(unsigned B_Particle_index = 0; B_Particle_index < Num_Particles_B_Bucket; B_Particle_index++) {
               } // for(unsigned A_particle_index = 0; A_particle_index < Num_Particles_A_Bucket; A_particle_index++) {
