@@ -93,7 +93,7 @@ Vector Vector::operator+(const Vector & V_In) const {
 
 
 
-Vector Vector::operator-(const Vector & V_In) const{
+Vector Vector::operator-(const Vector & V_In) const {
   // Declare a Diff vector. This will be used to store the difference.
   Vector Diff;
 
